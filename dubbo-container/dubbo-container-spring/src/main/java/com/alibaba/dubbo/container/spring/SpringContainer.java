@@ -38,6 +38,7 @@ public class SpringContainer implements Container {
         return context;
     }
 
+    //test
     public void start() {
         String configPath = ConfigUtils.getProperty(SPRING_CONFIG);
         if (configPath == null || configPath.length() == 0) {
