@@ -143,6 +143,7 @@ public class ConfigUtils {
     }
 
     public static Properties getProperties() {
+        //获取属性的值：先从系统变量获取，若无从环境变量中获取，都无从配置文件中获取
         if (PROPERTIES == null) {
             synchronized (ConfigUtils.class) {
                 if (PROPERTIES == null) {

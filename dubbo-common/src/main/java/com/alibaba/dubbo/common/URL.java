@@ -69,6 +69,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see java.net.URL
  * @see java.net.URI
  */
+//服务地址
+/**
+ dubbo://10.168.113.101:20980/com.tuya.atop.client.service.user.IAtopUserInfoProvider?anyhost=true&application=airtake_service
+ &default.retries=0&default.timeout=30000&dubbo=2.5.3&group=airtake&interface=com.tuya.atop.client.service.user.IAtopUserInfoProvider
+ &methods=updateModifyTime,abateSession,getSessionByUid,getUserIdBySession,getUser,abateUserSessionList,getSession&pid=693
+ &revision=0.0.2-20151209.122336-7&side=provider&threadpool=fixed&threads=300×tamp=1531221686039  **/
 public final class URL implements Serializable {
 
     private static final long serialVersionUID = -1985165475234910535L;
@@ -113,6 +119,7 @@ public final class URL implements Serializable {
         this.parameters = null;
     }
 
+    //服务地址对外提供有多个构造函数，但内部使用一个，没有的值使用空或默认值
     public URL(String protocol, String host, int port) {
         this(protocol, null, null, host, port, null, (Map<String, String>) null);
     }
@@ -146,6 +153,7 @@ public final class URL implements Serializable {
     }
 
     public URL(String protocol, String username, String password, String host, int port, String path, Map<String, String> parameters) {
+        //用户名密码要么同时有，要么同时无
         if ((username == null || username.length() == 0)
                 && password != null && password.length() > 0) {
             throw new IllegalArgumentException("Invalid url, password without username!");
@@ -421,6 +429,7 @@ public final class URL implements Serializable {
     }
 
     public String getParameter(String key) {
+        //获取url中的参数时，如果没有就取default.+key 默认键对应的值
         String value = parameters.get(key);
         if (value == null || value.length() == 0) {
             value = parameters.get(Constants.DEFAULT_KEY_PREFIX + key);

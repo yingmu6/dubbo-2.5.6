@@ -41,21 +41,27 @@ public abstract class AbstractProtocol implements Protocol {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected final Map<String, Exporter<?>> exporterMap = new ConcurrentHashMap<String, Exporter<?>>();
+    protected final Map<String, Exporter<?>> exporterMap = new ConcurrentHashMap<String, Exporter<?>>();//jdk中concurrent包下提供
 
-    //TODO SOFEREFENCE
-    protected final Set<Invoker<?>> invokers = new ConcurrentHashSet<Invoker<?>>();
+    //TODO SOFEREFENCE(疼痛的引用)
+    protected final Set<Invoker<?>> invokers = new ConcurrentHashSet<Invoker<?>>();//ConcurrentHashSet由dubbo实现的
 
     protected static String serviceKey(URL url) {
+        /**dubbo://192.168.0.103:20880/org.apache.dubbo.demo.DemoService?anyhost=true&application=demo-provider
+         &bind.ip=192.168.0.103&bind.port=20880&dubbo=2.0.2&generic=false&interface=
+        org.apache.dubbo.demo.DemoService&methods=sayHello&pid=1884&qos.port=22222&side=provider&timestamp=1535727842216**/
         return ProtocolUtils.serviceKey(url);
     }
 
+    //serviceKey用在哪里
     protected static String serviceKey(int port, String serviceName, String serviceVersion, String serviceGroup) {
         return ProtocolUtils.serviceKey(port, serviceName, serviceVersion, serviceGroup);
     }
 
     @SuppressWarnings("deprecation")
+    //微服务架构—优雅停机方案 https://my.oschina.net/yu120/blog/1788928
     protected static int getServerShutdownTimeout() {
+        //优雅停机，超时控制，超过时间还没有完成操作，则强制退出
         int timeout = Constants.DEFAULT_SERVER_SHUTDOWN_TIMEOUT;
         String value = ConfigUtils.getProperty(Constants.SHUTDOWN_WAIT_KEY);
         if (value != null && value.length() > 0) {

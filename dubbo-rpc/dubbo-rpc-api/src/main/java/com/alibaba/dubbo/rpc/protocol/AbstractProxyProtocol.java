@@ -62,6 +62,7 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {
 
     @SuppressWarnings("unchecked")
     public <T> Exporter<T> export(final Invoker<T> invoker) throws RpcException {
+        //uri内容是啥？exporterMap的内容
         final String uri = serviceKey(invoker.getUrl());
         Exporter<T> exporter = (Exporter<T>) exporterMap.get(uri);
         if (exporter != null) {
