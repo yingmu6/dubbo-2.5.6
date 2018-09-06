@@ -35,12 +35,15 @@ import java.lang.reflect.Type;
  *
  * @author william.liangf
  */
-public class CompatibleFilter implements Filter {
+//为啥没有@Active注解？
+public class CompatibleFilter implements Filter {//read finish
 
+    //这个类是用来做啥的？
     private static Logger logger = LoggerFactory.getLogger(CompatibleFilter.class);
 
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         Result result = invoker.invoke(invocation);
+        //在执行以后过滤拦截
         if (!invocation.getMethodName().startsWith("$") && !result.hasException()) {
             Object value = result.getValue();
             if (value != null) {
@@ -48,6 +51,7 @@ public class CompatibleFilter implements Filter {
                     Method method = invoker.getInterface().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
                     Class<?> type = method.getReturnType();
                     Object newValue;
+                    //序列化方式判断
                     String serialization = invoker.getUrl().getParameter(Constants.SERIALIZATION_KEY);
                     if ("json".equals(serialization)
                             || "fastjson".equals(serialization)) {

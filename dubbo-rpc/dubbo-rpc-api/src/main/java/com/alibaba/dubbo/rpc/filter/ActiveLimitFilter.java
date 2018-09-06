@@ -31,12 +31,15 @@ import com.alibaba.dubbo.rpc.RpcStatus;
  * @author william.liangf
  */
 @Activate(group = Constants.CONSUMER, value = Constants.ACTIVES_KEY)
-public class ActiveLimitFilter implements Filter {
+public class ActiveLimitFilter implements Filter {// read finish
 
+    //连接数控制
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         URL url = invoker.getUrl();
         String methodName = invocation.getMethodName();
+        //获取最大连接数
         int max = invoker.getUrl().getMethodParameter(methodName, Constants.ACTIVES_KEY, 0);
+        //RpcStatus 用途？
         RpcStatus count = RpcStatus.getStatus(invoker.getUrl(), invocation.getMethodName());
         if (max > 0) {
             long timeout = invoker.getUrl().getMethodParameter(invocation.getMethodName(), Constants.TIMEOUT_KEY, 0);

@@ -34,11 +34,11 @@ import java.util.Map;
  * @author william.liangf
  */
 @Activate(group = Constants.PROVIDER, order = -10000)
-public class ContextFilter implements Filter {
+public class ContextFilter implements Filter {//read finish
 
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         Map<String, String> attachments = invocation.getAttachments();
-        if (attachments != null) {
+        if (attachments != null) {//移除部分参数
             attachments = new HashMap<String, String>(attachments);
             attachments.remove(Constants.PATH_KEY);
             attachments.remove(Constants.GROUP_KEY);

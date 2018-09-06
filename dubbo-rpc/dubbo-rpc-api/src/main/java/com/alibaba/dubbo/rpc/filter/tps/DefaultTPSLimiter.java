@@ -26,11 +26,13 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public class DefaultTPSLimiter implements TPSLimiter {
+
+public class DefaultTPSLimiter implements TPSLimiter {/** read finish */
 
     private final ConcurrentMap<String, StatItem> stats
             = new ConcurrentHashMap<String, StatItem>();
 
+    //[TODO csy] rate,interval判断条件
     public boolean isAllowable(URL url, Invocation invocation) {
         int rate = url.getParameter(Constants.TPS_LIMIT_RATE_KEY, -1);
         long interval = url.getParameter(Constants.TPS_LIMIT_INTERVAL_KEY,
@@ -44,7 +46,7 @@ public class DefaultTPSLimiter implements TPSLimiter {
                 statItem = stats.get(serviceKey);
             }
             return statItem.isAllowable(url, invocation);
-        } else {
+        } else {  //rate <= 0返回true
             StatItem statItem = stats.get(serviceKey);
             if (statItem != null) {
                 stats.remove(serviceKey);

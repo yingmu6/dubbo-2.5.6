@@ -60,7 +60,7 @@ import java.util.concurrent.TimeUnit;
  * @author ding.lid
  */
 @Activate(group = Constants.PROVIDER, value = Constants.ACCESS_LOG_KEY)
-public class AccessLogFilter implements Filter {
+public class AccessLogFilter implements Filter {// read finish
 
     private static final Logger logger = LoggerFactory.getLogger(AccessLogFilter.class);
 
@@ -106,6 +106,7 @@ public class AccessLogFilter implements Filter {
         try {
             String accesslog = invoker.getUrl().getParameter(Constants.ACCESS_LOG_KEY);
             if (ConfigUtils.isNotEmpty(accesslog)) {
+                //RpcContext上下文信息
                 RpcContext context = RpcContext.getContext();
                 String serviceName = invoker.getInterface().getName();
                 String version = invoker.getUrl().getParameter(Constants.VERSION_KEY);
@@ -154,6 +155,7 @@ public class AccessLogFilter implements Filter {
         return invoker.invoke(inv);
     }
 
+    //日志线程
     private class LogTask implements Runnable {
         public void run() {
             try {

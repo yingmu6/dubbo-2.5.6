@@ -34,7 +34,8 @@ import java.util.Set;
  * @author william.liangf
  */
 @Activate(group = Constants.CONSUMER, value = Constants.DEPRECATED_KEY)
-public class DeprecatedFilter implements Filter {
+public class DeprecatedFilter implements Filter {  //read finish
+
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeprecatedFilter.class);
 

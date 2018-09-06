@@ -23,7 +23,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @author william.liangf
  */
 @SPI
-public interface Filter {
+public interface Filter {  // read finish
 
     /**
      * do invoke filter.
@@ -41,6 +41,7 @@ public interface Filter {
      * @throws RpcException
      * @see com.alibaba.dubbo.rpc.Invoker#invoke(Invocation)
      */
+    //在执行invoke之前、之后过滤
     Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException;
 
 }

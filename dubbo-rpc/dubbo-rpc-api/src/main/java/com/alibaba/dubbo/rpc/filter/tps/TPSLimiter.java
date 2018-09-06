@@ -22,6 +22,8 @@ import com.alibaba.dubbo.rpc.Invocation;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
+
+/** read finish */
 public interface TPSLimiter {
 
     /**
