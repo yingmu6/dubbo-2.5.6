@@ -35,6 +35,7 @@ import java.util.concurrent.Semaphore;
 @Activate(group = Constants.PROVIDER, value = Constants.EXECUTES_KEY)
 public class ExecuteLimitFilter implements Filter {
 
+    //服务端并发控制，如果操作最大并发数，直接报异常
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         URL url = invoker.getUrl();
         String methodName = invocation.getMethodName();
@@ -56,6 +57,7 @@ public class ExecuteLimitFilter implements Filter {
         }
         long begin = System.currentTimeMillis();
         boolean isSuccess = true;
+        //RpcStatus中beginCount、endCount用途？
         RpcStatus.beginCount(url, methodName);
         try {
             Result result = invoker.invoke(invocation);
