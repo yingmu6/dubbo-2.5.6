@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @see com.alibaba.dubbo.rpc.filter.ExecuteLimitFilter
  * @see com.alibaba.dubbo.rpc.cluster.loadbalance.LeastActiveLoadBalance
  */
-public class RpcStatus {
+public class RpcStatus {// read finish
 
     private static final ConcurrentMap<String, RpcStatus> SERVICE_STATISTICS = new ConcurrentHashMap<String, RpcStatus>();
 

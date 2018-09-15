@@ -25,8 +25,9 @@ package com.alibaba.dubbo.rpc;
  * @see com.alibaba.dubbo.rpc.Invoker#invoke(Invocation)
  * @since 1.0
  */
-public final class RpcException extends RuntimeException {
+public final class RpcException extends RuntimeException {// read finish
 
+    //异常类型 errorCode
     public static final int UNKNOWN_EXCEPTION = 0;
     public static final int NETWORK_EXCEPTION = 1;
     public static final int TIMEOUT_EXCEPTION = 2;

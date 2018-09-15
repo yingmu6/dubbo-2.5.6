@@ -30,8 +30,9 @@ import java.util.Map;
  * @author qian.lei
  * @serial Don't change the class name and properties.
  */
-public class RpcInvocation implements Invocation, Serializable {
+public class RpcInvocation implements Invocation, Serializable {// read finish
 
+    //调用信息的设置与获取
     private static final long serialVersionUID = -4355285085441097045L;
 
     private String methodName;

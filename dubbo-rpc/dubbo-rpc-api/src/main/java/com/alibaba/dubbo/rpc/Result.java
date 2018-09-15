@@ -26,7 +26,7 @@ import java.util.Map;
  * @see com.alibaba.dubbo.rpc.Invoker#invoke(Invocation)
  * @see com.alibaba.dubbo.rpc.RpcResult
  */
-public interface Result {
+public interface Result {// read finish
 
     /**
      * Get invoke result.

@@ -25,8 +25,9 @@ import com.alibaba.dubbo.common.Node;
  * @see com.alibaba.dubbo.rpc.InvokerListener
  * @see com.alibaba.dubbo.rpc.protocol.AbstractInvoker
  */
-public interface Invoker<T> extends Node {
-
+public interface Invoker<T> extends Node { // read finish
+    //Invoker，调用者对应一个服务接口，通过invoke方法执行调用，参数为Invocation，返回值为Result
+    //继承Node节点
     /**
      * get service interface.
      *

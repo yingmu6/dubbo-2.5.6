@@ -24,8 +24,9 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @author william.liangf
  */
 @SPI
-public interface InvokerListener {
+public interface InvokerListener {// read finish
 
+    //InvokerListener何时被使用
     /**
      * The invoker referred
      *

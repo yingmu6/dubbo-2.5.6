@@ -43,7 +43,7 @@ import java.util.concurrent.TimeoutException;
  * @export
  * @see com.alibaba.dubbo.rpc.filter.ContextFilter
  */
-public class RpcContext {
+public class RpcContext {// read finish
 
     private static final ThreadLocal<RpcContext> LOCAL = new ThreadLocal<RpcContext>() {
         @Override
@@ -126,6 +126,7 @@ public class RpcContext {
      * @return consumer side.
      */
     public boolean isConsumerSide() {
+        //与isProviderSide有啥不同？
         URL url = getUrl();
         if (url == null) {
             return false;
