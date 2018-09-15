@@ -41,7 +41,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author chao.liuc
  * @author william.liangf
  */
-final public class MockInvoker<T> implements Invoker<T> {
+final public class MockInvoker<T> implements Invoker<T> {// read finish
+    //Mock用来测试还是用来降级服务？功能作用？
     private final static ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
     private final static Map<String, Invoker<?>> mocks = new ConcurrentHashMap<String, Invoker<?>>();
     private final static Map<String, Throwable> throwables = new ConcurrentHashMap<String, Throwable>();
@@ -57,6 +58,7 @@ final public class MockInvoker<T> implements Invoker<T> {
     }
 
     public static Object parseMockValue(String mock, Type[] returnTypes) throws Exception {
+        //mock值形式？returnTypes形式
         Object value = null;
         if ("empty".equals(mock)) {
             value = ReflectUtils.getEmptyObject(returnTypes != null && returnTypes.length > 0 ? (Class<?>) returnTypes[0] : null);
@@ -190,7 +192,9 @@ final public class MockInvoker<T> implements Invoker<T> {
     //mock=fail:throw
     //mock=fail:return
     //mock=xx.Service
-    private String normallizeMock(String mock) {
+
+    //mock值形式？
+ private String normallizeMock(String mock) {
         if (mock == null || mock.trim().length() == 0) {
             return mock;
         } else if (ConfigUtils.isDefault(mock) || "fail".equalsIgnoreCase(mock.trim()) || "force".equalsIgnoreCase(mock.trim())) {

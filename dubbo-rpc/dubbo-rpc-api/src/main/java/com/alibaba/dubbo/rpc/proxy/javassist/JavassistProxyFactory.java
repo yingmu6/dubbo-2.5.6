@@ -28,7 +28,7 @@ import com.alibaba.dubbo.rpc.proxy.InvokerInvocationHandler;
  *
  * @author william.liangf
  */
-public class JavassistProxyFactory extends AbstractProxyFactory {
+public class JavassistProxyFactory extends AbstractProxyFactory {// read finish
 
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Invoker<T> invoker, Class<?>[] interfaces) {

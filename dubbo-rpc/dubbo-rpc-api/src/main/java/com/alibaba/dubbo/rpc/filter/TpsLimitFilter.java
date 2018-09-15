@@ -32,8 +32,9 @@ import com.alibaba.dubbo.rpc.filter.tps.TPSLimiter;
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
 @Activate(group = Constants.PROVIDER, value = Constants.TPS_LIMIT_RATE_KEY)
-public class TpsLimitFilter implements Filter {
+public class TpsLimitFilter implements Filter {// read finish
 
+    //对外提供的类，tps包下是内部实现
     private final TPSLimiter tpsLimiter = new DefaultTPSLimiter();
 
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {

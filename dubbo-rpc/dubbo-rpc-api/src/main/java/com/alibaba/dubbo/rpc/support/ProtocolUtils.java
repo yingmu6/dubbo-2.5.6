@@ -11,11 +11,12 @@ public class ProtocolUtils {
     private ProtocolUtils() {
     }
 
-    public static String serviceKey(URL url) {
+    public static String serviceKey(URL url) {// read finish
         return serviceKey(url.getPort(), url.getPath(), url.getParameter(Constants.VERSION_KEY),
                 url.getParameter(Constants.GROUP_KEY));
     }
 
+    //拼接服务的key
     public static String serviceKey(int port, String serviceName, String serviceVersion, String serviceGroup) {
         StringBuilder buf = new StringBuilder();
         if (serviceGroup != null && serviceGroup.length() > 0) {

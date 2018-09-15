@@ -29,13 +29,14 @@ import java.lang.reflect.Proxy;
  *
  * @author william.liangf
  */
-public class JdkProxyFactory extends AbstractProxyFactory {
+public class JdkProxyFactory extends AbstractProxyFactory {// read finish
 
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Invoker<T> invoker, Class<?>[] interfaces) {
         return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces, new InvokerInvocationHandler(invoker));
     }
 
+    //jdk与javassist代理的差异处？
     public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {
         return new AbstractProxyInvoker<T>(proxy, type, url) {
             @Override

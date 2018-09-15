@@ -23,7 +23,8 @@ import com.alibaba.dubbo.rpc.Invoker;
  * @author chao.liuc
  *
  */
-public class DelegateExporter<T> implements Exporter<T> {
+//委派暴露
+public class DelegateExporter<T> implements Exporter<T> {// read finish
 
     private final Exporter<T> exporter;
 

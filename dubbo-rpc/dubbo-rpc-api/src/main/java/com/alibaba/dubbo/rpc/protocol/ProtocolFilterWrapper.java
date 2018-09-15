@@ -33,8 +33,9 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public class ProtocolFilterWrapper implements Protocol {
+public class ProtocolFilterWrapper implements Protocol {// read finish
 
+    //ProtocolFilterWrapper与ProtocolListenerWrapper的区别？
     private final Protocol protocol;
 
     public ProtocolFilterWrapper(Protocol protocol) {
@@ -44,6 +45,7 @@ public class ProtocolFilterWrapper implements Protocol {
         this.protocol = protocol;
     }
 
+    //构建调用链
     private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
         Invoker<T> last = invoker;
         List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);

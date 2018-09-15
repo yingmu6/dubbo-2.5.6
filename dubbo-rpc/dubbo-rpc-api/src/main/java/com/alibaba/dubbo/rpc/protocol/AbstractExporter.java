@@ -26,7 +26,7 @@ import com.alibaba.dubbo.rpc.Invoker;
  * @author qianlei
  * @author william.liangf
  */
-public abstract class AbstractExporter<T> implements Exporter<T> {
+public abstract class AbstractExporter<T> implements Exporter<T> {// read finish
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -53,7 +53,7 @@ public abstract class AbstractExporter<T> implements Exporter<T> {
             return;
         }
         unexported = true;
-        getInvoker().destroy();
+        getInvoker().destroy();//销毁节点
     }
 
     public String toString() {

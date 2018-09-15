@@ -27,14 +27,14 @@ import com.alibaba.dubbo.rpc.service.EchoService;
  *
  * @author william.liangf
  */
-public abstract class AbstractProxyFactory implements ProxyFactory {
+public abstract class AbstractProxyFactory implements ProxyFactory {// read finish
 
     public <T> T getProxy(Invoker<T> invoker) throws RpcException {
         Class<?>[] interfaces = null;
         String config = invoker.getUrl().getParameter("interfaces");
         if (config != null && config.length() > 0) {
             String[] types = Constants.COMMA_SPLIT_PATTERN.split(config);
-            if (types != null && types.length > 0) {
+            if (types != null && types.length > 0) {//逗号分隔
                 interfaces = new Class<?>[types.length + 2];
                 interfaces[0] = invoker.getInterface();
                 interfaces[1] = EchoService.class;

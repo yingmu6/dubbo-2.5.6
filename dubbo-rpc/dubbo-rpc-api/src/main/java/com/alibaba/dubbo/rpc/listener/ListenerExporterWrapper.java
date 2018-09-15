@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public class ListenerExporterWrapper<T> implements Exporter<T> {
+public class ListenerExporterWrapper<T> implements Exporter<T> {// read finish
 
     private static final Logger logger = LoggerFactory.getLogger(ListenerExporterWrapper.class);
 

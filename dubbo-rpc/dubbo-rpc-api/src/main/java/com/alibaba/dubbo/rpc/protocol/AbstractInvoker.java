@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author qian.lei
  * @author william.liangf
  */
-public abstract class AbstractInvoker<T> implements Invoker<T> {
+public abstract class AbstractInvoker<T> implements Invoker<T> {// read finish
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -74,6 +74,7 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {
         this.attachment = attachment == null ? null : Collections.unmodifiableMap(attachment);
     }
 
+    //转变参数
     private static Map<String, String> convertAttachment(URL url, String[] keys) {
         if (keys == null || keys.length == 0) {
             return null;

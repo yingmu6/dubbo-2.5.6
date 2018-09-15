@@ -26,8 +26,9 @@ import java.lang.reflect.Method;
  *
  * @author william.liangf
  */
-public class InvokerInvocationHandler implements InvocationHandler {
+public class InvokerInvocationHandler implements InvocationHandler {// read finish
 
+    //handler什么时候用上？
     private final Invoker<?> invoker;
 
     public InvokerInvocationHandler(Invoker<?> handler) {

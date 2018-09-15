@@ -32,8 +32,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author william.liangf
  */
-public abstract class AbstractProxyProtocol extends AbstractProtocol {
+public abstract class AbstractProxyProtocol extends AbstractProtocol {// read finish
 
+    //既有export，又有refer，用途？
     private final List<Class<?>> rpcExceptions = new CopyOnWriteArrayList<Class<?>>();
     ;
 
@@ -62,7 +63,7 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {
 
     @SuppressWarnings("unchecked")
     public <T> Exporter<T> export(final Invoker<T> invoker) throws RpcException {
-        //uri内容是啥？exporterMap的内容
+        //uri内容是啥？exporterMap的内容？
         final String uri = serviceKey(invoker.getUrl());
         Exporter<T> exporter = (Exporter<T>) exporterMap.get(uri);
         if (exporter != null) {

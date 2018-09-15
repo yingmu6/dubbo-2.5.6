@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author qian.lei
  * @author william.liangf
  */
-public abstract class AbstractProtocol implements Protocol {
+public abstract class AbstractProtocol implements Protocol {// read finish
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 

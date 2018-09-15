@@ -21,10 +21,11 @@ package com.alibaba.dubbo.rpc.service;
  * @author qian.lei
  * @export
  */
-public interface EchoService {
+public interface EchoService {// read finish
 
     /**
      * echo test.
+     * 回声检查
      *
      * @param message message.
      * @return message.

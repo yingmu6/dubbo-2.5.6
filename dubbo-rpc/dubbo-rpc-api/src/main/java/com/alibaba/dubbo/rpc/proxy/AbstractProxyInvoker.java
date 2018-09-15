@@ -29,7 +29,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author william.liangf
  */
-public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
+public abstract class AbstractProxyInvoker<T> implements Invoker<T> {// read finish
 
     private final T proxy;
 

@@ -26,7 +26,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @author william.liangf
  */
 @SPI("javassist")
-public interface ProxyFactory {
+public interface ProxyFactory {// read finish
 
     /**
      * create proxy.

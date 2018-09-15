@@ -33,13 +33,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author william.liangf
  * @author chao.liuc
  */
-public class RpcUtils {
+public class RpcUtils {// read finish
 
     private static final Logger logger = LoggerFactory.getLogger(RpcUtils.class);
     private static final AtomicLong INVOKE_ID = new AtomicLong(0);
 
     public static Class<?> getReturnType(Invocation invocation) {
         try {
+            //获取调用service返回值类型
             if (invocation != null && invocation.getInvoker() != null
                     && invocation.getInvoker().getUrl() != null
                     && !invocation.getMethodName().startsWith("$")) {
@@ -71,6 +72,7 @@ public class RpcUtils {
                     if (method.getReturnType() == void.class) {
                         return null;
                     }
+                    //返回类型和泛华返回类型
                     return new Type[]{method.getReturnType(), method.getGenericReturnType()};
                 }
             }
@@ -112,6 +114,7 @@ public class RpcUtils {
     }
 
     public static String getMethodName(Invocation invocation) {
+        //为啥方法名加上$
         if (Constants.$INVOKE.equals(invocation.getMethodName())
                 && invocation.getArguments() != null
                 && invocation.getArguments().length > 0
@@ -126,6 +129,7 @@ public class RpcUtils {
                 && invocation.getArguments() != null
                 && invocation.getArguments().length > 2
                 && invocation.getArguments()[2] instanceof Object[]) {
+            //取第三个参数？Invocation具体的值？
             return (Object[]) invocation.getArguments()[2];
         }
         return invocation.getArguments();
@@ -160,6 +164,7 @@ public class RpcUtils {
         return isAsync;
     }
 
+    //用途？
     public static boolean isOneway(URL url, Invocation inv) {
         boolean isOneway;
         //如果Java代码中设置优先.

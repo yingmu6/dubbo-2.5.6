@@ -33,12 +33,12 @@ import java.util.Map;
  * @author william.liangf
  */
 @Activate(group = Constants.PROVIDER, value = Constants.TOKEN_KEY)
-public class TokenFilter implements Filter {
+public class TokenFilter implements Filter {// read finish
 
     public Result invoke(Invoker<?> invoker, Invocation inv)
             throws RpcException {
         String token = invoker.getUrl().getParameter(Constants.TOKEN_KEY);
-        if (ConfigUtils.isNotEmpty(token)) {
+        if (ConfigUtils.isNotEmpty(token)) {//如果url中含有token，与上下文里的token比较
             Class<?> serviceType = invoker.getInterface();
             Map<String, String> attachments = inv.getAttachments();
             String remoteToken = attachments == null ? null : attachments.get(Constants.TOKEN_KEY);
