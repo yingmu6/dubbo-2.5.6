@@ -25,7 +25,7 @@ import com.alibaba.dubbo.remoting.RemotingException;
  * @see com.alibaba.dubbo.remoting.exchange.ExchangeChannel#request(Object)
  * @see com.alibaba.dubbo.remoting.exchange.ExchangeChannel#request(Object, int)
  */
-public interface ResponseFuture {
+public interface ResponseFuture {// read finish
 
     /**
      * get result.

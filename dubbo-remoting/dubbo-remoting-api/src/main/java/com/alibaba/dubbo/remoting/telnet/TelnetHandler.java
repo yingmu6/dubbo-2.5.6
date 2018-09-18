@@ -25,7 +25,8 @@ import com.alibaba.dubbo.remoting.RemotingException;
  * @author william.liangf
  */
 @SPI
-public interface TelnetHandler {
+//telnet命令的扩展
+public interface TelnetHandler {// read finish
 
     /**
      * telnet.

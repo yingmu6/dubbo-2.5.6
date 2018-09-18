@@ -32,7 +32,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author william.liangf
  */
 @Activate
-public class ThreadPoolStatusChecker implements StatusChecker {
+public class ThreadPoolStatusChecker implements StatusChecker {// read finish
 
     public Status check() {
         DataStore dataStore = ExtensionLoader.getExtensionLoader(DataStore.class).getDefaultExtension();
@@ -46,6 +46,7 @@ public class ThreadPoolStatusChecker implements StatusChecker {
 
             if (executor != null && executor instanceof ThreadPoolExecutor) {
                 ThreadPoolExecutor tp = (ThreadPoolExecutor) executor;
+                //将活跃的线程数与最大连接数比较
                 boolean ok = tp.getActiveCount() < tp.getMaximumPoolSize() - 1;
                 Status.Level lvl = Status.Level.OK;
                 if (!ok) {

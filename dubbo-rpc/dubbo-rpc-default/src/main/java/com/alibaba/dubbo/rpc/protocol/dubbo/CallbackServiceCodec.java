@@ -41,7 +41,7 @@ import java.util.Set;
  *
  * @author chao.liuc
  */
-class CallbackServiceCodec {
+class CallbackServiceCodec {// read finish
     private static final Logger logger = LoggerFactory.getLogger(CallbackServiceCodec.class);
 
     private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
@@ -78,6 +78,7 @@ class CallbackServiceCodec {
      * @throws IOException
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
+    //此方法理解模糊
     private static String exportOrunexportCallbackService(Channel channel, URL url, Class clazz, Object inst, Boolean export) throws IOException {
         int instid = System.identityHashCode(inst);
 
@@ -140,6 +141,7 @@ class CallbackServiceCodec {
         String countkey = getServerSideCountKey(channel, clazz.getName());
         if (isRefer) {
             if (proxy == null) {
+                //回调url格式？
                 URL referurl = URL.valueOf("callback://" + url.getAddress() + "/" + clazz.getName() + "?" + Constants.INTERFACE_KEY + "=" + clazz.getName());
                 referurl = referurl.addParametersIfAbsent(url.getParameters()).removeParameter(Constants.METHODS_KEY);
                 if (!isInstancesOverLimit(channel, referurl, clazz.getName(), instid, true)) {
@@ -214,6 +216,7 @@ class CallbackServiceCodec {
         }
     }
 
+    //增加实例数
     private static void increaseInstanceCount(Channel channel, String countkey) {
         try {
             //ignore cuncurrent problem? 
@@ -229,6 +232,7 @@ class CallbackServiceCodec {
         }
     }
 
+    //减少实例数
     private static void decreaseInstanceCount(Channel channel, String countkey) {
         try {
             Integer count = (Integer) channel.getAttribute(countkey);

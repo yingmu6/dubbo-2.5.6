@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface Menu {
+public @interface Menu { // read finish
 
     String name();
 

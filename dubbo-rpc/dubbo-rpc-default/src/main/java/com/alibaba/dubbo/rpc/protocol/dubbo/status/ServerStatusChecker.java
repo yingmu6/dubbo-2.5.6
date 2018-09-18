@@ -29,8 +29,9 @@ import java.util.Collection;
  * @author william.liangf
  */
 @Activate
-public class ServerStatusChecker implements StatusChecker {
+public class ServerStatusChecker implements StatusChecker {// read finish
 
+    //服务器状态检查
     public Status check() {
         Collection<ExchangeServer> servers = DubboProtocol.getDubboProtocol().getServers();
         if (servers == null || servers.size() == 0) {

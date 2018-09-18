@@ -41,12 +41,13 @@ import java.util.Map;
  */
 @Activate
 @Help(parameter = "[service.]method(args)", summary = "Invoke the service method.", detail = "Invoke the service method.")
-public class InvokeTelnetHandler implements TelnetHandler {
+public class InvokeTelnetHandler implements TelnetHandler {// read finish
 
     private static Method findMethod(Exporter<?> exporter, String method, List<Object> args) {
         Invoker<?> invoker = exporter.getInvoker();
         Method[] methods = invoker.getInterface().getMethods();
         for (Method m : methods) {
+            //比较方法名、参数类型是否相同？
             if (m.getName().equals(method) && isMatch(m.getParameterTypes(), args)) {
                 return m;
             }
@@ -58,6 +59,7 @@ public class InvokeTelnetHandler implements TelnetHandler {
         if (types.length != args.size()) {
             return false;
         }
+        //types与args的数据内容？
         for (int i = 0; i < types.length; i++) {
             Class<?> type = types[i];
             Object arg = args.get(i);
@@ -88,6 +90,7 @@ public class InvokeTelnetHandler implements TelnetHandler {
     }
 
     @SuppressWarnings("unchecked")
+    //此方法比较模糊，用途？
     public String telnet(Channel channel, String message) {
         if (message == null || message.length() == 0) {
             return "Please input method name, eg: \r\ninvoke xxxMethod(1234, \"abcd\", {\"prop\" : \"value\"})\r\ninvoke XxxService.xxxMethod(1234, \"abcd\", {\"prop\" : \"value\"})\r\ninvoke com.xxx.XxxService.xxxMethod(1234, \"abcd\", {\"prop\" : \"value\"})";

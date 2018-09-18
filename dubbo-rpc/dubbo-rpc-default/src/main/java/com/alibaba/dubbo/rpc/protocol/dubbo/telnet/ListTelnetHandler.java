@@ -33,8 +33,10 @@ import java.lang.reflect.Method;
  */
 @Activate
 @Help(parameter = "[-l] [service]", summary = "List services and methods.", detail = "List services and methods.")
-public class ListTelnetHandler implements TelnetHandler {
+public class ListTelnetHandler implements TelnetHandler {// read finish
 
+    //列举出服务中的方法列表
+    //java是怎么与命令行交互的？
     public String telnet(Channel channel, String message) {
         StringBuilder buf = new StringBuilder();
         String service = null;

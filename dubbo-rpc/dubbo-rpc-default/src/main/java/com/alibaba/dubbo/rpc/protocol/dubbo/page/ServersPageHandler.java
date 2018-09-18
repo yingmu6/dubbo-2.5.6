@@ -33,7 +33,7 @@ import java.util.List;
  * @author william.liangf
  */
 @Menu(name = "Servers", desc = "Show exported service servers.", order = 14000)
-public class ServersPageHandler implements PageHandler {
+public class ServersPageHandler implements PageHandler {// read finish
 
     public Page handle(URL url) {
         List<List<String>> rows = new ArrayList<List<String>>();

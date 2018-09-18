@@ -38,7 +38,7 @@ import java.util.Date;
  */
 @Activate
 @Help(parameter = "level", summary = "Change log level or show log ", detail = "Change log level or show log")
-public class LogTelnetHandler implements TelnetHandler {
+public class LogTelnetHandler implements TelnetHandler {// read finish
 
     public static final String SERVICE_KEY = "telnet.log";
 
@@ -57,6 +57,7 @@ public class LogTelnetHandler implements TelnetHandler {
 
                 if (file != null && file.exists()) {
                     try {
+                        //没有看到输出流，不用写到文件吗
                         FileInputStream fis = new FileInputStream(file);
                         FileChannel filechannel = fis.getChannel();
                         size = filechannel.size();

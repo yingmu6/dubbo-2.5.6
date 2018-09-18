@@ -32,8 +32,9 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public class ClientsPageHandler implements PageHandler {
+public class ClientsPageHandler implements PageHandler {// read finish
 
+    //构造分页
     public Page handle(URL url) {
         String port = url.getParameter("port");
         int p = port == null || port.length() == 0 ? 0 : Integer.parseInt(port);
@@ -46,6 +47,7 @@ public class ClientsPageHandler implements PageHandler {
                 String address = server.getUrl().getAddress();
                 select.append(" &gt; " + NetUtils.getHostName(address) + "/" + address);
             } else {
+                //拼接字符串
                 select.append(" &gt; <select onchange=\"window.location.href='clients.html?port=' + this.value;\">");
                 for (ExchangeServer s : servers) {
                     int sp = s.getUrl().getPort();

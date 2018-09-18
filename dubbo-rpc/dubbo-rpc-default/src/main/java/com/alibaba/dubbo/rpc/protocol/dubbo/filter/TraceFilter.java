@@ -41,8 +41,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author william.liangf
  */
 @Activate(group = Constants.PROVIDER)
-public class TraceFilter implements Filter {
+public class TraceFilter implements Filter {// read finish
 
+    //此类比较模糊
     private static final Logger logger = LoggerFactory.getLogger(TraceFilter.class);
 
     private static final String TRACE_MAX = "trace.max";

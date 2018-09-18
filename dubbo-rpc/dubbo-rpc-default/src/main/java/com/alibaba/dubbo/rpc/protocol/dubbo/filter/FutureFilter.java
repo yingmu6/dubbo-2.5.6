@@ -42,8 +42,9 @@ import java.util.concurrent.Future;
  * @author william.liangf
  */
 @Activate(group = Constants.CONSUMER)
-public class FutureFilter implements Filter {
-
+public class FutureFilter implements Filter {// read finish
+    //FutureFilter主要是用来处理事件通知的过滤器
+    //此类比较模糊
     protected static final Logger logger = LoggerFactory.getLogger(FutureFilter.class);
 
     public Result invoke(final Invoker<?> invoker, final Invocation invocation) throws RpcException {
@@ -60,6 +61,7 @@ public class FutureFilter implements Filter {
         return result;
     }
 
+    //同步调用
     private void syncCallback(final Invoker<?> invoker, final Invocation invocation, final Result result) {
         if (result.hasException()) {
             fireThrowCallback(invoker, invocation, result.getException());
@@ -68,6 +70,7 @@ public class FutureFilter implements Filter {
         }
     }
 
+    //异步调用
     private void asyncCallback(final Invoker<?> invoker, final Invocation invocation) {
         Future<?> f = RpcContext.getContext().getFuture();
         if (f instanceof FutureAdapter) {
@@ -99,6 +102,7 @@ public class FutureFilter implements Filter {
     }
 
     private void fireInvokeCallback(final Invoker<?> invoker, final Invocation invocation) {
+        //onInvokeMethod、onInvokeInst值的格式？
         final Method onInvokeMethod = (Method) StaticContext.getSystemContext().get(StaticContext.getKey(invoker.getUrl(), invocation.getMethodName(), Constants.ON_INVOKE_METHOD_KEY));
         final Object onInvokeInst = StaticContext.getSystemContext().get(StaticContext.getKey(invoker.getUrl(), invocation.getMethodName(), Constants.ON_INVOKE_INSTANCE_KEY));
 
@@ -141,6 +145,7 @@ public class FutureFilter implements Filter {
         Object[] args = invocation.getArguments();
         Object[] params;
         Class<?>[] rParaTypes = onReturnMethod.getParameterTypes();
+        //此处逻辑不明确？
         if (rParaTypes.length > 1) {
             if (rParaTypes.length == 2 && rParaTypes[1].isAssignableFrom(Object[].class)) {
                 params = new Object[2];
@@ -183,6 +188,7 @@ public class FutureFilter implements Filter {
                 Object[] args = invocation.getArguments();
                 Object[] params;
 
+                //此处逻辑不明确？
                 if (rParaTypes.length > 1) {
                     if (rParaTypes.length == 2 && rParaTypes[1].isAssignableFrom(Object[].class)) {
                         params = new Object[2];

@@ -27,7 +27,7 @@ import com.alibaba.dubbo.remoting.telnet.support.Help;
  */
 @Activate
 @Help(parameter = "", summary = "Print working default service.", detail = "Print working default service.")
-public class CurrentTelnetHandler implements TelnetHandler {
+public class CurrentTelnetHandler implements TelnetHandler {// read finish
 
     public String telnet(Channel channel, String message) {
         if (message.length() > 0) {

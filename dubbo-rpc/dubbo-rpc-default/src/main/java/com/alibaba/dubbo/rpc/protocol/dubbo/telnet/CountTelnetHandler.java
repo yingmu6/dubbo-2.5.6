@@ -39,8 +39,9 @@ import java.util.List;
  */
 @Activate
 @Help(parameter = "[service] [method] [times]", summary = "Count the service.", detail = "Count the service.")
-public class CountTelnetHandler implements TelnetHandler {
+public class CountTelnetHandler implements TelnetHandler {// read finish
 
+    //实现接口方法的统计
     public String telnet(final Channel channel, String message) {
         String service = (String) channel.getAttribute(ChangeTelnetHandler.SERVICE_KEY);
         if ((service == null || service.length() == 0)
@@ -84,6 +85,7 @@ public class CountTelnetHandler implements TelnetHandler {
                 final String mtd = method;
                 final Invoker<?> inv = invoker;
                 final String prompt = channel.getUrl().getParameter("prompt", "telnet");
+                //此处启用线程用途？
                 Thread thread = new Thread(new Runnable() {
                     public void run() {
                         for (int i = 0; i < t; i++) {
