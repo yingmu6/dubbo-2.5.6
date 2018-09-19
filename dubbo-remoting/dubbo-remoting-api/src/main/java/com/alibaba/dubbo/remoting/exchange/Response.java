@@ -27,6 +27,7 @@ public class Response {
 
     public static final String READONLY_EVENT = "R";
 
+    //状态值
     /**
      * ok.
      */
@@ -140,7 +141,7 @@ public class Response {
 
     @Deprecated
     public void setHeartbeat(boolean isHeartbeat) {
-        if (isHeartbeat) {
+        if (isHeartbeat) {//心跳检测
             setEvent(HEARTBEAT_EVENT);
         }
     }

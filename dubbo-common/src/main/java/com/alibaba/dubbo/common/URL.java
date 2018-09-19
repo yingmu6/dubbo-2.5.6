@@ -647,6 +647,7 @@ public final class URL implements Serializable {
         return Boolean.parseBoolean(value);
     }
 
+    //判断参数是否存在
     public boolean hasParameter(String key) {
         String value = getParameter(key);
         return value != null && value.length() > 0;

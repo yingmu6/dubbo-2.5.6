@@ -42,7 +42,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author william.liangf
  * @author chao.liuc
  */
-public class DubboInvoker<T> extends AbstractInvoker<T> {
+public class DubboInvoker<T> extends AbstractInvoker<T> {// read finish
 
     private final ExchangeClient[] clients;
 
@@ -84,9 +84,10 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
             boolean isOneway = RpcUtils.isOneway(getUrl(), invocation);
             int timeout = getUrl().getMethodParameter(methodName, Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
             if (isOneway) {
+                //获取url中发送参数
                 boolean isSent = getUrl().getMethodParameter(methodName, Constants.SENT_KEY, false);
-                currentClient.send(inv, isSent);
-                RpcContext.getContext().setFuture(null);
+                currentClient.send(inv, isSent);//发送对象
+                RpcContext.getContext().setFuture(null);//Future异步调用模式
                 return new RpcResult();
             } else if (isAsync) {
                 ResponseFuture future = currentClient.request(inv, timeout);
@@ -122,7 +123,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
             return;
         } else {
             //dubbo check ,避免多次关闭
-            destroyLock.lock();
+            destroyLock.lock();//加锁
             try {
                 if (super.isDestroyed()) {
                     return;
@@ -131,7 +132,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
                 if (invokers != null) {
                     invokers.remove(this);
                 }
-                for (ExchangeClient client : clients) {
+                for (ExchangeClient client : clients) {//关闭客户端连接
                     try {
                         client.close(getShutdownTimeout());
                     } catch (Throwable t) {
@@ -140,12 +141,13 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
                 }
 
             } finally {
-                destroyLock.unlock();
+                destroyLock.unlock();//解锁
             }
         }
     }
 
     protected static int getShutdownTimeout() {
+        //获取优雅停机的时间
         int timeout = Constants.DEFAULT_SERVER_SHUTDOWN_TIMEOUT;
         String value = ConfigUtils.getProperty(Constants.SHUTDOWN_WAIT_KEY);
         if (value != null && value.length() > 0) {

@@ -55,7 +55,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author william.liangf
  * @author chao.liuc
  */
-public class DubboProtocol extends AbstractProtocol {
+public class DubboProtocol extends AbstractProtocol {// read finish
 
     public static final String NAME = "dubbo";
 
@@ -89,20 +89,20 @@ public class DubboProtocol extends AbstractProtocol {
                             }
                         }
                     }
-                    if (!hasMethod) {
+                    if (!hasMethod) {//判断方法是否存在
                         logger.warn(new IllegalStateException("The methodName " + inv.getMethodName() + " not found in callback service interface ,invoke will be ignored. please update the api interface. url is:" + invoker.getUrl()) + " ,invocation is :" + inv);
                         return null;
                     }
                 }
                 RpcContext.getContext().setRemoteAddress(channel.getRemoteAddress());
-                return invoker.invoke(inv);
+                return invoker.invoke(inv);//执行调用
             }
             throw new RemotingException(channel, "Unsupported request: " + message == null ? null : (message.getClass().getName() + ": " + message) + ", channel: consumer: " + channel.getRemoteAddress() + " --> provider: " + channel.getLocalAddress());
         }
 
         @Override
         public void received(Channel channel, Object message) throws RemotingException {
-            if (message instanceof Invocation) {
+            if (message instanceof Invocation) {//回复或者接收
                 reply((ExchangeChannel) channel, message);
             } else {
                 super.received(channel, message);
@@ -133,8 +133,9 @@ public class DubboProtocol extends AbstractProtocol {
             }
         }
 
+        //创建调用信息
         private Invocation createInvocation(Channel channel, URL url, String methodKey) {
-            String method = url.getParameter(methodKey);
+            String method = url.getParameter(methodKey);//methodKey的值是怎样？onconnect等
             if (method == null || method.length() == 0) {
                 return null;
             }
@@ -173,6 +174,7 @@ public class DubboProtocol extends AbstractProtocol {
         return exporterMap;
     }
 
+    //是否是消费端
     private boolean isClientSide(Channel channel) {
         InetSocketAddress address = channel.getRemoteAddress();
         URL url = channel.getUrl();
@@ -215,6 +217,7 @@ public class DubboProtocol extends AbstractProtocol {
         return DEFAULT_PORT;
     }
 
+    //重点：将invoker转换为exporter
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         URL url = invoker.getUrl();
 
@@ -259,6 +262,7 @@ public class DubboProtocol extends AbstractProtocol {
         }
     }
 
+    //创建服务
     private ExchangeServer createServer(URL url) {
         //默认开启server关闭时发送readonly事件
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
@@ -305,9 +309,9 @@ public class DubboProtocol extends AbstractProtocol {
 
         ExchangeClient[] clients = new ExchangeClient[connections];
         for (int i = 0; i < clients.length; i++) {
-            if (service_share_connect) {
+            if (service_share_connect) {//共享连接
                 clients[i] = getSharedClient(url);
-            } else {
+            } else {                   //每服务每连接
                 clients[i] = initClient(url);
             }
         }

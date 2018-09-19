@@ -22,7 +22,8 @@ import java.io.IOException;
  *
  * @author qian.lei
  */
-public interface DataInput {
+public interface DataInput {// read finish
+    //数据输入流，支持读取各种数据类型
 
     /**
      * Read boolean.

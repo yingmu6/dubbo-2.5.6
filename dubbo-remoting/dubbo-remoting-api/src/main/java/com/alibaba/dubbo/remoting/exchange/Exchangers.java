@@ -115,6 +115,7 @@ public class Exchangers {
         return getExchanger(type);
     }
 
+    //SPI机制获取到对象实例
     public static Exchanger getExchanger(String type) {
         return ExtensionLoader.getExtensionLoader(Exchanger.class).getExtension(type);
     }

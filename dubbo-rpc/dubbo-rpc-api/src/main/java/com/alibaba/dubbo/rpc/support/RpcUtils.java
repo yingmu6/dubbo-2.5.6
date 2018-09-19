@@ -72,7 +72,7 @@ public class RpcUtils {// read finish
                     if (method.getReturnType() == void.class) {
                         return null;
                     }
-                    //返回类型和泛华返回类型
+                    //返回类型和泛华返回类型(为啥返回两个类型？)
                     return new Type[]{method.getReturnType(), method.getGenericReturnType()};
                 }
             }

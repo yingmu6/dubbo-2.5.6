@@ -129,6 +129,7 @@ public class FastJsonObjectInput implements ObjectInput {
     }
 
     private String readLine() throws IOException, EOFException {
+        //BufferedReader 读取readLine,按行读取
         String line = reader.readLine();
         if (line == null || line.trim().length() == 0) throw new EOFException();
         return line;

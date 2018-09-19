@@ -52,6 +52,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface SPI {
+    //在指定目录下配置文件，当实例类时就会在文件中就找
 
     /**
      * 缺省扩展点名。

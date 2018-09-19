@@ -39,7 +39,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author chao.liuc
  */
 @SuppressWarnings("deprecation")
-final class LazyConnectExchangeClient implements ExchangeClient {
+//延迟连接，延迟多久？
+final class LazyConnectExchangeClient implements ExchangeClient {      // read finish
 
     //当调用时warning，出现这个warning，表示程序可能存在bug.
     static final String REQUEST_WITH_WARNING_KEY = "lazyclient_request_with_warning";
@@ -63,6 +64,7 @@ final class LazyConnectExchangeClient implements ExchangeClient {
 
 
     private void initClient() throws RemotingException {
+        //在client为空时，初始化
         if (client != null)
             return;
         if (logger.isInfoEnabled()) {
@@ -78,6 +80,7 @@ final class LazyConnectExchangeClient implements ExchangeClient {
         }
     }
 
+    //此处用途？
     public ResponseFuture request(Object request) throws RemotingException {
         warning(request);
         initClient();
@@ -90,6 +93,7 @@ final class LazyConnectExchangeClient implements ExchangeClient {
 
     public InetSocketAddress getRemoteAddress() {
         if (client == null) {
+            //createUnresolved 从主机名和端口号创建未解析的套接字地址，不会尝试将主机名解析为InetAddress。 该地址将被标记为未解决
             return InetSocketAddress.createUnresolved(url.getHost(), url.getPort());
         } else {
             return client.getRemoteAddress();
@@ -116,6 +120,7 @@ final class LazyConnectExchangeClient implements ExchangeClient {
         }
     }
 
+    //获取处理类
     public ChannelHandler getChannelHandler() {
         checkClient();
         return client.getChannelHandler();
@@ -141,6 +146,7 @@ final class LazyConnectExchangeClient implements ExchangeClient {
         return requestHandler;
     }
 
+    //发送消息？
     public void send(Object message) throws RemotingException {
         initClient();
         client.send(message);
@@ -163,6 +169,7 @@ final class LazyConnectExchangeClient implements ExchangeClient {
             client.close();
     }
 
+    //关闭客户端连接
     public void close(int timeout) {
         if (client != null)
             client.close(timeout);
@@ -175,6 +182,7 @@ final class LazyConnectExchangeClient implements ExchangeClient {
         }
     }
 
+    //reset ?
     public void reset(URL url) {
         checkClient();
         client.reset(url);

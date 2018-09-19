@@ -20,8 +20,9 @@ package com.alibaba.dubbo.common;
  *
  * @author william.liangf
  */
-public interface Node {
+public interface Node { // read finish
 
+    //节点的信息：url、是否可利用
     /**
      * get url.
      *

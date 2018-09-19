@@ -33,25 +33,27 @@ import java.util.Collection;
  */
 @Activate
 @Help(parameter = "[-l] [port]", summary = "Print server ports and connections.", detail = "Print server ports and connections.")
-public class PortTelnetHandler implements TelnetHandler {
-
+public class PortTelnetHandler implements TelnetHandler {// read finish
+    //detail 描述功能用途
+    //命令ps -l 20880  ？
     public String telnet(Channel channel, String message) {
         StringBuilder buf = new StringBuilder();
         String port = null;
         boolean detail = false;
         if (message.length() > 0) {
-            String[] parts = message.split("\\s+");
+            String[] parts = message.split("\\s+");//以空格进行分割
             for (String part : parts) {
-                if ("-l".equals(part)) {
+                if ("-l".equals(part)) {//判断是否是列举详情
                     detail = true;
                 } else {
-                    if (!StringUtils.isInteger(part)) {
+                    if (!StringUtils.isInteger(part)) {//判断是否是整数
                         return "Illegal port " + part + ", must be integer.";
                     }
                     port = part;
                 }
             }
         }
+        //怎样检验端口是否正确的？  (与URL中的port比较，url总线)
         if (port == null || port.length() == 0) {
             for (ExchangeServer server : DubboProtocol.getDubboProtocol().getServers()) {
                 if (buf.length() > 0) {
@@ -67,8 +69,8 @@ public class PortTelnetHandler implements TelnetHandler {
             int p = Integer.parseInt(port);
             ExchangeServer server = null;
             for (ExchangeServer s : DubboProtocol.getDubboProtocol().getServers()) {
-                if (p == s.getUrl().getPort()) {
-                    server = s;
+                if (p == s.getUrl().getPort()) {//对比url中的端口
+                    server = s;//找到相同端口server
                     break;
                 }
             }

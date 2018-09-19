@@ -38,7 +38,7 @@ import java.net.InetSocketAddress;
  *
  * @author chao.liuc
  */
-class ChannelWrappedInvoker<T> extends AbstractInvoker<T> {
+class ChannelWrappedInvoker<T> extends AbstractInvoker<T> {// read finish
 
     private final Channel channel;
     private final String serviceKey;
@@ -90,8 +90,10 @@ class ChannelWrappedInvoker<T> extends AbstractInvoker<T> {
 //        }
     }
 
+    //内部类
     public static class ChannelWrapper extends ClientDelegate {
 
+        //ClientDelegate客户端代表
         private final Channel channel;
         private final URL url;
 

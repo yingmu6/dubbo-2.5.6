@@ -27,7 +27,7 @@ import com.alibaba.dubbo.common.Node;
  */
 public interface Invoker<T> extends Node { // read finish
     //Invoker，调用者对应一个服务接口，通过invoke方法执行调用，参数为Invocation，返回值为Result
-    //继承Node节点
+    //继承Node节点，每个调用者就是一个节点
     /**
      * get service interface.
      *

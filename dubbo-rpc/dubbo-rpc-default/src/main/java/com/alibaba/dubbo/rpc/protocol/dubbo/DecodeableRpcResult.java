@@ -38,7 +38,7 @@ import java.lang.reflect.Type;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable {
+public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable {// read finish
 
     private static final Logger log = LoggerFactory.getLogger(DecodeableRpcResult.class);
 
@@ -75,11 +75,12 @@ public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable 
 
         byte flag = in.readByte();
         switch (flag) {
-            case DubboCodec.RESPONSE_NULL_VALUE:
+            case DubboCodec.RESPONSE_NULL_VALUE:  //2
                 break;
-            case DubboCodec.RESPONSE_VALUE:
+            case DubboCodec.RESPONSE_VALUE:       //1
                 try {
                     Type[] returnType = RpcUtils.getReturnTypes(invocation);
+                    //根据返回类型，获取返回结果值
                     setValue(returnType == null || returnType.length == 0 ? in.readObject() :
                             (returnType.length == 1 ? in.readObject((Class<?>) returnType[0])
                                     : in.readObject((Class<?>) returnType[0], returnType[1])));
@@ -87,7 +88,7 @@ public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable 
                     throw new IOException(StringUtils.toString("Read response data failed.", e));
                 }
                 break;
-            case DubboCodec.RESPONSE_WITH_EXCEPTION:
+            case DubboCodec.RESPONSE_WITH_EXCEPTION: //0
                 try {
                     Object obj = in.readObject();
                     if (obj instanceof Throwable == false)

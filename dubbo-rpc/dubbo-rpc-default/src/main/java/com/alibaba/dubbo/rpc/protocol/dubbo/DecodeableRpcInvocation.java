@@ -41,7 +41,7 @@ import static com.alibaba.dubbo.rpc.protocol.dubbo.CallbackServiceCodec.decodeIn
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Decodeable {
+public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Decodeable {// read finish
 
     private static final Logger log = LoggerFactory.getLogger(DecodeableRpcInvocation.class);
 
@@ -51,7 +51,7 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
 
     private InputStream inputStream;
 
-    private Request request;
+    private Request request;//请求的公有信息
 
     private volatile boolean hasDecoded;
 
@@ -66,6 +66,7 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
     }
 
     public void decode() throws Exception {
+        //解码条件判断
         if (!hasDecoded && channel != null && inputStream != null) {
             try {
                 decode(channel, inputStream);
@@ -81,14 +82,17 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
         }
     }
 
+    //为啥此处没有实现体
     public void encode(Channel channel, OutputStream output, Object message) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     public Object decode(Channel channel, InputStream input) throws IOException {
+        //获取序列化对象，再反序列化内部实现模糊？
         ObjectInput in = CodecSupport.getSerialization(channel.getUrl(), serializationType)
                 .deserialize(channel.getUrl(), input);
 
+        //往RpcInvocation中的attachments设置值
         setAttachment(Constants.DUBBO_VERSION_KEY, in.readUTF());
         setAttachment(Constants.PATH_KEY, in.readUTF());
         setAttachment(Constants.VERSION_KEY, in.readUTF());
@@ -106,6 +110,7 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
                 args = new Object[pts.length];
                 for (int i = 0; i < args.length; i++) {
                     try {
+                        //从转换来的Class数组元素中读取内容
                         args[i] = in.readObject(pts[i]);
                     } catch (Exception e) {
                         if (log.isWarnEnabled()) {
@@ -114,7 +119,7 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
                     }
                 }
             }
-            setParameterTypes(pts);
+            setParameterTypes(pts);//设置参数类型
 
             Map<String, String> map = (Map<String, String>) in.readObject(Map.class);
             if (map != null && map.size() > 0) {
@@ -127,6 +132,7 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
             }
             //decode argument ,may be callback
             for (int i = 0; i < args.length; i++) {
+                //此处解码模糊？
                 args[i] = decodeInvocationArgument(channel, this, pts, i, args[i]);
             }
 

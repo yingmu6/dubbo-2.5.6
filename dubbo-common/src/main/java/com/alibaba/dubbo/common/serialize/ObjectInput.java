@@ -23,8 +23,9 @@ import java.lang.reflect.Type;
  *
  * @author qian.lei
  */
-public interface ObjectInput extends DataInput {
+public interface ObjectInput extends DataInput {// read finish
 
+    //对象输入流，dubbo自定义
     /**
      * read object.
      *

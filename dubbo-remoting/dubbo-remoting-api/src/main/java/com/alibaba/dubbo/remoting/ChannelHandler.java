@@ -28,7 +28,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  */
 @SPI
 public interface ChannelHandler {
-
+    //ChannelHandler是抽象的通道事件处理器
     /**
      * on channel connected.
      *

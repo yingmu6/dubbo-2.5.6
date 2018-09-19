@@ -41,7 +41,7 @@ public class RpcInvocation implements Invocation, Serializable {// read finish
 
     private Object[] arguments;
 
-    private Map<String, String> attachments;
+    private Map<String, String> attachments;//url中附加参数
 
     private transient Invoker<?> invoker;
 
@@ -55,6 +55,7 @@ public class RpcInvocation implements Invocation, Serializable {// read finish
         if (invoker != null) {
             URL url = invoker.getUrl();
             setAttachment(Constants.PATH_KEY, url.getPath());
+            //判断url中是否存在一些参数，如group、version、timeout等
             if (url.hasParameter(Constants.INTERFACE_KEY)) {
                 setAttachment(Constants.INTERFACE_KEY, url.getParameter(Constants.INTERFACE_KEY));
             }
@@ -152,6 +153,7 @@ public class RpcInvocation implements Invocation, Serializable {// read finish
         attachments.put(key, value);
     }
 
+    //当map中没有包含key，才去放入map中
     public void setAttachmentIfAbsent(String key, String value) {
         if (attachments == null) {
             attachments = new HashMap<String, String>();

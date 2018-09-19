@@ -48,6 +48,7 @@ import java.util.regex.Pattern;
  */
 public final class ReflectUtils {
 
+    //类型符号简写
     /**
      * void(V).
      */
@@ -344,6 +345,7 @@ public final class ReflectUtils {
             c = c.getComponentType();
         }
 
+        //获取类型的简写
         if (c.isPrimitive()) {
             String t = c.getName();
             if ("void".equals(t)) ret.append(JVM_VOID);
@@ -696,7 +698,8 @@ public final class ReflectUtils {
      * @throws ClassNotFoundException
      */
     private static Class<?> desc2class(ClassLoader cl, String desc) throws ClassNotFoundException {
-        switch (desc.charAt(0)) {
+        //将对象的描述信息 转换为Class对象
+        switch (desc.charAt(0)) {//如果是基本类型，直接返回
             case JVM_VOID:
                 return void.class;
             case JVM_BOOLEAN:
@@ -715,7 +718,7 @@ public final class ReflectUtils {
                 return long.class;
             case JVM_SHORT:
                 return short.class;
-            case 'L':
+            case 'L':      //如果是对象类型，需要用反射机制获取class
                 desc = desc.substring(1, desc.length() - 1).replace('/', '.'); // "Ljava/lang/Object;" ==> "java.lang.Object"
                 break;
             case '[':
@@ -728,7 +731,7 @@ public final class ReflectUtils {
         if (cl == null)
             cl = ClassHelper.getClassLoader();
         Class<?> clazz = DESC_CLASS_CACHE.get(desc);
-        if (clazz == null) {
+        if (clazz == null) {//判断缓存中是否存在，不存在重新创建并设置
             clazz = Class.forName(desc, true, cl);
             DESC_CLASS_CACHE.put(desc, clazz);
         }
@@ -760,7 +763,7 @@ public final class ReflectUtils {
             return EMPTY_CLASS_ARRAY;
 
         List<Class<?>> cs = new ArrayList<Class<?>>();
-        Matcher m = DESC_PATTERN.matcher(desc);
+        Matcher m = DESC_PATTERN.matcher(desc);//正则表达式匹配desc中的类型
         while (m.find())
             cs.add(desc2class(cl, m.group()));
         return cs.toArray(EMPTY_CLASS_ARRAY);

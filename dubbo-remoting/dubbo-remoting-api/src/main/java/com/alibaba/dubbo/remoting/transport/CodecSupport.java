@@ -40,7 +40,7 @@ public class CodecSupport {
         for (String name : supportedExtensions) {
             Serialization serialization = ExtensionLoader.getExtensionLoader(Serialization.class).getExtension(name);
             byte idByte = serialization.getContentTypeId();
-            if (ID_SERIALIZATION_MAP.containsKey(idByte)) {
+            if (ID_SERIALIZATION_MAP.containsKey(idByte)) {//已存在key
                 logger.error("Serialization extension " + serialization.getClass().getName()
                         + " has duplicate id to Serialization extension "
                         + ID_SERIALIZATION_MAP.get(idByte).getClass().getName()
@@ -61,10 +61,11 @@ public class CodecSupport {
     public static Serialization getSerialization(URL url) {
         return ExtensionLoader.getExtensionLoader(Serialization.class).getExtension(
                 url.getParameter(Constants.SERIALIZATION_KEY, Constants.DEFAULT_REMOTING_SERIALIZATION));
+        //通过扩展名实例化扩展类，扩展名从url参数中获取
     }
 
     public static Serialization getSerialization(URL url, Byte id) {
-        Serialization result = getSerializationById(id);
+        Serialization result = getSerializationById(id);//先从缓存中查找
         if (result == null) {
             result = getSerialization(url);
         }

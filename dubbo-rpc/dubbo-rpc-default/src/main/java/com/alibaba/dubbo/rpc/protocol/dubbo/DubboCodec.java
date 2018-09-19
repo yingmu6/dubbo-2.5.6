@@ -48,19 +48,19 @@ import static com.alibaba.dubbo.rpc.protocol.dubbo.CallbackServiceCodec.encodeIn
  * @author qianlei
  * @author chao.liuc
  */
-public class DubboCodec extends ExchangeCodec implements Codec2 {
+public class DubboCodec extends ExchangeCodec implements Codec2 {// read finish
 
     public static final String NAME = "dubbo";
     public static final String DUBBO_VERSION = Version.getVersion(DubboCodec.class, Version.getVersion());
     public static final byte RESPONSE_WITH_EXCEPTION = 0;
     public static final byte RESPONSE_VALUE = 1;
-    public static final byte RESPONSE_NULL_VALUE = 2;
+    public static final byte RESPONSE_NULL_VALUE = 2 ;
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
     public static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
     private static final Logger log = LoggerFactory.getLogger(DubboCodec.class);
 
     protected Object decodeBody(Channel channel, InputStream is, byte[] header) throws IOException {
-        byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK);
+        byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK); //逻辑与
         Serialization s = CodecSupport.getSerialization(channel.getUrl(), proto);
         // get request id.
         long id = Bytes.bytes2long(header, 4);
@@ -71,7 +71,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
                 res.setEvent(Response.HEARTBEAT_EVENT);
             }
             // get status.
-            byte status = header[3];
+            byte status = header[3];//header字节数组的内容？
             res.setStatus(status);
             if (status == Response.OK) {
                 try {
@@ -81,14 +81,15 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
                     } else if (res.isEvent()) {
                         data = decodeEventData(channel, deserialize(s, channel.getUrl(), is));
                     } else {
-                        DecodeableRpcResult result;
+                        //解码逻辑？
+                        DecodeableRpcResult result;//请求返回结果
                         if (channel.getUrl().getParameter(
-                                Constants.DECODE_IN_IO_THREAD_KEY,
-                                Constants.DEFAULT_DECODE_IN_IO_THREAD)) {
+                                Constants.DECODE_IN_IO_THREAD_KEY, //decode.in.io
+                                Constants.DEFAULT_DECODE_IN_IO_THREAD)) { //true
                             result = new DecodeableRpcResult(channel, res, is,
                                     (Invocation) getRequestData(id), proto);
                             result.decode();
-                        } else {
+                        } else { //Url参数中没有
                             result = new DecodeableRpcResult(channel, res,
                                     new UnsafeByteArrayInputStream(readMessageData(is)),
                                     (Invocation) getRequestData(id), proto);
@@ -122,7 +123,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
                 } else if (req.isEvent()) {
                     data = decodeEventData(channel, deserialize(s, channel.getUrl(), is));
                 } else {
-                    DecodeableRpcInvocation inv;
+                    DecodeableRpcInvocation inv;//与上面解码的实体不一样，请求对象
                     if (channel.getUrl().getParameter(
                             Constants.DECODE_IN_IO_THREAD_KEY,
                             Constants.DEFAULT_DECODE_IN_IO_THREAD)) {
@@ -153,7 +154,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
     }
 
     private byte[] readMessageData(InputStream is) throws IOException {
-        if (is.available() > 0) {
+        if (is.available() > 0) {//从输入流中读取内容
             byte[] result = new byte[is.available()];
             is.read(result);
             return result;
@@ -161,6 +162,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
         return new byte[]{};
     }
 
+    //编码请求数据
     @Override
     protected void encodeRequestData(Channel channel, ObjectOutput out, Object data) throws IOException {
         RpcInvocation inv = (RpcInvocation) data;
@@ -179,6 +181,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
         out.writeObject(inv.getAttachments());
     }
 
+    //编码响应数据
     @Override
     protected void encodeResponseData(Channel channel, ObjectOutput out, Object data) throws IOException {
         Result result = (Result) data;

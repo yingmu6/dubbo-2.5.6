@@ -26,11 +26,11 @@ import java.util.Map;
  *
  * @author william.liangf
  */
-public class DubboExporter<T> extends AbstractExporter<T> {
+public class DubboExporter<T> extends AbstractExporter<T> {// read finish
 
     private final String key;
 
-    private final Map<String, Exporter<?>> exporterMap;
+    private final Map<String, Exporter<?>> exporterMap;//暴露export的map
 
     public DubboExporter(Invoker<T> invoker, String key, Map<String, Exporter<?>> exporterMap) {
         super(invoker);

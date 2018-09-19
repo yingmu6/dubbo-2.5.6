@@ -34,8 +34,9 @@ import java.lang.reflect.Method;
  */
 @Activate
 @Help(parameter = "[service] [method] [times]", summary = "Trace the service.", detail = "Trace the service.")
-public class TraceTelnetHandler implements TelnetHandler {
+public class TraceTelnetHandler implements TelnetHandler {// read finish
 
+    //trace XxxService xxxMethod 10: 跟踪 10 次服务方法的调用情况
     public String telnet(Channel channel, String message) {
         String service = (String) channel.getAttribute(ChangeTelnetHandler.SERVICE_KEY);
         if ((service == null || service.length() == 0)
@@ -82,6 +83,7 @@ public class TraceTelnetHandler implements TelnetHandler {
                     return "No such method " + method + " in class " + invoker.getInterface().getName();
                 }
             }
+            //添加追踪
             TraceFilter.addTracer(invoker.getInterface(), method, channel, Integer.parseInt(times));
         } else {
             return "No such service " + service;

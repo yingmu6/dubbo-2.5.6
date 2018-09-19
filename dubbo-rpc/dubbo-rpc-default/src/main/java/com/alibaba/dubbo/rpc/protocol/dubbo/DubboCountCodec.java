@@ -31,7 +31,7 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public final class DubboCountCodec implements Codec2 {
+public final class DubboCountCodec implements Codec2 {// read finish
 
     private DubboCodec codec = new DubboCodec();
 
@@ -40,13 +40,14 @@ public final class DubboCountCodec implements Codec2 {
     }
 
     public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
+        //NettyBackedChannelBuffer 调用
         int save = buffer.readerIndex();
         MultiMessage result = MultiMessage.create();
         do {
             Object obj = codec.decode(channel, buffer);
             if (Codec2.DecodeResult.NEED_MORE_INPUT == obj) {
                 buffer.readerIndex(save);
-                break;
+                break;//循环结束条件
             } else {
                 result.addMessage(obj);
                 logMessageLength(obj, buffer.readerIndex() - save);
@@ -66,14 +67,15 @@ public final class DubboCountCodec implements Codec2 {
         if (bytes <= 0) {
             return;
         }
-        if (result instanceof Request) {
+        //记录消息字节数
+        if (result instanceof Request) {//请求实例，RpcInvocation、Request
             try {
                 ((RpcInvocation) ((Request) result).getData()).setAttachment(
                         Constants.INPUT_KEY, String.valueOf(bytes));
             } catch (Throwable e) {
                 /* ignore */
             }
-        } else if (result instanceof Response) {
+        } else if (result instanceof Response) {//响应实例 RpcResult、Response
             try {
                 ((RpcResult) ((Response) result).getResult()).setAttachment(
                         Constants.OUTPUT_KEY, String.valueOf(bytes));

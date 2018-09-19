@@ -99,6 +99,7 @@ public class Log4jLogger implements Logger {
     }
 
     public boolean isInfoEnabled() {
+        //检查是否支持info级别日志
         return logger.isInfoEnabled();
     }
 
