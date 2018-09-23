@@ -26,6 +26,8 @@ import java.nio.ByteBuffer;
  */
 public class ByteBufferBackedChannelBuffer extends AbstractChannelBuffer {
 
+    //标记，位置，极限和容量值的以下不变量保持不变：
+    //0 <= mark <= position <= limit <= capacity
     private final ByteBuffer buffer;
 
     private final int capacity;
@@ -34,8 +36,9 @@ public class ByteBufferBackedChannelBuffer extends AbstractChannelBuffer {
         if (buffer == null) {
             throw new NullPointerException("buffer");
         }
-
+        //创建一个新的字节缓冲区，共享此缓冲区的内容。
         this.buffer = buffer.slice();
+        //返回当前位置和限制之间的元素数。
         capacity = buffer.remaining();
         writerIndex(capacity);
     }
@@ -47,6 +50,7 @@ public class ByteBufferBackedChannelBuffer extends AbstractChannelBuffer {
     }
 
     public ChannelBufferFactory factory() {
+        //直接与非直接缓冲区
         if (buffer.isDirect()) {
             return DirectChannelBufferFactory.getInstance();
         } else {

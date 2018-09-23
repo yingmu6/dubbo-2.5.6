@@ -26,9 +26,9 @@ import java.nio.ByteBuffer;
  */
 public abstract class AbstractChannelBuffer implements ChannelBuffer {
 
-    private int readerIndex;
+    private int readerIndex;//读索引位置
 
-    private int writerIndex;
+    private int writerIndex;//写索引位置
 
     private int markedReaderIndex;
 
@@ -50,6 +50,7 @@ public abstract class AbstractChannelBuffer implements ChannelBuffer {
     }
 
     public void writerIndex(int writerIndex) {
+        //判断容量以及下表
         if (writerIndex < readerIndex || writerIndex > capacity()) {
             throw new IndexOutOfBoundsException();
         }
