@@ -24,13 +24,17 @@ import java.nio.ByteBuffer;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
+// 这个ChannelBuffer实现类是动态扩容吗？
+// 是的，可以动态扩容
 public class DynamicChannelBuffer extends AbstractChannelBuffer {
 
     private final ChannelBufferFactory factory;
 
+    //可以将ChannelBuffer子类扩容
     private ChannelBuffer buffer;
 
-    public DynamicChannelBuffer(int estimatedLength) {
+    //若没有指定创建的工厂，默认使用HeapChannelBufferFactory
+    public DynamicChannelBuffer(int estimatedLength) {//预计的长度
         this(estimatedLength, HeapChannelBufferFactory.getInstance());
     }
 
@@ -58,7 +62,10 @@ public class DynamicChannelBuffer extends AbstractChannelBuffer {
             newCapacity = capacity();
         }
         int minNewCapacity = writerIndex() + minWritableBytes;
+        //动态扩容
         while (newCapacity < minNewCapacity) {
+            //这是什么运算(左移以为，按2的倍数增加)
+            //等价于 newCapacity = newCapacity << 1
             newCapacity <<= 1;
         }
 
@@ -117,6 +124,7 @@ public class DynamicChannelBuffer extends AbstractChannelBuffer {
 
 
     public void setByte(int index, int value) {
+        //TODO 此处的调用方法是哪个实例的方法？即成员变量ChannelBuffer的值在哪里设置的？
         buffer.setByte(index, value);
     }
 

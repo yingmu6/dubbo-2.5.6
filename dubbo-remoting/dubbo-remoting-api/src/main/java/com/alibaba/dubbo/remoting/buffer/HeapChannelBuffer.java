@@ -28,10 +28,14 @@ import java.nio.channels.ScatteringByteChannel;
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
 public class HeapChannelBuffer extends AbstractChannelBuffer {
+    //模仿Netty中的HeapChannelBuffer，固定大小的buffer
 
+    //这个类与用途？
+    //解：分配堆内buffer
     /**
-     * The underlying heap byte array that this buffer is wrapping.
+     * The underlying(潜在的、在下面的) heap byte array that this buffer is wrapping.
      */
+    //底层数据结构是固定大小的数组array
     protected final byte[] array;
 
     /**
@@ -39,22 +43,24 @@ public class HeapChannelBuffer extends AbstractChannelBuffer {
      *
      * @param length the length of the new byte array
      */
-    public HeapChannelBuffer(int length) {
+    public HeapChannelBuffer(int length) {//构造函数重载，不完整参数的函数最终归并到一个完整的函数
         this(new byte[length], 0, 0);
     }
 
     /**
+     * heap buffer有啥不同？
+     * 解：固定大小的buffer
      * Creates a new heap buffer with an existing byte array.
      *
      * @param array the byte array to wrap
      */
     public HeapChannelBuffer(byte[] array) {
-        this(array, 0, array.length);
+        this(array, 0, array.length);//this() 调用当前函数，super()调用父类函数
     }
 
     /**
      * Creates a new heap buffer with an existing byte array.
-     *
+     *函数
      * @param array       the byte array to wrap
      * @param readerIndex the initial reader index of this buffer
      * @param writerIndex the initial writer index of this buffer
@@ -64,7 +70,7 @@ public class HeapChannelBuffer extends AbstractChannelBuffer {
             throw new NullPointerException("array");
         }
         this.array = array;
-        setIndex(readerIndex, writerIndex);
+        setIndex(readerIndex, writerIndex);//索引的处理，使用父类AbstractChannelBuffer
     }
 
     public boolean isDirect() {
@@ -87,19 +93,21 @@ public class HeapChannelBuffer extends AbstractChannelBuffer {
         return 0;
     }
 
-    public byte getByte(int index) {
+    public byte getByte(int index) {//单个获取字节
         return array[index];
     }
 
+    //子类赋值给父类，向上转型；封装类不能互相强制转换，比如Long不能转换Integer
     public void getBytes(int index, ChannelBuffer dst, int dstIndex, int length) {
-        if (dst instanceof HeapChannelBuffer) {
+        if (dst instanceof HeapChannelBuffer) {//如果是当前对象的实例，就在当前类中实现
             getBytes(index, ((HeapChannelBuffer) dst).array, dstIndex, length);
-        } else {
+        } else {                               //如果是其它对象的实例，就由对应的类执行
             dst.setBytes(dstIndex, array, index, length);
         }
     }
 
     public void getBytes(int index, byte[] dst, int dstIndex, int length) {
+        //使用System复制数组，将指定数组从原数组指定位置开始，复制执行长度到目标数组，目标数组从dstIndex开始
         System.arraycopy(array, index, dst, dstIndex, length);
     }
 
@@ -122,6 +130,7 @@ public class HeapChannelBuffer extends AbstractChannelBuffer {
     }
 
     public void setBytes(int index, ChannelBuffer src, int srcIndex, int length) {
+        //判断是否是当前类的对象实例，如果是，就在当前类中实现，如果不是，交由对应的类实现
         if (src instanceof HeapChannelBuffer) {
             setBytes(index, ((HeapChannelBuffer) src).array, srcIndex, length);
         } else {
@@ -129,7 +138,9 @@ public class HeapChannelBuffer extends AbstractChannelBuffer {
         }
     }
 
+    //把数组src的值设置给当前对象
     public void setBytes(int index, byte[] src, int srcIndex, int length) {
+        //将指定源数组中的数组从指定位置复制到目标数组的指定位置
         System.arraycopy(src, srcIndex, array, index, length);
     }
 
@@ -192,6 +203,7 @@ public class HeapChannelBuffer extends AbstractChannelBuffer {
         return new HeapChannelBuffer(copiedArray);
     }
 
+    //选择对应的工厂创建实例
     public ChannelBufferFactory factory() {
         return HeapChannelBufferFactory.getInstance();
     }

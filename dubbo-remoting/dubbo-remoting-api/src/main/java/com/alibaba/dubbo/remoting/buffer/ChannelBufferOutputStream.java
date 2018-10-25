@@ -22,8 +22,12 @@ import java.io.OutputStream;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
+
+//此处为啥要重写OutputStream，用途在哪里？
+//解：exchange中codec用到
 public class ChannelBufferOutputStream extends OutputStream {
 
+    //重新实现OutputStream方法
     private final ChannelBuffer buffer;
     private final int startIndex;
 

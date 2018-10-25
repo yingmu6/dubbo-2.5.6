@@ -22,15 +22,19 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 /**
- * A random and sequential accessible sequence of zero or more bytes (octets).
- * This interface provides an abstract view for one or more primitive byte
+ * A random and sequential accessible sequence of zero or more bytes (octets 八进制).
+ * This interface provides an abstract view for one or more primitive(原始的) byte
  * arrays ({@code byte[]}) and {@linkplain ByteBuffer NIO buffers}.
  * <p/>
  * <h3>Creation of a buffer</h3>
  * <p/>
  * It is recommended to create a new buffer using the helper methods in {@link
- * ChannelBuffers} rather than calling an individual implementation's
+ * ChannelBuffers} rather than（而不是） calling an individual(独特的) implementation's    //可以使用ChannelBuffers来创建ChannelBuffer
  * constructor.
+ *        channelBuffer创建步骤
+ *        1)调用ChannelBuffers的方法，比如dynamicBuffer、wrappedBuffer等
+ *        2）调用工厂方法创建channelBuffer
+ *
  * <p/>
  * <h3>Random Access Indexing</h3>
  * <p/>
@@ -39,7 +43,7 @@ import java.nio.ByteBuffer;
  * indexing</a>. It means the index of the first byte is always {@code 0} and
  * the index of the last byte is always {@link #capacity() capacity - 1}.  For
  * example, to iterate all bytes of a buffer, you can do the following,
- * regardless of its internal implementation:
+ * regardless（不顾的） of its internal implementation:
  * <p/>
  * <pre>
  * {@link ChannelBuffer} buffer = ...;
@@ -51,13 +55,13 @@ import java.nio.ByteBuffer;
  * <p/>
  * <h3>Sequential Access Indexing</h3>
  * <p/>
- * {@link ChannelBuffer} provides two pointer variables to support sequential
+ * {@link ChannelBuffer} provides two pointer variables to support sequential（提供两个指针支持顺序读和写）
  * read and write operations - {@link #readerIndex() readerIndex} for a read
  * operation and {@link #writerIndex() writerIndex} for a write operation
- * respectively.  The following diagram shows how a buffer is segmented into
+ * respectively.  The following diagram shows how a buffer is segmented（分段的） into
  * three areas by the two pointers:
  * <p/>
- * <pre>
+ * <pre> 可废弃的 discardable
  *      +-------------------+------------------+------------------+
  *      | discardable bytes |  readable bytes  |  writable bytes  |
  *      |                   |     (CONTENT)    |                  |
@@ -82,7 +86,7 @@ import java.nio.ByteBuffer;
  * <pre>
  * // Iterates the readable bytes of a buffer.
  * {@link ChannelBuffer} buffer = ...;
- * while (buffer.readable()) {
+ * while (buffer.readable()) {//读取channelbuffer的内容，readindex会增加
  *     System.out.println(buffer.readByte());
  * }
  * </pre>
@@ -105,7 +109,7 @@ import java.nio.ByteBuffer;
  * <pre>
  * // Fills the writable bytes of a buffer with random integers.
  * {@link ChannelBuffer} buffer = ...;
- * while (buffer.writableBytes() >= 4) {
+ * while (buffer.writableBytes() >= 4) {//写入的单位是byte，如果写入int类型，自然要超过4字节
  *     buffer.writeInt(random.nextInt());
  * }
  * </pre>
@@ -119,6 +123,7 @@ import java.nio.ByteBuffer;
  * reclaim unused area as depicted by the following diagram:
  * <p/>
  * <pre>
+ *
  *  BEFORE discardReadBytes()
  *
  *      +-------------------+------------------+------------------+
@@ -128,7 +133,7 @@ import java.nio.ByteBuffer;
  *      0      <=      readerIndex   <=   writerIndex    <=    capacity
  *
  *
- *  AFTER discardReadBytes()
+ *  AFTER discardReadBytes()   //可写的字节数变大了，可读的字节数不变
  *
  *      +------------------+--------------------------------------+
  *      |  readable bytes  |    writable bytes (got more space)   |
@@ -136,7 +141,7 @@ import java.nio.ByteBuffer;
  *      |                  |                                      |
  * readerIndex (0) <= writerIndex (decreased)        <=        capacity
  * </pre>
- * <p/>
+ * <p/>注意之处 废弃之后可能会出现错误
  * Please note that there is no guarantee about the content of writable bytes
  * after calling {@link #discardReadBytes()}.  The writable bytes will not be
  * moved in most cases and could even be filled with completely different data
@@ -178,7 +183,7 @@ import java.nio.ByteBuffer;
  * and reset methods in {@link InputStream} except that there's no {@code
  * readlimit}.
  * <p/>
- * <h3>Conversion to existing JDK types</h3>
+ * <h3>Conversion to existing JDK types</h3>  //转换类型到byte数组
  * <p/>
  * <h4>Byte array</h4>
  * <p/>
@@ -186,7 +191,7 @@ import java.nio.ByteBuffer;
  * you can access it directly via the {@link #array()} method.  To determine if
  * a buffer is backed by a byte array, {@link #hasArray()} should be used.
  * <p/>
- * <h4>NIO Buffers</h4>
+ * <h4>NIO Buffers</h4>   //转换到java NIO中的ByteBuffer
  * <p/>
  * Various {@link #toByteBuffer()}  methods convert a {@link ChannelBuffer} into
  * one or more NIO buffers.  These methods avoid buffer allocation and memory
@@ -194,24 +199,39 @@ import java.nio.ByteBuffer;
  * involved.
  * <p/>
  * <h4>I/O Streams</h4>
+ *       重写Java InputStream、OutputSteam中的内容
  * <p/>
  * Please refer to {@link ChannelBufferInputStream} and {@link
  * ChannelBufferOutputStream}.
  *
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public interface ChannelBuffer extends Comparable<ChannelBuffer> {
+//TODO 有几个方法方法中的参数就是当前的接口，接口中含有当前接口的引用，这个属于什么设计模式
+
+//对外以接口的形式提供出去，外部调用，内部实现接口
+//点击实现的时候，会把直接实现类和间接实现类展示出来
+public interface ChannelBuffer extends Comparable<ChannelBuffer> {//finish understand(完成理解)
+
+    /** TODO AbstractChannelBuffer 内容是使用ByteBuffer、索引使用的是readIndex、writeIndex
+    也就是既使用了Java NIO中的ByteBuffer、又使用了Netty NIO的readIndex、writeIndex，
+    那么position是怎样和readIndex、writeIndex转换的 **/
 
     /**
      * Returns the number of bytes (octets) this buffer can contain.
      */
-    int capacity();
+    int capacity();//容量，以字节为单位
 
     /**
+     * 将readerIndex、writerIndex索引下标置为0，内容并没处理
      * Sets the {@code readerIndex} and {@code writerIndex} of this buffer to
      * {@code 0}. This method is identical to {@link #setIndex(int, int)
      * setIndex(0, 0)}.
      * <p/>
+     *
+     * 提示信息说与NIO的行为不同？不同在哪
+     * 解：上下文的意思是Java NIO的clear是处理limit、capacity，而dubbo中自定义的ChannelBuffer是处理readerIndex、writerIndex
+     *
+     *
      * Please note that the behavior of this method is different from that of
      * NIO buffer, which sets the {@code limit} to the {@code capacity} of the
      * buffer.
@@ -219,12 +239,13 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
     void clear();
 
     /**
-     * Returns a copy of this buffer's readable bytes.  Modifying the content of
-     * the returned buffer or this buffer does not affect each other at all.
+     * Returns a copy of this buffer's readable bytes（可读字节的拷贝）.  Modifying the content of
+     * the returned buffer or this buffer does not affect each other at all（不会对被拷贝的buffer有任何影响）.
      * This method is identical to {@code buf.copy(buf.readerIndex(),
      * buf.readableBytes())}. This method does not modify {@code readerIndex} or
      * {@code writerIndex} of this buffer.
      */
+    //文档中的@code 表示代码内容
     ChannelBuffer copy();
 
     /**
@@ -233,15 +254,19 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      * method does not modify {@code readerIndex} or {@code writerIndex} of this
      * buffer.
      */
-    ChannelBuffer copy(int index, int length);
+    ChannelBuffer copy(int index, int length);//从原ChannelBuffer指定下标，拷贝指定长度的内容
 
     /**
-     * Discards the bytes between the 0th index and {@code readerIndex}. It
+     * Discards（放弃） the bytes between the 0th index and {@code readerIndex}. It
      * moves the bytes between {@code readerIndex} and {@code writerIndex} to
      * the 0th index, and sets {@code readerIndex} and {@code writerIndex} to
      * {@code 0} and {@code oldWriterIndex - oldReaderIndex} respectively.
      * <p/>
      * Please refer to the class documentation for more detailed explanation.
+     *
+     * 区间的读写下标改变，增大了可写的区域
+     * newReadIndex = (0 => (oldWriteIndex-OldReadIndex))
+     * newWriteIndex = (0 => capacity - newReadIndex)
      */
     void discardReadBytes();
 
@@ -266,7 +291,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
 
     /**
      * Determines if the content of the specified buffer is identical to the
-     * content of this array.  'Identical' here means: <ul> <li>the size of the
+     * content of this array.  'Identical'（相同的） here means: <ul> <li>the size of the
      * contents of the two buffers are same and</li> <li>every single byte of
      * the content of the two buffers are same.</li> </ul> Please note that it
      * does not compare {@link #readerIndex()} nor {@link #writerIndex()}.  This
@@ -278,6 +303,9 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
     /**
      * Returns the factory which creates a {@link ChannelBuffer} whose type and
      * default {@link java.nio.ByteOrder} are same with this buffer.
+     * ByteOrder 字节顺序的类型安全枚举
+     * BIG_ENDIAN：常量表示大字节字节顺序，从最高有效位到最低有效位排序
+     * LITTLE_ENDIAN：常量表示小端字节顺序，从最低有效到最高有序排序
      */
     ChannelBufferFactory factory();
 
@@ -285,11 +313,17 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      * Gets a byte at the specified absolute {@code index} in this buffer. This
      * method does not modify {@code readerIndex} or {@code writerIndex} of this
      * buffer.
+     * index是ByteBuffer里的下标，不会影响readerIndex、writerIndex
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less
      *                                   than {@code 0} or {@code index + 1} is
      *                                   greater than {@code this.capacity}
      */
+    //从ChannelBuffer获取数据，有几种形式
+    //1.单字节读取 2.或取到byte[] 字节数据
+    // 3.获取到数据到ChannelBuffer 4.获取数据写到OutputStream
+
+    //get、read区别：get获取数据，不会改变readIndex和writerIndex，而read会对redeaIndex改变
     byte getByte(int index);
 
     /**
@@ -298,10 +332,11 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      * readerIndex} or {@code writerIndex} of this buffer
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less
-     *                                   than {@code 0} or if {@code index +
-     *                                   dst.length} is greater than {@code
+     *              目标                     than（小于） {@code 0} or if {@code index +
+     *                                   dst.length} is greater than（大于） {@code
      *                                   this.capacity}
      */
+    //获取从index开始的数据到指定的数组
     void getBytes(int index, byte[] dst);
 
     /**
@@ -319,6 +354,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   dstIndex + length} is greater than
      *                                   {@code dst.length}
      */
+    //从当前的ChannelBuffer读取内容到目标数组dst中
     void getBytes(int index, byte[] dst, int dstIndex, int length);
 
     /**
@@ -333,6 +369,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   dst.remaining()} is greater than {@code
      *                                   this.capacity}
      */
+    //把从index读取到的数据，用来构造ByteBuffer
     void getBytes(int index, ByteBuffer dst);
 
     /**
@@ -407,7 +444,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      * Returns {@code true} if and only if this buffer is backed by an NIO
      * direct buffer.
      */
-    boolean isDirect();
+    boolean isDirect();//是否是直接缓冲区
 
     /**
      * Marks the current {@code readerIndex} in this buffer.  You can reposition
@@ -415,7 +452,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      * calling {@link #resetReaderIndex()}. The initial value of the marked
      * {@code readerIndex} is {@code 0}.
      */
-    void markReaderIndex();
+    void markReaderIndex();//对当前readerIndex进行标记
 
     /**
      * Marks the current {@code writerIndex} in this buffer.  You can reposition
@@ -444,6 +481,9 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      * @throws IndexOutOfBoundsException if {@code this.readableBytes} is less
      *                                   than {@code 1}
      */
+
+    //readByte类似getByte，只不过它会更改readIndex
+    //都能单字节读取；多字节时，能写到byte[]、channelBuffer、outputStream
     byte readByte();
 
     /**
@@ -454,6 +494,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      * @throws IndexOutOfBoundsException if {@code dst.length} is greater than
      *                                   {@code this.readableBytes}
      */
+    //从当前readerIndex开始，读取dst.length长度的字节到目标数组dst
     void readBytes(byte[] dst);
 
     /**
@@ -486,7 +527,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      * Transfers this buffer's data to the specified destination starting at the
      * current {@code readerIndex} until the destination becomes non-writable,
      * and increases the {@code readerIndex} by the number of the transferred
-     * bytes.  This method is basically same with {@link
+     * bytes.  This method is basically（主要地） same with {@link
      * #readBytes(ChannelBuffer, int, int)}, except that this method increases
      * the {@code writerIndex} of the destination by the number of the
      * transferred bytes while {@link #readBytes(ChannelBuffer, int, int)} does
@@ -550,6 +591,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   less than the marked {@code
      *                                   readerIndex}
      */
+    //readerIndex重置到markReaderIndex
     void resetReaderIndex();
 
     /**
@@ -572,6 +614,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   less than {@code 0} or greater than
      *                                   {@code this.writerIndex}
      */
+    //更改设置readerIndex
     void readerIndex(int readerIndex);
 
     /**
@@ -596,6 +639,9 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   than {@code 0} or {@code index + 1} is
      *                                   greater than {@code this.capacity}
      */
+    //将channelBuffer指定index的字节值，替换为value值
+    //set方法不会更改readerIndex，writerIndex，只是对内容进行更改
+    //TODO setByte虽然不改变readerIndex，writerIndex，但改变ByteBuffer中的position，加入多次set，会不会出现越界？
     void setByte(int index, int value);
 
     /**
@@ -608,6 +654,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   src.length} is greater than {@code
      *                                   this.capacity}
      */
+    //从index开始将源数组src的内容设置到当前channelBuffer
     void setBytes(int index, byte[] src);
 
     /**
@@ -636,6 +683,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   src.remaining()} is greater than {@code
      *                                   this.capacity}
      */
+    //从ByteBuffer取内容设置到当前buffer
     void setBytes(int index, ByteBuffer src);
 
     /**
@@ -689,6 +737,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   srcIndex + length} is greater than
      *                                   {@code src.capacity}
      */
+    //从原来的ChannelBuffer中的srcIndex开始复制length字节长度的内容，到目标ChannelBuffer，并从目标的index开始，
     void setBytes(int index, ChannelBuffer src, int srcIndex, int length);
 
     /**
@@ -761,6 +810,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   {@code writerIndex} is greater than
      *                                   {@code this.capacity}
      */
+    //手动设置读下标、写下标，避免越界异常
     void setIndex(int readerIndex, int writerIndex);
 
     /**
@@ -770,6 +820,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      * @throws IndexOutOfBoundsException if {@code length} is greater than
      *                                   {@code this.readableBytes}
      */
+    //将readerIndex跳过指定的长度
     void skipBytes(int length);
 
     /**
@@ -813,8 +864,8 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
     void writeByte(int value);
 
     /**
-     * Transfers the specified source array's data to this buffer starting at
-     * the current {@code writerIndex} and increases the {@code writerIndex} by
+     * Transfers（传输） the specified source array's data to this buffer starting at
+     * the current {@code writerIndex} and increases（增加） the {@code writerIndex} by
      * the number of the transferred bytes (= {@code src.length}).
      *
      * @throws IndexOutOfBoundsException if {@code src.length} is greater than
@@ -835,6 +886,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   src.length}, or if {@code length} is
      *                                   greater than {@code this.writableBytes}
      */
+    //将指定的数组传输给buffer，并且从writerIndex指定的下边index，偏移指定长度
     void writeBytes(byte[] src, int index, int length);
 
     /**
@@ -893,6 +945,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   src.capacity}, or if {@code length} is
      *                                   greater than {@code this.writableBytes}
      */
+    //把原ChannelBuffer的内容写到当前的对象中
     void writeBytes(ChannelBuffer src, int srcIndex, int length);
 
     /**
@@ -929,7 +982,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      * @throws UnsupportedOperationException if there no accessible backing byte
      *                                       array
      */
-    byte[] array();
+    byte[] array(); //返回buffer数组
 
     /**
      * Returns {@code true} if and only if this buffer has a backing byte array.

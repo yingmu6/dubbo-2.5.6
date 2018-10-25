@@ -23,7 +23,7 @@ import static org.junit.Assert.fail;
  */
 public abstract class AbstractChannelBufferTest {
 
-    private static final int CAPACITY = 4096; // Must be even
+    private static final int CAPACITY = 10; // Must be even(偶数)
     private static final int BLOCK_SIZE = 128;
 
     private long seed;
@@ -41,9 +41,17 @@ public abstract class AbstractChannelBufferTest {
 
     @Before
     public void init() {
+        //此处有多个实现类？如果选择的
+        //在运行时，手动指定哪个实现类运行
         buffer = newBuffer(CAPACITY);
         seed = System.currentTimeMillis();
         random = new Random(seed);
+
+//        byte []a = new byte[]{10,11,12};
+////        if(buffer instanceof ByteBufferBackedChannelBuffer){
+////           buffer.setIndex(0,0);
+////        }
+//        buffer.writeBytes(a);
     }
 
     @After
@@ -57,13 +65,16 @@ public abstract class AbstractChannelBufferTest {
         assertEquals(0, buffer.readerIndex());
     }
 
+    //设置下标，判断边界   0 <= readerIndex <= writerIndex <= capacity
     @Test(expected = IndexOutOfBoundsException.class)
     public void readerIndexBoundaryCheck1() {
         try {
+
             buffer.writerIndex(0);
         } catch (IndexOutOfBoundsException e) {
             fail();
         }
+        //下标越界
         buffer.readerIndex(-1);
     }
 
@@ -134,14 +145,18 @@ public abstract class AbstractChannelBufferTest {
         buffer.getByte(-1);
     }
 
+    //边界值检验
     @Test(expected = IndexOutOfBoundsException.class)
     public void getByteBoundaryCheck2() {
+        //下标越界，最后一个数组元素下标应该是 capacity-1
         buffer.getByte(buffer.capacity());
     }
 
+    //TODO GOTO
     @Test(expected = IndexOutOfBoundsException.class)
     public void getByteArrayBoundaryCheck1() {
-        buffer.getBytes(-1, new byte[0]);
+       // buffer.getBytes(-1, new byte[0]);
+        buffer.getBytes(1, new byte[4]);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)

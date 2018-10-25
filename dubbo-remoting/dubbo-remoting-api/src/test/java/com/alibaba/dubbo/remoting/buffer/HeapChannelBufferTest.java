@@ -11,6 +11,7 @@ public class HeapChannelBufferTest extends AbstractChannelBufferTest {
 
     @Override
     protected ChannelBuffer newBuffer(int capacity) {
+        //创建capacity大小的字节数据数组，readIndex、writeIndex下标都为0
         buffer = ChannelBuffers.buffer(capacity);
         Assert.assertEquals(0, buffer.writerIndex());
         return buffer;

@@ -79,6 +79,7 @@ public abstract class AbstractRegistry implements Registry {
 
     private AtomicBoolean destroyed = new AtomicBoolean(false);
 
+    /** dubbo本地缓存文件地址 */
     public AbstractRegistry(URL url) {
         setUrl(url);
         // 启动文件保存定时器

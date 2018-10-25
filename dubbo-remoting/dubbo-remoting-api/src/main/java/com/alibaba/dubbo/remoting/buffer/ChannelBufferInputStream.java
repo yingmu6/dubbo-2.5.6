@@ -22,9 +22,12 @@ import java.io.InputStream;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
+//重写InputStream中的方法，但内部依然使用ChannelBuffer，只是下标有所不同
 public class ChannelBufferInputStream extends InputStream {
 
+    //重新实现InputStream的实现
     private final ChannelBuffer buffer;
+    //索引不同于ChannelBuffer，开始下标、结束下标
     private final int startIndex;
     private final int endIndex;
 
@@ -49,6 +52,7 @@ public class ChannelBufferInputStream extends InputStream {
         buffer.markReaderIndex();
     }
 
+    //TODO 流的下标是怎样和ChannelBuffer结合使用的？是怎样的顺序
     public int readBytes() {
         return buffer.readerIndex() - startIndex;
     }
@@ -73,6 +77,7 @@ public class ChannelBufferInputStream extends InputStream {
         if (!buffer.readable()) {
             return -1;
         }
+        //TODO 此处按位与的用途
         return buffer.readByte() & 0xff;
     }
 

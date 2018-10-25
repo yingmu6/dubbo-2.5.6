@@ -1,0 +1,2 @@
+/Users/chenshengyong/.m2/settings.xml  maven的中央仓库
+/Users/chenshengyong/soft/apace-maven-3.5.3/conf/settings.xml  公司使用的maven

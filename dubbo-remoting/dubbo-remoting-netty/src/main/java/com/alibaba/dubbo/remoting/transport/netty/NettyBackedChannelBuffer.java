@@ -125,6 +125,7 @@ public class NettyBackedChannelBuffer implements ChannelBuffer {
     // AbstractChannelBuffer
 
 
+    //底层直接调用Netty API处理
     public void clear() {
         buffer.clear();
     }

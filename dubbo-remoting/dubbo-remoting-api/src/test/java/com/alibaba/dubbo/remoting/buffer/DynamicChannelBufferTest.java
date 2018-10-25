@@ -12,7 +12,7 @@ public class DynamicChannelBufferTest extends AbstractChannelBufferTest {
     private ChannelBuffer buffer;
 
     @Override
-    protected ChannelBuffer newBuffer(int length) {
+    protected ChannelBuffer newBuffer(int length) {//分配指定大小ChannelBuffer
         buffer = ChannelBuffers.dynamicBuffer(length);
 
         assertEquals(0, buffer.readerIndex());

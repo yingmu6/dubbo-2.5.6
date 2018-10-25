@@ -21,13 +21,16 @@ import java.nio.ByteBuffer;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public final class ChannelBuffers {
 
+//ChannelBuffers获取ChannelBuffer的过程中，用到了工厂方法获取ChannelBuffer
+public final class ChannelBuffers {
+    //抽象类  Heap堆、堆积
     public static final ChannelBuffer EMPTY_BUFFER = new HeapChannelBuffer(0);
 
     private ChannelBuffers() {
     }
 
+    //TODO 对外不提供公有的构造方法，而是通过静态方法创建实例，这样有啥好处
     public static ChannelBuffer dynamicBuffer() {
         return dynamicBuffer(256);
     }
@@ -36,11 +39,14 @@ public final class ChannelBuffers {
         return new DynamicChannelBuffer(capacity);
     }
 
+    //指定工厂创建factory
     public static ChannelBuffer dynamicBuffer(int capacity,
                                               ChannelBufferFactory factory) {
         return new DynamicChannelBuffer(capacity, factory);
     }
 
+    //分配堆内buffer
+    //创建capacity大小的字节数据数组，readIndex、writeIndex下标都为0
     public static ChannelBuffer buffer(int capacity) {
         if (capacity < 0) {
             throw new IllegalArgumentException("capacity can not be negative");
@@ -56,6 +62,7 @@ public final class ChannelBuffers {
             throw new NullPointerException("array == null");
         }
         byte[] dest = new byte[length];
+        //数组复制
         System.arraycopy(array, offset, dest, 0, length);
         return wrappedBuffer(dest);
     }
@@ -70,6 +77,7 @@ public final class ChannelBuffers {
         return new HeapChannelBuffer(array);
     }
 
+    //TODO 待调试
     public static ChannelBuffer wrappedBuffer(ByteBuffer buffer) {
         if (!buffer.hasRemaining()) {
             return EMPTY_BUFFER;
@@ -81,11 +89,13 @@ public final class ChannelBuffers {
         }
     }
 
+    //directBuffer使用Java nio中创建
     public static ChannelBuffer directBuffer(int capacity) {
         if (capacity == 0) {
             return EMPTY_BUFFER;
         }
-
+        //封装java NIO 创建的直接缓冲区
+        //TODO bigEndian 大边界、小边界区别
         ChannelBuffer buffer = new ByteBufferBackedChannelBuffer(
                 ByteBuffer.allocateDirect(capacity));
         buffer.clear();
@@ -98,6 +108,7 @@ public final class ChannelBuffers {
             return false;
         }
 
+        //TODO 为啥要与7进行与运算
         final int byteCount = aLen & 7;
 
         int aIndex = bufferA.readerIndex();

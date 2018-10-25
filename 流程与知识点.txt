@@ -1,0 +1,25 @@
+接口ChannelBuffer的实现类
+         [AbstractChannelBuffer、 ByteBufferBackedChannelBuffer、DynamicChannelBuffer、HeapChannelBuffer、NettyBackedChannelBuffer]
+抽象类AbstractChannelBuffer的子类
+         [ByteBufferBackedChannelBuffer、DynamicChannelBuffer、HeapChannelBuffer]
+1.ChannelBuffer创建流程
+     =》1.0 => getBuffer（int capacity)
+     [DirectChannelBufferFactory、HeapChannelBufferFactory、NettyBackedChannelBufferFactory]：：getBuffer
+        1.0.0 DirectChannelBufferFactory：：getBuffer（int capacity） =》if(capacity == 0)
+                                         {ChannelBuffers.EMPTY_BUFFER => new HeapChannelBuffer(0)} //分配固定大小的Buffer
+                                     else {ChannelBuffers.directBuffer(capacity) => new ByteBufferBackedChannelBuffer(
+                                          ByteBuffer.allocateDirect(capacity))}  //使用Java NIO 分配直接的buffer（不需要中间buffer）
+
+        1.0.1 DirectChannelBufferFactory：：getBuffer(byte[] array, int offset, int length)
+                          =》调用1） getBuffer获取ChannelBuffer
+                          =》ChannelBuffer中 writeBytes(byte[] src, int srcIndex, int length)
+
+          1.0.1.0 ChannelBuffer中 writeBytes(byte[] src, int srcIndex, int length) //将指定的数组传输给buffer，并且从writerIndex指定的下边index，偏移指定长度
+             [AbstractChannelBuffer、DynamicChannelBuffer、NettyBackedChannelBuffer、NettyBackedChannelBuffer]
+             =>1.0.1.0.0 AbstractChannelBuffer ：：setBytes(int index, ByteBuffer src)
+                            =>{ByteBuffer data = buffer.duplicate();  //复制已有的ByteBuffer
+                                    data.limit(index + src.remaining()).position(index);//改变索引位置
+                                  data.put(src);}                   //动态扩容？
+
+
+

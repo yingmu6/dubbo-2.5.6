@@ -21,8 +21,14 @@ import java.nio.ByteBuffer;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public interface ChannelBufferFactory {
+//提供多个工厂方法构造
+public interface ChannelBufferFactory {// read finish
+    //模仿Netty创建ChannelBuffer
+    //HeapChannelBufferFactory分配堆内Buffer
+    //DirectChannelBufferFactory直接封装了ByteBuffer的 directBuffer,直接buffer，没有中间缓冲区的
+    //NettyBackedChannelBufferFactory分配动态太小的buffer
 
+    //构造ChannelBuffer
     ChannelBuffer getBuffer(int capacity);
 
     ChannelBuffer getBuffer(byte[] array, int offset, int length);

@@ -9,6 +9,7 @@ public class DirectChannelBufferTest extends AbstractChannelBufferTest {
 
     private ChannelBuffer buffer;
 
+    //使用ChannelBuffers创建分配ChannelBuffer
     @Override
     protected ChannelBuffer newBuffer(int capacity) {
         buffer = ChannelBuffers.directBuffer(capacity);
