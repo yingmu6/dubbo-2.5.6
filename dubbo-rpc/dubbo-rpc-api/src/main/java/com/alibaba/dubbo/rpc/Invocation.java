@@ -26,8 +26,10 @@ import java.util.Map;
  * @see com.alibaba.dubbo.rpc.Invoker#invoke(Invocation)
  * @see com.alibaba.dubbo.rpc.RpcInvocation
  */
+
+//Invocation，一次具体的调用信息，包含方法名、参数类型、参数、调用者信息
+//TODO 与Node中URL中的参数有啥区别？
 public interface Invocation {// read finish
-    //Invocation，一次具体的调用，包含方法名、参数类型、参数、调用者信息
     /**
      * get method name.
      *
@@ -38,6 +40,7 @@ public interface Invocation {// read finish
 
     /**
      * get parameter types.
+     * TODO 是指方法参数的类型吗？
      *
      * @return parameter types.
      * @serial
@@ -53,7 +56,7 @@ public interface Invocation {// read finish
     Object[] getArguments();
 
     /**
-     * get attachments.
+     * get attachments.以map形式存储参数
      *
      * @return attachments.
      * @serial
@@ -77,7 +80,7 @@ public interface Invocation {// read finish
     String getAttachment(String key, String defaultValue);
 
     /**
-     * get the invoker in current context.
+     * get the invoker in current context（当前环境）.
      *
      * @return invoker.
      * @transient

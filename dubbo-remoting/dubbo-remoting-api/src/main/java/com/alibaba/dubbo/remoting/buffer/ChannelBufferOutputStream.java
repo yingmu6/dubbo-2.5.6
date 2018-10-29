@@ -24,7 +24,7 @@ import java.io.OutputStream;
  */
 
 //此处为啥要重写OutputStream，用途在哪里？
-//解：exchange中codec用到
+//解：exchange中codec用到,使用输入输出流，支持序列化操作
 public class ChannelBufferOutputStream extends OutputStream {
 
     //重新实现OutputStream方法

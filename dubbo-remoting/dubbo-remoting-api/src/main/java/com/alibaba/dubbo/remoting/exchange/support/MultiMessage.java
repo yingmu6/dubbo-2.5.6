@@ -27,6 +27,7 @@ import java.util.List;
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  * @see com.alibaba.dubbo.remoting.transport.MultiMessageHandler
  */
+//包含多个消息，底层数据结构是List
 public final class MultiMessage implements Iterable {
 
     //包含对象list
@@ -45,6 +46,7 @@ public final class MultiMessage implements Iterable {
         return createFromCollection(Arrays.asList(args));
     }
 
+    //TODO 此处调用无参数、无实现的构造函数，那么成员变量的值messages是不是为Null
     public static MultiMessage create() {
         return new MultiMessage();
     }

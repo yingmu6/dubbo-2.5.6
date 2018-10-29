@@ -67,6 +67,7 @@ public class TelnetCodecTest {
         return channel;
     }
 
+    //将两个数组合并起来
     protected byte[] join(byte[] in1, byte[] in2) {
         byte[] ret = new byte[in1.length + in2.length];
         System.arraycopy(in1, 0, ret, 0, in1.length);

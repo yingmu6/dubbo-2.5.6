@@ -22,7 +22,7 @@ import java.io.InputStream;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-//重写InputStream中的方法，但内部依然使用ChannelBuffer，只是下标有所不同
+//重写InputStream中的方法，但内部依然使用ChannelBuffer，只是下标有所不同，支持反序列化
 public class ChannelBufferInputStream extends InputStream {
 
     //重新实现InputStream的实现

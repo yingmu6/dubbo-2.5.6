@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Adaptive {
-
+    //TODO 还不能理解这个适配器
     /**
      * 从{@link URL}的Key名，对应的Value作为要Adapt成的Extension名。
      * <p>

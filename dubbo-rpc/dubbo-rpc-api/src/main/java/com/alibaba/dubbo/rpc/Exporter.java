@@ -23,6 +23,7 @@ package com.alibaba.dubbo.rpc;
  * @see com.alibaba.dubbo.rpc.ExporterListener
  * @see com.alibaba.dubbo.rpc.protocol.AbstractExporter
  */
+//TODO 指服务提供者吗？
 public interface Exporter<T> {// read finish
 
     /**

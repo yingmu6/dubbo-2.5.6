@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
  *
  * @author william.liangf
  */
+//TODO 抽空浏览下
 public class Constants {
 
     public static final String PROVIDER = "provider";
@@ -73,10 +74,12 @@ public class Constants {
 
     public static final String $ECHO = "$echo";
 
+    //看看默认的常量名，就可以见名知意，知道某些默认的策略
     public static final int DEFAULT_IO_THREADS = Math.min(Runtime.getRuntime().availableProcessors() + 1, 32);
 
     public static final String DEFAULT_PROXY = "javassist";
 
+    //TODO 默认负载，是指每秒能传输的数据吗？还是一次性能传输的数据
     public static final int DEFAULT_PAYLOAD = 8 * 1024 * 1024;                      // 8M
 
     public static final String DEFAULT_CLUSTER = "failover";
@@ -89,6 +92,7 @@ public class Constants {
 
     public static final String DEFAULT_EXCHANGER = "header";
 
+    //默认的传输
     public static final String DEFAULT_TRANSPORTER = "netty";
 
     public static final String DEFAULT_REMOTING_SERVER = "netty";

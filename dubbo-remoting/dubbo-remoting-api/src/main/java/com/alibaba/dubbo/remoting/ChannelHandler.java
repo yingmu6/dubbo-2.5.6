@@ -29,16 +29,17 @@ import com.alibaba.dubbo.common.extension.SPI;
 @SPI
 public interface ChannelHandler {
     //ChannelHandler是抽象的通道事件处理器
+    //TODO 连接通道，是ChannelHandler与channel单向连接吗？那通道与通道怎么连接？
     /**
      * on channel connected.
-     *
+     * 与Channel建立连接
      * @param channel channel.
      */
     void connected(Channel channel) throws RemotingException;
 
     /**
      * on channel disconnected.
-     *
+     *  断开与Channel的连接
      * @param channel channel.
      */
     void disconnected(Channel channel) throws RemotingException;

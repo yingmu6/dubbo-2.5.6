@@ -25,6 +25,7 @@ import com.alibaba.dubbo.common.Node;
  * @see com.alibaba.dubbo.rpc.InvokerListener
  * @see com.alibaba.dubbo.rpc.protocol.AbstractInvoker
  */
+//TODO Invoker是提供者还是消费者调用的？
 public interface Invoker<T> extends Node { // read finish
     //Invoker，调用者对应一个服务接口，通过invoke方法执行调用，参数为Invocation，返回值为Result
     //继承Node节点，每个调用者就是一个节点
@@ -42,6 +43,7 @@ public interface Invoker<T> extends Node { // read finish
      * @return result
      * @throws RpcException
      */
+    //TODO 这个方法用途？
     Result invoke(Invocation invocation) throws RpcException;
 
 }

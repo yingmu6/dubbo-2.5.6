@@ -44,15 +44,17 @@ import java.io.InputStream;
  * @author qianlei
  * @author william.liangf
  */
+//编解码共有类
 public class ExchangeCodec extends TelnetCodec {
 
     // header length.
     protected static final int HEADER_LENGTH = 16;
-    // magic header.
+    //magic header.用途（用来判断是不是dubbo的协议包）
     protected static final short MAGIC = (short) 0xdabb;
     protected static final byte MAGIC_HIGH = Bytes.short2bytes(MAGIC)[0];
     protected static final byte MAGIC_LOW = Bytes.short2bytes(MAGIC)[1];
     // message flag.
+    //TODO 验证这些16进制的值
     protected static final byte FLAG_REQUEST = (byte) 0x80;
     protected static final byte FLAG_TWOWAY = (byte) 0x40;
     protected static final byte FLAG_EVENT = (byte) 0x20;
@@ -64,6 +66,7 @@ public class ExchangeCodec extends TelnetCodec {
     }
 
     public void encode(Channel channel, ChannelBuffer buffer, Object msg) throws IOException {
+        //TODO Request、Response需要了解一下
         if (msg instanceof Request) {
             encodeRequest(channel, buffer, (Request) msg);
         } else if (msg instanceof Response) {
@@ -76,16 +79,20 @@ public class ExchangeCodec extends TelnetCodec {
     public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
         int readable = buffer.readableBytes();
         byte[] header = new byte[Math.min(readable, HEADER_LENGTH)];
+        //读取当前的buffer里前16个字节，写到header字节数组中
         buffer.readBytes(header);
         return decode(channel, buffer, readable, header);
     }
 
+    //TODO 解码逻辑比较模糊？
     protected Object decode(Channel channel, ChannelBuffer buffer, int readable, byte[] header) throws IOException {
         // check magic number.
+        //TODO 此处判断逻辑整理一下
         if (readable > 0 && header[0] != MAGIC_HIGH
                 || readable > 1 && header[1] != MAGIC_LOW) {
             int length = header.length;
             if (header.length < readable) {
+                // TODO 拷贝逻辑整理一下
                 header = Bytes.copyOf(header, readable);
                 buffer.readBytes(header, length, readable - length);
             }
@@ -131,6 +138,7 @@ public class ExchangeCodec extends TelnetCodec {
         }
     }
 
+    //解码Body内容
     protected Object decodeBody(Channel channel, InputStream is, byte[] header) throws IOException {
         byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK);
         Serialization s = CodecSupport.getSerialization(channel.getUrl(), proto);
@@ -203,8 +211,9 @@ public class ExchangeCodec extends TelnetCodec {
     }
 
     protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req) throws IOException {
+        //获取序列化方式
         Serialization serialization = getSerialization(channel);
-        // header.
+        // header.  组装header字节数组 （固定的16字节）
         byte[] header = new byte[HEADER_LENGTH];
         // set magic number.
         Bytes.short2bytes(MAGIC, header);
@@ -212,10 +221,12 @@ public class ExchangeCodec extends TelnetCodec {
         // set request and serialization flag.
         header[2] = (byte) (FLAG_REQUEST | serialization.getContentTypeId());
 
+        //TODO |= 这个是什么运算？
         if (req.isTwoWay()) header[2] |= FLAG_TWOWAY;
         if (req.isEvent()) header[2] |= FLAG_EVENT;
 
         // set request id.
+        //TODO 位运算要了解下
         Bytes.long2bytes(req.getId(), header, 4);
 
         // encode request data.
@@ -223,19 +234,22 @@ public class ExchangeCodec extends TelnetCodec {
         buffer.writerIndex(savedWriteIndex + HEADER_LENGTH);
         ChannelBufferOutputStream bos = new ChannelBufferOutputStream(buffer);
         ObjectOutput out = serialization.serialize(channel.getUrl(), bos);
+        //TODO 基于事件和非事件的区别，只是实现类不同吗？
         if (req.isEvent()) {
             encodeEventData(channel, out, req.getData());
         } else {
             encodeRequestData(channel, out, req.getData());
         }
         out.flushBuffer();
+        //ChannelBufferOutputStream重写的类，既有父类的功能，也有子类定制的功能
+        //TODO 关闭对子类有效吗？也会结束子类的资源吗？
         bos.flush();
         bos.close();
         int len = bos.writtenBytes();
         checkPayload(channel, len);
         Bytes.int2bytes(len, header, 12);
 
-        // write
+        // write（处理下标）
         buffer.writerIndex(savedWriteIndex);
         buffer.writeBytes(header); // write header.
         buffer.writerIndex(savedWriteIndex + HEADER_LENGTH + len);
@@ -244,6 +258,7 @@ public class ExchangeCodec extends TelnetCodec {
     protected void encodeResponse(Channel channel, ChannelBuffer buffer, Response res) throws IOException {
         int savedWriteIndex = buffer.writerIndex();
         try {
+            //TODO 与Request请求头部有啥不同？
             Serialization serialization = getSerialization(channel);
             // header.
             byte[] header = new byte[HEADER_LENGTH];
@@ -252,17 +267,20 @@ public class ExchangeCodec extends TelnetCodec {
             // set request and serialization flag.
             header[2] = serialization.getContentTypeId();
             if (res.isHeartbeat()) header[2] |= FLAG_EVENT;
-            // set response status.
+            // set response status.（响应状态）
             byte status = res.getStatus();
             header[3] = status;
             // set request id.
+            //TODO 请求id是在哪里分配的？分配策略是什么？
             Bytes.long2bytes(res.getId(), header, 4);
 
             buffer.writerIndex(savedWriteIndex + HEADER_LENGTH);
             ChannelBufferOutputStream bos = new ChannelBufferOutputStream(buffer);
             ObjectOutput out = serialization.serialize(channel.getUrl(), bos);
             // encode response data or error message.
+            //响应状态判断
             if (status == Response.OK) {
+                //心跳判断
                 if (res.isHeartbeat()) {
                     encodeHeartbeatData(channel, out, res.getResult());
                 } else {
@@ -273,6 +291,7 @@ public class ExchangeCodec extends TelnetCodec {
             bos.flush();
             bos.close();
 
+            //TODO 只是对响应头部编码吗？
             int len = bos.writtenBytes();
             checkPayload(channel, len);
             Bytes.int2bytes(len, header, 12);
@@ -292,6 +311,7 @@ public class ExchangeCodec extends TelnetCodec {
                     logger.warn(t.getMessage(), t);
                     try {
                         r.setErrorMessage(t.getMessage());
+                        //TODO 通道是怎样发送信息的
                         channel.send(r);
                         return;
                     } catch (RemotingException e) {
@@ -311,6 +331,7 @@ public class ExchangeCodec extends TelnetCodec {
             }
 
             // 重新抛出收到的异常
+            // TODO 怎么会重新收到异常
             if (t instanceof IOException) {
                 throw (IOException) t;
             } else if (t instanceof RuntimeException) {
@@ -362,6 +383,7 @@ public class ExchangeCodec extends TelnetCodec {
         out.writeObject(data);
     }
 
+    //编码心跳数据
     @Deprecated
     protected void encodeHeartbeatData(ObjectOutput out, Object data) throws IOException {
         encodeEventData(out, data);

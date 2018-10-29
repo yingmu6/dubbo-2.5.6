@@ -27,7 +27,7 @@ import java.util.List;
  * @see com.alibaba.dubbo.registry.RegistryFactory#getRegistry(URL)
  */
 public interface RegistryService {
-
+     //注册是针对提供者
     /**
      * 注册数据，比如：提供者地址，消费者地址，路由规则，覆盖规则，等数据。
      * <p>
@@ -53,6 +53,7 @@ public interface RegistryService {
      */
     void unregister(URL url);
 
+    //订阅是针对消费者
     /**
      * 订阅符合条件的已注册数据，当有注册数据变更时自动推送.
      * <p>

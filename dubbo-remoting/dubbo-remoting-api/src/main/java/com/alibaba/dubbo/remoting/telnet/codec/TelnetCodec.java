@@ -55,6 +55,7 @@ public class TelnetCodec extends TransportCodec {
 
     private static final List<?> EXIT = Arrays.asList(new Object[]{new byte[]{3} /* Windows Ctrl+C */, new byte[]{-1, -12, -1, -3, 6} /* Linux Ctrl+C */, new byte[]{-1, -19, -1, -3, 6} /* Linux Pause */});
 
+    //字符集处理
     private static Charset getCharset(Channel channel) {
         if (channel != null) {
             Object attribute = channel.getAttribute(Constants.CHARSET_KEY);
@@ -86,7 +87,7 @@ public class TelnetCodec extends TransportCodec {
         }
         return Charset.defaultCharset();
     }
-
+    //TODO 实现逻辑不清楚？待调试
     private static String toString(byte[] message, Charset charset) throws UnsupportedEncodingException {
         byte[] copy = new byte[message.length];
         int index = 0;

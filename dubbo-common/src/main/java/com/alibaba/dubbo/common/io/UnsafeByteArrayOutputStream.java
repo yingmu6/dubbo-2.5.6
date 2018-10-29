@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
  *
  * @author qian.lei
  */
-
+//TODO 当前类的用途是什么？与netty 中Unsafe有没有相似之处
 public class UnsafeByteArrayOutputStream extends OutputStream {
     protected byte mBuffer[];
 

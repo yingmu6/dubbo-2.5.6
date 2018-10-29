@@ -1,0 +1,9 @@
+与流程无关的的知识点，暂时假设正确先不管，一个流程一个流程的来，从头走到尾。
+从最顶层的类开始走起，知道走到最底层。
+
+1：code编解码
+   1.1：DubboCountCodec流程解析
+     encode(Channel channel, ChannelBuffer buffer, Object message)
+     Codec2 =》DubboCountCodec =》ExchangeCodec 判断（if是Request对象 =>encodeRequest(channel, buffer, (Request) msg)）
+              (else if是Response对象 =》encodeResponse(channel, buffer, (Response) msg))
+             （else 调用TelnetCodec中的encode(Channel channel, ChannelBuffer buffer, Object message)）

@@ -27,11 +27,14 @@ import java.net.InetSocketAddress;
  * @see com.alibaba.dubbo.remoting.Client
  * @see com.alibaba.dubbo.remoting.Server
  */
+//TODO 用来做啥的？含义是端点，节点；是指zookeeper中的节点，还是dubbo自身的节点？是树结构吗？
+//TODO 可以把一个provider或者consumer认为是一个endpoint节点吗
 public interface Endpoint {
 
     /**
-     * get url.
-     *
+     * get url. dubbo自定义的URL
+     * Dubbo采用总线型方式，参数都放在url中了
+     * TODO URL细节待阅读
      * @return url
      */
     URL getUrl();

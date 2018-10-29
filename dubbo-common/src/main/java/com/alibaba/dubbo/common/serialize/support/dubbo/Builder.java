@@ -57,6 +57,7 @@ import java.util.regex.Matcher;
  */
 
 @SuppressWarnings({"unchecked", "rawtypes"})
+//TODO 用途？
 public abstract class Builder<T> implements GenericDataFlags {
     static final Builder<Serializable> SerializableBuilder = new Builder<Serializable>() {
         @Override

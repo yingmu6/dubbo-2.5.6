@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+//
+//看包名以及调入的类，就能判断是否到最底层
 package com.alibaba.dubbo.common.serialize.support.hessian;
 
 import com.alibaba.com.caucho.hessian.io.Hessian2Output;
@@ -27,6 +29,7 @@ import java.io.OutputStream;
  * @author qian.lei
  */
 
+//到hessian2实现的最底层了，dubbo就是封装重写hessian2中的方法
 public class Hessian2ObjectOutput implements ObjectOutput {
     private final Hessian2Output mH2o;
 

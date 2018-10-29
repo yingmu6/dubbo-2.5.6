@@ -34,7 +34,7 @@ import java.util.zip.InflaterInputStream;
  *
  * @author qian.lei
  */
-
+//TODO 此工具的常用方法调试一下
 public class Bytes {
     private static final String C64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="; //default base64.
 
@@ -51,6 +51,7 @@ public class Bytes {
 
     /**
      * byte array copy.
+     * 拷贝字节数组
      *
      * @param src    src.
      * @param length new length.
@@ -90,6 +91,7 @@ public class Bytes {
      * @param v value.
      * @param b byte array.
      */
+    //TODO 右移的算法？
     public static void short2bytes(short v, byte[] b, int off) {
         b[off + 1] = (byte) v;
         b[off + 0] = (byte) (v >>> 8);
@@ -742,7 +744,7 @@ public class Bytes {
      *
      * @param bytes source.
      * @return compressed byte array.
-     * @throws IOException.
+     * @throws IOException
      */
     public static byte[] zip(byte[] bytes) throws IOException {
         UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream();

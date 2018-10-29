@@ -52,6 +52,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {// read finish
 
     public static final String NAME = "dubbo";
     public static final String DUBBO_VERSION = Version.getVersion(DubboCodec.class, Version.getVersion());
+    //响应的值
     public static final byte RESPONSE_WITH_EXCEPTION = 0;
     public static final byte RESPONSE_VALUE = 1;
     public static final byte RESPONSE_NULL_VALUE = 2 ;
@@ -81,7 +82,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {// read finish
                     } else if (res.isEvent()) {
                         data = decodeEventData(channel, deserialize(s, channel.getUrl(), is));
                     } else {
-                        //解码逻辑？
+                        //TODO 解码逻辑？
                         DecodeableRpcResult result;//请求返回结果
                         if (channel.getUrl().getParameter(
                                 Constants.DECODE_IN_IO_THREAD_KEY, //decode.in.io
@@ -148,6 +149,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {// read finish
         }
     }
 
+    //反序列化
     private ObjectInput deserialize(Serialization serialization, URL url, InputStream is)
             throws IOException {
         return serialization.deserialize(url, is);
@@ -193,6 +195,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {// read finish
                 out.writeByte(RESPONSE_NULL_VALUE);
             } else {
                 out.writeByte(RESPONSE_VALUE);
+                //将内容写入输出流
                 out.writeObject(ret);
             }
         } else {

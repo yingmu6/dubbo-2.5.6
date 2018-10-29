@@ -50,7 +50,7 @@ public class JSON {
      *
      * @param obj object.
      * @return json string.
-     * @throws IOException.
+     * @throws IOException
      */
     public static String json(Object obj) throws IOException {
         if (obj == null) return NULL;
@@ -68,7 +68,7 @@ public class JSON {
      *
      * @param obj    object.
      * @param writer writer.
-     * @throws IOException.
+     * @throws IOException
      */
     public static void json(Object obj, Writer writer) throws IOException {
         json(obj, writer, false);
@@ -87,7 +87,7 @@ public class JSON {
      * @param obj        object.
      * @param properties property name array.
      * @return json string.
-     * @throws IOException.
+     * @throws IOException
      */
     public static String json(Object obj, String[] properties) throws IOException {
         if (obj == null) return NULL;
@@ -110,7 +110,7 @@ public class JSON {
      * @param obj        object.
      * @param properties property name array.
      * @param writer     writer.
-     * @throws IOException.
+     * @throws IOException
      */
     public static void json(Object obj, final String[] properties, Writer writer, boolean writeClass) throws IOException {
         if (obj == null)

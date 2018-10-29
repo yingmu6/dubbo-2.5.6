@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
  */
 public class NativeJavaObjectInput implements ObjectInput {
 
+    //封装java ObjectInputStream 实现序列化
     private final ObjectInputStream inputStream;
 
     public NativeJavaObjectInput(InputStream is) throws IOException {

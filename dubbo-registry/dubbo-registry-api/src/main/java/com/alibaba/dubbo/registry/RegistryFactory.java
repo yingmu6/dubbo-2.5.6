@@ -28,12 +28,13 @@ import com.alibaba.dubbo.common.extension.SPI;
 @SPI("dubbo")
 public interface RegistryFactory {
 
+    //支持SPI扩展，但是需要满足契约
     /**
      * 连接注册中心.
      * <p>
      * 连接注册中心需处理契约：<br>
      * 1. 当设置check=false时表示不检查连接，否则在连接不上时抛出异常。<br>
-     * 2. 支持URL上的username:password权限认证。<br>
+     * 2. 支持URL上的username:password权限认证。<br> TODO username:password在哪里设置？是不是提供者带上了，消费者就要对应带上？
      * 3. 支持backup=10.20.153.10备选注册中心集群地址。<br>
      * 4. 支持file=registry.cache本地磁盘文件缓存。<br>
      * 5. 支持timeout=1000请求超时设置。<br>

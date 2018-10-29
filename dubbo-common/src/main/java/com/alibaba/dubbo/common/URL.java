@@ -75,8 +75,10 @@ import java.util.concurrent.ConcurrentHashMap;
  &default.retries=0&default.timeout=30000&dubbo=2.5.3&group=airtake&interface=com.tuya.atop.client.service.user.IAtopUserInfoProvider
  &methods=updateModifyTime,abateSession,getSessionByUid,getUserIdBySession,getUser,abateUserSessionList,getSession&pid=693
  &revision=0.0.2-20151209.122336-7&side=provider&threadpool=fixed&threads=300×tamp=1531221686039  **/
-public final class URL implements Serializable {
+// dubbo的URL采用总线型方法，即配置都放在url里面的参数
+public final class URL implements Serializable {//可进行序列化
 
+    // TODO 网络URL学习一下，对比一下与dubbo的自定义的URL的异同
     private static final long serialVersionUID = -1985165475234910535L;
 
     private final String protocol;
@@ -91,10 +93,11 @@ public final class URL implements Serializable {
 
     private final String path;
 
+    //参数集合
     private final Map<String, String> parameters;
 
     // ==== cache ====
-
+    // 原子性并且不可以被序列化
     private volatile transient Map<String, Number> numbers;
 
     private volatile transient Map<String, URL> urls;
@@ -111,7 +114,7 @@ public final class URL implements Serializable {
 
     protected URL() {
         this.protocol = null;
-        this.username = null;
+        this.username = null;//用户名和密码可以不填
         this.password = null;
         this.host = null;
         this.port = 0;
@@ -153,7 +156,7 @@ public final class URL implements Serializable {
     }
 
     public URL(String protocol, String username, String password, String host, int port, String path, Map<String, String> parameters) {
-        //用户名密码要么同时有，要么同时无
+        //在有用户名的时候，需要有密码
         if ((username == null || username.length() == 0)
                 && password != null && password.length() > 0) {
             throw new IllegalArgumentException("Invalid url, password without username!");
@@ -523,6 +526,7 @@ public final class URL implements Serializable {
         return l;
     }
 
+    //如果参数中没取到值，就使用默认的值
     public int getParameter(String key, int defaultValue) {
         Number n = getNumbers().get(key);
         if (n != null) {
@@ -1041,6 +1045,7 @@ public final class URL implements Serializable {
         return removeParameters(keys.toArray(new String[0]));
     }
 
+    //TODO 为啥移除参数？
     public URL removeParameters(String... keys) {
         if (keys == null || keys.length == 0) {
             return this;

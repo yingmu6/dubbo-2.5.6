@@ -26,6 +26,7 @@ import com.alibaba.dubbo.rpc.Invoker;
  * @author qianlei
  * @author william.liangf
  */
+//子类DubboExporter、InjvmExporter只是重写了unexport方法
 public abstract class AbstractExporter<T> implements Exporter<T> {// read finish
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -34,6 +35,7 @@ public abstract class AbstractExporter<T> implements Exporter<T> {// read finish
 
     private volatile boolean unexported = false;
 
+    //抽象类不能实例化，此处的invoker由子类传入
     public AbstractExporter(Invoker<T> invoker) {
         if (invoker == null)
             throw new IllegalStateException("service invoker == null");
@@ -48,6 +50,7 @@ public abstract class AbstractExporter<T> implements Exporter<T> {// read finish
         return invoker;
     }
 
+    //设置状态并销毁节点
     public void unexport() {
         if (unexported) {
             return;

@@ -23,7 +23,7 @@ import com.alibaba.dubbo.rpc.Invoker;
  * @author chao.liuc
  *
  */
-//委派暴露
+//TODO 委派模式，同一级别的节点委派，并不是使用向上转型
 public class DelegateExporter<T> implements Exporter<T> {// read finish
 
     private final Exporter<T> exporter;
@@ -37,6 +37,7 @@ public class DelegateExporter<T> implements Exporter<T> {// read finish
 
     }
 
+    //委派给Exporter的实现类，
     public Invoker<T> getInvoker() {
         return exporter.getInvoker();
     }

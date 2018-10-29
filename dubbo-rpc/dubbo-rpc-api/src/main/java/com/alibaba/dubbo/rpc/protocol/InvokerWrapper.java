@@ -26,6 +26,7 @@ import com.alibaba.dubbo.rpc.RpcException;
  *
  * @author william.liangf
  */
+//封装Invoker（封装invoker和url）
 public class InvokerWrapper<T> implements Invoker<T> {// read finish
 
     private final Invoker<T> invoker;

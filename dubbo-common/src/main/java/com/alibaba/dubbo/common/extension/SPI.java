@@ -54,6 +54,7 @@ import java.lang.annotation.Target;
 public @interface SPI {
     //在指定目录下配置文件，当实例类时就会在文件中就找
 
+    //TODO 为啥用SPI，不可以写个子类继承吗？SPI到底用来做啥？
     /**
      * 缺省扩展点名。
      */

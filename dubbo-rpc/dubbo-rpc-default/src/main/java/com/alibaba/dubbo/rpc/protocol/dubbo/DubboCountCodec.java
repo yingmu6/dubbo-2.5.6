@@ -42,6 +42,7 @@ public final class DubboCountCodec implements Codec2 {// read finish
     public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
         //NettyBackedChannelBuffer 调用
         int save = buffer.readerIndex();
+        //此处设计得很好，一般情况看到列表都是List<Object>样式的，不够简洁，它直接封装了类来处理
         MultiMessage result = MultiMessage.create();
         do {
             Object obj = codec.decode(channel, buffer);

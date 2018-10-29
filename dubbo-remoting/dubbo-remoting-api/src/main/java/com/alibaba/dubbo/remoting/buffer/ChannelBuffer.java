@@ -210,6 +210,8 @@ import java.nio.ByteBuffer;
 
 //对外以接口的形式提供出去，外部调用，内部实现接口
 //点击实现的时候，会把直接实现类和间接实现类展示出来
+
+//数据缓冲区、类似java 中ByteBuffer
 public interface ChannelBuffer extends Comparable<ChannelBuffer> {//finish understand(完成理解)
 
     /** TODO AbstractChannelBuffer 内容是使用ByteBuffer、索引使用的是readIndex、writeIndex

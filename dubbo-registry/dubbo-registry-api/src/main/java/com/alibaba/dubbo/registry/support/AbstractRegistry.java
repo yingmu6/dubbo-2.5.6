@@ -55,6 +55,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author chao.liuc
  * @author william.liangf
  */
+//TODO 深入理解
 public abstract class AbstractRegistry implements Registry {
 
     // URL地址分隔符，用于文件缓存中，服务提供者URL分隔

@@ -59,6 +59,7 @@ public class CodecSupport {
     }
 
     public static Serialization getSerialization(URL url) {
+        //TODO 通过使用SPI选择相应的实现类
         return ExtensionLoader.getExtensionLoader(Serialization.class).getExtension(
                 url.getParameter(Constants.SERIALIZATION_KEY, Constants.DEFAULT_REMOTING_SERIALIZATION));
         //通过扩展名实例化扩展类，扩展名从url参数中获取

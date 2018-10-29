@@ -27,6 +27,7 @@ import java.util.List;
  */
 public interface NotifyListener {
 
+    //TODO 契约待理解
     /**
      * 当收到服务变更通知时触发。
      * <p>

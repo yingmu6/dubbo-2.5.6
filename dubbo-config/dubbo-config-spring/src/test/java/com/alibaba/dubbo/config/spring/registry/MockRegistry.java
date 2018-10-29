@@ -10,13 +10,15 @@ import java.util.List;
 /**
  * @author <a href="mailto:gang.lvg@taobao.com">kimi</a>
  */
+//TODO mock是测试用的吗
 public class MockRegistry implements Registry {
+    //数据结构是两个列表：注册与订阅就是对列表的操作
 
     private URL url;
 
-    private List<URL> registered = new ArrayList<URL>();
+    private List<URL> registered = new ArrayList<URL>();//已注册的
 
-    private List<URL> subscribered = new ArrayList<URL>();
+    private List<URL> subscribered = new ArrayList<URL>();//已订阅的
 
     public MockRegistry(URL url) {
         if (url == null) {

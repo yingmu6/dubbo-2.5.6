@@ -29,6 +29,7 @@ import java.io.OutputStream;
  * @author ding.lid
  * @author william.liangf
  */
+//自定义序列化接口
 @SPI("hessian2")
 public interface Serialization {
 
@@ -48,6 +49,7 @@ public interface Serialization {
 
     /**
      * create serializer
+     * 创建序列化对象
      *
      * @param url
      * @param output
@@ -59,7 +61,7 @@ public interface Serialization {
 
     /**
      * create deserializer
-     *
+     * 反序列化对象
      * @param url
      * @param input
      * @return deserializer

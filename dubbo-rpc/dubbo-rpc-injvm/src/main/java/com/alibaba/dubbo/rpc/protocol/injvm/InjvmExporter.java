@@ -26,6 +26,7 @@ import java.util.Map;
  *
  * @author william.liangf
  */
+//本地Jvm服务处理
 class InjvmExporter<T> extends AbstractExporter<T> {
 
     private final String key;
