@@ -58,3 +58,35 @@ dubbo协议采用固定长度的消息头（16字节）和不定长度的消息�
 过程，Socket的底层已经帮我们处理了IP/TCP的分包，我们不需要解析IP/TCP的包结构，处理包头信息等。但是Dubbo作为一个封装性的协议，
 需要自己处理一下包头，包体的内容处理，粘包也需要自行进行处理
 4.dubbo涉及的常用编码协议如：hession2？
+
+2018/10/28
+1.Invoker与Expoter的转换
+2.子类中怎样构造父类，构造函数的调用super()
+3.反射机制
+4.ConcurrentHashSet（dubbo自定义）
+
+2018/10/30
+1.Dubbo负载均衡策略
+
+18/11/5
+1.InetAddress的使用以及API
+
+2018/10/29
+1.java Pattern、Math以及正则表达式
+2.java 反射机制获取方法、变量等 Class类的使用
+
+2018/10/30
+1.java AtomicReference、ConcurrentMap
+2.java 泛型了解，比如AtomicReference<T>
+3.java ScheduledExecutorService 定时器 、ScheduledFuture
+4.java ThreadFactory、NamedThreadFactory
+5.ReentrantLock、Collections
+6.锁的用途
+7.java Number使用
+
+2018/10/30
+1.监控是基于事件触发的吗？怎样配置的？还是定时去统计吗？配置标签是什么？
+2.监控粒度怎样的？比如Application、Interface、Method等？
+3.MonitorService中colloct、lockup中的URL是需要指定的格式传入的吗？
+
+

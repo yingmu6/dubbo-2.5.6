@@ -1,0 +1,12 @@
+---------流程要一个个来看（不用等到一个模块看完，再看另一个）---------------
+
+2018/10/27
+1.Exporter中的getInvoker流程调用
+
+2.Protocol中的export流程调用：
+  Protocol ::export(Invoker<T> invoker) => DubboProtocol ::export()
+         =>获取Invoker中url，并且打开服务openServer
+         =>创建服务Exchangers.bind(url, requestHandler)
+         =>放入map中Map<String, ExchangeServer>
+
+

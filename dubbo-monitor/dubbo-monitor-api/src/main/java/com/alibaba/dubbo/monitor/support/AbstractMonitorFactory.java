@@ -47,7 +47,7 @@ public abstract class AbstractMonitorFactory implements MonitorFactory {
     public Monitor getMonitor(URL url) {
         url = url.setPath(MonitorService.class.getName()).addParameter(Constants.INTERFACE_KEY, MonitorService.class.getName());
         String key = url.toServiceStringWithoutResolving();
-        LOCK.lock();
+        LOCK.lock(); //用到类的公有资源，临界资源，避免互相修改，用了锁
         try {
             Monitor monitor = MONITORS.get(key);
             if (monitor != null) {

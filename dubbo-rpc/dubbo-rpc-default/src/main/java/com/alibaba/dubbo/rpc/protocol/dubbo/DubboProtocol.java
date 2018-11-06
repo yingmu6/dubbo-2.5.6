@@ -68,8 +68,10 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     //consumer side export a stub service for dispatching event
     //servicekey-stubmethods
     private final ConcurrentMap<String, String> stubServiceMethodsMap = new ConcurrentHashMap<String, String>();
+    //创建ExchangeHandler
     private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() {
 
+        //reply 回答、答复(用来响应服务调用方的请求，调用具体的服务，并将请求结果封装为RpcResult返回给调用方)
         public Object reply(ExchangeChannel channel, Object message) throws RemotingException {
             if (message instanceof Invocation) {
                 Invocation inv = (Invocation) message;
@@ -95,7 +97,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
                     }
                 }
                 RpcContext.getContext().setRemoteAddress(channel.getRemoteAddress());
-                return invoker.invoke(inv);//执行调用
+                return invoker.invoke(inv);//调用具体的服务
             }
             throw new RemotingException(channel, "Unsupported request: " + message == null ? null : (message.getClass().getName() + ": " + message) + ", channel: consumer: " + channel.getRemoteAddress() + " --> provider: " + channel.getLocalAddress());
         }
@@ -184,6 +186,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     }
 
     Invoker<?> getInvoker(Channel channel, Invocation inv) throws RemotingException {
+        //TODO 这两个服务有啥区别？
         boolean isCallBackServiceInvoke = false;
         boolean isStubServiceInvoke = false;
         int port = channel.getLocalAddress().getPort();
@@ -201,6 +204,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         }
         String serviceKey = serviceKey(port, path, inv.getAttachments().get(Constants.VERSION_KEY), inv.getAttachments().get(Constants.GROUP_KEY));
 
+        //构建DubboExporter，然后获取Invoker
         DubboExporter<?> exporter = (DubboExporter<?>) exporterMap.get(serviceKey);
 
         if (exporter == null)
@@ -233,6 +237,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
             String stubServiceMethods = url.getParameter(Constants.STUB_EVENT_METHODS_KEY);
             if (stubServiceMethods == null || stubServiceMethods.length() == 0) {
                 if (logger.isWarnEnabled()) {
+                    //TODO stub method方法是啥？
                     logger.warn(new IllegalStateException("consumer [" + url.getParameter(Constants.INTERFACE_KEY) +
                             "], has set stubproxy support event ,but no stub methods founded."));
                 }
@@ -241,11 +246,13 @@ public class DubboProtocol extends AbstractProtocol {// read finish
             }
         }
 
+        //TODO 打开服务端需要理解下？
         openServer(url);
 
         return exporter;
     }
 
+    //提供者打开服务
     private void openServer(URL url) {
         // find server.
         String key = url.getAddress();
@@ -262,7 +269,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         }
     }
 
-    //创建服务
+    //TODO 创建服务
     private ExchangeServer createServer(URL url) {
         //默认开启server关闭时发送readonly事件
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
@@ -276,7 +283,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         url = url.addParameter(Constants.CODEC_KEY, DubboCodec.NAME);
         ExchangeServer server;
         try {
-            server = Exchangers.bind(url, requestHandler);
+            server = Exchangers.bind(url, requestHandler);//绑定服务
         } catch (RemotingException e) {
             throw new RpcException("Fail to start server(url: " + url + ") " + e.getMessage(), e);
         }

@@ -37,6 +37,20 @@ import static org.junit.Assert.fail;
  * @author william.liangf
  */
 public class URLTest {
+    @Test
+    public void testValueOf(){
+        String urlStr = "dubbo://172.18.20.80:20835/com.tuya.adam.atop.user.IUserAtopService?anyhost=true&application=adam&default.service.filter=-exception" +
+                "&dubbo=2.5.4-TUYA-SNAPSHOT&generic=false&interface=com.tuya.adam.atop.user.IUserAtopService&methods=resetMobilePasswd," +
+                "resetPasswd,checkEmailCode,checkUsernameExists,sendRegEmailCode,loginByMobileAndCode,loginByPasswd,syncUid,checkMobileCode," +
+                "registerByEmailPasswd,updateDevUserInfo,applyLogout,resetUidPasswd,registerByMobilePasswd,checkCode,registerByEmailPasswdCode," +
+                "bindMobile,checkUserPassword,loginOut,resetEmailPasswd,updateInfo,modifyPasswdByOldPasswd,modifyPasswdByOldPasswdV2," +
+                "resetMobilePasswdV2,getUserByNameAndBizType,registerByPasswd,loginByEmailAndCode,queryUserInfosByBizType,resetEmailPasswdDirectly," +
+                "updateTimeZoneId,sendOpenEmailCode,loginAndRegisterByNamePassMerge,registerByUidPasswd,loginByUidAndPasswd,updateTempUnit," +
+                "loginByEmailAndPasswd,resetCheckCode,resetEmailPasswdV2,updateInfoV2,emailSendCode,getUserInfo,updateInfoV3," +
+                "loginByMobileAndPasswd&pid=1&revision=1.0-SNAPSHOT&side=provider&threadpool=fixed&threads=400×tamp=1540899047342";
+
+        URL.valueOf(urlStr);
+    }
 
     @Test
     public void test_valueOf_noProtocolAndHost() throws Exception {

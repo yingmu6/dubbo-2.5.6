@@ -16,7 +16,7 @@
 package com.alibaba.dubbo.common;
 
 /**
- * Resetable.
+ * Resetable. TODO 重置什么？
  *
  * @author william.liangf
  */

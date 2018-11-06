@@ -169,6 +169,7 @@ public class CollectionUtils {
         return obj1.equals(obj2);
     }
 
+    //参数个数为偶数，按key、value、key、value...排列
     public static Map<String, String> toStringMap(String... pairs) {
         Map<String, String> parameters = new HashMap<String, String>();
         if (pairs.length > 0) {

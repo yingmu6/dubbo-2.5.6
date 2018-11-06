@@ -21,7 +21,7 @@ import com.alibaba.dubbo.monitor.MonitorService;
 import java.io.Serializable;
 
 /**
- * Statistics. (SPI, Prototype, ThreadSafe)
+ * Statistics（统计）. (SPI, Prototype, ThreadSafe)
  *
  * @author william.liangf
  */
@@ -29,6 +29,7 @@ public class Statistics implements Serializable {
 
     private static final long serialVersionUID = -6921183057683641441L;
 
+    //统计包含的信息
     private URL url;
 
     private String application;
@@ -126,7 +127,7 @@ public class Statistics implements Serializable {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() {//TODO 此处hashCode为啥这种逻辑？
         final int prime = 31;
         int result = 1;
         result = prime * result + ((application == null) ? 0 : application.hashCode());
@@ -140,7 +141,7 @@ public class Statistics implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj) {//比较具体的内容
         if (this == obj)
             return true;
         if (obj == null)

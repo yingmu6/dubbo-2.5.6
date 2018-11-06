@@ -55,12 +55,13 @@ public class DubboMonitor implements Monitor {
     private final MonitorService monitorService;
 
     private final long monitorInterval;
-
+    //TODO statisticsMap数据结构的含义？Statistics怎么会对应一个数组？
     private final ConcurrentMap<Statistics, AtomicReference<long[]>> statisticsMap = new ConcurrentHashMap<Statistics, AtomicReference<long[]>>();
 
     public DubboMonitor(Invoker<MonitorService> monitorInvoker, MonitorService monitorService) {
         this.monitorInvoker = monitorInvoker;
         this.monitorService = monitorService;
+        // 获取到定时器的时间间隔，默认每隔60秒执行一次
         this.monitorInterval = monitorInvoker.getUrl().getPositiveParameter("interval", 60000);
         // 启动统计信息收集定时器
         sendFuture = scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
@@ -83,6 +84,7 @@ public class DubboMonitor implements Monitor {
         for (Map.Entry<Statistics, AtomicReference<long[]>> entry : statisticsMap.entrySet()) {
             // 获取已统计数据
             Statistics statistics = entry.getKey();
+            //AtomicReference的成员变量value是泛型，这里指定类型，表明value是long[]
             AtomicReference<long[]> reference = entry.getValue();
             long[] numbers = reference.get();
             long success = numbers[0];
@@ -110,6 +112,7 @@ public class DubboMonitor implements Monitor {
                             MonitorService.MAX_ELAPSED, String.valueOf(maxElapsed),
                             MonitorService.MAX_CONCURRENT, String.valueOf(maxConcurrent)
                     );
+            //搜集统计指定url
             monitorService.collect(url);
 
             // 减掉已统计数据
@@ -156,6 +159,7 @@ public class DubboMonitor implements Monitor {
         long[] update = new long[LENGTH];
         do {
             current = reference.get();
+            //TODO 为啥此处update[2]相同，6，7，8，9位预留做啥的
             if (current == null) {
                 update[0] = success;
                 update[1] = failure;
@@ -168,6 +172,7 @@ public class DubboMonitor implements Monitor {
                 update[8] = elapsed;
                 update[9] = concurrent;
             } else {
+                //分位置统计：前面几位累加，后面几位做大小判读
                 update[0] = current[0] + success;
                 update[1] = current[1] + failure;
                 update[2] = current[2] + input;

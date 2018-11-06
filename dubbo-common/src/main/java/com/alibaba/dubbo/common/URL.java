@@ -36,7 +36,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * URL - Uniform Resource Locator (Immutable, ThreadSafe)
+ * URL - Uniform Resource Locator (Immutable（不可变的）, ThreadSafe)
  * <p>
  * url example:
  * <ul>
@@ -78,7 +78,8 @@ import java.util.concurrent.ConcurrentHashMap;
 // dubbo的URL采用总线型方法，即配置都放在url里面的参数
 public final class URL implements Serializable {//可进行序列化
 
-    // TODO 网络URL学习一下，对比一下与dubbo的自定义的URL的异同
+    // 网络URL学习一下，对比一下与dubbo的自定义的URL的异同
+    // URL语法结构  协议：//授权机构/路径?查询条件
     private static final long serialVersionUID = -1985165475234910535L;
 
     private final String protocol;
@@ -96,7 +97,7 @@ public final class URL implements Serializable {//可进行序列化
     //参数集合
     private final Map<String, String> parameters;
 
-    // ==== cache ====
+    // ==== cache ====  TODO URL中怎样使用缓存的？
     // 原子性并且不可以被序列化
     private volatile transient Map<String, Number> numbers;
 
@@ -104,7 +105,7 @@ public final class URL implements Serializable {//可进行序列化
 
     private volatile transient String ip;
 
-    private volatile transient String full;
+    private volatile transient String full;  //TODO 用途？指完整的url吗？
 
     private volatile transient String identity;
 
@@ -156,7 +157,7 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     public URL(String protocol, String username, String password, String host, int port, String path, Map<String, String> parameters) {
-        //在有用户名的时候，需要有密码
+        //在有密码的时候，需要有用户名
         if ((username == null || username.length() == 0)
                 && password != null && password.length() > 0) {
             throw new IllegalArgumentException("Invalid url, password without username!");
@@ -176,7 +177,7 @@ public final class URL implements Serializable {//可进行序列化
         } else {
             parameters = new HashMap<String, String>(parameters);
         }
-        this.parameters = Collections.unmodifiableMap(parameters);
+        this.parameters = Collections.unmodifiableMap(parameters);//不能修改的Map，只能只读
     }
 
     /**
@@ -197,18 +198,18 @@ public final class URL implements Serializable {//可进行序列化
         int port = 0;
         String path = null;
         Map<String, String> parameters = null;
-        int i = url.indexOf("?"); // seperator between body and parameters 
+        int i = url.indexOf("?"); // seperator between body（主体） and parameters
         if (i >= 0) {
-            String[] parts = url.substring(i + 1).split("\\&");
+            String[] parts = url.substring(i + 1).split("\\&");//将参数按&符号分隔，所有的参数都会分隔
             parameters = new HashMap<String, String>();
             for (String part : parts) {
                 part = part.trim();
                 if (part.length() > 0) {
-                    int j = part.indexOf('=');
+                    int j = part.indexOf('=');//返回-1 表示没有该字符出现
                     if (j >= 0) {
-                        parameters.put(part.substring(0, j), part.substring(j + 1));
+                        parameters.put(part.substring(0, j), part.substring(j + 1));//substring（start,end） [start,end) 左闭右开
                     } else {
-                        parameters.put(part, part);
+                        parameters.put(part, part);//没有含等号，key、value都相等
                     }
                 }
             }
@@ -224,18 +225,18 @@ public final class URL implements Serializable {//可进行序列化
             i = url.indexOf(":/");
             if (i >= 0) {
                 if (i == 0) throw new IllegalStateException("url missing protocol: \"" + url + "\"");
-                protocol = url.substring(0, i);
+                protocol = url.substring(0, i);//值为：如  dubbo
                 url = url.substring(i + 1);
             }
         }
 
-        i = url.indexOf("/");
+        i = url.indexOf("/");  //此处的url已经去掉参数部分
         if (i >= 0) {
-            path = url.substring(i + 1);
+            path = url.substring(i + 1);  //path值为 如：com....IUserService
             url = url.substring(0, i);
         }
         i = url.indexOf("@");
-        if (i >= 0) {
+        if (i >= 0) {      //判断是否包含用户名、密码
             username = url.substring(0, i);
             int j = username.indexOf(":");
             if (j >= 0) {
@@ -258,6 +259,7 @@ public final class URL implements Serializable {//可进行序列化
             return "";
         }
         try {
+            //对URL中网际协议以外的字符编码
             return URLEncoder.encode(value, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -279,7 +281,7 @@ public final class URL implements Serializable {//可进行序列化
         return protocol;
     }
 
-    public URL setProtocol(String protocol) {
+    public URL setProtocol(String protocol) {//设置的时候生成新的URL
         return new URL(protocol, username, password, host, port, path, getParameters());
     }
 
@@ -412,7 +414,7 @@ public final class URL implements Serializable {//可进行序列化
         return new URL(protocol, username, password, host, port, path, getParameters());
     }
 
-    public String getAbsolutePath() {
+    public String getAbsolutePath() {//绝对路径，以/开头
         if (path != null && !path.startsWith("/")) {
             return "/" + path;
         }
@@ -427,7 +429,7 @@ public final class URL implements Serializable {//可进行序列化
         return getParameterAndDecoded(key, null);
     }
 
-    public String getParameterAndDecoded(String key, String defaultValue) {
+    public String getParameterAndDecoded(String key, String defaultValue) {//获取参数并且对参数解码
         return decode(getParameter(key, defaultValue));
     }
 
@@ -453,9 +455,10 @@ public final class URL implements Serializable {//可进行序列化
         if (value == null || value.length() == 0) {
             return defaultValue;
         }
-        return Constants.COMMA_SPLIT_PATTERN.split(value);
+        return Constants.COMMA_SPLIT_PATTERN.split(value);//将值按逗号分隔
     }
 
+    //此处的numbers的用途？解：用来管理各种类型的参数值
     private Map<String, Number> getNumbers() {
         if (numbers == null) { // 允许并发重复创建
             numbers = new ConcurrentHashMap<String, Number>();
@@ -470,7 +473,7 @@ public final class URL implements Serializable {//可进行序列化
         return urls;
     }
 
-    public URL getUrlParameter(String key) {
+    public URL getUrlParameter(String key) { //获取指定key的URL，并且设置到成员变量中
         URL u = getUrls().get(key);
         if (u != null) {
             return u;
@@ -494,7 +497,7 @@ public final class URL implements Serializable {//可进行序列化
             return defaultValue;
         }
         double d = Double.parseDouble(value);
-        getNumbers().put(key, d);
+        getNumbers().put(key, d); //Number适配各种基本类型
         return d;
     }
 
@@ -541,6 +544,7 @@ public final class URL implements Serializable {//可进行序列化
         return i;
     }
 
+    //获取指定参数的值，并且返回对应的类型
     public short getParameter(String key, short defaultValue) {
         Number n = getNumbers().get(key);
         if (n != null) {
@@ -591,6 +595,7 @@ public final class URL implements Serializable {//可进行序列化
         return value;
     }
 
+    //获取参数中指定key的value，并且返回正数
     public long getPositiveParameter(String key, long defaultValue) {
         if (defaultValue <= 0) {
             throw new IllegalArgumentException("defaultValue <= 0");
@@ -665,6 +670,7 @@ public final class URL implements Serializable {//可进行序列化
         return URL.decode(getMethodParameter(method, key, defaultValue));
     }
 
+    //TODO 方法参数是指method列表中内容吗？还是指特定方法中的参数吗？
     public String getMethodParameter(String method, String key) {
         String value = parameters.get(method + "." + key);
         if (value == null || value.length() == 0) {
@@ -891,6 +897,7 @@ public final class URL implements Serializable {//可进行序列化
         return addParameter(key, encode(value));
     }
 
+    // 添加url中的参数
     public URL addParameter(String key, boolean value) {
         return addParameter(key, String.valueOf(value));
     }
@@ -953,6 +960,7 @@ public final class URL implements Serializable {//可进行序列化
         return new URL(protocol, username, password, host, port, path, map);
     }
 
+    //判断参数是否存在，如果不存在就添加参数 Absent（缺少的、不存在的），存在就返回当前url，this
     public URL addParameterIfAbsent(String key, String value) {
         if (key == null || key.length() == 0
                 || value == null || value.length() == 0) {
@@ -968,6 +976,7 @@ public final class URL implements Serializable {//可进行序列化
 
     /**
      * Add parameters to a new url.
+     * 通过参数构造url
      *
      * @param parameters
      * @return A new URL
@@ -1009,6 +1018,7 @@ public final class URL implements Serializable {//可进行序列化
         return new URL(protocol, username, password, host, port, path, map);
     }
 
+    //可以添加若干个参数（按key、value方式传递参数）
     public URL addParameters(String... pairs) {
         if (pairs == null || pairs.length == 0) {
             return this;
@@ -1143,6 +1153,7 @@ public final class URL implements Serializable {//可进行序列化
         return buf.toString();
     }
 
+    //构建url中的参数
     private void buildParameters(StringBuilder buf, boolean concat, String[] parameters) {
         if (getParameters() != null && getParameters().size() > 0) {
             List<String> includes = (parameters == null || parameters.length == 0 ? null : Arrays.asList(parameters));
@@ -1241,6 +1252,7 @@ public final class URL implements Serializable {//可进行序列化
         return buf.toString();
     }
 
+    //TODO 用途？
     public String toServiceStringWithoutResolving() {
         return buildString(true, false, false, true);
     }

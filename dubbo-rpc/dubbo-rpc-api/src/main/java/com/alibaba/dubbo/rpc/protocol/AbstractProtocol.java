@@ -41,15 +41,12 @@ public abstract class AbstractProtocol implements Protocol {// read finish
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+    //将serviceKey与Exporter映射起来
     protected final Map<String, Exporter<?>> exporterMap = new ConcurrentHashMap<String, Exporter<?>>();//jdk中concurrent包下提供
 
-    //TODO SOFEREFENCE(疼痛的引用)
     protected final Set<Invoker<?>> invokers = new ConcurrentHashSet<Invoker<?>>();//ConcurrentHashSet由dubbo实现的
 
     protected static String serviceKey(URL url) {
-        /**dubbo://192.168.0.103:20880/org.apache.dubbo.demo.DemoService?anyhost=true&application=demo-provider
-         &bind.ip=192.168.0.103&bind.port=20880&dubbo=2.0.2&generic=false&interface=
-        org.apache.dubbo.demo.DemoService&methods=sayHello&pid=1884&qos.port=22222&side=provider&timestamp=1535727842216**/
         return ProtocolUtils.serviceKey(url);
     }
 

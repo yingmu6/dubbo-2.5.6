@@ -11,6 +11,7 @@ public class ProtocolUtils {
     private ProtocolUtils() {
     }
 
+    //TODO serviceKey的值待测试？
     public static String serviceKey(URL url) {// read finish
         return serviceKey(url.getPort(), url.getPath(), url.getParameter(Constants.VERSION_KEY),
                 url.getParameter(Constants.GROUP_KEY));
@@ -23,7 +24,7 @@ public class ProtocolUtils {
             buf.append(serviceGroup);
             buf.append("/");
         }
-        buf.append(serviceName);
+        buf.append(serviceName);//接口名
         if (serviceVersion != null && serviceVersion.length() > 0 && !"0.0.0".equals(serviceVersion)) {
             buf.append(":");
             buf.append(serviceVersion);

@@ -43,7 +43,7 @@ public interface Invoker<T> extends Node { // read finish
      * @return result
      * @throws RpcException
      */
-    //TODO 这个方法用途？
+    // 这个方法用途？ 解：执行方法调用
     Result invoke(Invocation invocation) throws RpcException;
 
 }
