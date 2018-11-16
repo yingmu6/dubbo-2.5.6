@@ -1,5 +1,15 @@
 （相关的知识点：只是为了辅助源码学习的，所以只要针对性学习，并且整体理解、熟悉就好，没必要非要把每个知识点了解）
 （知识点：是要有针对性的，范围要尽量缩小，按点来学习）
+2018-11-9
+1.匿名类、向上转型、抽象类、接口
+
+2018-11-7
+1.IP协议、Socket套接字
+2.TCP、UDP的初步了解
+3.网络通讯的初步了解
+4.了解JAVA的异常机制
+5.JAVA 注解，dubbo中的注解
+6.构造函数的处理，在继承中处理 super的使用
 
 2018-10-25
 1.java与Netty的 channel学习一下，看与dubbo自定义的channel的异同
@@ -8,25 +18,15 @@ ByteBuffer是将数据移进移出通道的唯一方式。ByteBuffer用来处理
 SocketChannel中open() 打开套接字通道，read(ByteBuffer dst)从通道中读取内容给ByteBuffer，write(ByteBuffer src)从ByteBuffer读取内容写到Channel
 
 2.网络传输为什么要编解码
-
 3.网络URL学习一下，对比一下与dubbo的自定义的URL的异同
-
 4.为啥用SPI，不可以写个子类继承吗？SPI到底用来做啥？
-
 5.java枚举类的使用
-
 6.Handler设计模式的学习
-
 7.java注解的学习
-
 8.java动态代理
-
 9.java RMI学习
-
 10.Http三次握手、四次挥手原理
-
 11.Http请求头、响应头、参数格式
-
 12.网络传输是以什么为单位的？
 
 13.Dubbo数据传输模型了解一下，（报文格式，数据包）
@@ -84,9 +84,6 @@ dubbo协议采用固定长度的消息头（16字节）和不定长度的消息�
 6.锁的用途
 7.java Number使用
 
-2018/10/30
-1.监控是基于事件触发的吗？怎样配置的？还是定时去统计吗？配置标签是什么？
-2.监控粒度怎样的？比如Application、Interface、Method等？
-3.MonitorService中colloct、lockup中的URL是需要指定的格式传入的吗？
+
 
 

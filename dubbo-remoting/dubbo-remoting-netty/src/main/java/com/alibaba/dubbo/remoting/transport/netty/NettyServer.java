@@ -90,7 +90,7 @@ public class NettyServer extends AbstractServer implements Server {
                 return pipeline;
             }
         });
-        // bind
+        // bind (使用Netty中ServerBootstrap启动服务)
         channel = bootstrap.bind(getBindAddress());
     }
 

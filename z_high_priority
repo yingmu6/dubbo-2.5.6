@@ -1,6 +1,17 @@
 -----------------影响流程理解、贯穿多个模块的知识点-----------
-2018/10/26（高优先级的知识点，尽量当天完成，每天排3、4个即可）
+----------------（高优先级的知识点，尽量当天完成，每天排3、4个即可）------
+18/11/9
+1.TCP、UDP通信，（面向连接、握手）
+2.Socket
+3.NIO中三大组件Buffer、Channel、Seletor
+4.java的动态代理javassist、ClassPool、CtClass，dubbo中ClassGenerator、Wrapper
 
+18/11/7
+1.ChannelHandler、Channel了解Netty、Java、Dubbo
+2.Dubbo中的ExchangeServer、Exchanger理解、学习
+3.网络交换流程、Transporter理解
+
+2018/10/26
 1.Dubbo数据传输模型（数据包格式） ok
 2.Dubbo编解码 ok
 3.位预算、进制转换

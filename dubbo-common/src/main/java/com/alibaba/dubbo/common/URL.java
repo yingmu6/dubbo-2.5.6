@@ -80,6 +80,8 @@ public final class URL implements Serializable {//可进行序列化
 
     // 网络URL学习一下，对比一下与dubbo的自定义的URL的异同
     // URL语法结构  协议：//授权机构/路径?查询条件
+
+    //与JAVA URL的异同：1）能获取、设置url中的参数，结构相似  2）dubbo中url没有openStream()、openConnection()
     private static final long serialVersionUID = -1985165475234910535L;
 
     private final String protocol;
@@ -92,7 +94,7 @@ public final class URL implements Serializable {//可进行序列化
 
     private final int port;
 
-    private final String path;
+    private final String path;//就是接口的路径名，如com.alibaba.dubbo.rpc.protocol.dubbo.support.DemoService
 
     //参数集合
     private final Map<String, String> parameters;

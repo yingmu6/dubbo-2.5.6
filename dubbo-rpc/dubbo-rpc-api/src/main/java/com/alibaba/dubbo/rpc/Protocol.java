@@ -26,7 +26,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  */
 @SPI("dubbo")
 public interface Protocol {// read finish
-
+    //名称、术语引用官方术语
     /**
      * 获取缺省端口，当用户没有配置端口时使用。
      *

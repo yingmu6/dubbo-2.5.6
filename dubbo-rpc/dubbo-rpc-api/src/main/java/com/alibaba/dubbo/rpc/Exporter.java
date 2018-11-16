@@ -23,12 +23,12 @@ package com.alibaba.dubbo.rpc;
  * @see com.alibaba.dubbo.rpc.ExporterListener
  * @see com.alibaba.dubbo.rpc.protocol.AbstractExporter
  */
-//TODO 指服务提供者吗？
+// 指服务提供者吗？ 解：暴露服务的引用
 public interface Exporter<T> {// read finish
 
     /**
      * get invoker.
-     *
+     * 获取服务的执行者
      * @return invoker
      */
     Invoker<T> getInvoker();

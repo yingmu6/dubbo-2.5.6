@@ -64,7 +64,7 @@ public interface Invocation {// read finish
     Map<String, String> getAttachments();
 
     /**
-     * get attachment by key.
+     * get attachment（附着点） by key.
      *
      * @return attachment value.
      * @serial

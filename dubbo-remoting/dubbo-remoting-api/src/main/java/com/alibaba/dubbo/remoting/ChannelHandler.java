@@ -26,19 +26,21 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @see com.alibaba.dubbo.remoting.Transporter#bind(com.alibaba.dubbo.common.URL, ChannelHandler)
  * @see com.alibaba.dubbo.remoting.Transporter#connect(com.alibaba.dubbo.common.URL, ChannelHandler)
  */
+//ChannelHandler是通道的事件处理器
+//Netty中描述 Handles an I/O event or intercepts（监听、拦截） an I/O operation, and forwards（向前） it to its next handler in its ChannelPipeline.
 @SPI
-public interface ChannelHandler {
-    //ChannelHandler是抽象的通道事件处理器
-    //TODO 连接通道，是ChannelHandler与channel单向连接吗？那通道与通道怎么连接？
+public interface ChannelHandler {//发生事件时，回调对应的函数
+    // 连接通道，是ChannelHandler与channel单向连接吗？那通道与通道怎么连接？
+    // 解：不管是否是单向，通道与通道可以用Channel中transport(通道传输)
     /**
-     * on channel connected.
+     * on channel connected.（连接事件）
      * 与Channel建立连接
      * @param channel channel.
      */
     void connected(Channel channel) throws RemotingException;
 
     /**
-     * on channel disconnected.
+     * on channel disconnected.（断开连接事件）
      *  断开与Channel的连接
      * @param channel channel.
      */

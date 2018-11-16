@@ -283,6 +283,7 @@ public class RpcContext {// read finish
         if (port < 0) {
             port = 0;
         }
+        //创建未解析的套接字地址，不会尝试将主机名解析为InetAddress
         this.remoteAddress = InetSocketAddress.createUnresolved(host, port);
         return this;
     }
@@ -610,7 +611,6 @@ public class RpcContext {// read finish
     /**
      * oneway调用，只发送请求，不接收返回结果.
      *
-     * @param callable
      */
     public void asyncCall(Runnable runable) {
         try {

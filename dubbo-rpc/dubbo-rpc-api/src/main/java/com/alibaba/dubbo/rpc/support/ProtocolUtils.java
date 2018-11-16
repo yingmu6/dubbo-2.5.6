@@ -11,7 +11,7 @@ public class ProtocolUtils {
     private ProtocolUtils() {
     }
 
-    //TODO serviceKey的值待测试？
+    //serviceKey的值待测试？ 解：将port、path、version、group拼接
     public static String serviceKey(URL url) {// read finish
         return serviceKey(url.getPort(), url.getPath(), url.getParameter(Constants.VERSION_KEY),
                 url.getParameter(Constants.GROUP_KEY));

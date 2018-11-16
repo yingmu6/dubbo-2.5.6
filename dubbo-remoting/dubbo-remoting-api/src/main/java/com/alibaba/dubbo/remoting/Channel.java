@@ -26,10 +26,12 @@ import java.net.InetSocketAddress;
  * @see com.alibaba.dubbo.remoting.Server#getChannels()
  * @see com.alibaba.dubbo.remoting.Server#getChannel(InetSocketAddress)
  */
-//TODO 通道里面都有啥内容，怎样获取URL内容的
+// 通道里面都有啥内容，怎样获取URL内容的
+// java NIO中的Channel是处理IO操作，是数据的来源和数据目的地
+// Dubbo中的Channel只是选取了Netty中部分内容
+// Netty中的Channel接口抽象了底层socket的一些状态属性以及调用方法
 public interface Channel extends Endpoint {
 
-    //TODO java与Netty的 channel学习一下，看与dubbo自定义的channel的异同
     /**
      * get remote address.
      *
