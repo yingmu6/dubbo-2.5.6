@@ -16,3 +16,6 @@
 
 2018/11/7
 1.java泛型中的边界和通配符使用，使用了通配符问号就不用声明吗？
+
+2018/11/16
+1.dubbo.stub.event、is_callback_service用途？

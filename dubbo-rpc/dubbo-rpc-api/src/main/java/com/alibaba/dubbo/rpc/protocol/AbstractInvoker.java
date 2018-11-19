@@ -138,6 +138,7 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {// read finish
         if (getUrl().getMethodParameter(invocation.getMethodName(), Constants.ASYNC_KEY, false)) {
             invocation.setAttachment(Constants.ASYNC_KEY, Boolean.TRUE.toString());
         }
+        //幂等操作
         RpcUtils.attachInvocationIdIfAsync(getUrl(), invocation);
 
 

@@ -94,7 +94,7 @@ public final class URL implements Serializable {//可进行序列化
 
     private final int port;
 
-    private final String path;//就是接口的路径名，如com.alibaba.dubbo.rpc.protocol.dubbo.support.DemoService
+    private final String path;//就是接口的完整名称，如com.alibaba.dubbo.rpc.protocol.dubbo.support.DemoService
 
     //参数集合
     private final Map<String, String> parameters;

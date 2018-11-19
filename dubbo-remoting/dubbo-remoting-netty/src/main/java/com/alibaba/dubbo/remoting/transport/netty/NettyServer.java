@@ -49,7 +49,7 @@ import java.util.concurrent.Executors;
  * @author qian.lei
  * @author chao.liuc
  */
-public class NettyServer extends AbstractServer implements Server {
+public class NettyServer extends AbstractServer implements Server {//netty服务端
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
 
@@ -59,10 +59,12 @@ public class NettyServer extends AbstractServer implements Server {
 
     private org.jboss.netty.channel.Channel channel;
 
+    /**@c */
     public NettyServer(URL url, ChannelHandler handler) throws RemotingException {
         super(url, ChannelHandlers.wrap(handler, ExecutorUtil.setThreadName(url, SERVER_THREAD_POOL_NAME)));
     }
 
+    /**@c */
     @Override
     protected void doOpen() throws Throwable {
         NettyHelper.setNettyLoggerFactory();
@@ -90,7 +92,7 @@ public class NettyServer extends AbstractServer implements Server {
                 return pipeline;
             }
         });
-        // bind (使用Netty中ServerBootstrap启动服务)
+        /**@c   bind (使用Netty中ServerBootstrap启动服务) */
         channel = bootstrap.bind(getBindAddress());
     }
 

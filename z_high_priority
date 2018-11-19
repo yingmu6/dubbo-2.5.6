@@ -1,10 +1,11 @@
 -----------------影响流程理解、贯穿多个模块的知识点-----------
 ----------------（高优先级的知识点，尽量当天完成，每天排3、4个即可）------
 18/11/9
-1.TCP、UDP通信，（面向连接、握手）
-2.Socket
-3.NIO中三大组件Buffer、Channel、Seletor
-4.java的动态代理javassist、ClassPool、CtClass，dubbo中ClassGenerator、Wrapper
+1.Socket
+2.Netty 服务启动、处理
+3.TCP、UDP通信，（面向连接、握手）
+4.NIO中三大组件Buffer、Channel、Seletor
+5.java的动态代理javassist、ClassPool、CtClass，dubbo中ClassGenerator、Wrapper
 
 18/11/7
 1.ChannelHandler、Channel了解Netty、Java、Dubbo

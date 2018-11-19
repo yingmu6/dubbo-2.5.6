@@ -26,7 +26,7 @@ import com.alibaba.dubbo.remoting.exchange.support.Replier;
 import com.alibaba.dubbo.remoting.transport.ChannelHandlerAdapter;
 
 /**
- * Exchanger facade. (API, Static, ThreadSafe)
+ * Exchanger facade(门面模式). (API, Static, ThreadSafe)
  *
  * @author william.liangf
  */
@@ -60,6 +60,7 @@ public class Exchangers {
         return bind(URL.valueOf(url), handler);
     }
 
+    /**@c */
     public static ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
         if (url == null) {
             throw new IllegalArgumentException("url == null");

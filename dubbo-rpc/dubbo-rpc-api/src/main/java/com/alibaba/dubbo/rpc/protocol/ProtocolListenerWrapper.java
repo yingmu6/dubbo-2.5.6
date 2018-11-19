@@ -30,7 +30,7 @@ import com.alibaba.dubbo.rpc.listener.ListenerInvokerWrapper;
 import java.util.Collections;
 
 /**
- * ListenerProtocol
+ * ListenerProtocol（监听协议）
  *
  * @author william.liangf
  */
@@ -49,6 +49,7 @@ public class ProtocolListenerWrapper implements Protocol {// read finish
         return protocol.getDefaultPort();
     }
 
+    /**@c */
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         //判断url是否包含注册协议
         if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) {

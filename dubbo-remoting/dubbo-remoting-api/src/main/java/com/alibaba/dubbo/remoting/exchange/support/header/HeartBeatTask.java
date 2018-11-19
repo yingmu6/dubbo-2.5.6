@@ -27,7 +27,7 @@ import java.util.Collection;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-final class HeartBeatTask implements Runnable {
+final class HeartBeatTask implements Runnable {//心跳定时任务
 
     private static final Logger logger = LoggerFactory.getLogger(HeartBeatTask.class);
 

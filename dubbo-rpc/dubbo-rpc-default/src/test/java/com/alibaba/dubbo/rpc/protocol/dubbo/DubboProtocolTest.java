@@ -56,7 +56,7 @@ public class DubboProtocolTest {
     }
 
     @Test
-    public void testDubboProtocol() throws Exception {
+    public void testDubboProtocol() throws Exception {/**@c export中的invoker由框架传入（动态代理创建） */
         DemoService service = new DemoServiceImpl();
         protocol.export(proxy.getInvoker(service, DemoService.class, URL.valueOf("dubbo://127.0.0.1:9010/" + DemoService.class.getName())));
         service = proxy.getProxy(protocol.refer(DemoService.class, URL.valueOf("dubbo://127.0.0.1:9010/" + DemoService.class.getName())));

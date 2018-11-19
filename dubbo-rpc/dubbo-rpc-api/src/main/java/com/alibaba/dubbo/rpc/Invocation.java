@@ -27,7 +27,7 @@ import java.util.Map;
  * @see com.alibaba.dubbo.rpc.RpcInvocation
  */
 
-//Invocation，一次具体的调用信息，包含方法名、参数类型、参数、调用者信息
+//Invocation，一个调用方法的具体信息，包含方法名、参数类型、参数、调用者信息
 //TODO 与Node中URL中的参数有啥区别？
 public interface Invocation {// read finish
     /**

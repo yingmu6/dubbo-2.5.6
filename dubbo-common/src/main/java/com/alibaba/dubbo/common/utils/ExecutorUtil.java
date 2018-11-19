@@ -114,7 +114,7 @@ public class ExecutorUtil {
     }
 
     /**
-     * append thread name with url address
+     * append thread name with url address（在url附加线程名）
      *
      * @return new url with updated thread name
      */

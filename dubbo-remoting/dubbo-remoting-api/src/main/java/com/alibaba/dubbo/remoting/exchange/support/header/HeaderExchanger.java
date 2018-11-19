@@ -39,7 +39,9 @@ public class HeaderExchanger implements Exchanger {
         return new HeaderExchangeClient(Transporters.connect(url, new DecodeHandler(new HeaderExchangeHandler(handler))), true);
     }
 
+    /**@c */
     public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
+        //HeaderExchangeServer 会进行心跳检测
         return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(new HeaderExchangeHandler(handler))));
     }
 

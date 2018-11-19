@@ -44,7 +44,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class DubboInvoker<T> extends AbstractInvoker<T> {// read finish
 
-    private final ExchangeClient[] clients;
+    private final ExchangeClient[] clients;//同一个对象，不同方法共同拥有
 
     private final AtomicPositiveInteger index = new AtomicPositiveInteger();
 
@@ -83,7 +83,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {// read finish
             boolean isAsync = RpcUtils.isAsync(getUrl(), invocation);
             boolean isOneway = RpcUtils.isOneway(getUrl(), invocation);
             int timeout = getUrl().getMethodParameter(methodName, Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
-            if (isOneway) {
+            if (isOneway) {//TODO 指同步吗
                 //获取url中发送参数
                 boolean isSent = getUrl().getMethodParameter(methodName, Constants.SENT_KEY, false);
                 currentClient.send(inv, isSent);//发送对象

@@ -24,7 +24,7 @@ import com.alibaba.dubbo.rpc.Invoker;
 import java.util.List;
 
 /**
- * ListenerExporter
+ * ListenerExporter（监听exporter）
  *
  * @author william.liangf
  */
@@ -36,6 +36,7 @@ public class ListenerExporterWrapper<T> implements Exporter<T> {// read finish
 
     private final List<ExporterListener> listeners;
 
+    /**@ */
     public ListenerExporterWrapper(Exporter<T> exporter, List<ExporterListener> listeners) {
         if (exporter == null) {
             throw new IllegalArgumentException("exporter == null");

@@ -41,6 +41,7 @@ public abstract class AbstractEndpoint extends AbstractPeer implements Resetable
 
     private int connectTimeout;
 
+    /**@c */
     public AbstractEndpoint(URL url, ChannelHandler handler) {
         super(url, handler);
         this.codec = getChannelCodec(url);

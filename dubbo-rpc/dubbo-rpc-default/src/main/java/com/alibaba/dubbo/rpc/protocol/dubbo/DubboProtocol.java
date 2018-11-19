@@ -69,7 +69,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     //servicekey-stubmethods
     private final ConcurrentMap<String, String> stubServiceMethodsMap = new ConcurrentHashMap<String, String>();
     //创建ExchangeHandler
-    private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() {
+    private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() {/**@c TODO 成员变量若有对象引用，在什么时候创建的 export中没有调用此方法*/
 
         //reply 回答、答复(用来响应服务调用方的请求，调用具体的服务，并将请求结果封装为RpcResult返回给调用方)
         public Object reply(ExchangeChannel channel, Object message) throws RemotingException {
@@ -80,7 +80,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
                 if (Boolean.TRUE.toString().equals(inv.getAttachments().get(IS_CALLBACK_SERVICE_INVOKE))) {
                     String methodsStr = invoker.getUrl().getParameters().get("methods");
                     boolean hasMethod = false;
-                    if (methodsStr == null || methodsStr.indexOf(",") == -1) {
+                    if (methodsStr == null || methodsStr.indexOf(",") == -1) {//没有方法名或只有一个方法名
                         hasMethod = inv.getMethodName().equals(methodsStr);
                     } else {
                         String[] methods = methodsStr.split(",");
@@ -91,13 +91,13 @@ public class DubboProtocol extends AbstractProtocol {// read finish
                             }
                         }
                     }
-                    if (!hasMethod) {//判断方法是否存在
+                    if (!hasMethod) {//判断回调方法是否存在于URL方法名列表中
                         logger.warn(new IllegalStateException("The methodName " + inv.getMethodName() + " not found in callback service interface ,invoke will be ignored. please update the api interface. url is:" + invoker.getUrl()) + " ,invocation is :" + inv);
                         return null;
                     }
                 }
                 RpcContext.getContext().setRemoteAddress(channel.getRemoteAddress());
-                return invoker.invoke(inv);//调用具体的服务
+                return invoker.invoke(inv);//回复客户端（服务调用者的请求）
             }
             throw new RemotingException(channel, "Unsupported request: " + message == null ? null : (message.getClass().getName() + ": " + message) + ", channel: consumer: " + channel.getRemoteAddress() + " --> provider: " + channel.getLocalAddress());
         }
@@ -204,7 +204,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         }
         String serviceKey = serviceKey(port, path, inv.getAttachments().get(Constants.VERSION_KEY), inv.getAttachments().get(Constants.GROUP_KEY));
 
-        //构建DubboExporter，然后获取Invoker
+        //构建serviceKey 然后通过DubboExporter获取Invoker
         DubboExporter<?> exporter = (DubboExporter<?>) exporterMap.get(serviceKey);
 
         if (exporter == null)
@@ -221,23 +221,23 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         return DEFAULT_PORT;
     }
 
-    //重点：将invoker转换为exporter
+    //重点：将invoker转换为exporter，Invoker由框架传入
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         URL url = invoker.getUrl();
 
-        // export service.
+        // export service.（根据执行者信息，构造服务暴露引用的信息）
         String key = serviceKey(url);
         DubboExporter<T> exporter = new DubboExporter<T>(invoker, key, exporterMap);
         exporterMap.put(key, exporter);
 
         //export an stub service for dispaching event
+        //TODO stub method方法是啥？
         Boolean isStubSupportEvent = url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT);
         Boolean isCallbackservice = url.getParameter(Constants.IS_CALLBACK_SERVICE, false);
         if (isStubSupportEvent && !isCallbackservice) {
             String stubServiceMethods = url.getParameter(Constants.STUB_EVENT_METHODS_KEY);
             if (stubServiceMethods == null || stubServiceMethods.length() == 0) {
-                if (logger.isWarnEnabled()) {
-                    //TODO stub method方法是啥？
+                if (logger.isWarnEnabled()) {//若支持了stubproxy，就需要stud method
                     logger.warn(new IllegalStateException("consumer [" + url.getParameter(Constants.INTERFACE_KEY) +
                             "], has set stubproxy support event ,but no stub methods founded."));
                 }
@@ -246,16 +246,15 @@ public class DubboProtocol extends AbstractProtocol {// read finish
             }
         }
 
-        //TODO 打开服务端需要理解下？
         openServer(url);
 
         return exporter;
     }
 
-    //提供者打开服务
+    /**@c 服务端打开服务*/
     private void openServer(URL url) {
         // find server.
-        String key = url.getAddress();
+        String key = url.getAddress();//形式为 host:port
         //client 也可以暴露一个只有server可以调用的服务。
         boolean isServer = url.getParameter(Constants.IS_SERVER_KEY, true);
         if (isServer) {
@@ -269,12 +268,13 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         }
     }
 
-    //TODO 创建服务
+    // 创建服务
     private ExchangeServer createServer(URL url) {
-        //默认开启server关闭时发送readonly事件
+        //默认开启server关闭时发送readonly事件（TODO server都关闭了，还能读吗？）
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
         //默认开启heartbeat
-        url = url.addParameterIfAbsent(Constants.HEARTBEAT_KEY, String.valueOf(Constants.DEFAULT_HEARTBEAT));
+        url = url.addParameterIfAbsent(Constants.HEARTBEAT_KEY, String.valueOf(Constants.DEFAULT_HEARTBEAT));/**@c 会启动心跳定时任务，每隔指定时间检查心跳*/
+        /**@c 默认使用Netty作为服务端 */
         String str = url.getParameter(Constants.SERVER_KEY, Constants.DEFAULT_REMOTING_SERVER);
 
         if (str != null && str.length() > 0 && !ExtensionLoader.getExtensionLoader(Transporter.class).hasExtension(str))
@@ -283,7 +283,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         url = url.addParameter(Constants.CODEC_KEY, DubboCodec.NAME);
         ExchangeServer server;
         try {
-            server = Exchangers.bind(url, requestHandler);//绑定服务
+            server = Exchangers.bind(url, requestHandler);/**@c 构建服务并且打开服务*/
         } catch (RemotingException e) {
             throw new RpcException("Fail to start server(url: " + url + ") " + e.getMessage(), e);
         }

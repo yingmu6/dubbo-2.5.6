@@ -16,7 +16,7 @@
 package com.alibaba.dubbo.common.utils;
 
 /**
- * Helper Class for hold a value.
+ * Helper Class for hold(持有) a value.
  *
  * @author william.liangf
  */

@@ -76,11 +76,11 @@ public interface Endpoint {
     void close();
 
     /**
-     * Graceful close the channel.
+     * Graceful（优雅的） close the channel.
      */
     void close(int timeout);
 
-    void startClose();
+    void startClose();//closing = true 标记状态
 
     /**
      * is closed.

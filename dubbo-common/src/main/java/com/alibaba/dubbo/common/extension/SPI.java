@@ -51,12 +51,13 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface SPI {
-    //在指定目录下配置文件，当实例类时就会在文件中就找
+public @interface SPI {//表示可以通过SPI的方式，
 
-    //TODO 为啥用SPI，不可以写个子类继承吗？SPI到底用来做啥？
+    //在指定目录下配置文件，当实例类时就会在文件中就找
+    //为啥用SPI，不可以写个子类继承吗？SPI到底用来做啥？
+    //解：SPI 服务提供接口，可以通过配置文件动态指定接口的实现类
     /**
-     * 缺省扩展点名。
+     * 缺省扩展点名。（只能有一个扩展名，比如netty，不能有多个用逗号分隔）
      */
     String value() default "";
 

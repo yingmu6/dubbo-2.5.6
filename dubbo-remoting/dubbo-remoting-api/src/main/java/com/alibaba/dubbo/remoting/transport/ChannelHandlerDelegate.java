@@ -19,6 +19,7 @@ import com.alibaba.dubbo.remoting.ChannelHandler;
 
 /**
  * @author chao.liuc
+ * Delegate 委派
  */
 public interface ChannelHandlerDelegate extends ChannelHandler {
     public ChannelHandler getHandler();

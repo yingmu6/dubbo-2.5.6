@@ -1,7 +1,16 @@
 （相关的知识点：只是为了辅助源码学习的，所以只要针对性学习，并且整体理解、熟悉就好，没必要非要把每个知识点了解）
 （知识点：是要有针对性的，范围要尽量缩小，按点来学习）
+2018-11-17
+1.枚举类、注解
+2.对象的创建、构造函数、继承、super、this的使用
+3.对象、接口、抽象类、成员变量、final
+4.Netty ExecutorService、NioServerSocketChannelFactory、Executor、ServerBootstrap
+5.反射机制 Class ClassLoader
+6.门面模式、java 定时器、包装模式
+
 2018-11-9
 1.匿名类、向上转型、抽象类、接口
+2.java RMI 、Stub、Callback
 
 2018-11-7
 1.IP协议、Socket套接字

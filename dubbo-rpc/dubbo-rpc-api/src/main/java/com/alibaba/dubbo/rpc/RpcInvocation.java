@@ -32,7 +32,6 @@ import java.util.Map;
  */
 public class RpcInvocation implements Invocation, Serializable {// read finish
 
-    //调用信息的设置与获取
     private static final long serialVersionUID = -4355285085441097045L;
 
     private String methodName;
@@ -41,7 +40,7 @@ public class RpcInvocation implements Invocation, Serializable {// read finish
 
     private Object[] arguments;
 
-    private Map<String, String> attachments;//url中附加参数
+    private Map<String, String> attachments;
 
     private transient Invoker<?> invoker;
 

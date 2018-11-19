@@ -61,6 +61,7 @@ public class HeaderExchangeServer implements ExchangeServer {
     private int heartbeatTimeout;
     private AtomicBoolean closed = new AtomicBoolean(false);
 
+    /**@c */
     public HeaderExchangeServer(Server server) {
         if (server == null) {
             throw new IllegalArgumentException("server == null");
@@ -233,6 +234,7 @@ public class HeaderExchangeServer implements ExchangeServer {
         server.send(message, sent);
     }
 
+    /**@c 启动心跳定时器*/
     private void startHeatbeatTimer() {
         stopHeartbeatTimer();
         if (heartbeat > 0) {

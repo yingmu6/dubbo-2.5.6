@@ -45,6 +45,7 @@ public class ChannelHandlers {
         INSTANCE = instance;
     }
 
+    /**  */
     protected ChannelHandler wrapInternal(ChannelHandler handler, URL url) {
         return new MultiMessageHandler(new HeartbeatHandler(ExtensionLoader.getExtensionLoader(Dispatcher.class)
                 .getAdaptiveExtension().dispatch(handler, url)));
