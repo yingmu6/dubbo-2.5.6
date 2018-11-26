@@ -53,6 +53,7 @@ public class DecodeHandler extends AbstractChannelHandlerDelegate {
         handler.received(channel, message);
     }
 
+    /**@c 反序列化对象  */
     private void decode(Object message) {
         if (message != null && message instanceof Decodeable) {
             try {

@@ -53,7 +53,7 @@ public class ProtocolFilterWrapper implements Protocol {// read finish
             for (int i = filters.size() - 1; i >= 0; i--) {
                 final Filter filter = filters.get(i);
                 final Invoker<T> next = last;
-                last = new Invoker<T>() {
+                last = new Invoker<T>() {//匿名类实现
 
                     public Class<T> getInterface() {
                         return invoker.getInterface();
@@ -95,7 +95,7 @@ public class ProtocolFilterWrapper implements Protocol {// read finish
         }
         return protocol.export(buildInvokerChain(invoker, Constants.SERVICE_FILTER_KEY, Constants.PROVIDER));
     }
-
+    /**@c 在Protocol中refer执行以后执行*/
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
         if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
             return protocol.refer(type, url);

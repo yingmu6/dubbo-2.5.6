@@ -35,6 +35,7 @@ public class HeaderExchanger implements Exchanger {
     public static final String NAME = "header";
     //客户端去连接、服务端去绑定
 
+    /**@c */  //TODO ref没有看到编码、解码，是要等事件触发时，及读取数据时处理吗？
     public ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {
         return new HeaderExchangeClient(Transporters.connect(url, new DecodeHandler(new HeaderExchangeHandler(handler))), true);
     }

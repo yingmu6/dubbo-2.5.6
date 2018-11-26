@@ -70,10 +70,11 @@ final class LazyConnectExchangeClient implements ExchangeClient {      // read f
         if (logger.isInfoEnabled()) {
             logger.info("Lazy connect to " + url);
         }
-        connectLock.lock();
+        connectLock.lock();//加锁处理
         try {
             if (client != null)
                 return;
+            /**@c 连接 */
             this.client = Exchangers.connect(url, requestHandler);
         } finally {
             connectLock.unlock();

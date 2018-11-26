@@ -74,7 +74,7 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {// read finish
         this.attachment = attachment == null ? null : Collections.unmodifiableMap(attachment);
     }
 
-    //转变参数
+    //转变参数（从URL中获取指定key的value）
     private static Map<String, String> convertAttachment(URL url, String[] keys) {
         if (keys == null || keys.length == 0) {
             return null;
@@ -121,7 +121,7 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {// read finish
     }
 
     public Result invoke(Invocation inv) throws RpcException {
-        if (destroyed.get()) {
+        if (destroyed.get()) {//当前服务执行者已被删除
             throw new RpcException("Rpc invoker for service " + this + " on consumer " + NetUtils.getLocalHost()
                     + " use dubbo version " + Version.getVersion()
                     + " is DESTROYED, can not be invoked any more!");

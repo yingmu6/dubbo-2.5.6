@@ -296,7 +296,8 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         }
         return server;
     }
-
+    //构建Invoker实例
+    /**@c TODO 暴露流程尚需了解 */  //serviceType 接口完整名称
     public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
         // create rpc invoker.
         DubboInvoker<T> invoker = new DubboInvoker<T>(serviceType, url, getClients(url), invokers);
@@ -304,8 +305,9 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         return invoker;
     }
 
+    /**@c 进行条件判断以及初始化 */
     private ExchangeClient[] getClients(URL url) {
-        //是否共享连接
+        //通过连接数判断是否共享连接
         boolean service_share_connect = false;
         int connections = url.getParameter(Constants.CONNECTIONS_KEY, 0);
         //如果connections不配置，则共享连接，否则每服务每连接
@@ -314,9 +316,10 @@ public class DubboProtocol extends AbstractProtocol {// read finish
             connections = 1;
         }
 
+        //接口也能是数组元素
         ExchangeClient[] clients = new ExchangeClient[connections];
         for (int i = 0; i < clients.length; i++) {
-            if (service_share_connect) {//共享连接
+            if (service_share_connect) {//共享连接（统计调用次数）
                 clients[i] = getSharedClient(url);
             } else {                   //每服务每连接
                 clients[i] = initClient(url);
@@ -328,30 +331,30 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     /**
      * 获取共享连接
      */
-    private ExchangeClient getSharedClient(URL url) {
+    private ExchangeClient getSharedClient(URL url) {/**@c */
         String key = url.getAddress();
         ReferenceCountExchangeClient client = referenceClientMap.get(key);
-        if (client != null) {
-            if (!client.isClosed()) {
+        if (client != null) {//初始时client为NUll
+            if (!client.isClosed()) {//如果没有关闭，则原子自增
                 client.incrementAndGetCount();
                 return client;
             } else {
                 referenceClientMap.remove(key);
             }
         }
-        synchronized (key.intern()) {
+        synchronized (key.intern()) {//返回字符串的规范表示
             ExchangeClient exchangeClient = initClient(url);
             client = new ReferenceCountExchangeClient(exchangeClient, ghostClientMap);
             referenceClientMap.put(key, client);
-            ghostClientMap.remove(key);
+            ghostClientMap.remove(key);//移除延迟client
             return client;
         }
     }
 
     /**
-     * 创建新连接.
+     * 创建新连接.（每个服务、每个连接）
      */
-    private ExchangeClient initClient(URL url) {
+    private ExchangeClient initClient(URL url) {/**@c */
 
         // client type setting.
         String str = url.getParameter(Constants.CLIENT_KEY, url.getParameter(Constants.SERVER_KEY, Constants.DEFAULT_REMOTING_CLIENT));

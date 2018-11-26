@@ -62,6 +62,7 @@ public class Transporters {
         return connect(URL.valueOf(url), handler);
     }
 
+    /**@c 传输层connet */
     public static Client connect(URL url, ChannelHandler... handlers) throws RemotingException {
         if (url == null) {
             throw new IllegalArgumentException("url == null");

@@ -100,6 +100,7 @@ public class Exchangers {
         return connect(URL.valueOf(url), handler);
     }
 
+    /**@c 默认HeaderExchanger*/
     public static ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {
         if (url == null) {
             throw new IllegalArgumentException("url == null");
@@ -111,6 +112,7 @@ public class Exchangers {
         return getExchanger(url).connect(url, handler);
     }
 
+    /**@c */
     public static Exchanger getExchanger(URL url) {
         String type = url.getParameter(Constants.EXCHANGER_KEY, Constants.DEFAULT_EXCHANGER);
         return getExchanger(type);

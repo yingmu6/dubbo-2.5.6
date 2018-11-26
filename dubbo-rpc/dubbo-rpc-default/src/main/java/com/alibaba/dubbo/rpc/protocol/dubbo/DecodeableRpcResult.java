@@ -70,6 +70,7 @@ public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable 
         throw new UnsupportedOperationException();
     }
 
+    /**@c 反序列化*/
     public Object decode(Channel channel, InputStream input) throws IOException {
         ObjectInput in = CodecSupport.getSerialization(channel.getUrl(), serializationType)
                 .deserialize(channel.getUrl(), input);

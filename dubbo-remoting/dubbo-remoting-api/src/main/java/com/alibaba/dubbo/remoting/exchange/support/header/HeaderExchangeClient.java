@@ -60,14 +60,14 @@ public class HeaderExchangeClient implements ExchangeClient {
             throw new IllegalArgumentException("client == null");
         }
         this.client = client;
-        this.channel = new HeaderExchangeChannel(client);
+        this.channel = new HeaderExchangeChannel(client);//Client是Channel子类，所以向上转型
         String dubbo = client.getUrl().getParameter(Constants.DUBBO_VERSION_KEY);
         this.heartbeat = client.getUrl().getParameter(Constants.HEARTBEAT_KEY, dubbo != null && dubbo.startsWith("1.0.") ? Constants.DEFAULT_HEARTBEAT : 0);
         this.heartbeatTimeout = client.getUrl().getParameter(Constants.HEARTBEAT_TIMEOUT_KEY, heartbeat * 3);
         if (heartbeatTimeout < heartbeat * 2) {
             throw new IllegalStateException("heartbeatTimeout < heartbeatInterval * 2");
         }
-        if (needHeartbeat) {
+        if (needHeartbeat) { /**@启动心跳定时任务 */
             startHeatbeatTimer();
         }
     }
@@ -162,6 +162,7 @@ public class HeaderExchangeClient implements ExchangeClient {
         return channel.hasAttribute(key);
     }
 
+    /**@c 启动心跳任务器 */
     private void startHeatbeatTimer() {
         stopHeartbeatTimer();
         if (heartbeat > 0) {

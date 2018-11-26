@@ -67,7 +67,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     //the last successed connected time
     private long lastConnectedTime = System.currentTimeMillis();
 
-
+    /**@c */
     public AbstractClient(URL url, ChannelHandler handler) throws RemotingException {
         super(url, handler);
 
@@ -258,6 +258,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         channel.send(message, sent);
     }
 
+    /**@c */
     protected void connect() throws RemotingException {
         connectLock.lock();
         try {
