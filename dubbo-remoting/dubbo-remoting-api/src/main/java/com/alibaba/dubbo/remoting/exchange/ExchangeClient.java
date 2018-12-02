@@ -22,6 +22,8 @@ import com.alibaba.dubbo.remoting.Client;
  *
  * @author william.liangf
  */
+
+/** 交换层客户端 */
 public interface ExchangeClient extends Client, ExchangeChannel {
 
 }

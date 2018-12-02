@@ -297,7 +297,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         return server;
     }
     //构建Invoker实例
-    /**@c TODO 暴露流程尚需了解 */  //serviceType 接口完整名称
+    /**@c 引用服务 */  //serviceType 接口完整名称
     public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
         // create rpc invoker.
         DubboInvoker<T> invoker = new DubboInvoker<T>(serviceType, url, getClients(url), invokers);

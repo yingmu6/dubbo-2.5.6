@@ -25,6 +25,7 @@ import java.util.Collection;
  *
  * @author william.liangf
  */
+/** 交换层服务端server */
 public interface ExchangeServer extends Server {
 
     /**

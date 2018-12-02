@@ -28,7 +28,6 @@ import java.util.Map;
  */
 
 //Invocation，一个调用方法的具体信息，包含方法名、参数类型、参数、调用者信息
-//TODO 与Node中URL中的参数有啥区别？
 public interface Invocation {// read finish
     /**
      * get method name.
@@ -40,7 +39,6 @@ public interface Invocation {// read finish
 
     /**
      * get parameter types.
-     * TODO 是指方法参数的类型吗？
      *
      * @return parameter types.
      * @serial

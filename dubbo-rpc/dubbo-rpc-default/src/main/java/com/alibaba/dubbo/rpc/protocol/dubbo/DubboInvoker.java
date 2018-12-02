@@ -59,6 +59,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {// read finish
     }
 
     public DubboInvoker(Class<T> serviceType, URL url, ExchangeClient[] clients, Set<Invoker<?>> invokers) {
+        //数组初始化（URL中参数key的数组）
         super(serviceType, url, new String[]{Constants.INTERFACE_KEY, Constants.GROUP_KEY, Constants.TOKEN_KEY, Constants.TIMEOUT_KEY});
         this.clients = clients;
         // get version.
