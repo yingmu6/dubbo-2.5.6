@@ -25,7 +25,7 @@ import org.junit.Test;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public class ReferenceConfigTest {
+public class ReferenceConfigTest {//引用测试
 
     @Test
     public void testInjvm() throws Exception {

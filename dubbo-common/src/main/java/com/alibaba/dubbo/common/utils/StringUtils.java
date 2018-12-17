@@ -290,6 +290,8 @@ public final class StringUtils {
      * @param array String array.
      * @param split split
      * @return String.
+     * StringBuffer ：线程安全
+     * StringBuilder ：线程不安全
      */
     public static String join(String[] array, String split) {
         if (array.length == 0) return "";
@@ -399,10 +401,10 @@ public final class StringUtils {
                         buf.append(camelName.substring(0, i));
                     }
                 }
-                if (i > 0) {
+                if (i > 0) {/**@c 将方法名中有大写的字符用"-"分隔 */
                     buf.append(split);
                 }
-                buf.append(Character.toLowerCase(ch));
+                buf.append(Character.toLowerCase(ch));/**@c 将大写字符转换为小写字符 */
             } else if (buf != null) {
                 buf.append(ch);
             }

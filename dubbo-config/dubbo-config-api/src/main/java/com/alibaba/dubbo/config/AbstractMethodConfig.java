@@ -27,6 +27,7 @@ import java.util.Map;
  * @author william.liangf
  * @export
  */
+/**@c 方法配置 */
 public abstract class AbstractMethodConfig extends AbstractConfig {
 
     private static final long serialVersionUID = 1L;

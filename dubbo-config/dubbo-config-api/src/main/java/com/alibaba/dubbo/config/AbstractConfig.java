@@ -40,13 +40,19 @@ import java.util.regex.Pattern;
  * @author william.liangf
  * @export
  */
-public abstract class AbstractConfig implements Serializable {
+public abstract class AbstractConfig implements Serializable {/**@c API配置方式 抽象出公有的配置操作 */
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractConfig.class);
     private static final long serialVersionUID = 4267533505537413570L;
     private static final int MAX_LENGTH = 200;
 
     private static final int MAX_PATH_LENGTH = 200;
+    /**@c
+     * 正则表达式语法
+     * 加号+ 相当于 {1,} ,匹配一次或者多次前面的字符或子字符串
+     * 问好? 相当于 {0,1} 出现0次或1次
+     * 星号* 相当于 {0,} 出现0次或多次
+     */
 
     //模式名称
     private static final Pattern PATTERN_NAME = Pattern.compile("[\\-._0-9a-zA-Z]+");
@@ -63,8 +69,7 @@ public abstract class AbstractConfig implements Serializable {
     private static final Map<String, String> legacyProperties = new HashMap<String, String>();
     private static final String[] SUFFIXS = new String[]{"Config", "Bean"};
 
-    //TODO 此处的Map的用途？
-    static {
+    static {//legacy:遗赠，遗产，TODO 这些参数的用途？
         legacyProperties.put("dubbo.protocol.name", "dubbo.service.protocol");
         legacyProperties.put("dubbo.protocol.host", "dubbo.service.server.host");
         legacyProperties.put("dubbo.protocol.port", "dubbo.service.server.port");
@@ -75,20 +80,21 @@ public abstract class AbstractConfig implements Serializable {
         legacyProperties.put("dubbo.service.url", "dubbo.service.address");
     }
 
-    //TODO 此处的用途？优雅停机吗
+    //此处的用途？优雅停机
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
                 if (logger.isInfoEnabled()) {
                     logger.info("Run shutdown hook now.");
                 }
-                ProtocolConfig.destroyAll();
+                ProtocolConfig.destroyAll();//停机时，销毁协议配置
             }
         }, "DubboShutdownHook"));
     }
 
     protected String id;
 
+    /**@c TODO 此方法的用途？*/
     private static String convertLegacyValue(String key, String value) {
         if (value != null && value.length() > 0) {
             if ("dubbo.service.max.retry.providers".equals(key)) {
@@ -100,6 +106,7 @@ public abstract class AbstractConfig implements Serializable {
         return value;
     }
 
+    /**@c TODO 此方法是设值还是取值 */
     protected static void appendProperties(AbstractConfig config) {
         if (config == null) {
             return;
@@ -108,11 +115,13 @@ public abstract class AbstractConfig implements Serializable {
         Method[] methods = config.getClass().getMethods();
         for (Method method : methods) {
             try {
-                //TODO 解析逻辑？
-                //TODO read flag 上次阅读位置
+                /**@c 处理方法名，获取配置值 */
                 String name = method.getName();
                 if (name.length() > 3 && name.startsWith("set") && Modifier.isPublic(method.getModifiers())
                         && method.getParameterTypes().length == 1 && isPrimitive(method.getParameterTypes()[0])) {
+                    /**@c 将方法名set后的字母小写，然后后面的由大写字母的地方用"-"分隔，并转换为小写
+                     * 将驼峰式的写法改为用分隔符分开的形式
+                     */
                     String property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), "-");
 
                     String value = null;
@@ -133,6 +142,7 @@ public abstract class AbstractConfig implements Serializable {
                     if (value == null || value.length() == 0) {
                         Method getter;
                         try {
+                            /**@c 从System Property获取config的配置，如果没有，调用指定方法去获取 */
                             getter = config.getClass().getMethod("get" + name.substring(3), new Class<?>[0]);
                         } catch (NoSuchMethodException e) {
                             try {
@@ -171,7 +181,7 @@ public abstract class AbstractConfig implements Serializable {
 
     private static String getTagName(Class<?> cls) {
         String tag = cls.getSimpleName();
-        for (String suffix : SUFFIXS) {
+        for (String suffix : SUFFIXS) {/**@c suffix后缀，将后缀名Config、Bean去掉，就是标签的名称 */
             if (tag.endsWith(suffix)) {
                 tag = tag.substring(0, tag.length() - suffix.length());
                 break;
@@ -181,11 +191,12 @@ public abstract class AbstractConfig implements Serializable {
         return tag;
     }
 
+    /**@c 附加参数 */
     protected static void appendParameters(Map<String, String> parameters, Object config) {
         appendParameters(parameters, config, null);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")  /**@c 把配置的键与值写到Map中 */
     protected static void appendParameters(Map<String, String> parameters, Object config, String prefix) {
         if (config == null) {
             return;
@@ -199,6 +210,7 @@ public abstract class AbstractConfig implements Serializable {
                         && Modifier.isPublic(method.getModifiers())
                         && method.getParameterTypes().length == 0
                         && isPrimitive(method.getReturnType())) {
+                    /**@ 通过反射机制获取注解 参数类型不能为Object并且没有被排除 */
                     Parameter parameter = method.getAnnotation(Parameter.class);
                     if (method.getReturnType() == Object.class || parameter != null && parameter.excluded()) {
                         continue;
@@ -214,6 +226,7 @@ public abstract class AbstractConfig implements Serializable {
                     Object value = method.invoke(config, new Object[0]);
                     String str = String.valueOf(value).trim();
                     if (value != null && str.length() > 0) {
+                        //TODO 逃逸的？
                         if (parameter != null && parameter.escaped()) {
                             str = URL.encode(str);
                         }
@@ -230,7 +243,7 @@ public abstract class AbstractConfig implements Serializable {
                         if (prefix != null && prefix.length() > 0) {
                             key = prefix + "." + key;
                         }
-                        parameters.put(key, str);
+                        parameters.put(key, str);/**@c 存入键值*/
                     } else if (parameter != null && parameter.required()) {
                         throw new IllegalStateException(config.getClass().getSimpleName() + "." + key + " == null");
                     }
@@ -276,7 +289,7 @@ public abstract class AbstractConfig implements Serializable {
                     if (parameter != null && parameter.key() != null && parameter.key().length() > 0) {
                         key = parameter.key();
                     } else {
-                        int i = name.startsWith("get") ? 3 : 2;
+                        int i = name.startsWith("get") ? 3 : 2;/**@c 判定get或is方法 */
                         key = name.substring(i, i + 1).toLowerCase() + name.substring(i + 1);
                     }
                     Object value = method.invoke(config, new Object[0]);
@@ -293,6 +306,7 @@ public abstract class AbstractConfig implements Serializable {
         }
     }
 
+    /**@c 是否是原始的类型 */
     private static boolean isPrimitive(Class<?> type) {
         return type.isPrimitive()
                 || type == String.class
@@ -307,6 +321,7 @@ public abstract class AbstractConfig implements Serializable {
                 || type == Object.class;
     }
 
+    /**@c 将基本类型转换为封装类型 */
     private static Object convertPrimitive(Class<?> type, String value) {
         if (type == char.class || type == Character.class) {
             return value.length() > 0 ? value.charAt(0) : '\0';
@@ -396,6 +411,7 @@ public abstract class AbstractConfig implements Serializable {
         }
     }
 
+    /**@ 检查长度以及正则表达式 只能以数字、字母、中划线、下划线、点号 */
     protected static void checkProperty(String property, String value, int maxlength, Pattern pattern) {
         if (value == null || value.length() == 0) {
             return;
@@ -411,6 +427,7 @@ public abstract class AbstractConfig implements Serializable {
         }
     }
 
+    /**@ 排除字段，影响哪些操作？解：appendAttributes等进行注解参数判断 */
     @Parameter(excluded = true)
     public String getId() {
         return id;
@@ -420,6 +437,7 @@ public abstract class AbstractConfig implements Serializable {
         this.id = id;
     }
 
+    /**@c 添加注解 利用反射机制 解析注解内容*/
     protected void appendAnnotation(Class<?> annotationClass, Object annotation) {
         Method[] methods = annotationClass.getMethods();
         for (Method method : methods) {

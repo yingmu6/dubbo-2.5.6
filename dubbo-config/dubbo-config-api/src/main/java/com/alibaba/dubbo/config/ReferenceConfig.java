@@ -56,7 +56,7 @@ import java.util.Properties;
  * @author william.liangf
  * @export
  */
-public class ReferenceConfig<T> extends AbstractReferenceConfig {
+public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引用配置 核心配置 <dubbo:reference />*/
 
     private static final long serialVersionUID = -5864351140409987595L;
 
@@ -109,13 +109,13 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     public ReferenceConfig(Reference reference) {
         appendAnnotation(Reference.class, reference);
     }
-
+    //Implicit隐式
     private static void checkAndConvertImplicitConfig(MethodConfig method, Map<String, String> map, Map<Object, Object> attributes) {
         //check config conflict
         if (Boolean.FALSE.equals(method.isReturn()) && (method.getOnreturn() != null || method.getOnthrow() != null)) {
             throw new IllegalStateException("method config error : return attribute must be set true when onreturn or onthrow has been setted.");
         }
-        //convert onreturn methodName to Method
+        //convert onreturn methodName to Method  //TODO 待理解
         String onReturnMethodKey = StaticContext.getKey(map, method.getName(), Constants.ON_RETURN_METHOD_KEY);
         Object onReturnMethod = attributes.get(onReturnMethodKey);
         if (onReturnMethod != null && onReturnMethod instanceof String) {

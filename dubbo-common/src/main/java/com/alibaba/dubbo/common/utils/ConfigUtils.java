@@ -40,7 +40,7 @@ public class ConfigUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigUtils.class);
     private static Pattern VARIABLE_PATTERN = Pattern.compile(
-            "\\$\\s*\\{?\\s*([\\._0-9a-zA-Z]+)\\s*\\}?");
+            "\\$\\s*\\{?\\s*([\\._0-9a-zA-Z]+)\\s*\\}?");  /**@c \s匹配空白，\S匹配非空白 */
     private static volatile Properties PROPERTIES;
     private static int PID = -1;
 
@@ -121,6 +121,7 @@ public class ConfigUtils {
         return names;
     }
 
+    /**@ 替换属性值 */
     public static String replaceProperty(String expression, Map<String, String> params) {
         if (expression == null || expression.length() == 0 || expression.indexOf('$') < 0) {
             return expression;
@@ -177,12 +178,13 @@ public class ConfigUtils {
         return getProperty(key, null);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"}) /**@c 从System获取指定的值，如果不存在使用默认值 */
     public static String getProperty(String key, String defaultValue) {
         String value = System.getProperty(key);
         if (value != null && value.length() > 0) {
             return value;
         }
+        /**@c Properties继承了HashTable 加了synchronized锁，线程安全的 */
         Properties properties = getProperties();
         return replaceProperty(properties.getProperty(key, defaultValue), (Map) properties);
     }
@@ -209,7 +211,7 @@ public class ConfigUtils {
      */
     public static Properties loadProperties(String fileName, boolean allowMultiFile, boolean optional) {
         Properties properties = new Properties();
-        if (fileName.startsWith("/")) {
+        if (fileName.startsWith("/")) {/**@c 本地文件 */
             try {
                 FileInputStream input = new FileInputStream(fileName);
                 try {
@@ -223,7 +225,7 @@ public class ConfigUtils {
             return properties;
         }
 
-        List<java.net.URL> list = new ArrayList<java.net.URL>();
+        List<java.net.URL> list = new ArrayList<java.net.URL>();/**@c 远程文件URL */
         try {
             Enumeration<java.net.URL> urls = ClassHelper.getClassLoader().getResources(fileName);
             list = new ArrayList<java.net.URL>();
@@ -242,7 +244,7 @@ public class ConfigUtils {
         }
 
         if (!allowMultiFile) {
-            if (list.size() > 1) {
+            if (list.size() > 1) {/**@c 在不允许多文件时，不能超过一个问题 */
                 String errMsg = String.format("only 1 %s file is expected, but %d dubbo.properties files found on class path: %s",
                         fileName, list.size(), list.toString());
                 logger.warn(errMsg);

@@ -139,6 +139,7 @@ public final class ReflectUtils {
                 || Number.class.isAssignableFrom(cls) || Date.class.isAssignableFrom(cls);
     }
 
+    /**@c 返回封装类 */
     public static Class<?> getBoxedClass(Class<?> c) {
         if (c == int.class)
             c = Integer.class;

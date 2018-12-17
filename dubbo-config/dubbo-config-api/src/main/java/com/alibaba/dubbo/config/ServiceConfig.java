@@ -58,18 +58,20 @@ import java.util.concurrent.TimeUnit;
  * @author william.liangf
  * @export
  */
+/**@ 服务提供者配置 */
 public class ServiceConfig<T> extends AbstractServiceConfig {
 
     private static final long serialVersionUID = 3033787999037024738L;
 
     private static final Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
-
+    //TODO 代理工厂需了解
     private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
 
     private static final Map<String, Integer> RANDOM_PORT_MAP = new HashMap<String, Integer>();
 
+    /**@ 单例的线程池 TODO 线程池待了解*/
     private static final ScheduledExecutorService delayExportExecutor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("DubboServiceDelayExporter", true));
-    private final List<URL> urls = new ArrayList<URL>();
+    private final List<URL> urls = new ArrayList<URL>(); /**@ list中的E 表示元素类型，泛型表示 */
     private final List<Exporter<?>> exporters = new ArrayList<Exporter<?>>();
     // 接口类型
     private String interfaceName;
@@ -81,6 +83,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     // 方法配置
     private List<MethodConfig> methods;
     private ProviderConfig provider;
+    /**@ volatile 原子安全 */
     private transient volatile boolean exported;
 
     private transient volatile boolean unexported;
@@ -118,6 +121,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         return providers;
     }
 
+    /**@ 将提供者配置ProviderConfig 转换为 ProtocolConfig 协议配置*/
     @Deprecated
     private static final ProtocolConfig convertProviderToProtocol(ProviderConfig provider) {
         ProtocolConfig protocol = new ProtocolConfig();
@@ -155,7 +159,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (RANDOM_PORT_MAP.containsKey(protocol)) {
             return RANDOM_PORT_MAP.get(protocol);
         }
-        return Integer.MIN_VALUE;
+        return Integer.MIN_VALUE;/** 整数的最小值，负2的31次方 */
     }
 
     private static void putRandomPort(String protocol, Integer port) {
@@ -183,6 +187,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         return unexported;
     }
 
+    /**@c TODO 什么时候加载这个方法 */
     public synchronized void export() {
         if (provider != null) {
             if (export == null) {
@@ -196,7 +201,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             return;
         }
 
-        if (delay != null && delay > 0) {
+        if (delay != null && delay > 0) {//验证暴露
             delayExportExecutor.schedule(new Runnable() {
                 public void run() {
                     doExport();

@@ -68,12 +68,12 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
         try {
             for (Registry registry : getRegistries()) {
                 try {
-                    registry.destroy();
+                    registry.destroy();//销毁节点Node
                 } catch (Throwable e) {
                     LOGGER.error(e.getMessage(), e);
                 }
             }
-            REGISTRIES.clear();
+            REGISTRIES.clear();//移除map中的所有映射
         } finally {
             // 释放锁
             LOCK.unlock();

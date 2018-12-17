@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Inherited
-public @interface Service {
+public @interface Service {/**@ 采用注解配置 */
 
     Class<?> interfaceClass() default void.class;
 

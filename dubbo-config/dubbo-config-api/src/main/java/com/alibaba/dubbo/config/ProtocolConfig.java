@@ -117,7 +117,7 @@ public class ProtocolConfig extends AbstractConfig {
     private String status;
 
     // 是否注册
-    private Boolean register;
+    private Boolean register; /**@ 相对于ProviderConfig 多了register、parameters、wait、name */
 
     // 参数
     private Map<String, String> parameters;
@@ -140,7 +140,7 @@ public class ProtocolConfig extends AbstractConfig {
     }
 
     // TODO: 2017/8/30 to move this method somewhere else
-    public static void destroyAll() {
+    public static void destroyAll() {//销毁注册中心内容、释放协议
         if (!destroyed.compareAndSet(false, true)) {
             return;
         }
@@ -150,7 +150,7 @@ public class ProtocolConfig extends AbstractConfig {
             try {
                 Protocol protocol = loader.getLoadedExtension(protocolName);
                 if (protocol != null) {
-                    protocol.destroy();
+                    protocol.destroy();//释放协议
                 }
             } catch (Throwable t) {
                 logger.warn(t.getMessage(), t);

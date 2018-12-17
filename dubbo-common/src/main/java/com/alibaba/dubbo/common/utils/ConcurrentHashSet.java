@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**@c 自定义安全的set 内部数据结构为ConcurrentHashMap 用key存set值保证唯一性 */
 public class ConcurrentHashSet<E> extends AbstractSet<E> implements Set<E>, java.io.Serializable {
 
     private static final long serialVersionUID = -8672117787651310382L;

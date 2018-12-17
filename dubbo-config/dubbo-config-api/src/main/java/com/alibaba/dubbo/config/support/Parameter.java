@@ -35,9 +35,9 @@ public @interface Parameter {
 
     boolean required() default false;
 
-    boolean excluded() default false;
+    boolean excluded() default false;/**@c 排除 */
 
-    boolean escaped() default false;
+    boolean escaped() default false;/**@c 逃逸 */
 
     boolean attribute() default false;
 

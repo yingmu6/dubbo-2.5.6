@@ -1,15 +1,41 @@
 （相关的知识点：只是为了辅助源码学习的，所以只要针对性学习，并且整体理解、熟悉就好，没必要非要把每个知识点了解）
 （知识点：是要有针对性的，范围要尽量缩小，按点来学习）
+----------细化知识点、日积月累----------
+2018-12-7
+1.@Inherited 注解
+
+2018-12-2
+1.Pattern模式匹配
+2.Dubbo日志输出，重写LoggerFactory
+3.AtomicBoolean中的compareAndSet，expect，update比较规则
+4.Collections.unmodifiableCollection
+5.rt.jar包源码怎么看？Unsafe
+6.Map中values函数以及ConcurrenMap的clear源码
+7.LOCK 中lock与unlock理解以及源码
+8.看是否能登服务器，或者自己自己启动zk，看注册的内容RegistryService
+9.API/SPI, Singleton, ThreadSafe 标签的含义
+10.子类父类getClass()，父类的getClass()是什么？cls.getSimpleName()
+Class获取Modifier（修饰符），Method（方法）、参数等
+11.注解中的@Documented
+12.System.getProperty、setProperty了解
+13.Matcher appendReplacement matcher  find
+14.能看懂正则表达式，明白含义
+15.ReflectiveOperationException 反射异常处理
+16.java 运算符的优先级
+
+
 2018-11-24
 1.ProtocolFilterWrapper了解
+2.Filter 过滤器
 
 2018-11-19
-1.ConcurrentMap、AtomicInteger
+1.ConcurrentMap ok
+AtomicInteger （ok）
 2.Dubbo中Remoting中ExchangeClient、exchange层
-3.key.intern()字符串
+3.key.intern()字符串 ok
 
 2018-11-17
-1.枚举类、注解
+1.枚举类、注解 ok
 2.对象的创建、构造函数、继承、super、this的使用
 3.对象、接口、抽象类、成员变量、final
 4.Netty ExecutorService、NioServerSocketChannelFactory、Executor、ServerBootstrap
