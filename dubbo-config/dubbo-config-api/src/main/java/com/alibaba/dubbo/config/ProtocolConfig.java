@@ -50,7 +50,7 @@ public class ProtocolConfig extends AbstractConfig {
     // 服务端口
     private Integer port;
 
-    // 上下文路径
+    // 上下文路径 TODO 具体形式
     private String contextpath;
 
     // 线程池类型

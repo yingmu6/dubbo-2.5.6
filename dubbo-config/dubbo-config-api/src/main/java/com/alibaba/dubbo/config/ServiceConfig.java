@@ -201,7 +201,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             return;
         }
 
-        if (delay != null && delay > 0) {//验证暴露
+        if (delay != null && delay > 0) {//延迟暴露
             delayExportExecutor.schedule(new Runnable() {
                 public void run() {
                     doExport();
@@ -224,7 +224,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             throw new IllegalStateException("<dubbo:service interface=\"\" /> interface not allow null!");
         }
         checkDefault();
-        if (provider != null) {
+        if (provider != null) {/**@c 设置属性值 */
             if (application == null) {
                 application = provider.getApplication();
             }
@@ -270,7 +270,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 throw new IllegalStateException(e.getMessage(), e);
             }
             checkInterfaceAndMethods(interfaceClass, methods);
-            checkRef();
+            checkRef();/**@c 检查引用ref */
             generic = Boolean.FALSE.toString();
         }
         if (local != null) {
@@ -301,7 +301,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 throw new IllegalStateException("The stub implementation class " + stubClass.getName() + " not implement interface " + interfaceName);
             }
         }
-        checkApplication();
+        checkApplication();/**@c 暴露服务前检查配置 */
         checkRegistry();
         checkProtocol();
         appendProperties(this);
@@ -352,6 +352,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }
     }
 
+    //TODO 暴露URL流程有点复杂，需要仔细分析
     private void doExportUrlsFor1Protocol(ProtocolConfig protocolConfig, List<URL> registryURLs) {
         String name = protocolConfig.getName();
         if (name == null || name.length() == 0) {
@@ -376,6 +377,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         try {
                             Socket socket = new Socket();
                             try {
+                                /**@c 连接到注册中心 */
                                 SocketAddress addr = new InetSocketAddress(registryURL.getHost(), registryURL.getPort());
                                 socket.connect(addr, 1000);
                                 host = socket.getLocalAddress().getHostAddress();
@@ -418,13 +420,13 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (anyhost) {
             map.put(Constants.ANYHOST_KEY, "true");
         }
-        map.put(Constants.SIDE_KEY, Constants.PROVIDER_SIDE);
+        map.put(Constants.SIDE_KEY, Constants.PROVIDER_SIDE);/**@c 提供方*/
         map.put(Constants.DUBBO_VERSION_KEY, Version.getVersion());
         map.put(Constants.TIMESTAMP_KEY, String.valueOf(System.currentTimeMillis()));
         if (ConfigUtils.getPid() > 0) {
             map.put(Constants.PID_KEY, String.valueOf(ConfigUtils.getPid()));
         }
-        appendParameters(map, application);
+        appendParameters(map, application);/**@c 构建暴露的参数 */
         appendParameters(map, module);
         appendParameters(map, provider, Constants.DEFAULT_KEY);
         appendParameters(map, protocolConfig);
@@ -453,7 +455,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                                     if (methodName.equals(method.getName())) {
                                         Class<?>[] argtypes = methods[i].getParameterTypes();
                                         //一个方法中单个callback
-                                        if (argument.getIndex() != -1) {
+                                        if (argument.getIndex() != -1) {/**@c 匹配方法中的参数 是根据index与type 匹配的*/
                                             if (argtypes[argument.getIndex()].getName().equals(argument.getType())) {
                                                 appendParameters(map, argument, method.getName() + "." + argument.getIndex());
                                             } else {
@@ -502,14 +504,14 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 map.put("methods", StringUtils.join(new HashSet<String>(Arrays.asList(methods)), ","));
             }
         }
-        if (!ConfigUtils.isEmpty(token)) {
+        if (!ConfigUtils.isEmpty(token)) {/**@c token生成 */
             if (ConfigUtils.isDefault(token)) {
                 map.put("token", UUID.randomUUID().toString());
             } else {
                 map.put("token", token);
             }
         }
-        if ("injvm".equals(protocolConfig.getName())) {
+        if ("injvm".equals(protocolConfig.getName())) {/**@c 本地服务 */
             protocolConfig.setRegister(false);
             map.put("notify", "false");
         }
@@ -543,7 +545,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         && url.getParameter("register", true)) {
                     for (URL registryURL : registryURLs) {
                         url = url.addParameterIfAbsent("dynamic", registryURL.getParameter("dynamic"));
-                        URL monitorUrl = loadMonitor(registryURL);
+                        URL monitorUrl = loadMonitor(registryURL);/**@c 加载监控 */
                         if (monitorUrl != null) {
                             url = url.addParameterAndEncoded(Constants.MONITOR_KEY, monitorUrl.toFullString());
                         }

@@ -28,7 +28,7 @@ public class ArgumentConfig implements Serializable {
     private static final long serialVersionUID = -2165482463925213595L;
 
     //arugment index -1 represents not set
-    private Integer index = -1;
+    private Integer index = -1;/**@c 参数配置 包含参数位置索引和对应的类型 */
 
     //argument type
     private String type;

@@ -285,7 +285,7 @@ public class ConfigUtils {
         return properties;
     }
 
-    public static int getPid() {
+    public static int getPid() {/**@获取进程pid */
         if (PID < 0) {
             try {
                 RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
