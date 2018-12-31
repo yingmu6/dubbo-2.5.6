@@ -64,7 +64,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         super(url);
         int retryPeriod = url.getParameter(Constants.REGISTRY_RETRY_PERIOD_KEY, Constants.DEFAULT_REGISTRY_RETRY_PERIOD);
         this.retryFuture = retryExecutor.scheduleWithFixedDelay(new Runnable() {
-            public void run() {
+            public void run() {/**@c 失败后重试，怎样设置重试次数 ：无限次重试 */
                 // 检测并连接注册中心
                 try {
                     retry();
@@ -108,7 +108,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         listeners.add(listener);
     }
 
-    private void removeFailedSubscribed(URL url, NotifyListener listener) {
+    private void removeFailedSubscribed(URL url, NotifyListener listener) {/**@c  */
         Set<NotifyListener> listeners = failedSubscribed.get(url);
         if (listeners != null) {
             listeners.remove(listener);
@@ -133,7 +133,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         failedUnregistered.remove(url);
         try {
             // 向服务器端发送注册请求
-            doRegister(url);
+            doRegister(url);/**@c 由子类实现注册 */
         } catch (Exception e) {
             Throwable t = e;
 
@@ -142,7 +142,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
                     && url.getParameter(Constants.CHECK_KEY, true)
                     && !Constants.CONSUMER_PROTOCOL.equals(url.getProtocol());
             boolean skipFailback = t instanceof SkipFailbackWrapperException;
-            if (check || skipFailback) {
+            if (check || skipFailback) {/**@c 注册失败*/
                 if (skipFailback) {
                     t = t.getCause();
                 }
@@ -203,7 +203,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
             Throwable t = e;
 
             List<URL> urls = getCacheUrls(url);
-            if (urls != null && urls.size() > 0) {
+            if (urls != null && urls.size() > 0) {/**@c 若从本地缓存中有url，则表明远程订阅失败 */
                 notify(url, listener, urls);
                 logger.error("Failed to subscribe " + url + ", Using cached list: " + urls + " from cache file: " + getUrl().getParameter(Constants.FILE_KEY, System.getProperty("user.home") + "/dubbo-registry-" + url.getHost() + ".cache") + ", cause: " + t.getMessage(), t);
             } else {
@@ -216,7 +216,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
                         t = t.getCause();
                     }
                     throw new IllegalStateException("Failed to subscribe " + url + ", cause: " + t.getMessage(), t);
-                } else {
+                } else {/**@c 只是打错误日志，没有抛出异常，终止运行 */
                     logger.error("Failed to subscribe " + url + ", waiting for retry, cause: " + t.getMessage(), t);
                 }
             }
@@ -289,7 +289,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
     }
 
     @Override
-    protected void recover() throws Exception {
+    protected void recover() throws Exception {/**@c recover恢复 */
         // register
         Set<URL> recoverRegistered = new HashSet<URL>(getRegistered());
         if (!recoverRegistered.isEmpty()) {
@@ -316,7 +316,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
     }
 
     // 重试失败的动作
-    protected void retry() {
+    protected void retry() {/**@c 重试失败的集合 注册、取消注册、订阅、取消订阅*/
         if (!failedRegistered.isEmpty()) {
             Set<URL> failed = new HashSet<URL>(failedRegistered);
             if (failed.size() > 0) {
@@ -326,7 +326,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
                 try {
                     for (URL url : failed) {
                         try {
-                            doRegister(url);
+                            doRegister(url);/**@c 重试成功后，从失败集合中去除URL */
                             failedRegistered.remove(url);
                         } catch (Throwable t) { // 忽略所有异常，等待下次重试
                             logger.warn("Failed to retry register " + failed + ", waiting for again, cause: " + t.getMessage(), t);
@@ -374,7 +374,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
                         Set<NotifyListener> listeners = entry.getValue();
                         for (NotifyListener listener : listeners) {
                             try {
-                                doSubscribe(url, listener);
+                                doSubscribe(url, listener);/**@c 重试成功后，移除监听器 */
                                 listeners.remove(listener);
                             } catch (Throwable t) { // 忽略所有异常，等待下次重试
                                 logger.warn("Failed to retry subscribe " + failed + ", waiting for again, cause: " + t.getMessage(), t);

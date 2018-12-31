@@ -79,7 +79,7 @@ public class RedisRegistry extends FailbackRegistry {
 
     private boolean replicate;
 
-    public RedisRegistry(URL url) {
+    public RedisRegistry(URL url) {/**@c */
         super(url);
         if (url.isAnyHost()) {
             throw new IllegalStateException("registry address == null");
@@ -196,7 +196,7 @@ public class RedisRegistry extends FailbackRegistry {
                         URL url = URL.valueOf(entry.getKey());
                         if (url.getParameter(Constants.DYNAMIC_KEY, true)) {
                             long expire = Long.parseLong(entry.getValue());
-                            if (expire < now) {
+                            if (expire < now) {/**@c 过期判断 */
                                 jedis.hdel(key, entry.getKey());
                                 delete = true;
                                 if (logger.isWarnEnabled()) {
@@ -231,10 +231,10 @@ public class RedisRegistry extends FailbackRegistry {
     }
 
     @Override
-    public void destroy() {
+    public void destroy() {/**@c 取消定时任务、停止通知者、销毁连接池 */
         super.destroy();
         try {
-            expireFuture.cancel(true);
+            expireFuture.cancel(true);/**@c */
         } catch (Throwable t) {
             logger.warn(t.getMessage(), t);
         }
@@ -267,7 +267,7 @@ public class RedisRegistry extends FailbackRegistry {
             try {
                 Jedis jedis = jedisPool.getResource();
                 try {
-                    jedis.hset(key, value, expire);
+                    jedis.hset(key, value, expire);/**@c 键值对把参数存起来 */
                     jedis.publish(key, Constants.REGISTER);
                     success = true;
                     if (!replicate) {
@@ -300,7 +300,7 @@ public class RedisRegistry extends FailbackRegistry {
             try {
                 Jedis jedis = jedisPool.getResource();
                 try {
-                    jedis.hdel(key, value);
+                    jedis.hdel(key, value);/**@c 删除对应的键 */
                     jedis.publish(key, Constants.UNREGISTER);
                     success = true;
                     if (!replicate) {
@@ -359,7 +359,7 @@ public class RedisRegistry extends FailbackRegistry {
                                 doNotify(jedis, sk, url, Arrays.asList(listener));
                             }
                         }
-                    } else {
+                    } else {/**@c */
                         doNotify(jedis, jedis.keys(service + Constants.PATH_SEPARATOR + Constants.ANY_VALUE), url, Arrays.asList(listener));
                     }
                     success = true;
@@ -384,7 +384,7 @@ public class RedisRegistry extends FailbackRegistry {
     public void doUnsubscribe(URL url, NotifyListener listener) {
     }
 
-    private void doNotify(Jedis jedis, String key) {
+    private void doNotify(Jedis jedis, String key) {/**@c 通知 */
         for (Map.Entry<URL, Set<NotifyListener>> entry : new HashMap<URL, Set<NotifyListener>>(getSubscribed()).entrySet()) {
             doNotify(jedis, Arrays.asList(key), entry.getKey(), new HashSet<NotifyListener>(entry.getValue()));
         }
@@ -399,7 +399,7 @@ public class RedisRegistry extends FailbackRegistry {
         List<URL> result = new ArrayList<URL>();
         List<String> categories = Arrays.asList(url.getParameter(Constants.CATEGORY_KEY, new String[0]));
         String consumerService = url.getServiceInterface();
-        for (String key : keys) {
+        for (String key : keys) {/**@c TODO */
             if (!Constants.ANY_VALUE.equals(consumerService)) {
                 String prvoiderService = toServiceName(key);
                 if (!prvoiderService.equals(consumerService)) {
@@ -521,7 +521,7 @@ public class RedisRegistry extends FailbackRegistry {
 
     }
 
-    private class Notifier extends Thread {
+    private class Notifier extends Thread {/**@c 通知线程 */
 
         private final String service;
         private final AtomicInteger connectSkip = new AtomicInteger();
@@ -582,7 +582,7 @@ public class RedisRegistry extends FailbackRegistry {
                                                     }
                                                 }
                                                 resetSkip();
-                                            }
+                                            }/**@c TODO redis发布订阅模式待了解 */
                                             jedis.psubscribe(new NotifySub(jedisPool), service); // 阻塞
                                         } else {
                                             if (!first) {

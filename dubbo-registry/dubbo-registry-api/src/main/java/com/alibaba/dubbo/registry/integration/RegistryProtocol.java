@@ -111,6 +111,7 @@ public class RegistryProtocol implements Protocol {
         return overrideListeners;
     }
 
+    /**@c 暴露注册协议 */
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
         //export invoker
         final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker);
@@ -153,7 +154,7 @@ public class RegistryProtocol implements Protocol {
 
     @SuppressWarnings("unchecked")
     private <T> ExporterChangeableWrapper<T> doLocalExport(final Invoker<T> originInvoker) {
-        String key = getCacheKey(originInvoker);
+        String key = getCacheKey(originInvoker);/**@c 本地暴露 url字符串 */
         ExporterChangeableWrapper<T> exporter = (ExporterChangeableWrapper<T>) bounds.get(key);
         if (exporter == null) {
             synchronized (bounds) {
@@ -297,7 +298,7 @@ public class RegistryProtocol implements Protocol {
         bounds.clear();
     }
 
-    public static class InvokerDelegete<T> extends InvokerWrapper<T> {
+    public static class InvokerDelegete<T> extends InvokerWrapper<T> {/**@c TODO 此静态内部类的用途*/
         private final Invoker<T> invoker;
 
         /**
@@ -400,11 +401,11 @@ public class RegistryProtocol implements Protocol {
 
     /**
      * exporter代理,建立返回的exporter与protocol export出的exporter的对应关系，在override时可以进行关系修改.
-     *
+     * TODO 对应关系是怎样体现的?
      * @param <T>
      * @author chao.liuc
      */
-    private class ExporterChangeableWrapper<T> implements Exporter<T> {
+    private class ExporterChangeableWrapper<T> implements Exporter<T> {/**@c exporter代理类 */
 
         private final Invoker<T> originInvoker;
         private Exporter<T> exporter;

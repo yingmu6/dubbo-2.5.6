@@ -69,7 +69,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
     private static final Map<String, String> legacyProperties = new HashMap<String, String>();
     private static final String[] SUFFIXS = new String[]{"Config", "Bean"};
 
-    static {//legacy:遗赠，遗产，TODO 这些参数的用途？
+    static {//legacy:遗赠，遗产， 这些参数的用途？解：替换特定的属性值
         legacyProperties.put("dubbo.protocol.name", "dubbo.service.protocol");
         legacyProperties.put("dubbo.protocol.host", "dubbo.service.server.host");
         legacyProperties.put("dubbo.protocol.port", "dubbo.service.server.port");
@@ -106,24 +106,25 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         return value;
     }
 
-    /**@c TODO 此方法是设值还是取值 */
-    protected static void appendProperties(AbstractConfig config) {
+    /**@c 为此方法是设值 但API已经可以设置，为啥还用这个 解：可以为对象所有属性设值 */
+    protected static void appendProperties(AbstractConfig config) {/**@c 向上转型，依次设置属性的值*/
         if (config == null) {
             return;
         }
-        String prefix = "dubbo." + getTagName(config.getClass()) + ".";
+        String prefix = "dubbo." + getTagName(config.getClass()) + ".";/**@c 如：dubbo.provider. */
         Method[] methods = config.getClass().getMethods();
         for (Method method : methods) {
             try {
-                /**@c 处理方法名，获取配置值 */
+                /**@c 处理方法名，获取配置值 找到set方法进行设值 */
                 String name = method.getName();
                 if (name.length() > 3 && name.startsWith("set") && Modifier.isPublic(method.getModifiers())
                         && method.getParameterTypes().length == 1 && isPrimitive(method.getParameterTypes()[0])) {
                     /**@c 将方法名set后的字母小写，然后后面的由大写字母的地方用"-"分隔，并转换为小写
                      * 将驼峰式的写法改为用分隔符分开的形式
+                     * 去掉set，获取到属性名，如setDefault变为default
                      */
                     String property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), "-");
-
+                    /**@c 先从系统中获取属性值，若没有，则调用get或is方法获取值 */
                     String value = null;
                     if (config.getId() != null && config.getId().length() > 0) {
                         String pn = prefix + config.getId() + "." + property;
@@ -133,7 +134,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                         }
                     }
                     if (value == null || value.length() == 0) {
-                        String pn = prefix + property;
+                        String pn = prefix + property;/**@c 如：dubbo.provider.default */
                         value = System.getProperty(pn);
                         if (!StringUtils.isBlank(value)) {
                             logger.info("Use System Property " + pn + " to config dubbo");
@@ -142,7 +143,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                     if (value == null || value.length() == 0) {
                         Method getter;
                         try {
-                            /**@c 从System Property获取config的配置，如果没有，调用指定方法去获取 */
+                            /**@c 判断是否有get+属性名的方法，如果没有，寻找是否有is+属性名的方法 */
                             getter = config.getClass().getMethod("get" + name.substring(3), new Class<?>[0]);
                         } catch (NoSuchMethodException e) {
                             try {
@@ -151,15 +152,15 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                                 getter = null;
                             }
                         }
-                        if (getter != null) {
-                            if (getter.invoke(config, new Object[0]) == null) {
+                        if (getter != null) {/**@c 执行method中方法invoke */
+                            if (getter.invoke(config, new Object[0]) == null) {/**@c invoke(方法所属对象，参数列表) */
                                 if (config.getId() != null && config.getId().length() > 0) {
                                     value = ConfigUtils.getProperty(prefix + config.getId() + "." + property);
                                 }
                                 if (value == null || value.length() == 0) {
                                     value = ConfigUtils.getProperty(prefix + property);
                                 }
-                                if (value == null || value.length() == 0) {
+                                if (value == null || value.length() == 0) {/**@c 替换特定的属性 */
                                     String legacyKey = legacyProperties.get(prefix + property);
                                     if (legacyKey != null && legacyKey.length() > 0) {
                                         value = convertLegacyValue(legacyKey, ConfigUtils.getProperty(legacyKey));
@@ -169,7 +170,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                             }
                         }
                     }
-                    if (value != null && value.length() > 0) {
+                    if (value != null && value.length() > 0) {/**@c 执行方法调用 */
                         method.invoke(config, new Object[]{convertPrimitive(method.getParameterTypes()[0], value)});
                     }
                 }
@@ -180,9 +181,9 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
     }
 
     private static String getTagName(Class<?> cls) {
-        String tag = cls.getSimpleName();
+        String tag = cls.getSimpleName();/**@c 如com.alibaba.dubbo.config.ProviderConfig的simpleName为ProviderConfig */
         for (String suffix : SUFFIXS) {/**@c suffix后缀，将后缀名Config、Bean去掉，就是标签的名称 */
-            if (tag.endsWith(suffix)) {
+            if (tag.endsWith(suffix)) {/**@c 去掉config或bean，如ProviderConfig处理后为Provider */
                 tag = tag.substring(0, tag.length() - suffix.length());
                 break;
             }
@@ -477,7 +478,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
     }
 
     @Override
-    public String toString() {
+    public String toString() {/**@c 转换为String */
         try {
             StringBuilder buf = new StringBuilder();
             buf.append("<dubbo:");

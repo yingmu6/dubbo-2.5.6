@@ -41,7 +41,7 @@ public class SpringExtensionFactory implements ExtensionFactory {
 
     @SuppressWarnings("unchecked")
     public <T> T getExtension(Class<T> type, String name) {
-        for (ApplicationContext context : contexts) {
+        for (ApplicationContext context : contexts) {/**@c */
             if (context.containsBean(name)) {
                 Object bean = context.getBean(name);
                 if (type.isInstance(bean)) {

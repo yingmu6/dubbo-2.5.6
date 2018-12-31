@@ -94,7 +94,7 @@ public class MulticastRegistry extends FailbackRegistry {
                     DatagramPacket recv = new DatagramPacket(buf, buf.length);
                     while (!mutilcastSocket.isClosed()) {
                         try {
-                            mutilcastSocket.receive(recv);
+                            mutilcastSocket.receive(recv);/**@c TODO 多播使用 */
                             String msg = new String(recv.getData()).trim();
                             int i = msg.indexOf('\n');
                             if (i > 0) {
@@ -131,7 +131,7 @@ public class MulticastRegistry extends FailbackRegistry {
         }
     }
 
-    private static boolean isMulticastAddress(String ip) {
+    private static boolean isMulticastAddress(String ip) {/**@c 判断是否是多播地址 */
         int i = ip.indexOf('.');
         if (i > 0) {
             String prefix = ip.substring(0, i);
@@ -144,7 +144,7 @@ public class MulticastRegistry extends FailbackRegistry {
     }
 
     private void clean() {
-        if (admin) {
+        if (admin) {/**@c 管理员可以取消注册 */
             for (Set<URL> providers : new HashSet<Set<URL>>(received.values())) {
                 for (URL url : new HashSet<URL>(providers)) {
                     if (isExpired(url)) {
@@ -182,7 +182,7 @@ public class MulticastRegistry extends FailbackRegistry {
             } finally {
                 if (socket2 != null) {
                     try {
-                        socket2.close();
+                        socket2.close();/**@c 对过期的URL，关闭socket */
                     } catch (Throwable e2) {
                     }
                 }
@@ -211,7 +211,7 @@ public class MulticastRegistry extends FailbackRegistry {
         } else if (msg.startsWith(Constants.SUBSCRIBE)) {
             URL url = URL.valueOf(msg.substring(Constants.SUBSCRIBE.length()).trim());
             Set<URL> urls = getRegistered();
-            if (urls != null && urls.size() > 0) {
+            if (urls != null && urls.size() > 0) {/**@c TODO 网络知识待了解 */
                 for (URL u : urls) {
                     if (UrlUtils.isMatch(url, u)) {
                         String host = remoteAddress != null && remoteAddress.getAddress() != null
@@ -236,13 +236,13 @@ public class MulticastRegistry extends FailbackRegistry {
         try {
             byte[] data = (msg + "\n").getBytes();
             DatagramPacket hi = new DatagramPacket(data, data.length, mutilcastAddress, mutilcastPort);
-            mutilcastSocket.send(hi);
+            mutilcastSocket.send(hi);/**@c */
         } catch (Exception e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
-    private void unicast(String msg, String host) {
+    private void unicast(String msg, String host) {/**@c 单播 */
         if (logger.isInfoEnabled()) {
             logger.info("Send unicast message: " + msg + " to " + host + ":" + mutilcastPort);
         }

@@ -48,7 +48,7 @@ public abstract class AbstractConfigurator implements Configurator {
         return configuratorUrl;
     }
 
-    public URL configure(URL url) {
+    public URL configure(URL url) {/**@c TODO */
         if (configuratorUrl == null || configuratorUrl.getHost() == null
                 || url == null || url.getHost() == null) {
             return url;
@@ -69,7 +69,7 @@ public abstract class AbstractConfigurator implements Configurator {
         return url;
     }
 
-    private URL configureIfMatch(String host, URL url) {
+    private URL configureIfMatch(String host, URL url) {/**@c TODO */
         if (Constants.ANYHOST_VALUE.equals(configuratorUrl.getHost()) || host.equals(configuratorUrl.getHost())) {
             String configApplication = configuratorUrl.getParameter(Constants.APPLICATION_KEY,
                     configuratorUrl.getUsername());

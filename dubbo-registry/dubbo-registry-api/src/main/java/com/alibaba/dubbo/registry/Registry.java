@@ -19,11 +19,11 @@ import com.alibaba.dubbo.common.Node;
 import com.alibaba.dubbo.common.URL;
 
 /**
- * Registry. (SPI, Prototype, ThreadSafe)
+ * Registry（注册）. (SPI, Prototype, ThreadSafe)
  *
  * @author william.liangf
  * @see com.alibaba.dubbo.registry.RegistryFactory#getRegistry(URL)
  * @see com.alibaba.dubbo.registry.support.AbstractRegistry
  */
-public interface Registry extends Node, RegistryService {
+public interface Registry extends Node, RegistryService {/**@c 是一个节点，并且继承注册服务 */
 }

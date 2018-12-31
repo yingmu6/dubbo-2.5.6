@@ -26,7 +26,7 @@ import java.util.List;
  * @see com.alibaba.dubbo.registry.Registry
  * @see com.alibaba.dubbo.registry.RegistryFactory#getRegistry(URL)
  */
-public interface RegistryService {
+public interface RegistryService {/**@c */
      //注册是针对提供者
     /**
      * 注册数据，比如：提供者地址，消费者地址，路由规则，覆盖规则，等数据。

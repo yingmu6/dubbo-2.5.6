@@ -60,7 +60,7 @@ import java.util.regex.Pattern;
  * @author william.liangf
  * @export
  */
-/**@c TODO 了解dubbo对xml的解析 */
+/**@c dubbo对xml的解析 自定义解析 */
 public class DubboBeanDefinitionParser implements BeanDefinitionParser {
 
     private static final Logger logger = LoggerFactory.getLogger(DubboBeanDefinitionParser.class);
@@ -93,7 +93,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
             }
             id = generatedBeanName;
             int counter = 2;
-            while (parserContext.getRegistry().containsBeanDefinition(id)) {
+            while (parserContext.getRegistry().containsBeanDefinition(id)) {/**@c TODO 统计数字用途 */
                 id = generatedBeanName + (counter++);
             }
         }
@@ -104,7 +104,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
             parserContext.getRegistry().registerBeanDefinition(id, beanDefinition);
             beanDefinition.getPropertyValues().addPropertyValue("id", id);
         }
-        if (ProtocolConfig.class.equals(beanClass)) {
+        if (ProtocolConfig.class.equals(beanClass)) {/**@c TODO 调用spring API 生成自定义bean */
             for (String name : parserContext.getRegistry().getBeanDefinitionNames()) {
                 BeanDefinition definition = parserContext.getRegistry().getBeanDefinition(name);
                 PropertyValue property = definition.getPropertyValues().getPropertyValue("protocol");
@@ -137,6 +137,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                     && Modifier.isPublic(setter.getModifiers())
                     && setter.getParameterTypes().length == 1) {
                 Class<?> type = setter.getParameterTypes()[0];
+                /**@c 解析属性名称 */
                 String property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), "-");
                 props.add(property);
                 Method getter = null;
@@ -174,7 +175,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                                 parseMultiRef("providers", value, beanDefinition, parserContext);
                             } else if ("protocol".equals(property) && value.indexOf(',') != -1) {
                                 parseMultiRef("protocols", value, beanDefinition, parserContext);
-                            } else {
+                            } else {/**@c TODO goto */
                                 Object reference;
                                 if (isPrimitive(type)) {
                                     if ("async".equals(property) && "false".equals(value)
@@ -282,7 +283,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
 
     @SuppressWarnings("unchecked")
     private static void parseMultiRef(String property, String value, RootBeanDefinition beanDefinition,
-                                      ParserContext parserContext) {
+                                      ParserContext parserContext) {/**@c TODO 解析多引用 ？*/
         String[] values = value.split("\\s*[,]+\\s*");
         ManagedList list = null;
         for (int i = 0; i < values.length; i++) {
@@ -298,7 +299,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
     }
 
     private static void parseNested(Element element, ParserContext parserContext, Class<?> beanClass, boolean required, String tag, String property, String ref, BeanDefinition beanDefinition) {
-        NodeList nodeList = element.getChildNodes();
+        NodeList nodeList = element.getChildNodes();/**@c 解析嵌套元素 */
         if (nodeList != null && nodeList.getLength() > 0) {
             boolean first = true;
             for (int i = 0; i < nodeList.getLength(); i++) {
@@ -350,7 +351,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
 
     @SuppressWarnings("unchecked")
     private static ManagedMap parseParameters(NodeList nodeList, RootBeanDefinition beanDefinition) {
-        if (nodeList != null && nodeList.getLength() > 0) {
+        if (nodeList != null && nodeList.getLength() > 0) {/**@c 解析<dubbo:parameter> */
             ManagedMap parameters = null;
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
@@ -377,7 +378,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
 
     @SuppressWarnings("unchecked")
     private static void parseMethods(String id, NodeList nodeList, RootBeanDefinition beanDefinition,
-                                     ParserContext parserContext) {
+                                     ParserContext parserContext) {/**@c 解析<dubbo:method> */
         if (nodeList != null && nodeList.getLength() > 0) {
             ManagedList methods = null;
             for (int i = 0; i < nodeList.getLength(); i++) {
@@ -409,7 +410,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
 
     @SuppressWarnings("unchecked")
     private static void parseArguments(String id, NodeList nodeList, RootBeanDefinition beanDefinition,
-                                       ParserContext parserContext) {
+                                       ParserContext parserContext) {/**@c 解析<dubbo:argument> */
         if (nodeList != null && nodeList.getLength() > 0) {
             ManagedList arguments = null;
             for (int i = 0; i < nodeList.getLength(); i++) {

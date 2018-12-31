@@ -16,17 +16,17 @@ import java.util.List;
 
 public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildListener> {
 
-    private final ZkClient client;
+    private final ZkClient client;/**@c 封装zk的client */
 
     private volatile KeeperState state = KeeperState.SyncConnected;
 
-    public ZkclientZookeeperClient(URL url) {
+    public ZkclientZookeeperClient(URL url) {/**@c 创建zk客户端，并且监听状态改变 */
         super(url);
         client = new ZkClient(url.getBackupAddress());
         client.subscribeStateChanges(new IZkStateListener() {
             public void handleStateChanged(KeeperState state) throws Exception {
                 ZkclientZookeeperClient.this.state = state;
-                if (state == KeeperState.Disconnected) {
+                if (state == KeeperState.Disconnected) {/**@c 状态转换，将zk中的状态转换为dubbo的状态 */
                     stateChanged(StateListener.DISCONNECTED);
                 } else if (state == KeeperState.SyncConnected) {
                     stateChanged(StateListener.CONNECTED);

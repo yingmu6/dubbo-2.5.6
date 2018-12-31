@@ -46,7 +46,7 @@ public class SubscribedPageHandler implements PageHandler {
                 select.append(" &gt; " + registry.getUrl().getAddress());
             } else {
                 select.append(" &gt; <select onchange=\"window.location.href='subscribed.html?registry=' + this.value;\">");
-                for (Registry r : registries) {
+                for (Registry r : registries) {/**@c 拼接HTML */
                     String sp = r.getUrl().getAddress();
                     select.append("<option value=\">");
                     select.append(sp);

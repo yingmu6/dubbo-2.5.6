@@ -31,7 +31,7 @@ import java.util.Collection;
 @Activate
 public class RegistryStatusChecker implements StatusChecker {
 
-    public Status check() {
+    public Status check() {/**@c */
         Collection<Registry> regsitries = AbstractRegistryFactory.getRegistries();
         if (regsitries == null || regsitries.size() == 0) {
             return new Status(Status.Level.UNKNOWN);

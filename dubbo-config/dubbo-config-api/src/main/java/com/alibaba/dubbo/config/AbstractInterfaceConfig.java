@@ -135,13 +135,13 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                 application = new ApplicationConfig();
             }
         }
-        if (application == null) {
+        if (application == null) {/**@c Application 应用配置不能为空 */
             throw new IllegalStateException(
                     "No such application config! Please add <dubbo:application name=\"...\" /> to your spring config.");
         }
         appendProperties(application);
 
-        String wait = ConfigUtils.getProperty(Constants.SHUTDOWN_WAIT_KEY);
+        String wait = ConfigUtils.getProperty(Constants.SHUTDOWN_WAIT_KEY);/**@ 优雅停机的等待时间 */
         if (wait != null && wait.trim().length() > 0) {
             System.setProperty(Constants.SHUTDOWN_WAIT_KEY, wait.trim());
         } else {
@@ -249,7 +249,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
             throw new IllegalStateException("The interface class " + interfaceClass + " is not a interface!");
         }
         // 检查方法是否在接口中存在
-        if (methods != null && methods.size() > 0) {/**@c 将MethodConfig中的方法名与反射机制中Method获取的方法名比较  */
+        if (methods != null && methods.size() > 0) {/**@c 将ServiceConfig中声明的方法与接口中实际的方法比较  */
             for (MethodConfig methodBean : methods) {
                 String methodName = methodBean.getName();
                 if (methodName == null || methodName.length() == 0) {
@@ -273,11 +273,11 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     protected void checkStubAndMock(Class<?> interfaceClass) {
         if (ConfigUtils.isNotEmpty(local)) {
             Class<?> localClass = ConfigUtils.isDefault(local) ? ReflectUtils.forName(interfaceClass.getName() + "Local") : ReflectUtils.forName(local);
-            if (!interfaceClass.isAssignableFrom(localClass)) {
+            if (!interfaceClass.isAssignableFrom(localClass)) {/**@c 判断一个类Class1和另一个类Class2是否相同或是另一个类的超类或接口 */
                 throw new IllegalStateException("The local implementation class " + localClass.getName() + " not implement interface " + interfaceClass.getName());
             }
             try {
-                ReflectUtils.findConstructor(localClass, interfaceClass);
+                ReflectUtils.findConstructor(localClass, interfaceClass);/**@c 判断是否存在构造方法 */
             } catch (NoSuchMethodException e) {
                 throw new IllegalStateException("No such constructor \"public " + localClass.getSimpleName() + "(" + interfaceClass.getName() + ")\" in local implementation class " + localClass.getName());
             }
@@ -297,7 +297,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
             if (mock.startsWith(Constants.RETURN_PREFIX)) {
                 String value = mock.substring(Constants.RETURN_PREFIX.length());
                 try {
-                    MockInvoker.parseMockValue(value);
+                    MockInvoker.parseMockValue(value);/**@c TODO mock值都有哪些形式*/
                 } catch (Exception e) {
                     throw new IllegalStateException("Illegal mock json value in <dubbo:service ... mock=\"" + mock + "\" />");
                 }

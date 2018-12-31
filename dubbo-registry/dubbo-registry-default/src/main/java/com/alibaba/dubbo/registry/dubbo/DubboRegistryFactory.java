@@ -39,7 +39,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public class DubboRegistryFactory extends AbstractRegistryFactory {
+public class DubboRegistryFactory extends AbstractRegistryFactory {/**@c */
 
     private Protocol protocol;
     private ProxyFactory proxyFactory;

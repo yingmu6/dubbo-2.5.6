@@ -30,7 +30,7 @@ import com.alibaba.dubbo.rpc.Invocation;
  * @see com.alibaba.dubbo.rpc.cluster.Directory#list(Invocation)
  */
 @SPI
-public interface RouterFactory {
+public interface RouterFactory {/**@c 路由工厂 */
 
     /**
      * Create router.

@@ -352,6 +352,7 @@ public class UrlUtils {
         }
     }
 
+    /**@c 比较两个URL是否相等，interfaceName、group、version、classifier 比较*/
     public static boolean isMatch(URL consumerUrl, URL providerUrl) {
         String consumerInterface = consumerUrl.getServiceInterface();
         String providerInterface = providerUrl.getServiceInterface();

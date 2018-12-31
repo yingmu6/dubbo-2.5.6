@@ -46,7 +46,7 @@ public class RegistriesPageHandler implements PageHandler {
                 String server = registry.getUrl().getAddress();
                 List<String> row = new ArrayList<String>();
                 row.add(NetUtils.getHostName(server) + "/" + server);
-                if (registry.isAvailable()) {
+                if (registry.isAvailable()) {/**@c 判断注册节点是否有效 */
                     row.add("<font color=\"green\">Connected</font>");
                 } else {
                     row.add("<font color=\"red\">Disconnected</font>");

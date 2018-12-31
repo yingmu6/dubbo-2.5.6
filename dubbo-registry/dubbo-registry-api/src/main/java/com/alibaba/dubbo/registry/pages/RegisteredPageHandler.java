@@ -32,7 +32,7 @@ import java.util.Set;
  *
  * @author william.liangf
  */
-public class RegisteredPageHandler implements PageHandler {
+public class RegisteredPageHandler implements PageHandler {/**@c 管理页面注册逻辑处理 */
 
     public Page handle(URL url) {
         String registryAddress = url.getParameter("registry", "");

@@ -92,7 +92,7 @@ public class DubboRegistry extends FailbackRegistry {
                 if (isAvailable()) {
                     return;
                 }
-                recover();
+                recover();/**@c TODO 没有看到客户端连接服务端？ */
             } finally {
                 clientLock.unlock();
             }
@@ -126,16 +126,16 @@ public class DubboRegistry extends FailbackRegistry {
         registryInvoker.destroy();
     }
 
-    protected void doRegister(URL url) {
+    protected void doRegister(URL url) {/**@c 动态选取注册服务 */
         registryService.register(url);
     }
 
-    protected void doUnregister(URL url) {
+    protected void doUnregister(URL url) {/**@c TODO dubbo registry 没有看到具体的实现 */
         registryService.unregister(url);
     }
 
     protected void doSubscribe(URL url, NotifyListener listener) {
-        registryService.subscribe(url, listener);
+        registryService.subscribe(url, listener);/**@c 具体实现由multicast、redis、zk处理*/
     }
 
     protected void doUnsubscribe(URL url, NotifyListener listener) {

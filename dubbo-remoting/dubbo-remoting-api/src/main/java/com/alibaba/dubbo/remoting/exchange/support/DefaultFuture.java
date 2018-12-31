@@ -114,12 +114,12 @@ public class DefaultFuture implements ResponseFuture {
     }
 
     public Object get(int timeout) throws RemotingException {
-        if (timeout <= 0) {
+        if (timeout <= 0) {/**@c 若没有设置超时时间，取默认时间 */
             timeout = Constants.DEFAULT_TIMEOUT;
         }
         if (!isDone()) {
             long start = System.currentTimeMillis();
-            lock.lock();
+            lock.lock();/**@c 加锁判断超时 */
             try {
                 while (!isDone()) {
                     done.await(timeout, TimeUnit.MILLISECONDS);
@@ -263,7 +263,7 @@ public class DefaultFuture implements ResponseFuture {
         }
     }
 
-    private String getTimeoutMessage(boolean scan) {
+    private String getTimeoutMessage(boolean scan) {/**@c 等待服务端响应超时 */
         long nowTimestamp = System.currentTimeMillis();
         return (sent > 0 ? "Waiting server-side response timeout" : "Sending request timeout in client-side")
                 + (scan ? " by scan timer" : "") + ". start time: "

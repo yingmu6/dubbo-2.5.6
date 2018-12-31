@@ -25,7 +25,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @author william.liangf
  */
 @SPI
-public interface ConfiguratorFactory {
+public interface ConfiguratorFactory {/**@c 配置工厂 */
 
     /**
      * get the configurator instance.

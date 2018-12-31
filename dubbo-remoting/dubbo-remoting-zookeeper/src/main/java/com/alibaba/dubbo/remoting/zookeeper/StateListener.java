@@ -1,6 +1,6 @@
 package com.alibaba.dubbo.remoting.zookeeper;
 
-public interface StateListener {
+public interface StateListener {/**@c 状态监听器 */
 
     int DISCONNECTED = 0;
 

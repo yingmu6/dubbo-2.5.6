@@ -32,6 +32,6 @@ public interface GenericService {// read finish
      * @return 返回值
      * @throws Throwable 方法抛出的异常
      */
-    Object $invoke(String method, String[] parameterTypes, Object[] args) throws GenericException;
+    Object $invoke(String method, String[] parameterTypes, Object[] args) throws GenericException;/**@c 可以动态地调用接口中的方法 */
 
 }

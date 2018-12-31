@@ -187,9 +187,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         return unexported;
     }
 
-    /**@c TODO 什么时候加载这个方法 */
+    /**@c 接口暴露是在提供方，接口引用是在消费方 */
     public synchronized void export() {
-        if (provider != null) {
+        if (provider != null) {/**@c 提供者配置不为空的时候，从ProviderConfig获取 */
             if (export == null) {
                 export = provider.getExport();
             }
@@ -201,7 +201,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             return;
         }
 
-        if (delay != null && delay > 0) {//延迟暴露
+        if (delay != null && delay > 0) {//延迟暴露，在指定的时间后执行任务
             delayExportExecutor.schedule(new Runnable() {
                 public void run() {
                     doExport();
@@ -213,18 +213,18 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     protected synchronized void doExport() {
-        if (unexported) {
+        if (unexported) {/**@c 解除暴露*/
             throw new IllegalStateException("Already unexported!");
         }
-        if (exported) {
+        if (exported) {/**@c 已经暴露过*/
             return;
         }
         exported = true;
-        if (interfaceName == null || interfaceName.length() == 0) {
+        if (interfaceName == null || interfaceName.length() == 0) {/**@c 暴露的接口不能为空 */
             throw new IllegalStateException("<dubbo:service interface=\"\" /> interface not allow null!");
         }
         checkDefault();
-        if (provider != null) {/**@c 设置属性值 */
+        if (provider != null) {/**@c ServiceConfig中的配置，依次从ProviderConfig、ModuleConfig、ApplicationConfig获取，由小到大，类似局部、全局变量 */
             if (application == null) {
                 application = provider.getApplication();
             }
@@ -269,11 +269,11 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
-            checkInterfaceAndMethods(interfaceClass, methods);
+            checkInterfaceAndMethods(interfaceClass, methods);/**@c 检查配置中声明的方法是否在接口中 */
             checkRef();/**@c 检查引用ref */
             generic = Boolean.FALSE.toString();
         }
-        if (local != null) {
+        if (local != null) {/**@c 本地服务 */
             if ("true".equals(local)) {
                 local = interfaceName + "Local";
             }
@@ -287,8 +287,8 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 throw new IllegalStateException("The local implementation class " + localClass.getName() + " not implement interface " + interfaceName);
             }
         }
-        if (stub != null) {
-            if ("true".equals(stub)) {
+        if (stub != null) { /**@c 本地存根 */
+            if ("true".equals(stub)) {/**@c interfaceName接口名如： com.alibaba.dubbo.config.api.DemoService*/
                 stub = interfaceName + "Stub";
             }
             Class<?> stubClass;
@@ -301,15 +301,15 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 throw new IllegalStateException("The stub implementation class " + stubClass.getName() + " not implement interface " + interfaceName);
             }
         }
-        checkApplication();/**@c 暴露服务前检查配置 */
+        checkApplication();/**@c 暴露服务前检查配置，如果配置满足条件，则创建相应的配置对象，并且添加属性 */
         checkRegistry();
         checkProtocol();
-        appendProperties(this);
+        appendProperties(this);/**@c 为ServiceConfig添加属性 */
         checkStubAndMock(interfaceClass);
         if (path == null || path.length() == 0) {
             path = interfaceName;
         }
-        doExportUrls();
+        doExportUrls();/**@c TODO goto */
     }
 
     private void checkRef() {
@@ -317,7 +317,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (ref == null) {
             throw new IllegalStateException("ref not allow null!");
         }
-        if (!interfaceClass.isInstance(ref)) {
+        if (!interfaceClass.isInstance(ref)) {/**@c 检查引用是否是声明接口的实现 */
             throw new IllegalStateException("The class "
                     + ref.getClass().getName() + " unimplemented interface "
                     + interfaceClass + "!");

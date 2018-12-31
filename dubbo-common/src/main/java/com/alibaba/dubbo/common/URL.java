@@ -383,7 +383,7 @@ public final class URL implements Serializable {//可进行序列化
         return address.toString();
     }
 
-    public List<URL> getBackupUrls() {
+    public List<URL> getBackupUrls() {//获取备份url
         List<URL> urls = new ArrayList<URL>();
         urls.add(this);
         String[] backups = getParameter(Constants.BACKUP_KEY, new String[0]);
@@ -431,12 +431,12 @@ public final class URL implements Serializable {//可进行序列化
         return getParameterAndDecoded(key, null);
     }
 
-    public String getParameterAndDecoded(String key, String defaultValue) {//获取参数并且对参数解码
+    public String getParameterAndDecoded(String key, String defaultValue) {/**@c 获取参数并且对参数解码*/
         return decode(getParameter(key, defaultValue));
     }
 
     public String getParameter(String key) {
-        //获取url中的参数时，如果没有就取default.+key 默认键对应的值
+        /**@c 获取url中的参数时，如果没有就取default.+key 默认键对应的值*/
         String value = parameters.get(key);
         if (value == null || value.length() == 0) {
             value = parameters.get(Constants.DEFAULT_KEY_PREFIX + key);
@@ -1057,13 +1057,13 @@ public final class URL implements Serializable {//可进行序列化
         return removeParameters(keys.toArray(new String[0]));
     }
 
-    //TODO 为啥移除参数？
+    /**@c 移除参数后，重新构建URL */
     public URL removeParameters(String... keys) {
         if (keys == null || keys.length == 0) {
             return this;
         }
         Map<String, String> map = new HashMap<String, String>(getParameters());
-        for (String key : keys) {
+        for (String key : keys) {/**@c 需要移除的key */
             map.remove(key);
         }
         if (map.size() == getParameters().size()) {
@@ -1183,6 +1183,7 @@ public final class URL implements Serializable {//可进行序列化
         return buildString(appendUser, appendParameter, false, false, parameters);
     }
 
+    /**@c 将url参数构建成字符串 */
     private String buildString(boolean appendUser, boolean appendParameter, boolean useIP, boolean useService, String... parameters) {
         StringBuilder buf = new StringBuilder();
         if (protocol != null && protocol.length() > 0) {

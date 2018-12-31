@@ -79,7 +79,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
 
     private volatile URL overrideDirectoryUrl; // 构造时初始化，断言不为null，并且总是赋非null值
 
-    /*override规则 
+    /*override规则 TODO
      * 优先级：override>-D>consumer>provider
      * 第一种规则：针对某个provider <ip:port,timeout=100>
      * 第二种规则：针对所有provider <* ,timeout=5000>
@@ -230,7 +230,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * @param invokerUrls 传入的参数不能为null
      */
     // TODO: 2017/8/31 FIXME 使用线程池去刷新地址，否则可能会导致任务堆积
-    private void refreshInvoker(List<URL> invokerUrls) {
+    private void refreshInvoker(List<URL> invokerUrls) {/**@c TODO 待了解*/
         if (invokerUrls != null && invokerUrls.size() == 1 && invokerUrls.get(0) != null
                 && Constants.EMPTY_PROTOCOL.equals(invokerUrls.get(0).getProtocol())) {
             this.forbidden = true; // 禁止访问
@@ -266,6 +266,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
+    /**@c TODO */
     private Map<String, List<Invoker<T>>> toMergeMethodInvokerMap(Map<String, List<Invoker<T>>> methodMap) {
         Map<String, List<Invoker<T>>> result = new HashMap<String, List<Invoker<T>>>();
         for (Map.Entry<String, List<Invoker<T>>> entry : methodMap.entrySet()) {
@@ -349,7 +350,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                 String[] acceptProtocols = queryProtocols.split(",");
                 for (String acceptProtocol : acceptProtocols) {
                     if (providerUrl.getProtocol().equals(acceptProtocol)) {
-                        accept = true;
+                        accept = true;/**@c 在本地缓存中存在*/
                         break;
                     }
                 }
@@ -365,7 +366,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                         + ", supported protocol: " + ExtensionLoader.getExtensionLoader(Protocol.class).getSupportedExtensions()));
                 continue;
             }
-            URL url = mergeUrl(providerUrl);
+            URL url = mergeUrl(providerUrl);/**@c 合并url时，同一参数会有覆盖策略 */
 
             String key = url.toFullString(); // URL参数是排序的
             if (keys.contains(key)) { // 重复URL
@@ -407,7 +408,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * @param overrides
      * @return
      */
-    private URL mergeUrl(URL providerUrl) {
+    private URL mergeUrl(URL providerUrl) {/**@c */
         providerUrl = ClusterUtils.mergeUrl(providerUrl, queryMap); // 合并消费端参数
 
         List<Configurator> localConfigurators = this.configurators; // local reference
@@ -509,7 +510,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     /**
      * 关闭所有Invoker
      */
-    private void destroyAllInvokers() {
+    private void destroyAllInvokers() {/**@c */
         Map<String, Invoker<T>> localUrlInvokerMap = this.urlInvokerMap; // local reference
         if (localUrlInvokerMap != null) {
             for (Invoker<T> invoker : new ArrayList<Invoker<T>>(localUrlInvokerMap.values())) {

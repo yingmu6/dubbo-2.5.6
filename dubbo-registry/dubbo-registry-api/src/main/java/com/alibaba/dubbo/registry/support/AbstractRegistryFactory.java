@@ -43,7 +43,7 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
     // 注册中心获取过程锁
     private static final ReentrantLock LOCK = new ReentrantLock();
 
-    // 注册中心集合 Map<RegistryAddress, Registry>
+    // 注册中心集合 Map<RegistryAddress, Registry> 缓存实例
     private static final Map<String, Registry> REGISTRIES = new ConcurrentHashMap<String, Registry>();
 
     /**
@@ -88,7 +88,7 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
         // 锁定注册中心获取过程，保证注册中心单一实例
         LOCK.lock();
         try {
-            Registry registry = REGISTRIES.get(key);
+            Registry registry = REGISTRIES.get(key);/**@c 从本地缓存获取，若没有则创建 */
             if (registry != null) {
                 return registry;
             }

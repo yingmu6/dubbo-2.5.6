@@ -31,6 +31,7 @@ public class ReferenceConfigTest {//引用测试
     public void testInjvm() throws Exception {
         ApplicationConfig application = new ApplicationConfig();
         application.setName("test-protocol-random-port");
+        application.setOwner("test-csy");
 
         RegistryConfig registry = new RegistryConfig();
         registry.setAddress("multicast://224.5.6.7:1234");
