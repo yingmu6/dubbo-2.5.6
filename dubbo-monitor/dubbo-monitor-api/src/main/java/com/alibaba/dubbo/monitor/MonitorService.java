@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public interface MonitorService {
+public interface MonitorService {/**@c 监控服务 */
 
     String APPLICATION = "application";
 
@@ -51,7 +51,7 @@ public interface MonitorService {
 
     String OUTPUT = Constants.OUTPUT_KEY;
 
-    String ELAPSED = "elapsed";
+    String ELAPSED = "elapsed";/**@C 耗时 */
 
     String CONCURRENT = "concurrent";
 

@@ -148,7 +148,7 @@ public class Statistics implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Statistics other = (Statistics) obj;
+        Statistics other = (Statistics) obj;/**@c 比较对象中属性 */
         if (application == null) {
             if (other.application != null)
                 return false;

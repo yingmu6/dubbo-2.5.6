@@ -129,7 +129,7 @@ public class MonitorFilter implements Filter {
     private AtomicInteger getConcurrent(Invoker<?> invoker, Invocation invocation) {
         String key = invoker.getInterface().getName() + "." + invocation.getMethodName();
         AtomicInteger concurrent = concurrents.get(key);
-        if (concurrent == null) {
+        if (concurrent == null) {/**@c 若不存在则创建，并存入缓存 */
             concurrents.putIfAbsent(key, new AtomicInteger());
             concurrent = concurrents.get(key);
         }

@@ -55,7 +55,7 @@ public class DubboMonitor implements Monitor {
     private final MonitorService monitorService;
 
     private final long monitorInterval;
-    //TODO statisticsMap数据结构的含义？Statistics怎么会对应一个数组？
+    //statisticsMap数据结构的含义？Statistics怎么会对应一个数组？ 解：通过数组的每个元素，统计不同属性出现的次数
     private final ConcurrentMap<Statistics, AtomicReference<long[]>> statisticsMap = new ConcurrentHashMap<Statistics, AtomicReference<long[]>>();
 
     public DubboMonitor(Invoker<MonitorService> monitorInvoker, MonitorService monitorService) {

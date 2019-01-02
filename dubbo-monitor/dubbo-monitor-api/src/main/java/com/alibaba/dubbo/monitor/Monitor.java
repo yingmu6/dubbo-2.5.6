@@ -24,6 +24,6 @@ import com.alibaba.dubbo.common.Node;
  * @see com.alibaba.dubbo.monitor.MonitorFactory#getMonitor(com.alibaba.dubbo.common.URL)
  */
 //继承关系：Monitor接口是一个Node，并且包含MonitorService功能，它的实现类是DubboMonitor
-public interface Monitor extends Node, MonitorService {
+public interface Monitor extends Node, MonitorService {/**@c */
 
 }

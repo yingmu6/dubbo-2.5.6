@@ -44,7 +44,7 @@ public class DubboMonitorFactroy extends AbstractMonitorFactory {
     }
 
     @Override
-    protected Monitor createMonitor(URL url) {
+    protected Monitor createMonitor(URL url) {/**@c 创建monitor */
         url = url.setProtocol(url.getParameter(Constants.PROTOCOL_KEY, "dubbo"));
         if (url.getPath() == null || url.getPath().length() == 0) {
             url = url.setPath(MonitorService.class.getName());
@@ -57,7 +57,7 @@ public class DubboMonitorFactroy extends AbstractMonitorFactory {
         }
         url = url.addParameters(Constants.CLUSTER_KEY, "failsafe", Constants.CHECK_KEY, String.valueOf(false),
                 Constants.REFERENCE_FILTER_KEY, filter + "-monitor");
-        Invoker<MonitorService> monitorInvoker = protocol.refer(MonitorService.class, url);
+        Invoker<MonitorService> monitorInvoker = protocol.refer(MonitorService.class, url);/**@c 引用服务 */
         MonitorService monitorService = proxyFactory.getProxy(monitorInvoker);
         return new DubboMonitor(monitorInvoker, monitorService);
     }
