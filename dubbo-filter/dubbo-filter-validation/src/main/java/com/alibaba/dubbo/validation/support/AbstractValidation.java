@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author william.liangf
  */
-public abstract class AbstractValidation implements Validation {
+public abstract class AbstractValidation implements Validation {/**@c */
 
     private final ConcurrentMap<String, Validator> validators = new ConcurrentHashMap<String, Validator>();
 

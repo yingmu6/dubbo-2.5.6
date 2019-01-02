@@ -32,7 +32,7 @@ import com.alibaba.dubbo.validation.Validator;
  * @author william.liangf
  */
 @Activate(group = {Constants.CONSUMER, Constants.PROVIDER}, value = Constants.VALIDATION_KEY, order = 10000)
-public class ValidationFilter implements Filter {
+public class ValidationFilter implements Filter {/**@c */
 
     private Validation validation;
 

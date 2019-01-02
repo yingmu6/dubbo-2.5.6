@@ -24,7 +24,7 @@ import com.alibaba.dubbo.common.URL;
  *
  * @author william.liangf
  */
-public class LruCacheFactory extends AbstractCacheFactory {
+public class LruCacheFactory extends AbstractCacheFactory {/**@c */
 
     protected Cache createCache(URL url) {
         return new LruCache(url);

@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author william.liangf
  */
-public class JCache implements com.alibaba.dubbo.cache.Cache {
+public class JCache implements com.alibaba.dubbo.cache.Cache {/**@c java缓存新标准 */
 
     private final Cache<Object, Object> store;
 

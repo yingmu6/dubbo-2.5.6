@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author william.liangf
  */
-public abstract class AbstractCacheFactory implements CacheFactory {
+public abstract class AbstractCacheFactory implements CacheFactory {/**@c */
 
     private final ConcurrentMap<String, Cache> caches = new ConcurrentHashMap<String, Cache>();
 

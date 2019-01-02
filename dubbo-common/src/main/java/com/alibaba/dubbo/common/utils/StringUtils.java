@@ -412,7 +412,7 @@ public final class StringUtils {
         return buf == null ? camelName : buf.toString();
     }
 
-    public static String toArgumentString(Object[] args) {
+    public static String toArgumentString(Object[] args) {/**@c 将参数列表转换为字符串 */
         StringBuilder buf = new StringBuilder();
         for (Object arg : args) {
             if (buf.length() > 0) {

@@ -20,7 +20,7 @@ package com.alibaba.dubbo.cache;
  *
  * @author william.liangf
  */
-public interface Cache {
+public interface Cache {/**@c */
 
     void put(Object key, Object value);
 

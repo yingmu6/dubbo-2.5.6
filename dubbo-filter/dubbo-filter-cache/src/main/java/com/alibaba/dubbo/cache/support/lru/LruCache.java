@@ -26,7 +26,7 @@ import java.util.Map;
  *
  * @author william.liangf
  */
-public class LruCache implements Cache {
+public class LruCache implements Cache {/**@c */
 
     private final Map<Object, Object> store;
 

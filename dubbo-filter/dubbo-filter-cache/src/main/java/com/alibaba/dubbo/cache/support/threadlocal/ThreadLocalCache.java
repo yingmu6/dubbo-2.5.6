@@ -26,7 +26,7 @@ import java.util.Map;
  *
  * @author william.liangf
  */
-public class ThreadLocalCache implements Cache {
+public class ThreadLocalCache implements Cache {/**@c */
 
     private final ThreadLocal<Map<Object, Object>> store;
 

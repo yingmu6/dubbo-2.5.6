@@ -79,7 +79,7 @@ public class JValidator implements Validator {
         this.clazz = ReflectUtils.forName(url.getServiceInterface());
         String jvalidation = url.getParameter("jvalidation");
         ValidatorFactory factory;
-        if (jvalidation != null && jvalidation.length() > 0) {
+        if (jvalidation != null && jvalidation.length() > 0) {/**@c 构造检验工厂 */
             factory = Validation.byProvider((Class) ReflectUtils.forName(jvalidation)).configure().buildValidatorFactory();
         } else {
             factory = Validation.buildDefaultValidatorFactory();
@@ -99,8 +99,9 @@ public class JValidator implements Validator {
                 || Number.class.isAssignableFrom(cls) || Date.class.isAssignableFrom(cls);
     }
 
+    //TODO 待详细了解
     private static Object getMethodParameterBean(Class<?> clazz, Method method, Object[] args) {
-        if (!hasConstraintParameter(method)) {
+        if (!hasConstraintParameter(method)) {/**@c Constraint约束 */
             return null;
         }
         try {
@@ -230,7 +231,7 @@ public class JValidator implements Validator {
         return memberValue;
     }
 
-    public void validate(String methodName, Class<?>[] parameterTypes, Object[] arguments) throws Exception {
+    public void validate(String methodName, Class<?>[] parameterTypes, Object[] arguments) throws Exception {/**@c */
         String methodClassName = clazz.getName() + "_" + toUpperMethoName(methodName);
         Class<?> methodClass = null;
         try {
