@@ -44,7 +44,7 @@ public class JettyContainer implements Container {
     private static final Logger logger = LoggerFactory.getLogger(JettyContainer.class);
     SelectChannelConnector connector;
 
-    public void start() {
+    public void start() {/**@c 嵌入式启动 */
         String serverPort = ConfigUtils.getProperty(JETTY_PORT);
         int port;
         if (serverPort == null || serverPort.length() == 0) {
