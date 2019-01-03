@@ -42,7 +42,7 @@ public class SystemPageHandler implements PageHandler {
     private static final long HOUR = 60 * MINUTE;
     private static final long DAY = 24 * HOUR;
 
-    public Page handle(URL url) {
+    public Page handle(URL url) {/**@c 系统管理中的系统环境 */
         List<List<String>> rows = new ArrayList<List<String>>();
         List<String> row;
 
@@ -78,7 +78,7 @@ public class SystemPageHandler implements PageHandler {
         rows.add(row);
 
         row = new ArrayList<String>();
-        row.add("Uptime");
+        row.add("Uptime");/**@c 运行时间格式化 */
         row.add(formatUptime(ManagementFactory.getRuntimeMXBean().getUptime()));
         rows.add(row);
 
@@ -91,7 +91,7 @@ public class SystemPageHandler implements PageHandler {
                 "Property", "Value"}, rows);
     }
 
-    private String formatUptime(long uptime) {
+    private String formatUptime(long uptime) {/**@c 格式化时间 */
         StringBuilder buf = new StringBuilder();
         if (uptime > DAY) {
             long days = (uptime - uptime % DAY) / DAY;

@@ -75,7 +75,7 @@ public class LogPageHandler implements PageHandler {
         String content = "";
         String modified = "Not exist";
         if (file != null && file.exists()) {
-            try {
+            try {/**@c 从日志文件中读取内容 */
                 FileInputStream fis = new FileInputStream(file);
                 FileChannel channel = fis.getChannel();
                 size = channel.size();

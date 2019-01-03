@@ -38,7 +38,7 @@ import java.util.Set;
 @Menu(name = "Status", desc = "Show system status.", order = Integer.MAX_VALUE - 12000)
 public class StatusPageHandler implements PageHandler {
 
-    public Page handle(URL url) {
+    public Page handle(URL url) {/**@c 系统状态页面 */
         List<List<String>> rows = new ArrayList<List<String>>();
         Set<String> names = ExtensionLoader.getExtensionLoader(StatusChecker.class).getSupportedExtensions();
         Map<String, Status> statuses = new HashMap<String, Status>();

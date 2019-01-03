@@ -23,7 +23,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @author william.liangf
  */
 @SPI("spring")
-public interface Container {
+public interface Container {/**@c */
 
     /**
      * start.

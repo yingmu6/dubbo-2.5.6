@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author william.liangf
  */
-public class PageServlet extends HttpServlet {
+public class PageServlet extends HttpServlet {/**@c 页面处理 */
 
     protected static final Logger logger = LoggerFactory.getLogger(PageServlet.class);
     private static final long serialVersionUID = -8370312705453328501L;

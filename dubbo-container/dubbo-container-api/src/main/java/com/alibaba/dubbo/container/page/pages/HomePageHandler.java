@@ -31,7 +31,7 @@ import java.util.List;
  * @author william.liangf
  */
 @Menu(name = "Home", desc = "Home page.", order = Integer.MIN_VALUE)
-public class HomePageHandler implements PageHandler {
+public class HomePageHandler implements PageHandler {/**@c 首页处理 */
 
     public Page handle(URL url) {
         List<List<String>> rows = new ArrayList<List<String>>();

@@ -40,7 +40,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public class ResourceFilter implements Filter {
+public class ResourceFilter implements Filter {/**@c */
 
     private static final String CLASSPATH_PREFIX = "classpath:";
 
