@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author william.liangf
  */
-public class ScriptRouter implements Router {
+public class ScriptRouter implements Router {/**@c */
 
     private static final Logger logger = LoggerFactory.getLogger(ScriptRouter.class);
 
@@ -56,7 +56,7 @@ public class ScriptRouter implements Router {
 
     private final URL url;
 
-    public ScriptRouter(URL url) {
+    public ScriptRouter(URL url) {/**@c todo 是javascript处理吗 */
         this.url = url;
         String type = url.getParameter(Constants.TYPE_KEY);
         this.priority = url.getParameter(Constants.PRIORITY_KEY, 0);
@@ -87,7 +87,7 @@ public class ScriptRouter implements Router {
     public <T> List<Invoker<T>> route(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
         try {
             List<Invoker<T>> invokersCopy = new ArrayList<Invoker<T>>(invokers);
-            Compilable compilable = (Compilable) engine;
+            Compilable compilable = (Compilable) engine;/**@c todo */
             Bindings bindings = engine.createBindings();
             bindings.put("invokers", invokersCopy);
             bindings.put("invocation", invocation);

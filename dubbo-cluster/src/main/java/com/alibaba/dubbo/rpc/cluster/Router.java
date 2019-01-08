@@ -31,7 +31,7 @@ import java.util.List;
  * @see com.alibaba.dubbo.rpc.cluster.Cluster#join(Directory)
  * @see com.alibaba.dubbo.rpc.cluster.Directory#list(Invocation)
  */
-public interface Router extends Comparable<Router> {
+public interface Router extends Comparable<Router> {/**@c TODO 路由选择 */
 
     /**
      * get the router url.
@@ -41,7 +41,7 @@ public interface Router extends Comparable<Router> {
     URL getUrl();
 
     /**
-     * route. TODO 路由规则及用途
+     * route. TODO 是将传入的invoker列表过滤吗？
      *
      * @param invokers
      * @param url        refer url

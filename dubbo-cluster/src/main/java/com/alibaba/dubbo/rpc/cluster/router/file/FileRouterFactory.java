@@ -49,6 +49,7 @@ public class FileRouterFactory implements RouterFactory {
                     type = path.substring(i + 1);
                 }
             }
+            /**@c 从文件中读取规则rule */
             String rule = IOUtils.read(new FileReader(new File(url.getAbsolutePath())));
             URL script = url.setProtocol(protocol).addParameter(Constants.TYPE_KEY, type).addParameterAndEncoded(Constants.RULE_KEY, rule);
 

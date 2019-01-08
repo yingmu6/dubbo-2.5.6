@@ -23,7 +23,7 @@ import com.alibaba.dubbo.rpc.cluster.configurator.AbstractConfigurator;
  *
  * @author william.liangf
  */
-public class OverrideConfigurator extends AbstractConfigurator {
+public class OverrideConfigurator extends AbstractConfigurator {/**@c 覆盖配置 */
 
     public OverrideConfigurator(URL url) {
         super(url);

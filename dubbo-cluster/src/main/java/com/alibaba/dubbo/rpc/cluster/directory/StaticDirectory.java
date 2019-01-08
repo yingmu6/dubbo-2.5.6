@@ -67,7 +67,7 @@ public class StaticDirectory<T> extends AbstractDirectory<T> {
         return false;
     }
 
-    public void destroy() {
+    public void destroy() {/**@c 清除执行列表 */
         if (isDestroyed()) {
             return;
         }

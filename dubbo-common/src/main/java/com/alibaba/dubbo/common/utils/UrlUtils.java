@@ -382,13 +382,13 @@ public class UrlUtils {
 
     public static boolean isMatchGlobPattern(String pattern, String value, URL param) {
         if (param != null && pattern.startsWith("$")) {
-            pattern = param.getRawParameter(pattern.substring(1));
+            pattern = param.getRawParameter(pattern.substring(1));/**@c 去除第一个字符的子串 */
         }
         return isMatchGlobPattern(pattern, value);
     }
 
     public static boolean isMatchGlobPattern(String pattern, String value) {
-        if ("*".equals(pattern))
+        if ("*".equals(pattern))/**@c TODO 星号从哪里设置的，数据格式是怎样的 */
             return true;
         if ((pattern == null || pattern.length() == 0)
                 && (value == null || value.length() == 0))

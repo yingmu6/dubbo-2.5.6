@@ -27,7 +27,7 @@ import com.alibaba.dubbo.rpc.cluster.Directory;
  *
  * @author william.liangf
  */
-public class FailfastCluster implements Cluster {
+public class FailfastCluster implements Cluster {/**@c */
 
     public final static String NAME = "failfast";
 

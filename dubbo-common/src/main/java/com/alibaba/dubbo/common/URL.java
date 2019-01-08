@@ -436,7 +436,7 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     public String getParameter(String key) {
-        /**@c 获取url中的参数时，如果没有就取default.+key 默认键对应的值*/
+        /**@c 从参数集合中获取参数的值，如果没有就取default.+key 默认键对应的值*/
         String value = parameters.get(key);
         if (value == null || value.length() == 0) {
             value = parameters.get(Constants.DEFAULT_KEY_PREFIX + key);
@@ -1011,7 +1011,7 @@ public final class URL implements Serializable {//可进行序列化
         return new URL(protocol, username, password, host, port, path, map);
     }
 
-    public URL addParametersIfAbsent(Map<String, String> parameters) {
+    public URL addParametersIfAbsent(Map<String, String> parameters) {/**@c TODO 没有判断是否存在 */
         if (parameters == null || parameters.size() == 0) {
             return this;
         }
@@ -1076,7 +1076,7 @@ public final class URL implements Serializable {//可进行序列化
         return new URL(protocol, username, password, host, port, path, new HashMap<String, String>());
     }
 
-    public String getRawParameter(String key) {
+    public String getRawParameter(String key) {/**@c 从URL中获取key的值 */
         if ("protocol".equals(key))
             return protocol;
         if ("username".equals(key))

@@ -110,7 +110,7 @@ public abstract class AbstractConfigurator implements Configurator {
         if (o == null) {
             return -1;
         }
-
+        /**@c host字符串比较 */
         int ipCompare = getUrl().getHost().compareTo(o.getUrl().getHost());
         if (ipCompare == 0) {//ip相同，根据priority排序
             int i = getUrl().getParameter(Constants.PRIORITY_KEY, 0),

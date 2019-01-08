@@ -48,7 +48,7 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
 
     private volatile URL consumerUrl;
 
-    private volatile List<Router> routers;
+    private volatile List<Router> routers;/**@c 一个目录下有多个Router */
 
     public AbstractDirectory(URL url) {
         this(url, null);

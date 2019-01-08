@@ -41,7 +41,7 @@ import java.util.Set;
  * @author william.liangf
  * @author chao.liuc
  */
-public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {
+public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {/**@c */
 
     private static final Logger logger = LoggerFactory.getLogger(FailoverClusterInvoker.class);
 

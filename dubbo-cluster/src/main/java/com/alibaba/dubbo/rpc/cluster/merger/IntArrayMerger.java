@@ -21,11 +21,11 @@ import com.alibaba.dubbo.rpc.cluster.Merger;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public class IntArrayMerger implements Merger<int[]> {
+public class IntArrayMerger implements Merger<int[]> {/**@c 合并结果集 */
 
-    public int[] merge(int[]... items) {
+    public int[] merge(int[]... items) {/**@c 将多个数组合并到一个数组 */
         int totalLen = 0;
-        for (int[] item : items) {
+        for (int[] item : items) {/**@c 累计数组长度 */
             totalLen += item.length;
         }
         int[] result = new int[totalLen];

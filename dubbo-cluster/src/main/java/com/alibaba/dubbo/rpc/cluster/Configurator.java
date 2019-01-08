@@ -1,6 +1,6 @@
 /*
  * Copyright 1999-2012 Alibaba Group.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,7 +22,7 @@ import com.alibaba.dubbo.common.URL;
  *
  * @author william.liangf
  */
-public interface Configurator extends Comparable<Configurator> {
+public interface Configurator extends Comparable<Configurator> {/**@c 动态配置 */
 
     /**
      * get the configurator url.

@@ -54,7 +54,7 @@ public class MergerFactory {
         return result;
     }
 
-    static void loadMergers() {
+    static void loadMergers() {/**@c */
         Set<String> names = ExtensionLoader.getExtensionLoader(Merger.class)
                 .getSupportedExtensions();
         for (String name : names) {

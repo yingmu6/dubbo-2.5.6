@@ -21,7 +21,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
 @SPI
-public interface Merger<T> {
+public interface Merger<T> {/**@c 合并放回结果 */
 
     T merge(T... items);
 

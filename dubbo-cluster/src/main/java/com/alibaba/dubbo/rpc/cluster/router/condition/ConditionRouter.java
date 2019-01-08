@@ -42,17 +42,17 @@ import java.util.regex.Pattern;
  *
  * @author william.liangf
  */
-public class ConditionRouter implements Router, Comparable<Router> {
+public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有路由功能和比较器功能 */
 
     private static final Logger logger = LoggerFactory.getLogger(ConditionRouter.class);
-    private static Pattern ROUTE_PATTERN = Pattern.compile("([&!=,]*)\\s*([^&!=,\\s]+)");
+    private static Pattern ROUTE_PATTERN = Pattern.compile("([&!=,]*)\\s*([^&!=,\\s]+)");/**@c 路由规则正则表达式 */
     private final URL url;
-    private final int priority;
-    private final boolean force;
-    private final Map<String, MatchPair> whenCondition;
+    private final int priority;/**@c 优先级：数字越大、级别越高 */
+    private final boolean force;/**@c todo 此成员变量用途 */
+    private final Map<String, MatchPair> whenCondition;/**@c todo 是否是可以理解为 当什么条件满足，就执行什么条件 */
     private final Map<String, MatchPair> thenCondition;
 
-    public ConditionRouter(URL url) {
+    public ConditionRouter(URL url) {/**@c TODO url的格式*/
         this.url = url;
         this.priority = url.getParameter(Constants.PRIORITY_KEY, 0);
         this.force = url.getParameter(Constants.FORCE_KEY, false);
@@ -65,6 +65,7 @@ public class ConditionRouter implements Router, Comparable<Router> {
             int i = rule.indexOf("=>");
             String whenRule = i < 0 ? null : rule.substring(0, i).trim();
             String thenRule = i < 0 ? rule.trim() : rule.substring(i + 2).trim();
+            /**@c 判断条件是否为空 */
             Map<String, MatchPair> when = StringUtils.isBlank(whenRule) || "true".equals(whenRule) ? new HashMap<String, MatchPair>() : parseRule(whenRule);
             Map<String, MatchPair> then = StringUtils.isBlank(thenRule) || "false".equals(thenRule) ? null : parseRule(thenRule);
             // NOTE: When条件是允许为空的，外部业务来保证类似的约束条件
@@ -85,9 +86,9 @@ public class ConditionRouter implements Router, Comparable<Router> {
         MatchPair pair = null;
         // 多个Value值
         Set<String> values = null;
-        final Matcher matcher = ROUTE_PATTERN.matcher(rule);
+        final Matcher matcher = ROUTE_PATTERN.matcher(rule);/**@c 正则表达式匹配 */
         while (matcher.find()) { // 逐个匹配
-            String separator = matcher.group(1);
+            String separator = matcher.group(1);/**@c TODO 匹配逻辑 */
             String content = matcher.group(2);
             // 表达式开始
             if (separator == null || separator.length() == 0) {
@@ -148,16 +149,16 @@ public class ConditionRouter implements Router, Comparable<Router> {
             return invokers;
         }
         try {
-            if (!matchWhen(url, invocation)) {
+            if (!matchWhen(url, invocation)) {/**@c todo */
                 return invokers;
             }
             List<Invoker<T>> result = new ArrayList<Invoker<T>>();
-            if (thenCondition == null) {
+            if (thenCondition == null) {/**@c 白名单 */
                 logger.warn("The current consumer in the service blacklist. consumer: " + NetUtils.getLocalHost() + ", service: " + url.getServiceKey());
                 return result;
             }
             for (Invoker<T> invoker : invokers) {
-                if (matchThen(invoker.getUrl(), url)) {
+                if (matchThen(invoker.getUrl(), url)) {/**@c url匹配 */
                     result.add(invoker);
                 }
             }
@@ -194,7 +195,7 @@ public class ConditionRouter implements Router, Comparable<Router> {
     }
 
     private boolean matchCondition(Map<String, MatchPair> condition, URL url, URL param, Invocation invocation) {
-        Map<String, String> sample = url.toMap();
+        Map<String, String> sample = url.toMap();/**@c todo */
         boolean result = false;
         for (Map.Entry<String, MatchPair> matchPair : condition.entrySet()) {
             String key = matchPair.getKey();
@@ -223,7 +224,7 @@ public class ConditionRouter implements Router, Comparable<Router> {
         return result;
     }
 
-    private static final class MatchPair {
+    private static final class MatchPair {/**@c 内部类  */
         final Set<String> matches = new HashSet<String>();
         final Set<String> mismatches = new HashSet<String>();
 

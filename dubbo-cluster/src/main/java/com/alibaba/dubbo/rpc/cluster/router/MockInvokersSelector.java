@@ -53,7 +53,7 @@ public class MockInvokersSelector implements Router {
         }
         List<Invoker<T>> sInvokers = new ArrayList<Invoker<T>>(1);
         for (Invoker<T> invoker : invokers) {
-            if (invoker.getUrl().getProtocol().equals(Constants.MOCK_PROTOCOL)) {
+            if (invoker.getUrl().getProtocol().equals(Constants.MOCK_PROTOCOL)) {/**@c 比较是否满足条件 */
                 sInvokers.add(invoker);
             }
         }

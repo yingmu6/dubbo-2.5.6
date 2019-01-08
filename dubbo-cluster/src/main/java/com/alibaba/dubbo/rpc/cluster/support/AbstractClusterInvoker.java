@@ -50,7 +50,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
 
     private AtomicBoolean destroyed = new AtomicBoolean(false);
 
-    private volatile Invoker<T> stickyInvoker = null;
+    private volatile Invoker<T> stickyInvoker = null;/**@c sticky 粘连的*/
 
     public AbstractClusterInvoker(Directory<T> directory) {
         this(directory, directory.getUrl());
@@ -101,7 +101,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
         String methodName = invocation == null ? "" : invocation.getMethodName();
 
         boolean sticky = invokers.get(0).getUrl().getMethodParameter(methodName, Constants.CLUSTER_STICKY_KEY, Constants.DEFAULT_CLUSTER_STICKY);
-        {
+        {/**@c todo 此代码块用途 */
             //ignore overloaded method
             if (stickyInvoker != null && !invokers.contains(stickyInvoker)) {
                 stickyInvoker = null;
@@ -168,7 +168,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
      */
     private Invoker<T> reselect(LoadBalance loadbalance, Invocation invocation,
                                 List<Invoker<T>> invokers, List<Invoker<T>> selected, boolean availablecheck)
-            throws RpcException {
+            throws RpcException {/**@c todo */
 
         //预先分配一个，这个列表是一定会用到的.
         List<Invoker<T>> reselectInvokers = new ArrayList<Invoker<T>>(invokers.size() > 1 ? (invokers.size() - 1) : invokers.size());
@@ -244,7 +244,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
     }
 
     protected void checkInvokers(List<Invoker<T>> invokers, Invocation invocation) {
-        if (invokers == null || invokers.size() == 0) {
+        if (invokers == null || invokers.size() == 0) {/**@c 经常报出的日志 */
             throw new RpcException("Failed to invoke the method "
                     + invocation.getMethodName() + " in the service " + getInterface().getName()
                     + ". No provider available for the service " + directory.getUrl().getServiceKey()
