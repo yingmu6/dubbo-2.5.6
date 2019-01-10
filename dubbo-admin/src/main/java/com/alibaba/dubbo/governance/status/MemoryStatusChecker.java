@@ -25,7 +25,7 @@ import com.alibaba.dubbo.common.status.StatusChecker;
  */
 public class MemoryStatusChecker implements StatusChecker {
 
-    public Status check() {
+    public Status check() {/**@c 查看内存使用情况 */
         Runtime runtime = Runtime.getRuntime();
         long freeMemory = runtime.freeMemory();
         long totalMemory = runtime.totalMemory();

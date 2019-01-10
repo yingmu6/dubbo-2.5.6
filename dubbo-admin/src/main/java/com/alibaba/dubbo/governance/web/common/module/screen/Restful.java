@@ -49,6 +49,7 @@ public abstract class Restful {
                 || cls == String.class;
     }
 
+    /**@c 转换为封装类型 */
     private static Object convertPrimitive(Class<?> cls, String value) {
         if (cls == boolean.class || cls == Boolean.class) {
             return value == null || value.length() == 0 ? false : Boolean.valueOf(value);

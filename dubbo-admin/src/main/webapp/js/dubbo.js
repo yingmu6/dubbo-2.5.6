@@ -1,5 +1,5 @@
 //==== init ====
-function init() {
+function init() {//初始化内容
     initScroll();
     preloadImage();
     scanAlphaPNG();

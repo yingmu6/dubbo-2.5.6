@@ -29,7 +29,7 @@ import java.util.TreeMap;
 /**
  * @author ding.lid
  */
-public class Envs extends Restful {
+public class Envs extends Restful {/**@c 获取环境信息 */
 
     private static final long SECOND = 1000;
     private static final long MINUTE = 60 * SECOND;

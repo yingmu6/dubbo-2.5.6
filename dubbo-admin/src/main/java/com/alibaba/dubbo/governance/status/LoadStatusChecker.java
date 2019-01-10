@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
  */
 public class LoadStatusChecker implements StatusChecker {
 
-    public Status check() {
+    public Status check() {/**@c OperatingSystemMXBean Java中的CPU和系统负载监控*/
         OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
         double load;
         try {

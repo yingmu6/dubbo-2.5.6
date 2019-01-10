@@ -33,8 +33,9 @@ import java.util.concurrent.ConcurrentMap;
  * @author william.liangf
  */
 public class ConsumerServiceImpl extends AbstractService implements ConsumerService {
+    /**@c */
 
-    public List<Consumer> findByService(String service) {
+    public List<Consumer> findByService(String service) {/**@c 从本地缓存中获取信息 */
         return SyncUtils.url2ConsumerList(findConsumerUrlByService(service));
     }
 

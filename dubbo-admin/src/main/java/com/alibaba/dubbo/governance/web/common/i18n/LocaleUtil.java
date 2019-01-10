@@ -2,7 +2,7 @@ package com.alibaba.dubbo.governance.web.common.i18n;
 
 import java.util.Locale;
 
-public class LocaleUtil {
+public class LocaleUtil {/**@c 多语言处理 */
     private static ThreadLocal<Locale> userLocale = new ThreadLocal<Locale>();
 
     public static void cleanLocale() {

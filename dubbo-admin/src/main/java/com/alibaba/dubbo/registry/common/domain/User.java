@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public class User extends Entity {
+public class User extends Entity {/**@c 用户信息 */
 
     public static final String REALM = "dubbo";
     public static final String ROOT = "R";

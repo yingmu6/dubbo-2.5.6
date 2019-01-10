@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public interface ProviderService {
+public interface ProviderService {/**@c */
 
     void create(Provider provider);
 

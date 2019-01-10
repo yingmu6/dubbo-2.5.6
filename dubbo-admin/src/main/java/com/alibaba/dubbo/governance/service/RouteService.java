@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public interface RouteService {
+public interface RouteService {/**@c 路由服务 */
 
     void createRoute(Route route);
 

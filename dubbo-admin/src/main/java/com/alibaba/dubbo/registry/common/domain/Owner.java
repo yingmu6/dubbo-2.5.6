@@ -1,6 +1,6 @@
 package com.alibaba.dubbo.registry.common.domain;
 
-public class Owner extends Entity {
+public class Owner extends Entity {/**@c 负责人 */
 
     private static final long serialVersionUID = -4891350118145794727L;
 

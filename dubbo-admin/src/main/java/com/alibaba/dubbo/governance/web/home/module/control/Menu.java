@@ -27,7 +27,7 @@ import javax.servlet.http.HttpSession;
  * @author ding.lid
  * @author tony.chenl
  */
-public class Menu {
+public class Menu {/**@c */
 
     @Autowired
     ServletContext servletcontext;

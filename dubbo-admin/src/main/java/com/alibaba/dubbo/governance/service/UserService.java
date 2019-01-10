@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public interface UserService {
+public interface UserService {/**@c */
 
     List<User> findAllUsers();
 

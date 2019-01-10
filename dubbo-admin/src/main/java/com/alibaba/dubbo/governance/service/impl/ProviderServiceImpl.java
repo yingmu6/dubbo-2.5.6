@@ -45,12 +45,12 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
     @Autowired
     OverrideService overrideService;
 
-    public void create(Provider provider) {
+    public void create(Provider provider) {/**@c 注册url */
         URL url = provider.toUrl();
         registryService.register(url);
     }
 
-    public void enableProvider(Long id) {
+    public void enableProvider(Long id) {/**@c 启用服务 todo 此处id是bean中的id吗？ */
         if (id == null) {
             throw new IllegalStateException("no provider id");
         }
@@ -60,7 +60,7 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
         if (oldProvider == null) {
             throw new IllegalStateException("Provider was changed!");
         }
-        if (oldProvider.isDynamic()) {
+        if (oldProvider.isDynamic()) {/**@c todo 此处处理逻辑 */
             //保证disable的override唯一
             if (!oldProvider.isEnabled()) {
                 Override override = new Override();
@@ -125,11 +125,11 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
 
     }
 
-    public void doublingProvider(Long id) {
+    public void doublingProvider(Long id) {/**@c 倍权*/
         setWeight(id, 2F);
     }
 
-    public void halvingProvider(Long id) {
+    public void halvingProvider(Long id) {/**@c 半权*/
         setWeight(id, 0.5F);
     }
 
@@ -182,14 +182,14 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
             if (value == Constants.DEFAULT_WEIGHT) {
                 map.remove(Constants.WEIGHT_KEY);
             } else {
-                map.put(Constants.WEIGHT_KEY, String.valueOf(value));
+                map.put(Constants.WEIGHT_KEY, String.valueOf(value));/**@c 更新权重 */
             }
             oldProvider.setParameters(StringUtils.toQueryString(map));
             updateProvider(oldProvider);
         }
     }
 
-    private int getWeight(String value, float factor) {
+    private int getWeight(String value, float factor) {/**@c 计算权重 */
         int weight = 100;
         if (value != null && value.length() > 0) {
             weight = Integer.parseInt(value);

@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * IbatisRouteService
  *
- * @author william.liangf
+ * @authlliam.liangf
  */
 public class RouteServiceImpl extends AbstractService implements RouteService {
 
@@ -46,7 +46,7 @@ public class RouteServiceImpl extends AbstractService implements RouteService {
         if (oldRoute == null) {
             throw new IllegalStateException("Route was changed!");
         }
-
+        /**@c 先取消老的路由，然后再注册新的路由，先删后增 */
         registryService.unregister(oldRoute);
         registryService.register(route.toUrl());
     }

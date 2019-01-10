@@ -38,7 +38,7 @@ public class SyncUtils {
 
     public static final String ID_FILTER_KEY = ".id";
 
-    public static Provider url2Provider(Pair<Long, URL> pair) {
+    public static Provider url2Provider(Pair<Long, URL> pair) {/**@ 通过URL构建提供者Provider */
         if (pair == null) {
             return null;
         }
@@ -243,6 +243,7 @@ public class SyncUtils {
         }
     }
 
+    /**@c 泛型使用 在使用的时候指定类型 */
     public static <SM extends Map<String, Map<Long, URL>>> Pair<Long, URL> filterFromCategory(Map<String, SM> urls, String category, Long id) {
         SM services = urls.get(category);
         if (services == null) return null;

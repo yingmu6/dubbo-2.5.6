@@ -40,7 +40,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         this.guestPassword = (password == null ? "" : password);
     }
 
-    public User findUser(String username) {
+    public User findUser(String username) {/**@c 目前只处理guest、root用户 */
         if ("guest".equals(username)) {
             User user = new User();
             user.setUsername(username);

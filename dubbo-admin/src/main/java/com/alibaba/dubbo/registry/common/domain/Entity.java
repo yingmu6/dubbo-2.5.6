@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public abstract class Entity implements Serializable {
+public abstract class Entity implements Serializable {/**@c 实体对象 */
 
     private static final long serialVersionUID = -3031128781434583143L;
 

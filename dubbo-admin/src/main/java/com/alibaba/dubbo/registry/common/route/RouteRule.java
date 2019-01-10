@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  * @author william.liangf
  * @author ding.lid
  */
-public class RouteRule {
+public class RouteRule {/**@c 仔细阅读类描述 */
     @SuppressWarnings("unchecked")
     static RouteRule EMPTY = new RouteRule(Collections.EMPTY_MAP, Collections.EMPTY_MAP);
     private static Pattern ROUTE_PATTERN = Pattern.compile("([&!=,]*)\\s*([^&!=,\\s]+)");

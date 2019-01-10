@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author william.liangf
  */
-public class AbstractService {
+public class AbstractService {/**@c admin中的服务都是基于RegistryService */
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractService.class);
     @Autowired
@@ -38,7 +38,7 @@ public class AbstractService {
     @Autowired
     private RegistryServerSync sync;
 
-    public ConcurrentMap<String, ConcurrentMap<String, Map<Long, URL>>> getRegistryCache() {
+    public ConcurrentMap<String, ConcurrentMap<String, Map<Long, URL>>> getRegistryCache() {/**@c */
         return sync.getRegistryCache();
     }
 

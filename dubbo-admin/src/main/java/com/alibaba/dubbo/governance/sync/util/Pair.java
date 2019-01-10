@@ -17,7 +17,7 @@ package com.alibaba.dubbo.governance.sync.util;
 
 import java.util.Map;
 
-public class Pair<K, V> implements Map.Entry<K, V> {
+public class Pair<K, V> implements Map.Entry<K, V> {/**@c url中的key、value */
 
     private K key;
 

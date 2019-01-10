@@ -17,7 +17,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public abstract class Shell {
+public abstract class Shell {/**@c TODO 是用shell维护dubbo服务吗 */
     private static final Pattern OK_PATTERN = Pattern.compile("ok", Pattern.CASE_INSENSITIVE);
     private static final Pattern ERROR_PATTERN = Pattern.compile("error", Pattern.CASE_INSENSITIVE);
     protected String role = null;

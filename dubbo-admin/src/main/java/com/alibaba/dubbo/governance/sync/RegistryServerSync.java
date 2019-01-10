@@ -57,6 +57,7 @@ public class RegistryServerSync implements InitializingBean, DisposableBean, Not
 
     private static final AtomicLong ID = new AtomicLong();
     // ConcurrentMap<category, ConcurrentMap<servicename, Map<Long, URL>>>
+    /**@c registryCache值是从哪里设置的 */
     private final ConcurrentMap<String, ConcurrentMap<String, Map<Long, URL>>> registryCache = new ConcurrentHashMap<String, ConcurrentMap<String, Map<Long, URL>>>();
     @Autowired
     private RegistryService registryService;
@@ -75,7 +76,7 @@ public class RegistryServerSync implements InitializingBean, DisposableBean, Not
     }
 
     // 收到的通知对于 ，同一种类型数据（override、subcribe、route、其它是Provider），同一个服务的数据是全量的
-    public void notify(List<URL> urls) {
+    public void notify(List<URL> urls) {/**@c todo 待了解 */
         if (urls == null || urls.isEmpty()) {
             return;
         }
@@ -122,7 +123,7 @@ public class RegistryServerSync implements InitializingBean, DisposableBean, Not
             ConcurrentMap<String, Map<Long, URL>> services = registryCache.get(category);
             if (services == null) {
                 services = new ConcurrentHashMap<String, Map<Long, URL>>();
-                registryCache.put(category, services);
+                registryCache.put(category, services);/**@c 本地缓存值设置 */
             }
             services.putAll(categoryEntry.getValue());
         }
