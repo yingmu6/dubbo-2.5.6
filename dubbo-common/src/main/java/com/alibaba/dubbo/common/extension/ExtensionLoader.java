@@ -107,7 +107,7 @@ public class ExtensionLoader<T> {
     public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
         if (type == null)
             throw new IllegalArgumentException("Extension type == null");
-        if (!type.isInterface()) {
+        if (!type.isInterface()) {/**@c 在运行时候指定实现类 */
             throw new IllegalArgumentException("Extension type(" + type + ") is not interface!");
         }
         //只有加上SPI注解的才允许使用dubbo的SPI功能
