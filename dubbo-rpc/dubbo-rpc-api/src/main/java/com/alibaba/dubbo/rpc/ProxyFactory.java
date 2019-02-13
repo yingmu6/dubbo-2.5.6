@@ -41,8 +41,8 @@ public interface ProxyFactory {// read finish
      * create invoker.
      *
      * @param <T>
-     * @param proxy
-     * @param type
+     * @param proxy  代理接口
+     * @param type   代理接口类型
      * @param url
      * @return invoker
      */

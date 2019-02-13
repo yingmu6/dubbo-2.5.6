@@ -35,6 +35,7 @@ public interface Protocol {// read finish
     int getDefaultPort();
 
     /**
+     * 暴露的最终目的：创建指定协议的服务端，打开端口，并且把url注册到注册中心
      * 暴露远程服务：<br>
      * 1. 协议在接收请求时，应记录请求来源方地址信息：RpcContext.getContext().setRemoteAddress();<br>
      * 2. export()必须是幂等的，也就是暴露同一个URL的Invoker两次，和暴露一次没有区别。<br>

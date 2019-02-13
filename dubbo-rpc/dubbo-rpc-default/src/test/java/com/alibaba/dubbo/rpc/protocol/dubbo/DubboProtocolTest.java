@@ -19,6 +19,7 @@ package com.alibaba.dubbo.rpc.protocol.dubbo;
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.extension.ExtensionLoader;
+import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Protocol;
 import com.alibaba.dubbo.rpc.ProxyFactory;
 import com.alibaba.dubbo.rpc.RpcException;
@@ -50,8 +51,13 @@ public class DubboProtocolTest {
     @Test
     public void testDemoProtocol() throws Exception {
         DemoService service = new DemoServiceImpl();
-        protocol.export(proxy.getInvoker(service, DemoService.class, URL.valueOf("dubbo://127.0.0.1:9020/" + DemoService.class.getName() + "?codec=exchange")));
-        service = proxy.getProxy(protocol.refer(DemoService.class, URL.valueOf("dubbo://127.0.0.1:9020/" + DemoService.class.getName() + "?codec=exchange")));
+        URL url = URL.valueOf("dubbo://127.0.0.1:9020/" + DemoService.class.getName() + "?codec=exchange");
+        Invoker exportInvoker = proxy.getInvoker(service, DemoService.class, url);
+        protocol.export(exportInvoker);
+
+
+        Invoker<DemoService> invokeInvoker = protocol.refer(DemoService.class, url);
+        service = proxy.getProxy(invokeInvoker);
         assertEquals(service.getSize(new String[]{"", "", ""}), 3);
     }
 

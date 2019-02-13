@@ -46,7 +46,7 @@ public abstract class AbstractProxyFactory implements ProxyFactory {// read fini
         if (interfaces == null) {
             interfaces = new Class<?>[]{invoker.getInterface(), EchoService.class};
         }
-        return getProxy(invoker, interfaces);
+        return getProxy(invoker, interfaces);/**@c 构造接口类型 */
     }
 
     public abstract <T> T getProxy(Invoker<T> invoker, Class<?>[] types);

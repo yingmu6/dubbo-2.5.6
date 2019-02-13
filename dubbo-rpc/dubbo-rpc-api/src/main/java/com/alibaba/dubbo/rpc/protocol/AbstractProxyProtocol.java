@@ -63,12 +63,13 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {// read fi
 
     @SuppressWarnings("unchecked")
     public <T> Exporter<T> export(final Invoker<T> invoker) throws RpcException {
-        //uri内容是啥？exporterMap的内容？
+        //uri内容是啥？exporterMap的内容？ 解：uri是缓存的key
         final String uri = serviceKey(invoker.getUrl());
         Exporter<T> exporter = (Exporter<T>) exporterMap.get(uri);
-        if (exporter != null) {
+        if (exporter != null) {/**@c 判断本地缓存是否存在exporter 若存在则直接返回缓存中暴露者exporter*/
             return exporter;
         }
+        /**@c TODO 创建代理待研究 */
         final Runnable runnable = doExport(proxyFactory.getProxy(invoker), invoker.getInterface(), invoker.getUrl());
         exporter = new AbstractExporter<T>(invoker) {
             public void unexport() {
@@ -127,7 +128,7 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {// read fi
     protected int getErrorCode(Throwable e) {
         return RpcException.UNKNOWN_EXCEPTION;
     }
-
+    /**@c impl：代理对象，type：接口类型 */
     protected abstract <T> Runnable doExport(T impl, Class<T> type, URL url) throws RpcException;
 
     protected abstract <T> T doRefer(Class<T> type, URL url) throws RpcException;

@@ -231,13 +231,14 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         exporterMap.put(key, exporter);
 
         //export an stub service for dispaching event
-        //TODO stub method方法是啥？
+        //stub method方法是啥？ 解：本地存根，把部分逻辑放在客户端实现
         Boolean isStubSupportEvent = url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT);
+        /**@c TODO 回调方法的用途？ */
         Boolean isCallbackservice = url.getParameter(Constants.IS_CALLBACK_SERVICE, false);
-        if (isStubSupportEvent && !isCallbackservice) {
+        if (isStubSupportEvent && !isCallbackservice) {/**@c */
             String stubServiceMethods = url.getParameter(Constants.STUB_EVENT_METHODS_KEY);
             if (stubServiceMethods == null || stubServiceMethods.length() == 0) {
-                if (logger.isWarnEnabled()) {//若支持了stubproxy，就需要stud method
+                if (logger.isWarnEnabled()) {//若支持了stub，就需要stud method
                     logger.warn(new IllegalStateException("consumer [" + url.getParameter(Constants.INTERFACE_KEY) +
                             "], has set stubproxy support event ,but no stub methods founded."));
                 }
@@ -258,6 +259,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         //client 也可以暴露一个只有server可以调用的服务。
         boolean isServer = url.getParameter(Constants.IS_SERVER_KEY, true);
         if (isServer) {
+            /**@c TODO 服务端、客户端待了解 */
             ExchangeServer server = serverMap.get(key);
             if (server == null) {
                 serverMap.put(key, createServer(url));

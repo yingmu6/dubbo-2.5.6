@@ -27,7 +27,7 @@ import com.alibaba.dubbo.rpc.RpcException;
 import java.util.List;
 
 /**
- * ListenerInvoker
+ * ListenerInvoker 监听invoker
  *
  * @author william.liangf
  */
