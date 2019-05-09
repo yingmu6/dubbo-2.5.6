@@ -87,7 +87,7 @@ public class ClassHelper {
      */
     public static ClassLoader getClassLoader(Class<?> cls) {
         ClassLoader cl = null;
-        try {
+        try {/**@c 获取类加载器 */
             cl = Thread.currentThread().getContextClassLoader();
         } catch (Throwable ex) {
             // Cannot access thread context ClassLoader - falling back to system class loader...

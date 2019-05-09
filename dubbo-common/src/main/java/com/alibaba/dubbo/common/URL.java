@@ -170,7 +170,7 @@ public final class URL implements Serializable {//可进行序列化
         this.host = host;
         this.port = (port < 0 ? 0 : port);
         // trim the beginning "/"
-        while (path != null && path.startsWith("/")) {
+        while (path != null && path.startsWith("/")) {/**@c path 接口名*/
             path = path.substring(1);
         }
         this.path = path;
@@ -436,7 +436,7 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     public String getParameter(String key) {
-        /**@c 从参数集合中获取参数的值，如果没有就取default.+key 默认键对应的值*/
+        /**@c 从内存中获取参数的值，如果没有就取default.+key 默认键对应的值*/
         String value = parameters.get(key);
         if (value == null || value.length() == 0) {
             value = parameters.get(Constants.DEFAULT_KEY_PREFIX + key);
@@ -444,7 +444,7 @@ public final class URL implements Serializable {//可进行序列化
         return value;
     }
 
-    public String getParameter(String key, String defaultValue) {
+    public String getParameter(String key, String defaultValue) {//TODO defaultValue从哪里传入
         String value = getParameter(key);
         if (value == null || value.length() == 0) {
             return defaultValue;

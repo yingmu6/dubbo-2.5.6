@@ -76,7 +76,7 @@ public final class ClassGenerator {
         return new ClassGenerator(getClassPool(loader));
     }
 
-    public static boolean isDynamicClass(Class<?> cl) {
+    public static boolean isDynamicClass(Class<?> cl) {//TODO Class类中的isAssignableFrom方法
         return ClassGenerator.DC.class.isAssignableFrom(cl);
     }
 
