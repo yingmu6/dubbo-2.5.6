@@ -1,4 +1,4 @@
-package com.java.relative;
+package com.java.relative.thread;
 
 /**
  * @author chensy

@@ -69,7 +69,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     private static final Map<String, Integer> RANDOM_PORT_MAP = new HashMap<String, Integer>();
 
-    /**@ 单例的线程池 TODO 线程池待了解*/
+    /**@ 单例的线程池*/
     private static final ScheduledExecutorService delayExportExecutor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("DubboServiceDelayExporter", true));
     private final List<URL> urls = new ArrayList<URL>(); /**@ list中的E 表示元素类型，泛型表示 */
     private final List<Exporter<?>> exporters = new ArrayList<Exporter<?>>();

@@ -1,4 +1,4 @@
-package com.java.relative;
+package com.java.relative.thread;
 
 /**
  * 多线程通过final访问主线程局部变量
