@@ -187,9 +187,16 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         return unexported;
     }
 
+    /**
+     * this ServiceConfig对象显示内容
+     * <dubbo:service ref="com.alibaba.dubbo.demo.provider.self.provider.ApiDemoImpl@1ed1993a" exported="false" unexported="false"
+     * interface="com.alibaba.dubbo.demo.ApiDemo" id="com.alibaba.dubbo.demo.ApiDemo" />
+     */
+
     /**@c 接口暴露是在提供方，接口引用是在消费方 */
     public synchronized void export() {
-        if (provider != null) {/**@c 提供者配置不为空的时候，从ProviderConfig获取 */
+        logger.info("export测试:" + this.getExportedUrls());
+        if (provider != null) {/**@c 在ServiceConfig接口参数为空的时候，从提供者ProviderConfig参数获取 */
             if (export == null) {
                 export = provider.getExport();
             }
@@ -197,13 +204,15 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 delay = provider.getDelay();
             }
         }
-        if (export != null && !export) {
+        if (export != null && !export) { /**@c 如指定服务不暴露，直接终止返回 */
             return;
         }
 
         if (delay != null && delay > 0) {//延迟暴露，在指定的时间后执行任务
-            delayExportExecutor.schedule(new Runnable() {
+            final long startTime = System.currentTimeMillis();
+            delayExportExecutor.schedule(new Runnable() { //内部类访问局部变量需要加final
                 public void run() {
+                    logger.info("接口延时时间间隔：" + (System.currentTimeMillis() - startTime));
                     doExport();
                 }
             }, delay, TimeUnit.MILLISECONDS);

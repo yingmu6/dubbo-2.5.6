@@ -42,7 +42,7 @@ public abstract class AbstractServiceConfig extends AbstractInterfaceConfig {
     protected Boolean deprecated;
 
     // 延迟暴露
-    protected Integer delay;
+    protected Integer delay; /**@c 封装类型没有值就为NULL */
 
     // 是否暴露
     protected Boolean export;
