@@ -41,7 +41,7 @@ import java.util.Set;
  *
  * @author chao.liuc
  */
-class CallbackServiceCodec {// read finish
+class CallbackServiceCodec {// read finish hh
     private static final Logger logger = LoggerFactory.getLogger(CallbackServiceCodec.class);
 
     private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();

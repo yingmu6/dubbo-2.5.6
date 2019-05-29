@@ -69,7 +69,7 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {// read fi
         if (exporter != null) {/**@c 判断本地缓存是否存在exporter 若存在则直接返回缓存中暴露者exporter*/
             return exporter;
         }
-        /**@c TODO 创建代理待研究 */
+        /**@c TODO 创建代理待研究 暴露了什么内容 */
         final Runnable runnable = doExport(proxyFactory.getProxy(invoker), invoker.getInterface(), invoker.getUrl());
         exporter = new AbstractExporter<T>(invoker) {
             public void unexport() {

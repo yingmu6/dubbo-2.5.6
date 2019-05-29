@@ -318,7 +318,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             throw new IllegalStateException("ref not allow null!");
         }
         if (!interfaceClass.isInstance(ref)) {/**@c 检查引用是否是声明接口的实现 */
-            throw new IllegalStateException("The class "
+            throw new IllegalStateException("检查引用不为空 The class "
                     + ref.getClass().getName() + " unimplemented interface "
                     + interfaceClass + "!");
         }
