@@ -1,4 +1,4 @@
-package com.java.relative.thread;
+package com.java.relative.thread.schedule;
 
 import java.text.DateFormat;
 import java.text.ParseException;
