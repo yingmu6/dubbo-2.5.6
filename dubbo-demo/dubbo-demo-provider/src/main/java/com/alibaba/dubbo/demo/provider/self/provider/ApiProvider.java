@@ -14,7 +14,10 @@ public class ApiProvider {
 
         //应用设置
         ApplicationConfig application = new ApplicationConfig();
+        //非法字符
+        //application.setName(".&api_demo");
         application.setName("api_demo");
+
 
         //注册中心设置
         RegistryConfig registry = new RegistryConfig();
