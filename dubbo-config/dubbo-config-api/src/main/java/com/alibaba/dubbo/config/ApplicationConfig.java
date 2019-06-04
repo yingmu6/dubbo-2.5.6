@@ -25,8 +25,8 @@ import java.util.List;
 
 
 /**
- * ApplicationConfig
- *
+ * ApplicationConfig 继承了AbstractConfig出构造方法外的非private的变量和方法
+ * Debug时，this对象会显示toString()的内容，AbstractConfig对toString进行了重写，会输出xml标签的配置信息
  * @author william.liangf
  * @export
  */
@@ -67,6 +67,17 @@ public class ApplicationConfig extends AbstractConfig {
     // 是否为缺省
     private Boolean isDefault;
 
+    // test
+    private String testAppConfigOut;
+
+    public String getTestAppConfigOut() {
+        return testAppConfigOut;
+    }
+
+    public void setTestAppConfigOut(String testAppConfigOut) {
+        this.testAppConfigOut = testAppConfigOut;
+    }
+
     public ApplicationConfig() {
     }
 
@@ -80,7 +91,7 @@ public class ApplicationConfig extends AbstractConfig {
     }
 
     public void setName(String name) {
-        checkName("name", name);
+        checkName("name", name); //检查命名格式是否正确
         this.name = name;
         if (id == null || id.length() == 0) {
             id = name;
@@ -192,6 +203,11 @@ public class ApplicationConfig extends AbstractConfig {
 
     public void setDefault(Boolean isDefault) {
         this.isDefault = isDefault;
+    }
+
+    /**@c 测试appendProperties 该方法是protected 访问权限只能在同一个包进行*/
+    public void testAppendProperties(AbstractConfig abstractConfig) {
+        appendProperties(abstractConfig);
     }
 
 }

@@ -128,7 +128,7 @@ public class ConfigUtils {
         }
         Matcher matcher = VARIABLE_PATTERN.matcher(expression);
         StringBuffer sb = new StringBuffer();
-        while (matcher.find()) { // 逐个匹配
+        while (matcher.find()) { // 逐个匹配,app.na$me.proper$ties7788 会取值me.proper
             String key = matcher.group(1);
             String value = System.getProperty(key);
             if (value == null && params != null) {

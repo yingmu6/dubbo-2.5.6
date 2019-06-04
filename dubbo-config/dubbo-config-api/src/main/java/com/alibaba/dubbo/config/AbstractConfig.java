@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 
 /**
  * 配置解析的工具方法、公共方法
+ * 抽象类，但该类没有抽象方法
  *
  * @author william.liangf
  * @export
@@ -106,12 +107,12 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         return value;
     }
 
-    /**@c 为此方法是设值 但API已经可以设置，为啥还用这个 解：可以为对象所有属性设值 */
+    /**@c 为此方法是设值 但API已经可以设置，为啥还用这个 解：可以为对象所有属性设值，引用传递 */
     protected static void appendProperties(AbstractConfig config) {/**@c 向上转型，依次设置属性的值*/
         if (config == null) {
             return;
         }
-        String prefix = "dubbo." + getTagName(config.getClass()) + ".";/**@c 如：dubbo.provider. */
+        String prefix = "dubbo." + getTagName(config.getClass()) + "."; /**@c 如：dubbo.provider. 或dubbo.application. */
         Method[] methods = config.getClass().getMethods();
         for (Method method : methods) {
             try {
@@ -154,11 +155,11 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                         }
                         if (getter != null) {/**@c 执行method中方法invoke */
                             if (getter.invoke(config, new Object[0]) == null) {/**@c invoke(方法所属对象，参数列表) */
-                                if (config.getId() != null && config.getId().length() > 0) {
+                                if (config.getId() != null && config.getId().length() > 0) { //例如：dubbo.application.config_app.name
                                     value = ConfigUtils.getProperty(prefix + config.getId() + "." + property);
                                 }
                                 if (value == null || value.length() == 0) {
-                                    value = ConfigUtils.getProperty(prefix + property);
+                                    value = ConfigUtils.getProperty(prefix + property); //例如：dubbo.application.name
                                 }
                                 if (value == null || value.length() == 0) {/**@c 替换特定的属性 */
                                     String legacyKey = legacyProperties.get(prefix + property);
@@ -307,7 +308,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         }
     }
 
-    /**@c 是否是原始的类型 */
+    /**@c 是否是基本类型 */
     private static boolean isPrimitive(Class<?> type) {
         return type.isPrimitive()
                 || type == String.class
@@ -482,20 +483,21 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         try {
             StringBuilder buf = new StringBuilder();
             buf.append("<dubbo:");
-            buf.append(getTagName(getClass()));
+            buf.append(getTagName(getClass())); /**@c 将ApplicationConfig等 去掉config小写后得到标签名，getClass()是Object中的方法 */
             Method[] methods = getClass().getMethods();
             for (Method method : methods) {
                 try {
+                    /**@c 筛选满足条件get、is方法，并且返回值不为空，以键值对的形式展示出来 */
                     String name = method.getName();
                     if ((name.startsWith("get") || name.startsWith("is"))
                             && !"getClass".equals(name) && !"get".equals(name) && !"is".equals(name)
-                            && Modifier.isPublic(method.getModifiers())
-                            && method.getParameterTypes().length == 0
-                            && isPrimitive(method.getReturnType())) {
+                            && Modifier.isPublic(method.getModifiers()) //修饰符为public
+                            && method.getParameterTypes().length == 0   //参数列表为空
+                            && isPrimitive(method.getReturnType())) {   //返回类型是基本类
                         int i = name.startsWith("get") ? 3 : 2;
                         String key = name.substring(i, i + 1).toLowerCase() + name.substring(i + 1);
                         Object value = method.invoke(this, new Object[0]);
-                        if (value != null) {
+                        if (value != null) { //属性值不为空
                             buf.append(" ");
                             buf.append(key);
                             buf.append("=\"");

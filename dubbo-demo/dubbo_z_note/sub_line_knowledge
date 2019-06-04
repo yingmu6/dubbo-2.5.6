@@ -1,0 +1,10 @@
+在ym中产生的知识和问题，暂时记下来，集中处理
+
+19/6/2
+1.反射机制,方法Method的调用invoke
+2.System.getProperty、System.getenv获取系统信息
+
+19/6/3
+1.synchronized使用
+2.Properties
+3.Matcher中appendReplacement，quoteReplacement方法

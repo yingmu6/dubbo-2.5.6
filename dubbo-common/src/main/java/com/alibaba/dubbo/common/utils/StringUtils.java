@@ -387,6 +387,13 @@ public final class StringUtils {
         return buf.toString();
     }
 
+    /**
+     * 将驼峰式的写法换位任意分隔符的算法
+     * 1.循环取出字符，判断是否有大写字母
+     * 2.若存在，第一次取出大写字母之前的子串，添加上分隔符，然后加上大写字母的小写形式
+     * 3.之后的字符，若是小写字母直接添加，若是大写字符，转换为小写字母添加
+     *
+     */
     public static String camelToSplitName(String camelName, String split) {
         if (camelName == null || camelName.length() == 0) {
             return camelName;
@@ -396,7 +403,7 @@ public final class StringUtils {
             char ch = camelName.charAt(i);
             if (ch >= 'A' && ch <= 'Z') {
                 if (buf == null) {
-                    buf = new StringBuilder();
+                    buf = new StringBuilder(); //延迟初始化对象，只有存在大写字母才初始化
                     if (i > 0) {
                         buf.append(camelName.substring(0, i));
                     }
