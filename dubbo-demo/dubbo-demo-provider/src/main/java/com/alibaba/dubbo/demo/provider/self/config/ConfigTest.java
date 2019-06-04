@@ -19,14 +19,15 @@ public class ConfigTest {
     public static void main(String[] args) throws Exception {
         ApplicationConfig applicationConfig = new ApplicationConfig();
         //applicationConfig.setName("config_app");
-        System.setProperty("dubbo.application.name", "csy_app_config3");
+        //System.setProperty("dubbo.application.name", "csy_app_config3");
         //System.setProperty("dubbo.properties.file", "/Users/chenshengyong/selfPro/tuya_basic_dd/dubbo-demo/dubbo-demo-provider/src/main/resources/dubbo.properties.file");
-        applicationConfig.setTestAppConfigOut("yuu测试ooi");
-
-        System.out.println("aa输出值"+System.getProperty("aa"));
-        System.setProperty("aa", "aaeee");
-        System.out.println("aa输出值22"+System.getProperty("aa"));
-        Properties properties = new Properties();
+        System.setProperty("dubbo.application.service.name", "leasyy");
+//        applicationConfig.setTestAppConfigOut("yuu测试ooi");
+//
+//        System.out.println("aa输出值"+System.getProperty("aa"));
+//        System.setProperty("aa", "aaeee");
+//        System.out.println("aa输出值22"+System.getProperty("aa"));
+//        Properties properties = new Properties();
         //properties.setProperty(Constants.DUBBO_PROPERTIES_KEY, "/Users/chenshengyong/selfPro/tuya_basic_dd/dubbo-demo/dubbo-demo-provider/src/main/resources/dubbo.config.properties");
         //ConfigUtils.setProperties(properties);
 
@@ -35,6 +36,8 @@ public class ConfigTest {
         registryConfig.setAddress("127.0.0.1:2181");
 
         ConfigTest configTest = new ConfigTest();
+        //configTest.testSelfAppendProperties(applicationConfig);
+        configTest.testAppendProperties(applicationConfig);
         //configTest.testAppendProperties(applicationConfig);
 
         //configTest.testCamelToSplitName("testAppConfigOut", "*");
@@ -42,7 +45,7 @@ public class ConfigTest {
 
         //configTest.testMethodInvoke(applicationConfig);
 
-        configTest.testGetProperty();
+        //onfigTest.testGetProperty();
     }
 
     /**@c 测试appendProperties方法 */
@@ -52,6 +55,13 @@ public class ConfigTest {
         //dubbo.application.name
         applicationConfig.testAppendProperties(applicationConfig);
         System.out.println("添加参数后" + applicationConfig.toString());
+    }
+
+    /**@c 测试appendProperties方法 */
+    public void testSelfAppendProperties(ApplicationConfig applicationConfig) {
+        System.out.println("self添加参数前" + applicationConfig.toString());
+        applicationConfig.testAppendProperties(applicationConfig);
+        System.out.println("self添加参数后" + applicationConfig.toString());
     }
 
     public void testCamelToSplitName(String camelName, String split) {

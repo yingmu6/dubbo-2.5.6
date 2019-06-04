@@ -27,6 +27,7 @@ import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.config.support.Parameter;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -79,6 +80,8 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         legacyProperties.put("dubbo.consumer.retries", "dubbo.service.max.retry.providers");
         legacyProperties.put("dubbo.consumer.check", "dubbo.service.allow.no.provider");
         legacyProperties.put("dubbo.service.url", "dubbo.service.address");
+        // self
+        legacyProperties.put("dubbo.application.name", "dubbo.application.service.name");
     }
 
     //此处的用途？优雅停机
@@ -95,7 +98,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
 
     protected String id;
 
-    /**@c TODO 此方法的用途？*/
+    /**@c 对特殊属性处理 */
     private static String convertLegacyValue(String key, String value) {
         if (value != null && value.length() > 0) {
             if ("dubbo.service.max.retry.providers".equals(key)) {
@@ -107,8 +110,16 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         return value;
     }
 
+    /**
+     * DUBBO配置项的优先级: java -D优先于 Spring配置，Spring配置优先于 properties文件的配置，这也符合一般项目的规则.
+     * https://www.cnblogs.com/ydxblog/p/5714476.html
+     * java -D 效果等同 System.setProperty()
+     *
+     * 等同：系统配置（启动配置）> xml配置（API配置）> properties文件配置
+     * 此方法用于是将dubbo的属性配置过滤处理
+     */
     /**@c 为此方法是设值 但API已经可以设置，为啥还用这个 解：可以为对象所有属性设值，引用传递 */
-    protected static void appendProperties(AbstractConfig config) {/**@c 向上转型，依次设置属性的值*/
+    protected static void appendPropertiesOrigin(AbstractConfig config) {/**@c 向上转型，依次设置属性的值*/
         if (config == null) {
             return;
         }
@@ -263,6 +274,99 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                 }
             } catch (Exception e) {
                 throw new IllegalStateException(e.getMessage(), e);
+            }
+        }
+    }
+
+    /**
+     * 重写方法：
+     * 添加属性值算法逻辑：
+     * 1）判断config是否为空
+     * 2）获取属性值前缀 prefix = "dubbo." + 标签名 + "."
+     * 3) 反射机制获取方法，对set方法进行过滤：以set开头、长度大于3、公有方法、参数只有一个、参数是基本类型
+     * 4）从System获取值，key为 prefix + configId + name(属性名) 以及key为 prefix + name，看是否能获取到，若能值设置改值，若不能继续查找
+     * 5）获取getter方法以及is方法看是否有设定值，若没有设置值，继续往下查找
+     * 6）从ConfigUtil中获取属性值，即从配置文件中获取值，key依然为prefix + configId + name和prefix + name，若没取到值，继续查找
+     * 7）从特定的map中legacyProperties获取值，若没有取到值，本地设置值终止
+     */
+
+    protected static void appendProperties(AbstractConfig abstractConfig) {
+        if (abstractConfig == null) {
+            return;
+        }
+
+        Class configClass = abstractConfig.getClass();
+        String prefix = "dubbo." + getTagName(configClass) + ".";
+        Method[] methods = configClass.getMethods();
+        String configId = abstractConfig.getId();
+        for (Method method : methods) {
+            try {
+                String name = method.getName();
+                String value = null;
+                String property = "";
+                if (name.startsWith("set") && name.length() > 3 && Modifier.isPublic(method.getModifiers())
+                        && (method.getParameterCount() == 1) && isPrimitive(method.getParameterTypes()[0])) {
+                    //将属性名格式化
+                    property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), "-1");
+                    if (StringUtils.isNotEmpty(configId)) { //从系统属性获取
+                        value = System.getProperty(prefix + configId + property);
+                        if (StringUtils.isNotEmpty(value)) {
+                            logger.info("use system properties , key=" + (prefix + configId + property) + ", value=" + value);
+                        }
+                    }
+                    if (StringUtils.isEmpty(value)) {
+                        value = System.getProperty(prefix + property);
+                        if (StringUtils.isNotEmpty(value)) {
+                            logger.info("use system properties , key=" + (prefix + property) + ", value=" + value);
+                        }
+                    }
+                    if (StringUtils.isEmpty(value)) {   //从config bean中获取
+                        Method getter;
+                        try { //从get方法获取值，若没有get方法从is方法获取
+                            getter = configClass.getMethod("get" + name.substring(3), new Class[0]);
+                        } catch (Exception e) {
+                            try {
+                                getter = configClass.getMethod("is" + name.substring(2), new Class[0]);
+                            } catch (Exception e1) {
+                                getter = null;
+                            }
+                        }
+                        if (getter != null) {
+                            if (getter.invoke(abstractConfig, new Object[0]) == null) {
+                                if (StringUtils.isEmpty(value)) {   //从属性文件中获取
+                                    if (StringUtils.isNotEmpty(configId)) {
+                                        value = ConfigUtils.getProperty(prefix + configId + property);
+                                        if (StringUtils.isNotEmpty(value)) {
+                                            logger.info("use dubbo properties file, key=" + (prefix + configId + property) + ", value=" + value);
+                                        }
+                                    }
+                                }
+                                if (StringUtils.isEmpty(value)) {
+                                    value = ConfigUtils.getProperty(prefix + property);
+                                    if (StringUtils.isNotEmpty(value)) {
+                                        logger.info("use dubbo properties file, key=" + (prefix + property) + ", value=" + value);
+                                    }
+                                }
+                                if (StringUtils.isEmpty(value)) {  //从预定义的key获取
+                                    String key = legacyProperties.get(prefix + property); //将指定的key转换
+                                    if (key != null && key.length() > 0) {
+                                        value = convertLegacyValue(key, ConfigUtils.getProperty(key)); //过滤特殊的key值
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (StringUtils.isNotEmpty(value)) { //设置属性值
+                        try {
+                            method.invoke(abstractConfig, value);
+                        } catch (Exception e) {
+                            logger.info("invoke method error " + e.getMessage());
+                        }
+                    }
+                }
+            } catch (Exception e) { //错误日志捕获
+                logger.error(e.getMessage(), e);
             }
         }
     }
