@@ -31,16 +31,16 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface Parameter {
 
-    String key() default "";
+    String key() default ""; /**@ 键（别名）*/
 
-    boolean required() default false;
+    boolean required() default false; /**@c 是否必填 */
 
-    boolean excluded() default false;/**@c 排除 */
+    boolean excluded() default false;/**@c 是否忽略，排除 */
 
-    boolean escaped() default false;/**@c 逃逸 */
+    boolean escaped() default false;/**@c 是否转义 */
 
-    boolean attribute() default false;
+    boolean attribute() default false; /**@c 是否为属性*/
 
-    boolean append() default false;
+    boolean append() default false; /**@c 是否拼接默认属性 */
 
 }

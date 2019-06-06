@@ -5,8 +5,11 @@ import com.alibaba.dubbo.common.utils.ConfigUtils;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
+import com.alibaba.dubbo.config.ServiceConfig;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -18,10 +21,10 @@ import java.util.Properties;
 public class ConfigTest {
     public static void main(String[] args) throws Exception {
         ApplicationConfig applicationConfig = new ApplicationConfig();
-        //applicationConfig.setName("config_app");
+        applicationConfig.setName("config_app_test");
         //System.setProperty("dubbo.application.name", "csy_app_config3");
         //System.setProperty("dubbo.properties.file", "/Users/chenshengyong/selfPro/tuya_basic_dd/dubbo-demo/dubbo-demo-provider/src/main/resources/dubbo.properties.file");
-        System.setProperty("dubbo.application.service.name", "leasyy");
+        //System.setProperty("dubbo.application.service.name", "leasyy");
 //        applicationConfig.setTestAppConfigOut("yuu测试ooi");
 //
 //        System.out.println("aa输出值"+System.getProperty("aa"));
@@ -36,8 +39,41 @@ public class ConfigTest {
         registryConfig.setAddress("127.0.0.1:2181");
 
         ConfigTest configTest = new ConfigTest();
+        Map<String, String> map = new HashMap<>();
+        String prefix = "";
+        map.put(Constants.DEFAULT_KEY + "." + "application", "fsdf");
+
+
+        ServiceConfig serviceConfig = new ServiceConfig();
+        Map<String, String> configMap = new HashMap<>();
+        configMap.put("age", "11");
+        configMap.put("grade", "343");
+        serviceConfig.setParameters(configMap);
+//        configTest.testAppendParamter(map, applicationConfig, prefix);
+//        configTest.testAppendParamter(map, registryConfig, prefix);
+//        configTest.testAppendParamter(map, serviceConfig, prefix);
+
+        System.out.println(map);
+
+        System.out.println("---------override-----");
+
+        Map<String, String> mapSelf = new HashMap<>();
+        String prefixSelf = "";
+        mapSelf.put(Constants.DEFAULT_KEY + "." + "application", "fsdf");
+        ServiceConfig serviceConfigSelf = new ServiceConfig();
+        Map<String, String> configMapSelf = new HashMap<>();
+        configMapSelf.put("age", "11");
+        configMapSelf.put("grade", "343");
+        serviceConfigSelf.setParameters(configMapSelf);
+//        configTest.testAppendParamterSelf(mapSelf, applicationConfig, prefixSelf);
+//        configTest.testAppendParamterSelf(mapSelf, registryConfig, prefixSelf);
+//        configTest.testAppendParamterSelf(mapSelf, serviceConfigSelf, prefixSelf);
+        System.out.println(mapSelf);
+
+        //System.out.println(false || false && true); //运算符 || && 从左到右
+
         //configTest.testSelfAppendProperties(applicationConfig);
-        configTest.testAppendProperties(applicationConfig);
+       // configTest.testAppendProperties(applicationConfig);
         //configTest.testAppendProperties(applicationConfig);
 
         //configTest.testCamelToSplitName("testAppConfigOut", "*");
@@ -47,6 +83,14 @@ public class ConfigTest {
 
         //onfigTest.testGetProperty();
     }
+
+    public void testAppendParamter(Map<String, String> map, Object config, String prefix) {
+         new ApplicationConfig().testAppendParameter(map, config, prefix);
+    }
+
+//    public void testAppendParamterSelf(Map<String, String> map, Object config, String prefix) {
+//        new ApplicationConfig().testAppendParameterSelf(map, config, prefix);
+//    }
 
     /**@c 测试appendProperties方法 */
     public void testAppendProperties(ApplicationConfig applicationConfig) {

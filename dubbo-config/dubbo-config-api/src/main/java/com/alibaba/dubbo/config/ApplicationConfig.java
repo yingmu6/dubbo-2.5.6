@@ -22,6 +22,7 @@ import com.alibaba.dubbo.config.support.Parameter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -85,7 +86,8 @@ public class ApplicationConfig extends AbstractConfig {
         setName(name);
     }
 
-    @Parameter(key = Constants.APPLICATION_KEY, required = true)
+    //origin  @Parameter(key = Constants.APPLICATION_KEY, required = true)
+    @Parameter(key = Constants.APPLICATION_KEY, escaped = true, append = true, required = true)
     public String getName() {
         return name;
     }
@@ -209,5 +211,10 @@ public class ApplicationConfig extends AbstractConfig {
     public void testAppendProperties(AbstractConfig abstractConfig) {
         appendProperties(abstractConfig);
     }
+
+    public void testAppendParameter(Map<String, String> parameters, Object config, String prefix) {
+        appendParameters(parameters, config, prefix);
+    }
+
 
 }

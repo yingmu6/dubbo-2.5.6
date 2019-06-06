@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -118,7 +119,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
      * 等同：系统配置（启动配置）> xml配置（API配置）> properties文件配置
      * 此方法用于是将dubbo的属性配置过滤处理
      */
-    /**@c 为此方法是设值 但API已经可以设置，为啥还用这个 解：可以为对象所有属性设值，引用传递 */
+    /**@c 为此方法是设值 但API已经可以设置，为啥还用这个 解：过滤处理属性值，引用传递,过 */
     protected static void appendPropertiesOrigin(AbstractConfig config) {/**@c 向上转型，依次设置属性的值*/
         if (config == null) {
             return;
@@ -209,8 +210,8 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         appendParameters(parameters, config, null);
     }
 
-    @SuppressWarnings("unchecked")  /**@c 把配置的键与值写到Map中 */
-    protected static void appendParameters(Map<String, String> parameters, Object config, String prefix) {
+    @SuppressWarnings("unchecked")   /**@c 过滤处理URL中的参数值 原始方法*/
+    protected static void appendParametersOrigin(Map<String, String> parameters, Object config, String prefix) {
         if (config == null) {
             return;
         }
@@ -223,7 +224,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                         && Modifier.isPublic(method.getModifiers())
                         && method.getParameterTypes().length == 0
                         && isPrimitive(method.getReturnType())) {
-                    /**@ 通过反射机制获取注解 参数类型不能为Object并且没有被排除 */
+                    /**@ 通过反射机制获取注解 获取方法上的注解，注解的值若没有设置，则取默认值 */
                     Parameter parameter = method.getAnnotation(Parameter.class);
                     if (method.getReturnType() == Object.class || parameter != null && parameter.excluded()) {
                         continue;
@@ -232,14 +233,13 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                     String prop = StringUtils.camelToSplitName(name.substring(i, i + 1).toLowerCase() + name.substring(i + 1), ".");
                     String key;
                     if (parameter != null && parameter.key() != null && parameter.key().length() > 0) {
-                        key = parameter.key();
+                        key = parameter.key(); //取方法上注解key的值
                     } else {
                         key = prop;
                     }
                     Object value = method.invoke(config, new Object[0]);
                     String str = String.valueOf(value).trim();
                     if (value != null && str.length() > 0) {
-                        //TODO 逃逸的？
                         if (parameter != null && parameter.escaped()) {
                             str = URL.encode(str);
                         }
@@ -260,7 +260,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                     } else if (parameter != null && parameter.required()) {
                         throw new IllegalStateException(config.getClass().getSimpleName() + "." + key + " == null");
                     }
-                } else if ("getParameters".equals(name)
+                } else if ("getParameters".equals(name)  /**@c ProtocolConfig中方法*/
                         && Modifier.isPublic(method.getModifiers())
                         && method.getParameterTypes().length == 0
                         && method.getReturnType() == Map.class) {
@@ -307,7 +307,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                 if (name.startsWith("set") && name.length() > 3 && Modifier.isPublic(method.getModifiers())
                         && (method.getParameterCount() == 1) && isPrimitive(method.getParameterTypes()[0])) {
                     //将属性名格式化
-                    property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), "-1");
+                    property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), "-");
                     if (StringUtils.isNotEmpty(configId)) { //从系统属性获取
                         value = System.getProperty(prefix + configId + property);
                         if (StringUtils.isNotEmpty(value)) {
@@ -368,6 +368,88 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
             } catch (Exception e) { //错误日志捕获
                 logger.error(e.getMessage(), e);
             }
+        }
+    }
+
+    /**
+     * 添加处理URL中的参数,将config配置中的属性添加到参数map中
+     * 算法思路：
+     * 1）判断config是否为空
+     * 2）config不为空的时候，对get方法或is或getParameters方法进行处理
+     * 3）get方法中，取出方法上的注解，分析属性excluded、key、escaped、append、required
+     *    excluded判断是否忽略；key获取别名；escaped判断是否转义；append判断是否附加默认属性、required表示属性是必须设置值的
+     * 4）getParameters方法中，循环遍历map，把值写入待处理的map中
+     */
+
+    protected static void appendParameters (Map<String, String> parametersMap, Object config, String prefix) {
+        if (config == null) {
+            return;
+        }
+        Method [] methods = config.getClass().getMethods();
+        try {
+            for (Method method : methods) {
+                String name = method.getName(); //参数个数为0；方法是公有的；返回类型是基本类型
+                if ((name.startsWith("get")  || name.startsWith("is")) //筛选get或is方法
+                        && method.getParameterCount() == 0 && (!name.equals("getClass"))
+                        && Modifier.isPublic(method.getModifiers())
+                        && isPrimitive(method.getReturnType())) {
+                    Parameter parameter = method.getAnnotation(Parameter.class); //获取方法上注解
+                    if (method.getReturnType() == Object.class || parameter != null && parameter.excluded()) {
+                        continue;
+                    }
+                    int i = name.startsWith("get") ? 3 : 2; //判断get和is方法属性起始位置
+                    String property = StringUtils.camelToSplitName(name.substring(i, i + 1).toLowerCase() + name.substring(i + 1), ".");
+                    String key;
+                    if (parameter != null && StringUtils.isNotEmpty(parameter.key())) { //判断是否有别名，若有别名，属性名取别名
+                        key = parameter.key();
+                    } else {
+                        key = property;
+                    }
+                    Object value = method.invoke(config, new Object[0]);
+                    String val = value == null ? "" : String.valueOf(value).trim();
+                    if (value != null && val.length() > 0) {
+                        if (parameter != null && parameter.escaped()) {
+                            val = URL.encode(val);
+                        }
+
+                        // 如果注解append为true，将多个值用分隔符相连
+                        if (parameter != null && parameter.append()) { //判断参数集中是否存在key，若存在将值相连起来
+                            String defaultVal = parametersMap.get(Constants.DEFAULT_KEY + "." + key);
+                            if (defaultVal != null && defaultVal.length() > 0) {
+                                val = defaultVal + "," + val;
+                            }
+                            defaultVal = parametersMap.get(key);
+                            if (defaultVal != null && defaultVal.length() > 0) {
+                                val = defaultVal + "," + val;
+                            }
+                        }
+                        if (prefix != null && prefix.length() > 0) { //若前缀不为空，附加到键上key
+                            key = prefix + "." + key;
+                        }
+
+                        // 若append为false，相同的key，值会被覆盖
+                        parametersMap.put(key, val); /** 存入map */
+                    } else if (parameter != null && parameter.required()) { //若属性是必须的，就必须需要值
+                        throw new IllegalStateException(key + "is required, "  + "can not null");
+                    }
+
+                } else if (name.equals("getParameters")  /**@c 将已有map的属性加到parametersMap */
+                        && Modifier.isPublic(method.getModifiers())
+                        && method.getParameterTypes().length == 0
+                        && method.getReturnType() == Map.class) {
+                    Map<String, String> map = (Map<String, String>) method.invoke(config, new Object[0]);
+                    if (map != null && map.size() > 0) {
+                        // 键加上前缀
+                        String pre = (prefix != null && prefix.length() > 0 ? prefix + "." : "");
+                        Set<String> keySet = map.keySet();
+                        for (String key : keySet) { //key加上前缀并将'-'替换为'.'
+                            parametersMap.put(pre + key.replace('-', '.'), map.get(key));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
