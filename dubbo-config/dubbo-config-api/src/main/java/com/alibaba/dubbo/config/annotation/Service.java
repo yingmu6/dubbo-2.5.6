@@ -120,4 +120,7 @@ public @interface Service {/**@ 采用注解配置 */
 
     String[] registry() default {};
 
+    //test
+    String testAppConfigOut() default "test annotion";
+
 }

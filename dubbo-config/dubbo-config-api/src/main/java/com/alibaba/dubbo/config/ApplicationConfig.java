@@ -216,5 +216,12 @@ public class ApplicationConfig extends AbstractConfig {
         appendParameters(parameters, config, prefix);
     }
 
+    public void testAppendAnnotation(Class<?> annotationClass, Object annotation) {
+        appendAnnotationOrigin(annotationClass, annotation);
+    }
 
+    /**@c 重新方法 */
+    public void testAppendAnnotationSelf(Class<?> annotationClass, Object annotation) {
+        appendAnnotation(annotationClass, annotation);
+    }
 }

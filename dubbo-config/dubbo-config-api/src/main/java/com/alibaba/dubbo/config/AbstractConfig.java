@@ -457,6 +457,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         appendAttributes(parameters, config, null);
     }
 
+    /**@c 将config中注解attribute为true的属性放入map中 */
     protected static void appendAttributes(Map<Object, Object> parameters, Object config, String prefix) {
         if (config == null) {
             return;
@@ -471,7 +472,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                         && method.getParameterTypes().length == 0
                         && isPrimitive(method.getReturnType())) {
                     Parameter parameter = method.getAnnotation(Parameter.class);
-                    if (parameter == null || !parameter.attribute())
+                    if (parameter == null || !parameter.attribute()) //分析注解参数attribute
                         continue;
                     String key;
                     if (parameter != null && parameter.key() != null && parameter.key().length() > 0) {
@@ -532,15 +533,15 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
     }
 
     protected static void checkExtension(Class<?> type, String property, String value) {
-        checkName(property, value);
+        checkName(property, value);/**@c 检查value值是否符合条件 */
         if (value != null && value.length() > 0
-                && !ExtensionLoader.getExtensionLoader(type).hasExtension(value)) {
+                && !ExtensionLoader.getExtensionLoader(type).hasExtension(value)) { /**@c 检查spi扩展是否正确 */
             throw new IllegalStateException("No such extension " + value + " for " + property + "/" + type.getName());
         }
     }
 
     protected static void checkMultiExtension(Class<?> type, String property, String value) {
-        checkMultiName(property, value);
+        checkMultiName(property, value); /**@ 与checkName匹配的正则表达式不同 value由多个值组成 */
         if (value != null && value.length() > 0) {
             String[] values = value.split("\\s*[,]+\\s*");
             for (String v : values) {
@@ -625,8 +626,8 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         this.id = id;
     }
 
-    /**@c 添加注解 利用反射机制 解析注解内容*/
-    protected void appendAnnotation(Class<?> annotationClass, Object annotation) {
+    /**@c 将注解中方法的值设置到配置中对应的属性 */
+    protected void appendAnnotationOrigin(Class<?> annotationClass, Object annotation) {
         Method[] methods = annotationClass.getMethods();
         for (Method method : methods) {
             if (method.getDeclaringClass() != Object.class
@@ -701,6 +702,59 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
             logger.warn(t.getMessage(), t);
             return super.toString();
         }
+    }
+
+    /**
+     * 将注解中的值设置给对应的属性
+     * 1.获取注解中的所有方法
+     * 2.注解中的方法过滤：getDeclareClass != Object.class；retureType != void.class；parameterCount == 0；
+     * Modifier.isPublic； ！Modifier.isStatic
+     * 3.对interfaceClass或interfaceName方法处理，属性名按照interface处理
+     * 4.执行注解中的方法，进行判断 value != null && !value == method.getDefault
+     * 5.如果属性是filter或者listener，可能有多个值，将字符串拼接join
+     *   如果属性是getParameters，值为Map，CollectionUtils.toMap
+     * 6.当前对象中getClass查找对应的属性方法，如果有该方法，则设置值。若没有，则跳过
+     */
+    protected void appendAnnotation(Class<?> annotationClass, Object annotation) {
+        Method[] methods = annotationClass.getMethods();
+            for (Method method : methods) {
+                if (method.getDeclaringClass() != Object.class && method.getReturnType() != void.class
+                        && method.getParameterCount() == 0 && Modifier.isPublic(method.getModifiers())
+                        && !Modifier.isStatic(method.getModifiers())) {
+
+                    try { //异常捕获放在for循环内部，某次失败，并不影响下次执行，放在for循环外，一旦某次失败，for循环就结束了
+                        String property = method.getName(); // idea中的watcher可以通过method.name设置值，不能只指定一个值，因为method是个对象，还需要指定root等，如果数据类型复杂就加判断语句，对指定的值进行分析
+    //                    if (!property.equals("testAppConfigOut")) {
+    //                        continue;
+    //                    }
+                        if ("interfaceClass".equals(property) || "interfaceName".equals(property)) {
+                            property = "interface";
+                        }
+                        Object value = method.invoke(annotation, new Object[0]); //invoke指定的对象需要是一个实例，不能是个class，java.lang.IllegalArgumentException: object is not an instance of declaring class
+                        if (value != null && (!value.equals(method.getDefaultValue()))) {// 值不为空，并且不等于默认值
+                            Class<?> parameterType = ReflectUtils.getBoxedClass(method.getReturnType()); //获取返回类型的封装类型
+                            if ("filter".equals(property) || "listener".equals(property)) { //多个值用分隔符分隔
+                                parameterType = String.class;
+                                value = StringUtils.join((String [])value, ",");
+                            }
+                            if ("parameters".equals(property)) { //返回值为Map类型
+                                parameterType = Map.class;
+                                value = CollectionUtils.toStringMap((String [])value);
+                            }
+
+                            try {
+                                Method setter = getClass().getMethod("set" + property.substring(0, 1).toUpperCase() + property.substring(1), new Class<?>[]{parameterType});
+                                setter.invoke(this, new Object[]{value}); //为当前对象设置值
+                            } catch (NoSuchMethodException e) {
+
+                            }
+                        }
+                    } catch (Exception e) {
+                        logger.error("append annotion error ", e);
+                    }
+                }
+            }
+
     }
 
 }
