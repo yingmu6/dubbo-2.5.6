@@ -51,6 +51,7 @@ public class ClientsTest {
     public void testGetTransport3() {
         String name = "netty";
         assertEquals(NettyTransporter.class, ExtensionLoader.getExtensionLoader(Transporter.class).getExtension(name).getClass());
+        System.out.println(ExtensionLoader.getExtensionLoader(Transporter.class).getExtension(name).getClass());
     }
 
     @Test(expected = IllegalStateException.class)

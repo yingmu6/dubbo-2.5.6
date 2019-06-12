@@ -1,4 +1,5 @@
 在ym中产生的知识和问题，暂时记下来，集中处理
+只要不影响主流程的相关知识都可以暂时记下来，大体了解下。总之，不能影响主流程推进，主流程一般不要停。若影响主流程，暂停主流程，针对性学习实践
 
 19/6/2
 1.反射机制,方法Method的调用invoke  ok
@@ -18,3 +19,12 @@
 19/6/8
 1.注解使用，声明注解、提取注解
 https://blog.csdn.net/wp94302948/article/details/79724342
+
+19/6/11
+1.Collections.unmodifiableSet 以及TreeSet
+2.ConcurrentMap
+3.ClassLoader 类加载的获取和设置
+4.java.net.URL 与InputStream交互
+5.Class.forName 实例化对象
+  type.isAssignableFrom() class中的方法
+6.运行时栈帧结构  https://blog.csdn.net/qian520ao/article/details/79118474

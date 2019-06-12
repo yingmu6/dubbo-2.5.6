@@ -67,16 +67,16 @@ public class ExtensionLoader<T> {
 
     private static final String DUBBO_INTERNAL_DIRECTORY = DUBBO_DIRECTORY + "internal/";
 
-    private static final Pattern NAME_SEPARATOR = Pattern.compile("\\s*[,]+\\s*");
+    private static final Pattern NAME_SEPARATOR = Pattern.compile("\\s*[,]+\\s*"); //匹配任何空白字符，分隔符
 
-    /**@c ExtensionLoader 本地缓存 */
+    /**@c ExtensionLoader 本地缓存，将接口类型type与ExtensionLoader加载器映射缓存起来 */
     private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
 
     private static final ConcurrentMap<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<Class<?>, Object>();
 
     // ==============================
 
-    private final Class<?> type;
+    private final Class<?> type; //扩展的接口类型
 
     private final ExtensionFactory objectFactory;/**@c TODO objectFactory 用途？*/
 
@@ -95,21 +95,21 @@ public class ExtensionLoader<T> {
 
     private Map<String, IllegalStateException> exceptions = new ConcurrentHashMap<String, IllegalStateException>();
 
-    private ExtensionLoader(Class<?> type) {/**@c 私有的构造方法，对外隐藏 */
-        this.type = type;
-        /**@c objectFactory负责所有IOC创建的对象 对象工厂*/
-        objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
-    }
+//    private ExtensionLoaderOrigin(Class<?> type) {/**@c 私有的构造方法，对外隐藏 */
+//        this.type = type;
+//        /**@c objectFactory负责所有IOC创建的对象 对象工厂*/
+//        objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
+//    }
 
     private static <T> boolean withExtensionAnnotation(Class<T> type) {
         return type.isAnnotationPresent(SPI.class);/**@c 判断接口是否包含SPI注解 */
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
+    public static <T> ExtensionLoader<T> getExtensionLoaderOrigin(Class<T> type) { // 获取接口的扩展器
         if (type == null)
             throw new IllegalArgumentException("Extension type == null");
-        if (!type.isInterface()) {/**@c 在运行时候指定实现类 */
+        if (!type.isInterface()) {/**@c 扩展类型是接口类型 */
             throw new IllegalArgumentException("Extension type(" + type + ") is not interface!");
         }
         //只有加上SPI注解的才允许使用dubbo的SPI功能
@@ -118,10 +118,10 @@ public class ExtensionLoader<T> {
                     ") is not extension, because WITHOUT @" + SPI.class.getSimpleName() + " Annotation!");
         }
 
-        //从缓存中获取SPI加载器
+        //TODO 从内存中获取SPI加载器, EXTENSION_LOADERS何时写入
         ExtensionLoader<T> loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
         if (loader == null) {//如果为null，创建新的对象设置进去
-            EXTENSION_LOADERS.putIfAbsent(type, new ExtensionLoader<T>(type));
+            EXTENSION_LOADERS.putIfAbsent(type, new ExtensionLoader<T>(type)); //有两个key，一个是接口class，另一个是ExtensionFactory
             loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
         }
         return loader;
@@ -167,6 +167,46 @@ public class ExtensionLoader<T> {
         return getActivateExtension(url, values, null);
     }
 
+
+    /**
+     * override
+     * 获取接口类型的扩展器
+     * 1.判断type是否为空
+     * 2.判断type是否为接口
+     * 3.判断type是否带有SPI注解
+     * 4.从本地缓存中EXTENSION_LOADERS获取接口的扩展器，若没有创建扩展器，并返回
+     */
+    public static<T> ExtensionLoader<T> getExtensionLoader(Class<T> type) { //泛型形参声明
+        if (type == null) {
+            throw new IllegalArgumentException("Extension type is null"); //非法参数异常
+        }
+        if (!type.isInterface()) {
+            throw new IllegalArgumentException("Extension " + type + " need interface");
+        }
+        if (!withExtensionAnnotation(type)) {
+            throw new IllegalArgumentException("Extension" + type + "need with SPI Annotation");
+        }
+        ExtensionLoader<T> loader = (ExtensionLoader<T>)EXTENSION_LOADERS.get(type);
+        if (loader == null) {
+            EXTENSION_LOADERS.putIfAbsent(type, new ExtensionLoader<T>(type)); //此处会递归调用
+            loader = (ExtensionLoader<T>)EXTENSION_LOADERS.get(type);
+        }
+        return loader;
+    }
+
+    /**
+     * override
+     * 私有的构造函数
+     * 1.为当前对象的type赋值
+     * 2.为当前对象的objectFactory赋值
+     *   判断type是否是ExtensionFactory类型，若是置为null，若不是则type改为ExtensionFactory继续调用
+     */
+    private ExtensionLoader(Class<?> type) {
+        this.type = type;
+        this.objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
+    }
+
+
     /**
      * This is equivalent to <pre>
      *     getActivateExtension(url, url.getParameter(key).split(","), null);
@@ -183,7 +223,7 @@ public class ExtensionLoader<T> {
         return getActivateExtension(url, value == null || value.length() == 0 ? null : Constants.COMMA_SPLIT_PATTERN.split(value), group);
     }
 
-    /**
+    /** TODO read
      * Get activate extensions.
      *
      * @param url    url
@@ -237,7 +277,7 @@ public class ExtensionLoader<T> {
         if (group == null || group.length() == 0) {
             return true;
         }
-        if (groups != null && groups.length > 0) {
+        if (groups != null && groups.length > 0) { //判断字符串是否在字符数组中
             for (String g : groups) {
                 if (group.equals(g)) {
                     return true;
@@ -247,7 +287,7 @@ public class ExtensionLoader<T> {
         return false;
     }
 
-    private boolean isActive(Activate activate, URL url) {
+    private boolean isActive(Activate activate, URL url) { //Active 自动激活加载扩展
         String[] keys = activate.value();
         if (keys == null || keys.length == 0) {
             return true;
@@ -276,7 +316,7 @@ public class ExtensionLoader<T> {
     public T getLoadedExtension(String name) {
         if (name == null || name.length() == 0)
             throw new IllegalArgumentException("Extension name == null");
-        Holder<Object> holder = cachedInstances.get(name);
+        Holder<Object> holder = cachedInstances.get(name); //Holder存储泛型对象
         if (holder == null) {
             cachedInstances.putIfAbsent(name, new Holder<Object>());
             holder = cachedInstances.get(name);

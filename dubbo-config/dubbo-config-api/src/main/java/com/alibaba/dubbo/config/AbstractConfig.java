@@ -27,7 +27,6 @@ import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.config.support.Parameter;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -481,7 +480,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                         int i = name.startsWith("get") ? 3 : 2;/**@c 判定get或is方法 */
                         key = name.substring(i, i + 1).toLowerCase() + name.substring(i + 1);
                     }
-                    Object value = method.invoke(config, new Object[0]);
+                    Object value = method.invoke(config, new Object[0]); //invoke执行目标对象的方法，前面是method，后面是目标对象
                     if (value != null) {
                         if (prefix != null && prefix.length() > 0) {
                             key = prefix + "." + key;

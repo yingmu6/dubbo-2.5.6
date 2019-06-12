@@ -352,8 +352,8 @@ public class Constants {
 
     public static final String REGISTRY_SEPARATOR = "|";
 
-    public static final Pattern REGISTRY_SPLIT_PATTERN = Pattern
-            .compile("\\s*[|;]+\\s*");
+    public static final Pattern REGISTRY_SPLIT_PATTERN = Pattern  //分隔符正则表达式
+            .compile("\\s*[|;]+\\s*");   // \s 匹配任何空白字符，包括空格、制表符、换页符等等。等价于[ \f\n\r\t\v]; \S 匹配任何非空白字符。等价于[^ \f\n\r\t\v]。
 
     public static final String SEMICOLON_SEPARATOR = ";";
 
