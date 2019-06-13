@@ -6,7 +6,7 @@
 2.System.getProperty、System.getenv获取系统信息
 
 19/6/3
-1.synchronized使用
+1.synchronized使用，synchronize对对象加锁和对类加锁的区别synchronized (cachedAdaptiveInstance) {}
 2.Properties  ok
 3.Matcher中appendReplacement，quoteReplacement方法
 
@@ -28,3 +28,9 @@ https://blog.csdn.net/wp94302948/article/details/79724342
 5.Class.forName 实例化对象
   type.isAssignableFrom() class中的方法
 6.运行时栈帧结构  https://blog.csdn.net/qian520ao/article/details/79118474
+
+19/6/12
+1.递归函数调用
+2.synchronized双重检测判读
+3.Class中newInstance、isAssignableFrom、Class实例化对象、getConstructor
+4.Spring ApplicationContext获取bean，检查bean

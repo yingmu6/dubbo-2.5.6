@@ -86,9 +86,9 @@ public class ExtensionLoader<T> {
 
     private final Map<String, Activate> cachedActivates = new ConcurrentHashMap<String, Activate>();
     private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
-    private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>();
+    private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>(); //缓存中对象
     private volatile Class<?> cachedAdaptiveClass = null;
-    private String cachedDefaultName;
+    private String cachedDefaultName; //缓存SPI中value值
     private volatile Throwable createAdaptiveInstanceError;
 
     private Set<Class<?>> cachedWrapperClasses;
@@ -128,7 +128,7 @@ public class ExtensionLoader<T> {
     }
 
     private static ClassLoader findClassLoader() {/**@c 反射机制获取类加载器 */
-        return ExtensionLoader.class.getClassLoader();
+        return ExtensionLoader.class.getClassLoader(); //也可以用Thread.currentThread().getContextClassLoader();
     }
 
     public String getExtensionName(T extensionInstance) {
@@ -175,16 +175,18 @@ public class ExtensionLoader<T> {
      * 2.判断type是否为接口
      * 3.判断type是否带有SPI注解
      * 4.从本地缓存中EXTENSION_LOADERS获取接口的扩展器，若没有创建扩展器，并返回
+     *
+     * 递归调用，如type在EXTENSION_LOADERS中不存在，会先创建ExtensionFactory.class的映射 arr[0]，得到加载器，然后在查找type的映射 arr[1]
      */
-    public static<T> ExtensionLoader<T> getExtensionLoader(Class<T> type) { //泛型形参声明
+    public static<T> ExtensionLoader<T> getExtensionLoader(Class<T> type) { //泛型形参声明   SPI步骤01
         if (type == null) {
             throw new IllegalArgumentException("Extension type is null"); //非法参数异常
         }
         if (!type.isInterface()) {
-            throw new IllegalArgumentException("Extension " + type + " need interface");
+            throw new IllegalArgumentException("Extension type(" + type + ") is not interface!");
         }
         if (!withExtensionAnnotation(type)) {
-            throw new IllegalArgumentException("Extension" + type + "need with SPI Annotation");
+            throw new IllegalArgumentException("Extension type(" + type + ") is not SPI Annotation");
         }
         ExtensionLoader<T> loader = (ExtensionLoader<T>)EXTENSION_LOADERS.get(type);
         if (loader == null) {
@@ -201,9 +203,11 @@ public class ExtensionLoader<T> {
      * 2.为当前对象的objectFactory赋值
      *   判断type是否是ExtensionFactory类型，若是置为null，若不是则type改为ExtensionFactory继续调用
      */
-    private ExtensionLoader(Class<?> type) {
+    private ExtensionLoader(Class<?> type) { //SPI步骤02
+        // System.out.println("new Extension()" + type);
         this.type = type;
         this.objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
+        //type == ExtensionFactory.class ? null 递归结束条件
     }
 
 
@@ -342,7 +346,7 @@ public class ExtensionLoader<T> {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public T getExtension(String name) {
+    public T getExtension(String name) { //SPI步骤12
         if (name == null || name.length() == 0)
             throw new IllegalArgumentException("Extension name == null");
         if ("true".equals(name)) {
@@ -484,18 +488,18 @@ public class ExtensionLoader<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public T getAdaptiveExtension() {
+    public T getAdaptiveExtension() { //SPI步骤03
         Object instance = cachedAdaptiveInstance.get();
         if (instance == null) {
-            if (createAdaptiveInstanceError == null) {
+            if (createAdaptiveInstanceError == null) { //若有异常直接抛出，不用尝试创建
                 synchronized (cachedAdaptiveInstance) {
                     instance = cachedAdaptiveInstance.get();
                     if (instance == null) {
                         try {
-                            instance = createAdaptiveExtension();//创建适合的对象
-                            cachedAdaptiveInstance.set(instance);
+                            instance = createAdaptiveExtension(); //创建适合的对象
+                            cachedAdaptiveInstance.set(instance); //返回实例并存入缓存
                         } catch (Throwable t) {
-                            createAdaptiveInstanceError = t;
+                            createAdaptiveInstanceError = t; //记录异常
                             throw new IllegalStateException("fail to create adaptive instance: " + t.toString(), t);
                         }
                     }
@@ -534,7 +538,7 @@ public class ExtensionLoader<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private T createExtension(String name) {
+    private T createExtension(String name) { //SPI步骤13
         Class<?> clazz = getExtensionClasses().get(name);
         if (clazz == null) {
             throw findException(name);
@@ -559,7 +563,7 @@ public class ExtensionLoader<T> {
         }
     }
 
-    private T injectExtension(T instance) {/**@c inject注入 参数instance是由框架传入的 */
+    private T injectExtension(T instance) {/**@c inject注入 参数instance是由框架传入的 */  //SPI步骤11
         try {
             if (objectFactory != null) {
                 for (Method method : instance.getClass().getMethods()) {
@@ -597,7 +601,7 @@ public class ExtensionLoader<T> {
         return clazz;
     }
 
-    private Map<String, Class<?>> getExtensionClasses() {
+    private Map<String, Class<?>> getExtensionClasses() {  //SPI步骤06
         Map<String, Class<?>> classes = cachedClasses.get();
         if (classes == null) {//双重检查（单例创建）
             synchronized (cachedClasses) {/**@c TODO cachedClasses是类的成员变量，私有的为啥考虑线程安全？ */
@@ -612,7 +616,7 @@ public class ExtensionLoader<T> {
     }
 
     // 此方法已经getExtensionClasses方法同步过。
-    private Map<String, Class<?>> loadExtensionClasses() {
+    private Map<String, Class<?>> loadExtensionClasses() {  //SPI步骤07
         final SPI defaultAnnotation = type.getAnnotation(SPI.class);/**@c 获取注解SPI */
         if (defaultAnnotation != null) {
             String value = defaultAnnotation.value();/**@c 取注解的值 */
@@ -634,8 +638,8 @@ public class ExtensionLoader<T> {
     }
 
     /**@c TODO 加载SPI配置文件待了解 */
-    private void loadFile(Map<String, Class<?>> extensionClasses, String dir) {
-        String fileName = dir + type.getName();
+    private void loadFile(Map<String, Class<?>> extensionClasses, String dir) {   //SPI步骤08
+        String fileName = dir + type.getName(); //将SPI目录 + 接口的全称作为文件名
         try {
             Enumeration<java.net.URL> urls;
             ClassLoader classLoader = findClassLoader();
@@ -651,7 +655,7 @@ public class ExtensionLoader<T> {
                         /**@c 使用底层流构建高级流（字符缓冲输入流） */
                         BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "utf-8"));
                         try {
-                            String line = null;
+                            String line = null; //TODO 为啥加载xxx.xx.SpringExtensionFactory这个文件
                             while ((line = reader.readLine()) != null) {
                                 final int ci = line.indexOf('#'); /**@c 取出注释 */
                                 if (ci >= 0) line = line.substring(0, ci);
@@ -665,8 +669,8 @@ public class ExtensionLoader<T> {
                                             line = line.substring(i + 1).trim();
                                         }
                                         if (line.length() > 0) {/**@c TODO 实例化接口对象逻辑待了解 */
-                                            Class<?> clazz = Class.forName(line, true, classLoader);
-                                            if (!type.isAssignableFrom(clazz)) {
+                                            Class<?> clazz = Class.forName(line, true, classLoader); //读取指定路径的文件，并实例化对象
+                                            if (!type.isAssignableFrom(clazz)) { //判断接口type的实现类是否是clazz
                                                 throw new IllegalStateException("Error when load extension class(interface: " +
                                                         type + ", class line: " + clazz.getName() + "), class "
                                                         + clazz.getName() + "is not subtype of interface.");
@@ -757,7 +761,7 @@ public class ExtensionLoader<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private T createAdaptiveExtension() {
+    private T createAdaptiveExtension() { //SPI步骤04
         try {
             return injectExtension((T) getAdaptiveExtensionClass().newInstance());
         } catch (Exception e) {
@@ -765,7 +769,7 @@ public class ExtensionLoader<T> {
         }
     }
 
-    private Class<?> getAdaptiveExtensionClass() {/**@c 获取适合的扩展Class */
+    private Class<?> getAdaptiveExtensionClass() {/**@c 获取适合的扩展Class */  //SPI步骤05
         getExtensionClasses();
         if (cachedAdaptiveClass != null) {
             return cachedAdaptiveClass;
@@ -773,14 +777,14 @@ public class ExtensionLoader<T> {
         return cachedAdaptiveClass = createAdaptiveExtensionClass();
     }
 
-    private Class<?> createAdaptiveExtensionClass() {
+    private Class<?> createAdaptiveExtensionClass() {//SPI步骤09
         String code = createAdaptiveExtensionClassCode();
         ClassLoader classLoader = findClassLoader();
         com.alibaba.dubbo.common.compiler.Compiler compiler = ExtensionLoader.getExtensionLoader(com.alibaba.dubbo.common.compiler.Compiler.class).getAdaptiveExtension();
         return compiler.compile(code, classLoader);
     }
 
-    private String createAdaptiveExtensionClassCode() {
+    private String createAdaptiveExtensionClassCode() { //SPI步骤10
         StringBuilder codeBuidler = new StringBuilder();
         Method[] methods = type.getMethods();
         boolean hasAdaptiveAnnotation = false;
