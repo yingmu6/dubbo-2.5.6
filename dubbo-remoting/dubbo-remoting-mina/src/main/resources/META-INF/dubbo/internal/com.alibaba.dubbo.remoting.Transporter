@@ -1,1 +1,2 @@
 mina=com.alibaba.dubbo.remoting.transport.mina.MinaTransporter
+#netty=com.alibaba.dubbo.remoting.transport.mina.MinaTransporter

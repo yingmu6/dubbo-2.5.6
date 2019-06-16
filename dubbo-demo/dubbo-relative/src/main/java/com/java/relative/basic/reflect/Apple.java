@@ -11,6 +11,12 @@ public class Apple implements Fruits {
     public void setWeight(double weight) {
        this.weight = weight;
     }
+    public Apple() {
+
+    }
+    public Apple(double weight) {
+      this.weight = weight;
+    }
 
     @Override
     public double getWeight() {

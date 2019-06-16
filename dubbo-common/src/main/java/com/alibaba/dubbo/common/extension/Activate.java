@@ -22,6 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 用户通过group和value配置激活条件,被activate注解的扩展点在满足某种条件时会被激活（被创建）
+ * https://www.jianshu.com/p/7e116f480165
+ *
  * Activate
  * <p/>
  * 对于可以被框架中自动激活加载扩展，此Annotation用于配置扩展被自动激活加载条件。

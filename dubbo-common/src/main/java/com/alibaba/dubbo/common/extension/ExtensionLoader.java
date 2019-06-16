@@ -29,15 +29,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
@@ -80,7 +72,7 @@ public class ExtensionLoader<T> {
 
     private final ExtensionFactory objectFactory;/**@c TODO objectFactory 用途？*/
 
-    private final ConcurrentMap<Class<?>, String> cachedNames = new ConcurrentHashMap<Class<?>, String>();
+    private final ConcurrentMap<Class<?>, String> cachedNames = new ConcurrentHashMap<Class<?>, String>(); //存入例如 key=com.alibaba.dubbo.remoting.transport.netty.NettyTransporter  name=netty
 
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<Map<String, Class<?>>>();/**@c TODO 此处用途？ */
 
@@ -92,7 +84,7 @@ public class ExtensionLoader<T> {
     private volatile Throwable createAdaptiveInstanceError;
 
     private Set<Class<?>> cachedWrapperClasses;
-
+    // 扩展名对应的异常集合，如key=netty
     private Map<String, IllegalStateException> exceptions = new ConcurrentHashMap<String, IllegalStateException>();
 
 //    private ExtensionLoaderOrigin(Class<?> type) {/**@c 私有的构造方法，对外隐藏 */
@@ -512,12 +504,13 @@ public class ExtensionLoader<T> {
         return (T) instance;
     }
 
-    private IllegalStateException findException(String name) {
+    private IllegalStateException findException(String name) { //构造异常信息
         for (Map.Entry<String, IllegalStateException> entry : exceptions.entrySet()) {
-            if (entry.getKey().toLowerCase().contains(name.toLowerCase())) {
+            if (entry.getKey().toLowerCase().contains(name.toLowerCase())) { //
                 return entry.getValue();
             }
         }
+        // 没有找到接口的扩展类
         StringBuilder buf = new StringBuilder("No such extension " + type.getName() + " by name " + name);
 
 
@@ -540,7 +533,7 @@ public class ExtensionLoader<T> {
     @SuppressWarnings("unchecked")
     private T createExtension(String name) { //SPI步骤13
         Class<?> clazz = getExtensionClasses().get(name);
-        if (clazz == null) {
+        if (clazz == null) { //没有找到扩展类
             throw findException(name);
         }
         try {
@@ -607,7 +600,7 @@ public class ExtensionLoader<T> {
             synchronized (cachedClasses) {/**@c TODO cachedClasses是类的成员变量，私有的为啥考虑线程安全？ */
                 classes = cachedClasses.get();
                 if (classes == null) {
-                    classes = loadExtensionClasses();
+                    classes = loadExtensionClasses(); //加载扩展类，并设置到内存中cachedClasses
                     cachedClasses.set(classes);
                 }
             }
@@ -615,7 +608,7 @@ public class ExtensionLoader<T> {
         return classes;
     }
 
-    // 此方法已经getExtensionClasses方法同步过。
+    // 此方法已经getExtensionClasses方法同步过。读取配置文件中key=name，并写入缓存Map中extensionClasses
     private Map<String, Class<?>> loadExtensionClasses() {  //SPI步骤07
         final SPI defaultAnnotation = type.getAnnotation(SPI.class);/**@c 获取注解SPI */
         if (defaultAnnotation != null) {
@@ -631,46 +624,65 @@ public class ExtensionLoader<T> {
         }
 
         Map<String, Class<?>> extensionClasses = new HashMap<String, Class<?>>();
+//        loadFileOrigin(extensionClasses, DUBBO_INTERNAL_DIRECTORY);
+//        loadFileOrigin(extensionClasses, DUBBO_DIRECTORY);  /**@c 加载文件中值，写到缓存变量中 */
+//        loadFileOrigin(extensionClasses, SERVICES_DIRECTORY);
+
+        //重写加载文件方法
         loadFile(extensionClasses, DUBBO_INTERNAL_DIRECTORY);
         loadFile(extensionClasses, DUBBO_DIRECTORY);  /**@c 加载文件中值，写到缓存变量中 */
         loadFile(extensionClasses, SERVICES_DIRECTORY);
         return extensionClasses;
     }
 
-    /**@c TODO 加载SPI配置文件待了解 */
-    private void loadFile(Map<String, Class<?>> extensionClasses, String dir) {   //SPI步骤08
+    /**@c
+     * 加载指定目录的文件，得到实现类 比如com.alibaba.dubbo.remoting.transport.netty.NettyTransporter
+     *  1）判断按实现类是否有Adaptive注解，若有记录到cachedAdaptiveClass，不对extensionClasses处理
+     *  2）若没有Adaptive注解
+     *    2.1）判断是否有带参数type的构造函数clazz.getConstructor(type)
+     *     2.1.1 ） 若有，判断cachedWrapperClasses是否为空，若为空创建。并把实现类加入
+     *     2.1.2 ） 若没有，尝试无参的构造函数
+     *  3）判断文件中key是否为空，若为空，截取简单类名的前缀
+     *  4）判断是否有Activate注解，若有将第一个key记录到 cachedActivates
+     *  5）遍历key，记录key的值到cachedNames，记录clazz和key到extensionClasses
+     *
+     *  两个case：
+     *  1 配置文件中没name= 情况
+     *  2 配置文件中name有多个可以情况
+     */
+    private void loadFileOrigin(Map<String, Class<?>> extensionClasses, String dir) {   //SPI步骤08
         String fileName = dir + type.getName(); //将SPI目录 + 接口的全称作为文件名
         try {
             Enumeration<java.net.URL> urls;
             ClassLoader classLoader = findClassLoader();
-            if (classLoader != null) {/**@c TODO 类加载器加载文件为啥返回URL？URL中的内容是啥？ */
-                urls = classLoader.getResources(fileName);
+            if (classLoader != null) {/**@c 本地URL file://  */
+                urls = classLoader.getResources(fileName); //从资源路径中加载指定文件
             } else {
-                urls = ClassLoader.getSystemResources(fileName);
+                urls = ClassLoader.getSystemResources(fileName); //从系统资源中加载文件
             }
             if (urls != null) {
-                while (urls.hasMoreElements()) {
+                while (urls.hasMoreElements()) { //遍历集合
                     java.net.URL url = urls.nextElement();
                     try {
-                        /**@c 使用底层流构建高级流（字符缓冲输入流） */
+                        /**@c 使用底层流构建高级流（字符缓冲输入流） 将字节流转换为字符流 */
                         BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "utf-8"));
                         try {
                             String line = null; //TODO 为啥加载xxx.xx.SpringExtensionFactory这个文件
                             while ((line = reader.readLine()) != null) {
                                 final int ci = line.indexOf('#'); /**@c 取出注释 */
-                                if (ci >= 0) line = line.substring(0, ci);
+                                if (ci >= 0) line = line.substring(0, ci); // 去掉注释  //TODO 若#在第一个字符，不越界？
                                 line = line.trim();
                                 if (line.length() > 0) {
                                     try {
                                         String name = null;
                                         int i = line.indexOf('=');/**@c 取出键值对 */
-                                        if (i > 0) {
+                                        if (i > 0) { //可以没有等号
                                             name = line.substring(0, i).trim();
                                             line = line.substring(i + 1).trim();
                                         }
-                                        if (line.length() > 0) {/**@c TODO 实例化接口对象逻辑待了解 */
+                                        if (line.length() > 0) {/**@c initialize = true 该类将被初始化 */
                                             Class<?> clazz = Class.forName(line, true, classLoader); //读取指定路径的文件，并实例化对象
-                                            if (!type.isAssignableFrom(clazz)) { //判断接口type的实现类是否是clazz
+                                            if (!type.isAssignableFrom(clazz)) {
                                                 throw new IllegalStateException("Error when load extension class(interface: " +
                                                         type + ", class line: " + clazz.getName() + "), class "
                                                         + clazz.getName() + "is not subtype of interface.");
@@ -685,18 +697,20 @@ public class ExtensionLoader<T> {
                                                 }
                                             } else {         /**@c 方法上有adaptive注解 动态类*/
                                                 try {
-                                                    clazz.getConstructor(type);
+                                                    clazz.getConstructor(type); //判断是否存在带有type参数的构造函数
                                                     Set<Class<?>> wrappers = cachedWrapperClasses;
                                                     if (wrappers == null) {
                                                         cachedWrapperClasses = new ConcurrentHashSet<Class<?>>();
                                                         wrappers = cachedWrapperClasses;
                                                     }
-                                                    wrappers.add(clazz);
+                                                    wrappers.add(clazz); //此处变量是局部变量，没有使用，有啥用途？使用引用赋值，其中一个引用改变值，相关引用的值也会改变
                                                 } catch (NoSuchMethodException e) {
-                                                    clazz.getConstructor();
-                                                    if (name == null || name.length() == 0) {
-                                                        name = findAnnotationName(clazz);
+                                                    clazz.getConstructor();  //判断是否有无参的构造函数
+                                                    if (name == null || name.length() == 0) { //文件中没有key的情况下,截取实现类的名称作为key
+                                                        name = findAnnotationName(clazz); // TODO 此处为啥和下文一样处理逻辑的去获取扩展名
                                                         if (name == null || name.length() == 0) {
+                                                            // 例如 clazz = com.alibaba.dubbo.remoting.transport.netty.NettyTransporter
+                                                            // type = com.alibaba.dubbo.remoting.Transporter
                                                             if (clazz.getSimpleName().length() > type.getSimpleName().length()
                                                                     && clazz.getSimpleName().endsWith(type.getSimpleName())) {
                                                                 name = clazz.getSimpleName().substring(0, clazz.getSimpleName().length() - type.getSimpleName().length()).toLowerCase();
@@ -707,7 +721,7 @@ public class ExtensionLoader<T> {
                                                     }
                                                     String[] names = NAME_SEPARATOR.split(name);
                                                     if (names != null && names.length > 0) {
-                                                        Activate activate = clazz.getAnnotation(Activate.class);
+                                                        Activate activate = clazz.getAnnotation(Activate.class); //此处与if (clazz.isAnnotationPresent(Adaptive.class)) 有啥不同，应该是互斥的吧？ 注解不一样
                                                         if (activate != null) {
                                                             cachedActivates.put(names[0], activate);
                                                         }
@@ -728,7 +742,7 @@ public class ExtensionLoader<T> {
                                         }
                                     } catch (Throwable t) {
                                         IllegalStateException e = new IllegalStateException("Failed to load extension class(interface: " + type + ", class line: " + line + ") in " + url + ", cause: " + t.getMessage(), t);
-                                        exceptions.put(line, e);
+                                        exceptions.put(line, e); //记录下异常集合
                                     }
                                 }
                             } // end of while read lines
@@ -748,7 +762,7 @@ public class ExtensionLoader<T> {
     }
 
     @SuppressWarnings("deprecation")
-    private String findAnnotationName(Class<?> clazz) {/**@c TODO */
+    private String findAnnotationName(Class<?> clazz) {/**@c 获取注解名 */
         com.alibaba.dubbo.common.Extension extension = clazz.getAnnotation(com.alibaba.dubbo.common.Extension.class);
         if (extension == null) {
             String name = clazz.getSimpleName();
@@ -767,6 +781,140 @@ public class ExtensionLoader<T> {
         } catch (Exception e) {
             throw new IllegalStateException("Can not create adaptive extenstion " + type + ", cause: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * @override 加载文件获取实现鳄梨
+     * 1）拼接文件路径
+     * 2）获取类加载器ClassLoader,并且加载文件资源
+     * 3）遍历Url列表，获取字节输入流，并转换为字符流
+     * 4）从字符流中读取内容
+     *    4.1 判断是否与# ，取注释前的内容
+     *    4.2 以 =号分隔，加载等号后面的类 Class
+     * 5）对Class判断
+     *    5.1 type类型与clazz类型相同或者type的实现类是clazz
+     *    5.2 判断clazz是否适配器注解 @Adaper
+     *      5.2.1 如带有Adapter注解 写入cacheAdapterClass中
+     *      5.2.2 没有尝试查有参构造函数
+     *        5.2.2.1 有： 写入wrapedClass
+     *        5.2.2.2 无： 调用无参构造函数
+     *            判断key是否为空，如果为空，获取类名称的前缀：
+     *            判断条件：实现类clazz.length > type.length ; clazz.contains(type)
+     *            取值：clazz.getSimple().subString(0, clazz.getSimple.length - type.getSimple()).toLoweer();
+     *
+     *            判断是否含有自动激活注解Active, 若有记到cachedActiveClass
+     *
+     *      5.2.3  记录下cachedNames, 以及extendsLoadedClass
+     *
+     *
+     */
+
+    public void loadFile(Map<String, Class<?>> extensionClasses, String dir) {
+        String fileName = dir + type.getName();
+        try {
+            Enumeration<java.net.URL> urls;
+            ClassLoader classLoader = findClassLoader();
+            if (classLoader != null) {
+                urls = classLoader.getResources(fileName);
+            } else {
+                urls = ClassLoader.getSystemResources(fileName);
+            }
+            if (urls != null){
+            while (urls.hasMoreElements()) {
+                java.net.URL url = urls.nextElement();
+                BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream(), "utf-8"));
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    line = line.trim();
+                    //int pos = line.charAt('#'); charAt是获取指定索引的字符，而不是指定字符的位置，需要用indexOf()
+                    String str = line;
+                    int pos = line.indexOf('#');
+                    if (pos != -1) {
+                        if (pos != 0) {
+                            line.substring(0, pos);
+                        } else {
+                            str = "";
+                        }
+                    }
+                    if (str.length() > 0) {
+                        try {
+                            int i = str.indexOf('=');
+                            String name = null;
+                            String value = line; //初始整行的值
+                            if (i > 0) { //若有等号，按等号分隔
+                                name = str.substring(0, i);
+                                value = str.substring(i + 1); //去掉等号 =
+                            }
+                            Class<?> clazz = Class.forName(value, true, classLoader);
+                            if (!type.isAssignableFrom(clazz)) {
+                                throw new IllegalStateException("接口:" + type + " 的实现类不是 " + clazz);
+                            }
+                            if (clazz.isAnnotationPresent(Adaptive.class)) {
+                                if (cachedAdaptiveClass == null) { //适配器类为空时，重新赋值
+                                    cachedAdaptiveClass = clazz;
+                                } else if (!cachedAdaptiveClass.equals(clazz)) {
+                                    throw new IllegalStateException("超过一个适配器类：cacheAdaptive :" + cachedAdaptiveClass.getClass().getName() + ", clazz:" + clazz.getClass().getName());
+                                }
+                            } else {
+                                try {
+                                    clazz.getConstructor(type);
+                                    Set<Class<?>> wrapperSet = cachedWrapperClasses;
+                                    if (wrapperSet == null) {
+                                        cachedWrapperClasses = new ConcurrentHashSet<>(); //如何创建set : ConcurrentHashSet
+                                        wrapperSet = cachedWrapperClasses;
+                                    }
+                                    wrapperSet.add(type);
+                                } catch (NoSuchMethodException e) { // java.lang.NoSuchMethodException, 不能是NoSuchMethodError
+                                    clazz.getConstructor();
+                                    if (name == null || name.length() == 0) { //此处怎为空 ：配置文件中的key为空即可
+                                        name = findAnnotationName(clazz);
+                                        if (name == null || name.length() == 0) { //双重判断
+                                            if (clazz.getSimpleName().length() > type.getSimpleName().length() &&
+                                                    clazz.getSimpleName().contains(type.getSimpleName()) && clazz.getSimpleName().endsWith(type.getSimpleName())) {
+                                                name = clazz.getSimpleName().substring(0, clazz.getSimpleName().length() - type.getSimpleName().length()).toLowerCase();
+                                            } else {
+                                                throw new IllegalArgumentException("扩展类：" + clazz.getSimpleName() + " 与接口 " + type + "命名不标准");
+                                            }
+                                        }
+                                    }
+
+                                    String[] names = NAME_SEPARATOR.split(name); //处理含有分隔符的键
+                                    if (name != null && name.length() > 0) {
+                                        //判断是否包含自动激活注解 clazz需要使用泛型，不然这里会报类型错误
+                                        Activate activate = clazz.getAnnotation(Activate.class);
+                                        if (activate != null) {
+                                            cachedActivates.put(names[0], activate);
+                                        }
+
+                                        for (String s : names) { //处理cachedNames，extensionClasses 处理名称与实现类的映射关系
+                                            if (!cachedNames.containsKey(clazz)) { //若本地缓存没有实现类clazz对应的映射，则加入
+                                                cachedNames.put(clazz, s);
+                                            }
+                                            Class<?> c = extensionClasses.get(s);
+                                            if (c == null) {
+                                                extensionClasses.put(s, clazz);
+                                            } else if (c != clazz) {
+                                                throw new IllegalStateException("扩展类 缓存中的值 c:" + c.getName() + "，与文件加载中不同 clazz" + clazz.getName());
+                                            }
+
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Throwable t) {
+                            IllegalStateException e = new IllegalStateException("加载扩展类异常 type:" + type + "，line:" + line + ", errorMsg:" + t.getMessage(), t);
+                            exceptions.put(line, e); //记录下异常集合
+                        }
+
+                    }
+                }
+              }
+            }
+
+        } catch (Exception e) {
+            logger.error("加载SPI文件异常", e);
+        }
+
     }
 
     private Class<?> getAdaptiveExtensionClass() {/**@c 获取适合的扩展Class */  //SPI步骤05

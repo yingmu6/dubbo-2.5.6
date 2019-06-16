@@ -97,3 +97,15 @@ public class ClassLoaderTest {
  *  Thread.currentThread().getContextClassLoader().loadClass(name);
  *  它可以做到跨线程共享类，只要它们共享同一个 contextClassLoader。父子线程之间会自动传递 contextClassLoader，所以共享起来将是自动化的。
  */
+
+
+/**
+ * https://www.cnblogs.com/yejg1212/p/3270152.html
+ * Class.getResource(String path)
+ * path不以’/'开头时，默认是从此类所在的包下取资源；
+ * path  以’/'开头时，则是从ClassPath根下获取；
+ *
+ *
+ * https://blog.csdn.net/buster2014/article/details/47250387
+ * Java中获取classpath路径下的资源文件【ClassLoader.getSystemResource("")获取当前ClassPath的绝对URI路径，还可以以流的形式获取文件】
+ */
