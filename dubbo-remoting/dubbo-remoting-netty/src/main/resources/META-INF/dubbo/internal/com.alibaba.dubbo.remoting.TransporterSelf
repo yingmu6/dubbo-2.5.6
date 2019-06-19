@@ -1,0 +1,2 @@
+#netty
+nettySelf=com.alibaba.dubbo.remoting.transport.netty.NettyTransporterSelf

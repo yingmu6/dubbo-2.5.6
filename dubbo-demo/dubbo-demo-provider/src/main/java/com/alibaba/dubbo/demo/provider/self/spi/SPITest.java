@@ -2,6 +2,8 @@ package com.alibaba.dubbo.demo.provider.self.spi;
 
 import com.alibaba.dubbo.common.extension.ExtensionLoader;
 import com.alibaba.dubbo.remoting.Transporter;
+import com.alibaba.dubbo.remoting.TransporterSelf;
+import com.alibaba.dubbo.remoting.transport.mina.MinaTransporterSelf;
 
 /**
  * @author chensy
@@ -9,8 +11,14 @@ import com.alibaba.dubbo.remoting.Transporter;
  */
 public class SPITest {
     public static void main(String[] args) {
-        System.out.println(ExtensionLoader.getExtensionLoader(Transporter.class).getExtension("netty").getClass());
-        System.out.println(ExtensionLoader.getExtensionLoader(Transporter.class).getAdaptiveExtension().getClass());
+//        System.out.println(ExtensionLoader.getExtensionLoader(Transporter.class).getExtension("netty").getClass());
+//        System.out.println(ExtensionLoader.getExtensionLoader(Transporter.class).getAdaptiveExtension().getClass());
+
+//        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getExtension("nettySelf").getClass());
+        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getAdaptiveExtension().getClass());
+
+//        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getExtension("minaSelf").getClass());
+//        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getAdaptiveExtension().getClass());
     }
 
     /**

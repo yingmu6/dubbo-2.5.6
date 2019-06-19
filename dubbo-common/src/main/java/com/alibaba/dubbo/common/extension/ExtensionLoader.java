@@ -784,7 +784,101 @@ public class ExtensionLoader<T> {
     }
 
     /**
-     * @override 加载文件获取实现鳄梨
+     *
+     * @override 获取自适应扩展
+     * 1）判断接口是否带有Adaptive注解的方法
+     * 2）遍历接口中方法，获取接口的返回类型、参数列表、异常类型列表
+     * 3）判断参数列表是否含有URL类型，记录下URL位置，若没有看参数对象中的是否含有返回值为URL的方法，若都没有则抛出异常
+     *   3.1 参数有URL类型：附加对参数判断空的代码，以及赋值语句
+     *   3.2 遍历每个参数对象中所有方法，找出返回类型为URL类型，记录下URL位置以及attributeName属性名
+     */
+    public void createAdaptiveExtends() {
+        boolean isHasAdapter = false;
+        for (Method method : type.getMethods()) {
+            if (method.isAnnotationPresent(Adaptive.class)) {
+                isHasAdapter = true;
+                break;
+            }
+        }
+        if (!isHasAdapter) {
+            throw new IllegalStateException("接口中没有带有Adaptive注解的方法，type: " + type.getName());
+        }
+
+        //构造适配器类的声明
+        StringBuilder code = new StringBuilder();
+        code.append("package " + type.getPackage());
+        code.append("\nimport " + ExtensionFactory.class.getName());
+        code.append("\npublic class " + type.getSimpleName() + "$Adaptive implements " + type + "{");
+
+        //构造方法声明
+        for (Method method : type.getMethods()) {
+            Class<?> returnType = method.getReturnType();
+            Class<?> []pts = method.getParameterTypes();
+            Class<?> []exceptions = method.getExceptionTypes();
+
+            int urlPos = -1;
+            for (int i = 0; i < pts.length; i++) {
+                if (pts[i].equals(URL.class)) {
+                    urlPos = i;
+                    break;
+                }
+            }
+
+            //TODO 此处使用位置
+            code.append("\npublic " + returnType.getClass() + " " + method.getName() + "(");
+            for (int i = 0; i< pts.length; i++) {
+                if (i != pts.length - 1) {
+                    code.append(pts[i].getName() + " arg" + i + ",");
+                } else {
+                    code.append(pts[i].getName() + " arg" + i + " )");
+                }
+
+            }
+
+            if (exceptions.length > 0) {
+                code.append(" throws ");
+            }
+            for (int i = 0; i< exceptions.length; i++) {
+                if (i != exceptions.length - 1) {
+                    code.append(exceptions[i].getName() + ",");
+                } else {
+                    code.append(exceptions[i].getName());
+                }
+
+            }
+
+            String attributeName = null;
+            if (urlPos != -1) {
+                String s = String.format("\n if(arg%d == null) throw new IllegalArgumentException(\"url = null\");", urlPos);
+                String t = String.format("\n %s url = arg%d", urlPos);
+                code.append(s);
+                code.append(t);
+            } else {
+                for (int i = 0; i < pts.length; i++) {
+                    for (Method ptMethod : pts[i].getMethods()) {
+                        if (ptMethod.getName().startsWith("get") &&
+                                Modifier.isPublic(ptMethod.getModifiers()) && !Modifier.isStatic(ptMethod.getModifiers())
+                                && ptMethod.getReturnType().equals(URL.class)) {
+                            urlPos = i;
+                            attributeName = ptMethod.getName().substring(3).toLowerCase();
+                        }
+                    }
+                }
+
+                if (urlPos == -1) {
+                    throw new IllegalArgumentException("方法参数列表以及参数中都没有获取url的方法");
+                } else {
+
+                }
+            }
+        }
+
+        code.append("}");
+    }
+
+
+    /**
+     * @override 加载文件获取接口实现类
      * 1）拼接文件路径
      * 2）获取类加载器ClassLoader,并且加载文件资源
      * 3）遍历Url列表，获取字节输入流，并转换为字符流
@@ -932,13 +1026,14 @@ public class ExtensionLoader<T> {
         return compiler.compile(code, classLoader);
     }
 
+    //TODO 1）怎样适应不同接口 2)怎样调试生成的动态代理类
     private String createAdaptiveExtensionClassCode() { //SPI步骤10
         StringBuilder codeBuidler = new StringBuilder();
         Method[] methods = type.getMethods();
         boolean hasAdaptiveAnnotation = false;
-        for (Method m : methods) {
+        for (Method m : methods) { //方法上是否含有适配器Adaptive注解
             if (m.isAnnotationPresent(Adaptive.class)) {
-                hasAdaptiveAnnotation = true;
+                hasAdaptiveAnnotation = true; //只要有一个方法上带有@Adaptive注解即可
                 break;
             }
         }
@@ -947,16 +1042,17 @@ public class ExtensionLoader<T> {
             throw new IllegalStateException("No adaptive method on extension " + type.getName() + ", refuse to create the adaptive class!");
 
         codeBuidler.append("package " + type.getPackage().getName() + ";");
-        codeBuidler.append("\nimport " + ExtensionLoader.class.getName() + ";");
+        codeBuidler.append("\nimport " + ExtensionLoader.class.getName() + ";"); //getCanonicalName 获取规范名称
         codeBuidler.append("\npublic class " + type.getSimpleName() + "$Adaptive" + " implements " + type.getCanonicalName() + " {");
 
         for (Method method : methods) {
             Class<?> rt = method.getReturnType();
-            Class<?>[] pts = method.getParameterTypes();
-            Class<?>[] ets = method.getExceptionTypes();
+            Class<?>[] pts = method.getParameterTypes();   //方法参数列表类型
+            Class<?>[] ets = method.getExceptionTypes();   //方法异常类型
 
             Adaptive adaptiveAnnotation = method.getAnnotation(Adaptive.class);
             StringBuilder code = new StringBuilder(512);
+            // TODO 需要覆盖逻辑
             if (adaptiveAnnotation == null) {
                 code.append("throw new UnsupportedOperationException(\"method ")
                         .append(method.toString()).append(" of interface ")
@@ -964,7 +1060,7 @@ public class ExtensionLoader<T> {
             } else {
                 int urlTypeIndex = -1;
                 for (int i = 0; i < pts.length; ++i) {
-                    if (pts[i].equals(URL.class)) {
+                    if (pts[i].equals(URL.class)) { //判断URL 参数的位置
                         urlTypeIndex = i;
                         break;
                     }
@@ -975,17 +1071,18 @@ public class ExtensionLoader<T> {
                     String s = String.format("\nif (arg%d == null) throw new IllegalArgumentException(\"url == null\");",
                             urlTypeIndex);
                     code.append(s);
-
-                    s = String.format("\n%s url = arg%d;", URL.class.getName(), urlTypeIndex);
+                    //%d 数字，%s 字符串
+                    s = String.format("\n%s url = arg%d;", URL.class.getName(), urlTypeIndex); // java字符串格式化  https://blog.csdn.net/lonely_fireworks/article/details/7962171
                     code.append(s);
                 }
                 // 参数没有URL类型
                 else {
+                    // TODO 待调试覆盖
                     String attribMethod = null;
 
                     // 找到参数的URL属性
-                    LBL_PTS:
-                    for (int i = 0; i < pts.length; ++i) {
+                    LBL_PTS: //TODO 是变量吗？为啥没见到类型 ，调试看值
+                    for (int i = 0; i < pts.length; ++i) { //对参数列表中的每个参数类型进行分析
                         Method[] ms = pts[i].getMethods();
                         for (Method m : ms) {
                             String name = m.getName();
@@ -993,7 +1090,7 @@ public class ExtensionLoader<T> {
                                     && Modifier.isPublic(m.getModifiers())
                                     && !Modifier.isStatic(m.getModifiers())
                                     && m.getParameterTypes().length == 0
-                                    && m.getReturnType() == URL.class) {
+                                    && m.getReturnType() == URL.class) { //参数类型中分析有返回类型为URL的方法
                                 urlTypeIndex = i;
                                 attribMethod = name;
                                 break LBL_PTS;
@@ -1005,7 +1102,7 @@ public class ExtensionLoader<T> {
                                 + ": not found url parameter or url attribute in parameters of method " + method.getName());
                     }
 
-                    // Null point check
+                    // Null point check  含有url属性的参数不能为空
                     String s = String.format("\nif (arg%d == null) throw new IllegalArgumentException(\"%s argument == null\");",
                             urlTypeIndex, pts[urlTypeIndex].getName());
                     code.append(s);
@@ -1017,13 +1114,14 @@ public class ExtensionLoader<T> {
                     code.append(s);
                 }
 
-                String[] value = adaptiveAnnotation.value();
+                // 分析带有@Adaptive 注解的方法
+                String[] value = adaptiveAnnotation.value(); //调用注解中的方法，value作为url获取值的key 例如：url.getParameter("transporter.self", "netty")
                 // 没有设置Key，则使用“扩展点接口名的点分隔 作为Key
-                if (value.length == 0) {
-                    char[] charArray = type.getSimpleName().toCharArray();
+                if (value.length == 0) { //value值若注解有配置，可能有多个
+                    char[] charArray = type.getSimpleName().toCharArray(); //接口的简单名称的数据表示，比如Transporter
                     StringBuilder sb = new StringBuilder(128);
                     for (int i = 0; i < charArray.length; i++) {
-                        if (Character.isUpperCase(charArray[i])) {
+                        if (Character.isUpperCase(charArray[i])) { //判断字符是否大写字母，若是加上逗号，并将该字符转换为小写字母
                             if (i != 0) {
                                 sb.append(".");
                             }
@@ -1032,15 +1130,18 @@ public class ExtensionLoader<T> {
                             sb.append(charArray[i]);
                         }
                     }
-                    value = new String[]{sb.toString()};
+                    value = new String[]{sb.toString()}; //值例如：TransporterSelf，处理后的值transporter.self
                 }
 
                 boolean hasInvocation = false;
+                //判断是否包含Invocation，若包含则从其中获取方法名, 例如：
+                // String methodName = invocation.getMethodName();  String extName = url.getMethodParameter(methodName, "transporter.self", "nettySelf");
                 for (int i = 0; i < pts.length; ++i) {
                     if (pts[i].getName().equals("com.alibaba.dubbo.rpc.Invocation")) {
                         // Null Point check
                         String s = String.format("\nif (arg%d == null) throw new IllegalArgumentException(\"invocation == null\");", i);
                         code.append(s);
+                        // TODO Invocation 中的method name是啥？
                         s = String.format("\nString methodName = arg%d.getMethodName();", i);
                         code.append(s);
                         hasInvocation = true;
@@ -1049,7 +1150,7 @@ public class ExtensionLoader<T> {
                 }
 
                 String defaultExtName = cachedDefaultName;
-                String getNameCode = null;
+                String getNameCode = null; //TODO getNameCode的生成以及用途？
                 for (int i = value.length - 1; i >= 0; --i) {
                     if (i == value.length - 1) {
                         if (null != defaultExtName) {
@@ -1084,7 +1185,7 @@ public class ExtensionLoader<T> {
                 String s = String.format("\nif(extName == null) " +
                                 "throw new IllegalStateException(\"Fail to get extension(%s) name from url(\" + url.toString() + \") use keys(%s)\");",
                         type.getName(), Arrays.toString(value));
-                code.append(s);
+                code.append(s); //将异常附加到代理类中
 
                 s = String.format("\n%s extension = (%<s)%s.getExtensionLoader(%s.class).getExtension(extName);",
                         type.getName(), ExtensionLoader.class.getSimpleName(), type.getName());
@@ -1132,6 +1233,7 @@ public class ExtensionLoader<T> {
         if (logger.isDebugEnabled()) {
             logger.debug(codeBuidler.toString());
         }
+        logger.info("扩展类代码 开始：" + codeBuidler.toString() + "扩展类代码 结束");
         return codeBuidler.toString();
     }
 
