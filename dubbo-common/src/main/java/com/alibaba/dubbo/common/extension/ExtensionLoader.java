@@ -1052,7 +1052,7 @@ public class ExtensionLoader<T> {
 
             Adaptive adaptiveAnnotation = method.getAnnotation(Adaptive.class);
             StringBuilder code = new StringBuilder(512);
-            // TODO 需要覆盖逻辑
+            //判断方法上是否带有适配器注解
             if (adaptiveAnnotation == null) {
                 code.append("throw new UnsupportedOperationException(\"method ")
                         .append(method.toString()).append(" of interface ")
@@ -1075,7 +1075,7 @@ public class ExtensionLoader<T> {
                     s = String.format("\n%s url = arg%d;", URL.class.getName(), urlTypeIndex); // java字符串格式化  https://blog.csdn.net/lonely_fireworks/article/details/7962171
                     code.append(s);
                 }
-                // 参数没有URL类型
+                // 参数没有URL类型，但参数对象里包含返回类型为URL的方法
                 else {
                     // TODO 待调试覆盖
                     String attribMethod = null;
@@ -1150,16 +1150,16 @@ public class ExtensionLoader<T> {
                 }
 
                 String defaultExtName = cachedDefaultName;
-                String getNameCode = null; //TODO getNameCode的生成以及用途？
-                for (int i = value.length - 1; i >= 0; --i) {
-                    if (i == value.length - 1) {
-                        if (null != defaultExtName) {
-                            if (!"protocol".equals(value[i]))
-                                if (hasInvocation)
+                String getNameCode = null; // getNameCode的生成以及用途 : 获取扩展名
+                for (int i = value.length - 1; i >= 0; --i) { //遍历查询的键key
+                    if (i == value.length - 1) { //数组第一个值
+                        if (null != defaultExtName) { //判断默认值是否为空，若不为空，url获取值时带上默认值
+                            if (!"protocol".equals(value[i]))  //判断url的key是否是"protocol"，若是单独处理，用url.getProtocol获取
+                                if (hasInvocation)  //url.getMethodParameter(methodName, "grizzlySelf", "nettySelf") 从右到左，键key覆盖，最终取第一个值
                                     getNameCode = String.format("url.getMethodParameter(methodName, \"%s\", \"%s\")", value[i], defaultExtName);
                                 else
                                     getNameCode = String.format("url.getParameter(\"%s\", \"%s\")", value[i], defaultExtName);
-                            else
+                            else  // url中参数为protocol，通过url.getProtocol() 获取扩展名
                                 getNameCode = String.format("( url.getProtocol() == null ? \"%s\" : url.getProtocol() )", defaultExtName);
                         } else {
                             if (!"protocol".equals(value[i]))
@@ -1170,13 +1170,13 @@ public class ExtensionLoader<T> {
                             else
                                 getNameCode = "url.getProtocol()";
                         }
-                    } else {
+                    } else { //数组非第一个元素，若
                         if (!"protocol".equals(value[i]))
-                            if (hasInvocation)
+                            if (hasInvocation) // url.getMethodParameter(methodName, "grizzlySelf", "nettySelf")  ，声明的 value列表，@Adaptive(value = {"grizzlySelf", "minaSelf"})
                                 getNameCode = String.format("url.getMethodParameter(methodName, \"%s\", \"%s\")", value[i], defaultExtName);
-                            else
-                                getNameCode = String.format("url.getParameter(\"%s\", %s)", value[i], getNameCode);
-                        else
+                            else //没有invocation参数，从参数列表从由开始获取扩展名，并依次左右前一个参数的默认值，例如 url.getParameter("nettySelf", url.getParameter("minaSelf", url.getParameter("grizzlySelf", "nettySelf")))
+                                getNameCode = String.format("url.getParameter(\"%s\", %s)", value[i], getNameCode); //附加getNameCode
+                        else //参数为protocol，也一依次把后面的扩展名作为前一个参数的默认值
                             getNameCode = String.format("url.getProtocol() == null ? (%s) : url.getProtocol()", getNameCode);
                     }
                 }
@@ -1187,6 +1187,9 @@ public class ExtensionLoader<T> {
                         type.getName(), Arrays.toString(value));
                 code.append(s); //将异常附加到代理类中
 
+                //此处获取动态生成的扩展名对应的接口实现类
+                //com.alibaba.dubbo.remoting.TransporterSelf extension = (com.alibaba.dubbo.remoting.TransporterSelf)
+                // ExtensionLoader.getExtensionLoader(com.alibaba.dubbo.remoting.TransporterSelf.class).getExtension(extName);
                 s = String.format("\n%s extension = (%<s)%s.getExtensionLoader(%s.class).getExtension(extName);",
                         type.getName(), ExtensionLoader.class.getSimpleName(), type.getName());
                 code.append(s);
@@ -1195,19 +1198,19 @@ public class ExtensionLoader<T> {
                 if (!rt.equals(void.class)) {
                     code.append("\nreturn ");
                 }
-
+                //执行调用扩展接口的方法
                 s = String.format("extension.%s(", method.getName());
                 code.append(s);
-                for (int i = 0; i < pts.length; i++) {
+                for (int i = 0; i < pts.length; i++) { //方法中参数列表
                     if (i != 0)
                         code.append(", ");
                     code.append("arg").append(i);
                 }
                 code.append(");");
-            }
+            } //方法内代码 构建完毕
 
-            codeBuidler.append("\npublic " + rt.getCanonicalName() + " " + method.getName() + "(");
-            for (int i = 0; i < pts.length; i++) {
+            codeBuidler.append("\npublic " + rt.getCanonicalName() + " " + method.getName() + "("); //方法声明
+            for (int i = 0; i < pts.length; i++) { //方法参数列表
                 if (i > 0) {
                     codeBuidler.append(", ");
                 }
@@ -1216,7 +1219,7 @@ public class ExtensionLoader<T> {
                 codeBuidler.append("arg" + i);
             }
             codeBuidler.append(")");
-            if (ets.length > 0) {
+            if (ets.length > 0) {                 //方法上异常声明
                 codeBuidler.append(" throws ");
                 for (int i = 0; i < ets.length; i++) {
                     if (i > 0) {
@@ -1228,8 +1231,8 @@ public class ExtensionLoader<T> {
             codeBuidler.append(" {");
             codeBuidler.append(code.toString());
             codeBuidler.append("\n}");
-        }
-        codeBuidler.append("\n}");
+        } //方法构建完毕
+        codeBuidler.append("\n}"); //加上类结束符
         if (logger.isDebugEnabled()) {
             logger.debug(codeBuidler.toString());
         }

@@ -1,4 +1,5 @@
 package com.alibaba.dubbo.remoting;
+import com.alibaba.dubbo.common.Node;
 import com.alibaba.dubbo.common.extension.ExtensionLoader;
 
 /**
@@ -34,6 +35,22 @@ public class TransporterSelf$Adaptive implements com.alibaba.dubbo.remoting.Tran
         return extension.connect(arg0, arg1, arg2);
     }
 
+    //方法参数列表没有URL类型的参数，但是存在方法返回类型为URL的参数对象
+    public com.alibaba.dubbo.remoting.Server testUrl(com.alibaba.dubbo.common.Node arg0) {
+        if (arg0 == null)
+            throw new IllegalArgumentException("com.alibaba.dubbo.common.Node argument == null");
+        if (arg0.getUrl() == null)
+            throw new IllegalArgumentException("com.alibaba.dubbo.common.Node argument getUrl() == null");
+        com.alibaba.dubbo.common.URL url = arg0.getUrl();
+        String extName = url.getParameter("transporter.self", "nettySelf");
+        if(extName == null)
+            throw new IllegalStateException("Fail to get extension(com.alibaba.dubbo.remoting.TransporterSelf) name from url(" + url.toString() + ") use keys([transporter.self])");
+        com.alibaba.dubbo.remoting.TransporterSelf extension =
+                (com.alibaba.dubbo.remoting.TransporterSelf)ExtensionLoader.getExtensionLoader(com.alibaba.dubbo.remoting.TransporterSelf.class).getExtension(extName);
+        return extension.testUrl(arg0);
+    }
+
+    // 接口中方法上如果没有@Adaptive 适配器注解，就不实现方法体内容，并且方法体内抛出异常
     public com.alibaba.dubbo.remoting.Server bind(com.alibaba.dubbo.common.URL arg0, com.alibaba.dubbo.remoting.ChannelHandler arg1)
             throws com.alibaba.dubbo.remoting.RemotingException {
         throw new UnsupportedOperationException("method public abstract com.alibaba.dubbo.remoting.Server" +

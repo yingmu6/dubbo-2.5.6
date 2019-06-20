@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.dubbo.remoting.transport.netty;
+package com.alibaba.dubbo.remoting.transport.grizzly;
 
 import com.alibaba.dubbo.common.Node;
 import com.alibaba.dubbo.common.URL;
@@ -21,20 +21,21 @@ import com.alibaba.dubbo.remoting.*;
 import com.alibaba.dubbo.rpc.Invocation;
 
 /**
+ * GrizzlyTransporter
  *
+ * @author william.liangf
  */
-public class NettyTransporterSelf implements TransporterSelf {
+public class GrizzlyTransporterSelf implements TransporterSelf {
 
-    public static final String NAME = "netty";
+    public static final String NAME = "grizzly";
 
-    /**@c  */
     public Server bind(URL url, ChannelHandler listener) throws RemotingException {
-        return new NettyServer(url, listener);
+        return new GrizzlyServer(url, listener);
     }
 
-    /**@c 创建Netty客户端，NettyClient*/
-    public Client connect(URL url, ChannelHandler listener, Invocation invocation) throws RemotingException {
-        return new NettyClient(url, listener);
+    @Override
+    public Client connect(URL url, ChannelHandler handler, Invocation invocation) throws RemotingException {
+        return null;
     }
 
     @Override

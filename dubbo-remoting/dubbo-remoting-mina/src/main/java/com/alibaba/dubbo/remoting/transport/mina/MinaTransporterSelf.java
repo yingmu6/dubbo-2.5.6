@@ -15,6 +15,7 @@
  */
 package com.alibaba.dubbo.remoting.transport.mina;
 
+import com.alibaba.dubbo.common.Node;
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.remoting.*;
 import com.alibaba.dubbo.rpc.Invocation;
@@ -32,6 +33,11 @@ public class MinaTransporterSelf implements TransporterSelf {
 
     public Client connect(URL url, ChannelHandler handler, Invocation invocation) throws RemotingException {
         return new MinaClient(url, handler);
+    }
+
+    @Override
+    public Server testUrl(Node node) {
+        return null;
     }
 
 }
