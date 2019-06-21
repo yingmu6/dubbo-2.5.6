@@ -15,6 +15,7 @@ public class SPITest {
 //        System.out.println(ExtensionLoader.getExtensionLoader(Transporter.class).getAdaptiveExtension().getClass());
 
 //        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getExtension("nettySelf").getClass());
+        //ExtensionLoader.getExtensionLoader(TransporterSelf.class).getAdaptiveExtension().getClass();
         System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getAdaptiveExtension().getClass());
 
 //        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getExtension("minaSelf").getClass());

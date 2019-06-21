@@ -1,0 +1,10 @@
+代码错误搜集
+1.java.lang.IllegalStateException: fail to create adaptive instance: java.lang.IllegalStateException: Can not create adaptive extenstion
+interface com.alibaba.dubbo.remoting.TransporterSelf, cause: Format specifier '%d'
+
+java.util.MissingFormatArgumentException: Format specifier '%s'   缺少占位符(Java里面报出的异常)
+生成自适应扩展代码是，String format占位符没有对应或者给的值不对
+
+2.javassist.CannotCompileException: [source error] ; is missing
+Caused by: compile error: ; is missing
+生成的代码编译错误
