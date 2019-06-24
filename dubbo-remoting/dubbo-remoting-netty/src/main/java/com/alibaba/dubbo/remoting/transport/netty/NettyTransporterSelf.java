@@ -27,6 +27,36 @@ public class NettyTransporterSelf implements TransporterSelf {
 
     public static final String NAME = "netty";
 
+    private TransporterSelf minaSelf;  //通过injectExtension注入依赖，属性名需要值配置文件中出现的，是SPI类型，也可以是基本类型
+
+    private Transporter netty;
+
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public TransporterSelf getMinaSelf() {
+        return minaSelf;
+    }
+
+    public void setMinaSelf(TransporterSelf minaSelf) {
+        this.minaSelf = minaSelf;
+    }
+
+    public Transporter getNetty() {
+        return netty;
+    }
+
+    public void setNetty(Transporter netty) {
+        this.netty = netty;
+    }
+
     /**@c  */
     public Server bind(URL url, ChannelHandler listener) throws RemotingException {
         return new NettyServer(url, listener);

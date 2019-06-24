@@ -14,9 +14,16 @@ public class SPITest {
 //        System.out.println(ExtensionLoader.getExtensionLoader(Transporter.class).getExtension("netty").getClass());
 //        System.out.println(ExtensionLoader.getExtensionLoader(Transporter.class).getAdaptiveExtension().getClass());
 
-//        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getExtension("nettySelf").getClass());
         //ExtensionLoader.getExtensionLoader(TransporterSelf.class).getAdaptiveExtension().getClass();
-        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getAdaptiveExtension().getClass());
+
+        // 指定扩展名
+        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getExtension("nettySelf").getClass());
+
+        //ExtensionLoader 没有公有的构造函数，调用getExtensionLoader获取扩展实例
+
+        // 不指定扩展名，运行时动态从url中获取
+        ExtensionLoader extensionLoader = ExtensionLoader.getExtensionLoader(TransporterSelf.class);
+        System.out.println(extensionLoader.getAdaptiveExtension().getClass());
 
 //        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getExtension("minaSelf").getClass());
 //        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getAdaptiveExtension().getClass());

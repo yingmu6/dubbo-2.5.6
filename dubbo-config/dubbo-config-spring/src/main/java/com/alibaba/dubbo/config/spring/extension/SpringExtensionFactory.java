@@ -27,7 +27,7 @@ import java.util.Set;
  *
  * @author william.liangf
  */
-public class SpringExtensionFactory implements ExtensionFactory {
+public class SpringExtensionFactory implements ExtensionFactory { //从 Spring 的 IOC 容器中获取所需的拓展
 
     private static final Set<ApplicationContext> contexts = new ConcurrentHashSet<ApplicationContext>();
 
@@ -41,7 +41,7 @@ public class SpringExtensionFactory implements ExtensionFactory {
 
     @SuppressWarnings("unchecked")
     public <T> T getExtension(Class<T> type, String name) {
-        for (ApplicationContext context : contexts) {/**@c */
+        for (ApplicationContext context : contexts) {/**@c 从spring bean中获取实例 */
             if (context.containsBean(name)) {
                 Object bean = context.getBean(name);
                 if (type.isInstance(bean)) {

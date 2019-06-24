@@ -31,7 +31,7 @@ import java.util.List;
 @Adaptive
 public class AdaptiveExtensionFactory implements ExtensionFactory {
 
-    private final List<ExtensionFactory> factories;
+    private final List<ExtensionFactory> factories; //用于存储其他类型的 ExtensionFactor
 
     public AdaptiveExtensionFactory() {
         ExtensionLoader<ExtensionFactory> loader = ExtensionLoader.getExtensionLoader(ExtensionFactory.class);

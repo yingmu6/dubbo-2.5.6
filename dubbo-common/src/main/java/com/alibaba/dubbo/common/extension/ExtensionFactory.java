@@ -22,7 +22,7 @@ package com.alibaba.dubbo.common.extension;
  * @export
  */
 @SPI
-public interface ExtensionFactory {
+public interface ExtensionFactory { /**@c 通过扩展工厂方法获取扩展实例  */
 
     /**
      * Get extension.
@@ -31,6 +31,6 @@ public interface ExtensionFactory {
      * @param name object name.
      * @return object instance.
      */
-    <T> T getExtension(Class<T> type, String name);
+    <T> T getExtension(Class<T> type, String name); //TODO 获取接口指定名称的实例
 
 }
