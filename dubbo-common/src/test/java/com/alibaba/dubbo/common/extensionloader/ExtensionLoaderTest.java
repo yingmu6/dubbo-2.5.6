@@ -227,14 +227,16 @@ public class ExtensionLoaderTest {
     }
 
     @Test
-    public void test_AddExtension() throws Exception {
-        try {
-            ExtensionLoader.getExtensionLoader(AddExt1.class).getExtension("Manual1");
-            fail();
-        } catch (IllegalStateException expected) {
-            assertThat(expected.getMessage(), containsString("No such extension com.alibaba.dubbo.common.extensionloader.ext8_add.AddExt1 by name Manual"));
-        }
+    public void test_AddExtension() throws Exception { //添加扩展测试
+//        try {
+//            //com.alibaba.dubbo.common.extensionloader.ext8_add.AddExt1 这个接口没有对应的配置文件
+//            ExtensionLoader.getExtensionLoader(AddExt1.class).getExtension("Manual1");
+//            fail();
+//        } catch (IllegalStateException expected) {
+//            assertThat(expected.getMessage(), containsString("No such extension com.alibaba.dubbo.common.extensionloader.ext8_add.AddExt1 by name Manual"));
+//        }
 
+        //直接操作本地缓存内容
         ExtensionLoader.getExtensionLoader(AddExt1.class).addExtension("Manual1", AddExt1_ManualAdd1.class);
         AddExt1 ext = ExtensionLoader.getExtensionLoader(AddExt1.class).getExtension("Manual1");
 
@@ -278,7 +280,7 @@ public class ExtensionLoaderTest {
     }
 
     @Test
-    public void test_replaceExtension() throws Exception {
+    public void test_replaceExtension() throws Exception { //替换扩展点
         try {
             ExtensionLoader.getExtensionLoader(AddExt1.class).getExtension("Manual2");
             fail();
@@ -355,37 +357,43 @@ public class ExtensionLoaderTest {
 
     @Test
     public void testLoadActivateExtension() throws Exception {
-        // test default
-        URL url = URL.valueOf("test://localhost/test");
-        List<ActivateExt1> list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
-                .getActivateExtension(url, new String[]{}, "default_group");
-        Assert.assertEquals(1, list.size());
-        Assert.assertTrue(list.get(0).getClass() == ActivateExt1Impl1.class);
+        // test default  第一种案例: 配置文件中没有指定扩展名，根据group去和实现类上注解的参数比较
+        URL url = URL.valueOf("test://localhost/test"); // 没有配置key怎么找到，自适应中是截取实例内的名称？不用管扩展名，根据条件比较，满足条件的就可以创建实例
+//        //String []values = new String[]{"","-default"}; 报错
+//        String []values = new String[]{};
+//        //String group = ""; //此处若不指定group，会把缓存中满足条件的接口实现类返回
+//        String group = "default_group";
+//        List<ActivateExt1> list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+//                .getActivateExtension(url, values, group);
+//        Assert.assertEquals(1, list.size());
+//        Assert.assertTrue(list.get(0).getClass() == ActivateExt1Impl1.class);
 
-        // test group
-        url = url.addParameter(Constants.GROUP_KEY, "group1");
-        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
-                .getActivateExtension(url, new String[]{}, "group1");
-        Assert.assertEquals(1, list.size());
-        Assert.assertTrue(list.get(0).getClass() == GroupActivateExtImpl.class);
+        // test group 以group作为激活条件
+//         String []values = new String[]{"group","order1","","order2"};
+        String []values = new String[]{};
+        url = url.addParameter(Constants.GROUP_KEY, "group1"); //配置文件中没有看到group1的key，是怎样找到实例的类的？通过注解内容找到实例类
+        List<ActivateExt1>  list2 = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+                .getActivateExtension(url, values, "group1");
+        Assert.assertEquals(1, list2.size());
+        Assert.assertTrue(list2.get(0).getClass() == GroupActivateExtImpl.class);
 
-        // test value
-        url = url.removeParameter(Constants.GROUP_KEY);
-        url = url.addParameter(Constants.GROUP_KEY, "value");
-        url = url.addParameter("value", "value");
-        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
-                .getActivateExtension(url, new String[]{}, "value");
-        Assert.assertEquals(1, list.size());
-        Assert.assertTrue(list.get(0).getClass() == ValueActivateExtImpl.class);
-
-        // test order
-        url = URL.valueOf("test://localhost/test");
-        url = url.addParameter(Constants.GROUP_KEY, "order");
-        list = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
-                .getActivateExtension(url, new String[]{}, "order");
-        Assert.assertEquals(2, list.size());
-        Assert.assertTrue(list.get(0).getClass() == OrderActivateExtImpl1.class);
-        Assert.assertTrue(list.get(1).getClass() == OrderActivateExtImpl2.class);
+//        // test value 以value作为激活条件 （若注解@Adativate中value不为空，则需要在url中包含value值）
+//        url = url.removeParameter(Constants.GROUP_KEY);
+//        url = url.addParameter(Constants.GROUP_KEY, "value");
+//        url = url.addParameter("value", "value");
+//        List<ActivateExt1>  list3 = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+//                .getActivateExtension(url, new String[]{}, "value");
+//        Assert.assertEquals(1, list3.size());
+//        Assert.assertTrue(list3.get(0).getClass() == ValueActivateExtImpl.class);
+//
+//        // test order 以order作为激活条件
+//        url = URL.valueOf("test://localhost/test");
+//        url = url.addParameter(Constants.GROUP_KEY, "order");
+//        List<ActivateExt1> list4 = ExtensionLoader.getExtensionLoader(ActivateExt1.class)
+//                .getActivateExtension(url, new String[]{}, "order");
+//        Assert.assertEquals(2, list4.size());
+//        Assert.assertTrue(list4.get(0).getClass() == OrderActivateExtImpl1.class);
+//        Assert.assertTrue(list4.get(1).getClass() == OrderActivateExtImpl2.class);
     }
 
     @Test

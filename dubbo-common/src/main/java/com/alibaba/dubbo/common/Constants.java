@@ -152,7 +152,7 @@ public class Constants {
 
     public static final String DEFAULT_KEY_PREFIX = "default.";
 
-    public static final String DEFAULT_KEY = "default";
+    public static final String DEFAULT_KEY = "";
 
     public static final String LOADBALANCE_KEY = "loadbalance";
 

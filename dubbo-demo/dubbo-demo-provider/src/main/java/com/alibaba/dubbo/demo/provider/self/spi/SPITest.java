@@ -22,8 +22,8 @@ public class SPITest {
         //ExtensionLoader 没有公有的构造函数，调用getExtensionLoader获取扩展实例
 
         // 不指定扩展名，运行时动态从url中获取 （生成自适应代码，然后获取自适应扩展实例）
-//        ExtensionLoader extensionLoader = ExtensionLoader.getExtensionLoader(TransporterSelf.class);
-//        System.out.println(extensionLoader.getAdaptiveExtension().getClass());
+        ExtensionLoader extensionLoader = ExtensionLoader.getExtensionLoader(TransporterSelf.class);
+        System.out.println(extensionLoader.getAdaptiveExtension().getClass());
 
 //        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getExtension("minaSelf").getClass());
 //        System.out.println(ExtensionLoader.getExtensionLoader(TransporterSelf.class).getAdaptiveExtension().getClass());

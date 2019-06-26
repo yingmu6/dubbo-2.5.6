@@ -35,3 +35,6 @@ https://blog.csdn.net/wp94302948/article/details/79724342
 2.synchronized双重检测判读
 3.Class中newInstance、isAssignableFrom、Class实例化对象、getConstructor
 4.Spring ApplicationContext获取bean，检查bean
+
+19/6/24
+1.类变量与成员变量的区别

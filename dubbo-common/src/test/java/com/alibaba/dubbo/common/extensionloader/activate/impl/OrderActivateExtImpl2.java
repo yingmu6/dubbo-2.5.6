@@ -22,7 +22,7 @@ import com.alibaba.dubbo.common.extensionloader.activate.ActivateExt1;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-@Activate(order = 2, group = {"order"})
+@Activate(order = 2, group = {"order"})  //构建激活条件：配置文件中key为order1（错误理解）  正解：此处去掉order=2，也可以查找到，所以是根据group条件匹配的，而不是拼接order1
 public class OrderActivateExtImpl2 implements ActivateExt1 {
 
     public String echo(String msg) {

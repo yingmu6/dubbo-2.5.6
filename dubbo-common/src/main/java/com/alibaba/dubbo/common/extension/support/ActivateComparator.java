@@ -26,10 +26,11 @@ import java.util.Comparator;
  *
  * @author william.liangf
  */
-public class ActivateComparator implements Comparator<Object> {
+public class ActivateComparator implements Comparator<Object> { //比较器
 
     public static final Comparator<Object> COMPARATOR = new ActivateComparator();
 
+    //用例覆盖点1（两个对象比较，可单元测试）
     public int compare(Object o1, Object o2) {
         if (o1 == null && o2 == null) {
             return 0;

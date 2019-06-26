@@ -48,7 +48,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Activate {
+public @interface Activate { //以group、value作为过滤条件，查找实例类，不需要用配置文件的key
     /**
      * Group过滤条件。
      * <br />

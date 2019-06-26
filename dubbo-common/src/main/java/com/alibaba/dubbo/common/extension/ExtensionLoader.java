@@ -20,10 +20,7 @@ import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.extension.support.ActivateComparator;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.alibaba.dubbo.common.utils.ConcurrentHashSet;
-import com.alibaba.dubbo.common.utils.ConfigUtils;
-import com.alibaba.dubbo.common.utils.Holder;
-import com.alibaba.dubbo.common.utils.StringUtils;
+import com.alibaba.dubbo.common.utils.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -64,6 +61,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
     /**@c ExtensionLoader 本地缓存，将接口类型type与ExtensionLoader扩展类映射缓存起来 */
     private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
 
+    // 缓存接口Class与接口的实例类映射关系
     private static final ConcurrentMap<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<Class<?>, Object>();
 
     // ==============================
@@ -76,14 +74,21 @@ public class ExtensionLoader<T> {  //称谓：扩展类
      */
     private final Class<?> type; //扩展接口的类型
 
-    private final ExtensionFactory objectFactory; /**@c objectFactory用途 ：通过工厂方法获取扩展类 */
+    private final ExtensionFactory objectFactory; /**@c objectFactory用途 ：通过工厂方法获取扩展类，在创建ExtensionLoader时设置 */
 
+    // 缓存接口Class与扩展名的映射关系
     private final ConcurrentMap<Class<?>, String> cachedNames = new ConcurrentHashMap<Class<?>, String>(); //存入例如 key=com.alibaba.dubbo.remoting.transport.netty.NettyTransporter  name=netty
 
-    private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<Map<String, Class<?>>>(); /**@c 此处用途？ */
+    /**@c 此处用途？持有对象管理扩展名与接口Class的映射关系 */
+    private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<Map<String, Class<?>>>();
 
+    // 扩展名与自动激活注解Active的映射
     private final Map<String, Activate> cachedActivates = new ConcurrentHashMap<String, Activate>();
+
+    // 扩展名与实例的持有对象的映射
     private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
+
+    // 缓存中的实例对象，只存在一个实例
     private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>(); //缓存中对象
     private volatile Class<?> cachedAdaptiveClass = null;  //缓存自适应类的class
     private String cachedDefaultName; //缓存SPI中value值
@@ -116,7 +121,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                     ") is not extension, because WITHOUT @" + SPI.class.getSimpleName() + " Annotation!");
         }
 
-        //TODO 从内存中获取SPI扩展类, EXTENSION_LOADERS何时写入
+        //从内存中获取SPI扩展类, EXTENSION_LOADERS何时写入 : 初始时递归调用
         ExtensionLoader<T> loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
         if (loader == null) {//如果为null，创建新的对象设置进去
             EXTENSION_LOADERS.putIfAbsent(type, new ExtensionLoader<T>(type)); //有两个key，一个是接口class，另一个是ExtensionFactory
@@ -133,6 +138,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
         return getExtensionName(extensionInstance.getClass());
     }
 
+    // 从缓存中获取指定接口的扩展名
     public String getExtensionName(Class<?> extensionClass) {
         return cachedNames.get(extensionClass);
     }
@@ -147,6 +153,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
      * @return extension list which are activated.
      * @see #getActivateExtension(com.alibaba.dubbo.common.URL, String, String)
      */
+    //  此方法用途： 获取url中指定key对应的扩展实例
     public List<T> getActivateExtension(URL url, String key) {
         return getActivateExtension(url, key, null);
     }
@@ -225,12 +232,13 @@ public class ExtensionLoader<T> {  //称谓：扩展类
      * @return extension list which are activated.
      * @see #getActivateExtension(com.alibaba.dubbo.common.URL, String[], String)
      */
+    // 从url中获取key对应的value，比如：test://localhost/test?ext=order1,default， ext对应的值为order1,default
     public List<T> getActivateExtension(URL url, String key, String group) {
         String value = url.getParameter(key);
         return getActivateExtension(url, value == null || value.length() == 0 ? null : Constants.COMMA_SPLIT_PATTERN.split(value), group);
     }
 
-    /** TODO read
+    /**
      * Get activate extensions.
      *
      * @param url    url
@@ -239,31 +247,37 @@ public class ExtensionLoader<T> {  //称谓：扩展类
      * @return extension list which are activated
      * @see com.alibaba.dubbo.common.extension.Activate
      */
-    public List<T> getActivateExtension(URL url, String[] values, String group) {
+
+    //方法的用途：根据Active注解上的条件选择加载的实例？是的
+    public List<T> getActivateExtensionOrigin(URL url, String[] values, String group) { //TODO values的用途？
+        //new String[]{"","-"} 数组会报错  - 会跳过第一个判断，""进入第二判断 getExtension(name)传入空字符会报错
         List<T> exts = new ArrayList<T>();
         List<String> names = values == null ? new ArrayList<String>(0) : Arrays.asList(values);
-        if (!names.contains(Constants.REMOVE_VALUE_PREFIX + Constants.DEFAULT_KEY)) {
+        //用例覆盖点1（条件：包含与不包含 -）
+        if (!names.contains(Constants.REMOVE_VALUE_PREFIX + Constants.DEFAULT_KEY)) { //是否包含"-"
             getExtensionClasses();
-            for (Map.Entry<String, Activate> entry : cachedActivates.entrySet()) {
+            for (Map.Entry<String, Activate> entry : cachedActivates.entrySet()) { //遍历缓存中activate的Map映射关系
                 String name = entry.getKey();
                 Activate activate = entry.getValue();
-                if (isMatchGroup(group, activate.group())) {
-                    T ext = getExtension(name);
+                if (isMatchGroup(group, activate.group())) { //取注解中的group进行匹配过滤，并没有拿配置文件中key比较
+                    T ext = getExtension(name); //匹配成功，获取该activate对应key的实例
                     if (!names.contains(name)
                             && !names.contains(Constants.REMOVE_VALUE_PREFIX + name)
-                            && isActive(activate, url)) {
+                            && isActive(activate, url)) { //若Activate中的values不为空，则需要url需要存在value值
                         exts.add(ext);
                     }
                 }
             }
-            Collections.sort(exts, ActivateComparator.COMPARATOR);
+            Collections.sort(exts, ActivateComparator.COMPARATOR); //将实例列表排序 TODO 排序算法
         }
+
+        //用例覆盖点5（条件：Activate注解中属性value不为空时）
         List<T> usrs = new ArrayList<T>();
         for (int i = 0; i < names.size(); i++) {
             String name = names.get(i);
             if (!name.startsWith(Constants.REMOVE_VALUE_PREFIX)
                     && !names.contains(Constants.REMOVE_VALUE_PREFIX + name)) {
-                if (Constants.DEFAULT_KEY.equals(name)) {
+                if (Constants.DEFAULT_KEY.equals(name)) { //{"group","order1","","order2"};
                     if (usrs.size() > 0) {
                         exts.addAll(0, usrs);
                         usrs.clear();
@@ -280,11 +294,15 @@ public class ExtensionLoader<T> {  //称谓：扩展类
         return exts;
     }
 
+    //判断组group是否在注解中group数组里 (将传入的group值，与注解中的group[] 比较)
     private boolean isMatchGroup(String group, String[] groups) {
-        if (group == null || group.length() == 0) {
+        //用例覆盖点2（条件：group空与非空）
+        if (group == null || group.length() == 0) { //未传入值，认为是匹配的
             return true;
         }
-        if (groups != null && groups.length > 0) { //判断字符串是否在字符数组中
+
+        //用例覆盖点3（条件：group是否在groups）  匹配group参数
+        if (groups != null && groups.length > 0) {
             for (String g : groups) {
                 if (group.equals(g)) {
                     return true;
@@ -294,12 +312,15 @@ public class ExtensionLoader<T> {  //称谓：扩展类
         return false;
     }
 
+    //判断注解的key数组中的值是否在url的参数中
     private boolean isActive(Activate activate, URL url) { //Active 自动激活加载扩展
         String[] keys = activate.value();
         if (keys == null || keys.length == 0) {
             return true;
         }
-        for (String key : keys) {
+
+        //用例覆盖点4（条件：activate.value是否为空） 匹配value参数
+        for (String key : keys) {  //遍历注解中的value数组，看value值是否存在url参数列表中
             for (Map.Entry<String, String> entry : url.getParameters().entrySet()) {
                 String k = entry.getKey();
                 String v = entry.getValue();
@@ -340,6 +361,63 @@ public class ExtensionLoader<T> {  //称谓：扩展类
      */
     public Set<String> getLoadedExtensions() {
         return Collections.unmodifiableSet(new TreeSet<String>(cachedInstances.keySet()));
+    }
+
+    /**
+     * @overwrite 获取@Adaptivate注解标识的扩展
+     * 1）将values赋值给names列表，作为加载文件的key查询
+     * 2）names不包含移除前缀"-"  【匹配group以及value值】
+     *    2.1）遍历缓存中@Activaty集合cachedActivaty
+     *    2.2) 获取name、Activaty，获取到注解上的group数组
+     *    2.3）匹配传入的group是否在注解上group数组里面 isMathGroup
+     *      2.3.1）若存在，则判断value是否在url的参数中isActivaty()。
+     *      2.3.2) 若传入values不为空，遍历的name不在values数组中
+     *      若添加都满足，表明是需要的实例getExtension(name)，创建实例并且加入到返回列表List<T> extList
+     *
+     * 3）names不会空(传入的values不为空) 【传入values值，获取指定的name实例】
+     *    3.1）遍历names,将name做判断，若等于DEFAULT_KEY即""时，并且看之前是否有缓存的列表，若有添加到返回列表，并清除临时列表
+     *    3.2）若不等于DEFAULT_KEY，获取指定name实例，并加入到返回列表
+     *
+     */
+    public List<T> getActivateExtension(URL url, String[] values, String group) {
+        List<T> extList = new ArrayList<>();
+        List<String> names = (values == null || values.length == 0) ? new ArrayList<>() : Arrays.asList(values);
+        if (!names.contains(Constants.REMOVE_VALUE_PREFIX + Constants.DEFAULT_KEY)) { //不包含移除前缀，只要有一个元素包含移除前缀就跳过
+            getExtensionClasses();
+            for (Map.Entry<String, Activate> activateMap : cachedActivates.entrySet()) {
+                String name = activateMap.getKey();
+                Activate activate = activateMap.getValue();
+                if (isMatchGroup(group, activate.group())) {
+                    T ext = getExtension(name);
+                    if (!names.contains(name) //不包含在values数组中
+                            && !names.contains(Constants.REMOVE_VALUE_PREFIX + name) //不包含（移除前缀 + name）
+                            && isActive(activate, url)) { //判断设置values是否存在url参数中
+                        extList.add(ext);
+                    }
+                }
+            }
+            Collections.sort(extList, ActivateComparator.COMPARATOR); //对列表按指定比较器排序
+        }
+
+        List<T> usr = new ArrayList<>();  //按指定value获取实例
+        if (names.size() > 0) {
+            for (String name : names) { //部分含有移除前缀的省略掉
+                if (!name.startsWith(Constants.REMOVE_VALUE_PREFIX) //去除包含移除前缀的name
+                     && !name.startsWith(Constants.REMOVE_VALUE_PREFIX + name)) {
+                    if (name.equals(Constants.DEFAULT_KEY)) {
+                        if (usr.size() > 0) {
+                            extList.addAll(0, usr);
+                            usr.clear();
+                        }
+
+                    } else {
+                        T ext = getExtension(name);
+                        usr.add(ext);
+                    }
+                }
+            }
+        }
+        return extList;
     }
 
     /**
@@ -388,6 +466,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
         return getExtension(cachedDefaultName);
     }
 
+    // 判断是否包含指定name的扩展：查询指定name的扩展class，看是否存在
     public boolean hasExtension(String name) {
         if (name == null || name.length() == 0)
             throw new IllegalArgumentException("Extension name == null");
@@ -398,7 +477,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
         }
     }
 
-    public Set<String> getSupportedExtensions() {
+    public Set<String> getSupportedExtensions() { //从文件中读取支持的扩展名集合
         Map<String, Class<?>> clazzes = getExtensionClasses();
         return Collections.unmodifiableSet(new TreeSet<String>(clazzes.keySet()));
     }
@@ -452,6 +531,8 @@ public class ExtensionLoader<T> {  //称谓：扩展类
      * @param name  扩展点名
      * @param clazz 扩展点类
      * @throws IllegalStateException 要添加扩展点名已经存在。
+     *
+     * 不用读取配置文件的值，动态添加？ 是的，直接处理缓存的值cachedClasses、cachedNames
      */
     public void addExtension(String name, Class<?> clazz) {
         getExtensionClasses(); // load classes
@@ -469,7 +550,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
             if (StringUtils.isBlank(name)) {
                 throw new IllegalStateException("Extension name is blank (Extension " + type + ")!");
             }
-            if (cachedClasses.get().containsKey(name)) {
+            if (cachedClasses.get().containsKey(name)) { //判断扩展名是否已存在
                 throw new IllegalStateException("Extension name " +
                         name + " already existed(Extension " + type + ")!");
             }
@@ -492,6 +573,8 @@ public class ExtensionLoader<T> {  //称谓：扩展类
      * @param clazz 扩展点类
      * @throws IllegalStateException 要添加扩展点名已经存在。
      * @deprecated 不推荐应用使用，一般只在测试时可以使用
+     *
+     * 怎么替换扩展点 : 更新缓存中的值
      */
     @Deprecated
     public void replaceExtension(String name, Class<?> clazz) {
@@ -510,13 +593,13 @@ public class ExtensionLoader<T> {  //称谓：扩展类
             if (StringUtils.isBlank(name)) {
                 throw new IllegalStateException("Extension name is blank (Extension " + type + ")!");
             }
-            if (!cachedClasses.get().containsKey(name)) {
+            if (!cachedClasses.get().containsKey(name)) { //若缓存中没有name则报错
                 throw new IllegalStateException("Extension name " +
                         name + " not existed(Extension " + type + ")!");
             }
 
-            cachedNames.put(clazz, name);
-            cachedClasses.get().put(name, clazz);
+            cachedNames.put(clazz, name); //多个clazz对应一个name
+            cachedClasses.get().put(name, clazz); //更新相同name的值
             cachedInstances.remove(name);
         } else {
             if (cachedAdaptiveClass == null) {
@@ -823,7 +906,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                                                 } catch (NoSuchMethodException e) {
                                                     clazz.getConstructor();  //判断是否有无参的构造函数
                                                     if (name == null || name.length() == 0) { //文件中没有key的情况下,截取实现类的名称作为key
-                                                        name = findAnnotationName(clazz); // TODO 此处为啥和下文一样处理逻辑的去获取扩展名
+                                                        name = findAnnotationName(clazz); //此方法已经被弃用
                                                         if (name == null || name.length() == 0) {
                                                             // 例如 clazz = com.alibaba.dubbo.remoting.transport.netty.NettyTransporter
                                                             // type = com.alibaba.dubbo.remoting.Transporter
@@ -907,6 +990,14 @@ public class ExtensionLoader<T> {  //称谓：扩展类
     }
 
 
+    /**
+     * 此方法已被弃用
+     * 在配置文件中没有配置扩展名的处理逻辑：
+     * 1）看实例类是否包含Extension，若包含则取Extension的value值
+     * 2）将实例类与接口比较，若实例类以接口名结尾，就解决实例类的名称，并小写
+     * 3）若实例类不是以接口结尾，直接将类名小写 如："class com.alibaba.dubbo.common.extensionloader.activate.impl.ActivateExt1Impl1" -> "activateext1impl1"
+     * 但这样命名比较随意，不好规范控制
+     */
     @SuppressWarnings("deprecation")
     private String findAnnotationName(Class<?> clazz) {/**@c 获取注解名 */
         com.alibaba.dubbo.common.Extension extension = clazz.getAnnotation(com.alibaba.dubbo.common.Extension.class);
@@ -1174,6 +1265,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
      *
      */
 
+    //加载配置文件，并且将文件中键值对缓存在内存中(记录的缓存内容有： cachedActivates、cachedClasses等)
     public void loadFile(Map<String, Class<?>> extensionClasses, String dir) {
         String fileName = dir + type.getName();  //加载接口名对应文件的内容，然后按需实例文件中的对象
         try {
@@ -1231,6 +1323,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                                     wrapperSet.add(type);
                                 } catch (NoSuchMethodException e) { // java.lang.NoSuchMethodException, 不能是NoSuchMethodError
                                     clazz.getConstructor();
+                                    //在配置文件中没有配置扩展名key时，通过截取解析的实例类，获取获取名（实例类名称 - 接口名称 并小写）
                                     if (name == null || name.length() == 0) { //此处怎为空 ：配置文件中的key为空即可
                                         name = findAnnotationName(clazz);
                                         if (name == null || name.length() == 0) { //双重判断
