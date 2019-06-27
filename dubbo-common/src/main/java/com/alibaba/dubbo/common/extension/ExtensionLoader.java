@@ -1238,7 +1238,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
             code.append("}");
         }
         code.append("}");
-        //System.out.println("自定义重新code:" + code.toString());
+        //System.out.println("自定义重新code:\n" + code.toString());
         return code.toString();
     }
 
