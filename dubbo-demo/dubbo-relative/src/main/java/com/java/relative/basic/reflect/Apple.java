@@ -1,5 +1,7 @@
 package com.java.relative.basic.reflect;
 
+import java.lang.reflect.Constructor;
+
 /**
  * 苹果类
  * @author chensy
@@ -31,6 +33,26 @@ public class Apple implements Fruits {
         System.out.println(apple.isAssignableFrom(apple)); //返回true
         System.out.println(apple.isAssignableFrom(fruit)); //返回false
         System.out.println(fruit.isAssignableFrom(apple)); //返回true
+
+        try {
+            Constructor app = apple.getConstructor();
+            Constructor app2 = apple.getConstructor(double.class); //获取包含指定参数的构造函数
+            System.out.println(app.getName());
+            Class[] param = app2.getParameterTypes();
+            System.out.println(app2.getName() + "," + param[0].getSimpleName());
+
+            //获取指定类型的构造器，并传入实参进行实例
+            Apple appleIns = (Apple) apple.getConstructor(double.class).newInstance(12.9);
+            System.out.println(appleIns.getWeight());
+
+            //获取无参的构造器
+            Apple appleIns2 = (Apple) apple.getConstructor().newInstance();
+            appleIns2.setWeight(133);
+            System.out.println(appleIns2.getWeight());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 
     /**

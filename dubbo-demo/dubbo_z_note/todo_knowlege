@@ -5,3 +5,5 @@
 3.ExtensionFactory
 4.Activty激活、addExtension(动态增加扩展点)、replaceExtension（动态替换扩展点）  ok
 5.注解
+6.Activaty比较器
+

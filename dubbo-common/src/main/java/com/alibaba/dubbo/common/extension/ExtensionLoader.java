@@ -675,7 +675,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                 instance = (T) EXTENSION_INSTANCES.get(clazz);
             }
             injectExtension(instance);
-            Set<Class<?>> wrapperClasses = cachedWrapperClasses; //TODO 此处wrapper的用途
+            Set<Class<?>> wrapperClasses = cachedWrapperClasses; //封装类，比如ProtocolFilterWrapper对Protocol封装
             if (wrapperClasses != null && wrapperClasses.size() > 0) {
                 for (Class<?> wrapperClass : wrapperClasses) {
                     instance = injectExtension((T) wrapperClass.getConstructor(type).newInstance(instance));
@@ -738,10 +738,11 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                 instance = EXTENSION_INSTANCES.get(cachedClass);
             }
             injectExtension((T)instance);
+            // cachedWrapperClasses 值是否存错了，接口没有构造函数：存实例类
             Set<Class<?>> cachedWrapperSet = cachedWrapperClasses;
             if (cachedWrapperSet != null && cachedWrapperSet.size() > 0) {
                 for (Class wrapper : cachedWrapperSet) {
-                    injectExtension((T)wrapper.getConstructor(type).newInstance(instance));
+                    instance = injectExtension((T)wrapper.getConstructor(type).newInstance(instance));
                 }
             }
 
@@ -896,7 +897,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                                                 }
                                             } else {         /**@c 方法上有adaptive注解 动态类*/
                                                 try {
-                                                    clazz.getConstructor(type); //判断是否存在带有type参数的构造函数
+                                                    clazz.getConstructor(type); //判断实现类是否存在带有type参数的构造函数
                                                     Set<Class<?>> wrappers = cachedWrapperClasses;
                                                     if (wrappers == null) {
                                                         cachedWrapperClasses = new ConcurrentHashSet<Class<?>>();
@@ -1078,10 +1079,10 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                 if (i != pts.length - 1) {
                     code.append(pts[i].getName() + " arg" + i + ",");
                 } else {
-                    code.append(pts[i].getName() + " arg" + i + " )");
+                    code.append(pts[i].getName() + " arg" + i);
                 }
             }
-
+            code.append(" ) ");
             if (exceptions.length > 0) {
                 code.append(" throws ");
             }
@@ -1162,7 +1163,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
 
                 String[] keys = method.getAnnotation(Adaptive.class).value();
                 if (keys.length == 0) {
-                    char[] typeNameArr = type.getName().toCharArray();
+                    char[] typeNameArr = type.getSimpleName().toCharArray();
                     StringBuilder key = new StringBuilder();
                     for (int i = 0; i < typeNameArr.length; i++) {
                         if (Character.isUpperCase(typeNameArr[i])) {
@@ -1174,6 +1175,8 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                             key.append(typeNameArr[i]);
                         }
                     }
+                    keys = new String[1];
+                    keys[0] = key.toString();
                 }
 
                 String getExtNameCode = "";
@@ -1188,7 +1191,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                                     getExtNameCode = String.format("url.getParameter(\"%s\", \"%s\")", keys[i], defaultName);
                                 }
                             } else {
-                                getExtNameCode = (String.format("url.getProtocol() == null ? (\"%s\") : url.getProtocol()", defaultName));
+                                getExtNameCode = (String.format("(url.getProtocol() == null || url.getProtocol() == \"\") ? (\"%s\") : url.getProtocol()", defaultName));
                             }
                         } else { //默认值为空时
                             if (!"protocol".equals(keys[i])) {
@@ -1198,7 +1201,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                                     getExtNameCode = String.format("url.getParameter(\"%s\")", keys[i]);
                                 }
                             } else {
-                                getExtNameCode = "url.getProtocol() == null";
+                                getExtNameCode = "(url.getProtocol() == null || url.getProtocol() == \"\") ? \"\" : url.getProtocol()";
                             }
                         }
                     } else {
@@ -1209,11 +1212,12 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                                 getExtNameCode = (String.format("url.getParameter(\"%s\", %s)", keys[i], getExtNameCode));
                             }
                         } else {
-                            getExtNameCode = (String.format("url.getProtocol() == null ? (%s) : url.getProtocol()", getExtNameCode));
+                            getExtNameCode = (String.format("(url.getProtocol() == null || url.getProtocol() == \"\")? (%s) : url.getProtocol()", getExtNameCode));
                         }
                     }
                 }
-                code.append("\nString extName = " + getExtNameCode + ";");
+                code.append("\nString extName = null; ");
+                code.append("\nextName = " + getExtNameCode + ";");
                 code.append("\nif (extName == null || extName.equals(\"\")) throw new IllegalStateException (\"" + type.getName() + " 的扩展名为空 \" );");
                 code.append("\n" + type.getName() + " extension = ExtensionLoader.getExtensionLoader(" + type.getName() + ".class ).getExtension(extName);");
                 if (returnType != void.class) {
@@ -1315,12 +1319,12 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                             } else {
                                 try {
                                     clazz.getConstructor(type);
-                                    Set<Class<?>> wrapperSet = cachedWrapperClasses;
+                                    Set<Class<?>> wrapperSet = cachedWrapperClasses; //cachedWrapperClasses存入的是实例类
                                     if (wrapperSet == null) {
                                         cachedWrapperClasses = new ConcurrentHashSet<>(); //如何创建set : ConcurrentHashSet
                                         wrapperSet = cachedWrapperClasses;
                                     }
-                                    wrapperSet.add(type);
+                                    wrapperSet.add(clazz);
                                 } catch (NoSuchMethodException e) { // java.lang.NoSuchMethodException, 不能是NoSuchMethodError
                                     clazz.getConstructor();
                                     //在配置文件中没有配置扩展名key时，通过截取解析的实例类，获取获取名（实例类名称 - 接口名称 并小写）
