@@ -42,7 +42,7 @@ public class Transporters {
     }
 
     /**  */
-    public static Server bind(URL url, ChannelHandler... handlers) throws RemotingException {
+    public static Server bind(URL url, ChannelHandler... handlers) throws RemotingException { //service export 步骤13
         if (url == null) {
             throw new IllegalArgumentException("url == null");
         }

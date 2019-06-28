@@ -30,7 +30,7 @@ public class NettyTransporter implements Transporter {
     public static final String NAME = "netty";
 
     /**@c  */
-    public Server bind(URL url, ChannelHandler listener) throws RemotingException {
+    public Server bind(URL url, ChannelHandler listener) throws RemotingException { //service export 步骤14
         return new NettyServer(url, listener);
     }
 

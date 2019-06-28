@@ -61,7 +61,7 @@ public class Exchangers {
     }
 
     /**@c */
-    public static ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
+    public static ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException { //service export 步骤11
         if (url == null) {
             throw new IllegalArgumentException("url == null");
         }

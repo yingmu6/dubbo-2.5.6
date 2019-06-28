@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class ClassHelper {
+public class ClassHelper { //TODO 待了解
 
     /**
      * Suffix for array class names: "[]"

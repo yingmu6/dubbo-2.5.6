@@ -153,7 +153,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     }
 
     /**@c 加载注册配置map，并把参数附加到URL中*/
-    protected List<URL> loadRegistries(boolean provider) {
+    protected List<URL> loadRegistries(boolean provider) { //service export 步骤04
         checkRegistry();
         List<URL> registryList = new ArrayList<URL>();
         if (registries != null && registries.size() > 0) {
@@ -199,7 +199,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         return registryList;
     }
 
-    protected URL loadMonitor(URL registryURL) {
+    protected URL loadMonitor(URL registryURL) { //service export 步骤06 TODO
         if (monitor == null) {
             String monitorAddress = ConfigUtils.getProperty("dubbo.monitor.address");
             String monitorProtocol = ConfigUtils.getProperty("dubbo.monitor.protocol");

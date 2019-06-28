@@ -222,7 +222,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     }
 
     //重点：将invoker转换为exporter，Invoker由框架传入
-    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
+    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException { //service export 步骤08
         URL url = invoker.getUrl();
 
         // export service.（根据执行者信息，构造服务暴露引用的信息）
@@ -253,7 +253,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     }
 
     /**@c 服务端打开服务*/
-    private void openServer(URL url) {
+    private void openServer(URL url) { //service export 步骤09
         // find server.
         String key = url.getAddress();//形式为 host:port
         //client 也可以暴露一个只有server可以调用的服务。
@@ -271,7 +271,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     }
 
     // 创建服务
-    private ExchangeServer createServer(URL url) {
+    private ExchangeServer createServer(URL url) {  //service export 步骤10
         //默认开启server关闭时发送readonly事件（TODO server都关闭了，还能读吗？）
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
         //默认开启heartbeat

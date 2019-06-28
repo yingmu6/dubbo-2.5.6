@@ -194,7 +194,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
      */
 
     /**@c 接口暴露是在提供方，接口引用是在消费方 */
-    public synchronized void export() {
+    public synchronized void export() { //service export 步骤01
         logger.info("export测试:" + this.getExportedUrls());
         if (provider != null) {/**@c 在ServiceConfig接口参数为空的时候，从提供者ProviderConfig参数获取 */
             if (export == null) {
@@ -221,7 +221,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }
     }
 
-    protected synchronized void doExport() {
+    protected synchronized void doExport() { //service export 步骤02
         if (unexported) {/**@c 解除暴露*/
             throw new IllegalStateException("Already unexported!");
         }
@@ -266,7 +266,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 monitor = application.getMonitor();
             }
         }
-        if (ref instanceof GenericService) {
+        if (ref instanceof GenericService) { //TODO 此分支作用
             interfaceClass = GenericService.class;
             if (StringUtils.isEmpty(generic)) {
                 generic = Boolean.TRUE.toString();
@@ -274,7 +274,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         } else {
             try {
                 interfaceClass = Class.forName(interfaceName, true, Thread.currentThread()
-                        .getContextClassLoader());
+                        .getContextClassLoader()); //使用类加载返回类对象
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
@@ -354,7 +354,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void doExportUrls() {
+    private void doExportUrls() { //service export 步骤03
         List<URL> registryURLs = loadRegistries(true);
         for (ProtocolConfig protocolConfig : protocols) {
             doExportUrlsFor1Protocol(protocolConfig, registryURLs);
@@ -362,10 +362,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     //TODO 暴露URL流程有点复杂，需要仔细分析
-    private void doExportUrlsFor1Protocol(ProtocolConfig protocolConfig, List<URL> registryURLs) {
+    private void doExportUrlsFor1Protocol(ProtocolConfig protocolConfig, List<URL> registryURLs) { //service export 步骤05
         String name = protocolConfig.getName();
         if (name == null || name.length() == 0) {
-            name = "dubbo";
+            name = "dubbo"; //默认协议为dubbo
         }
 
         String host = protocolConfig.getHost();
@@ -531,7 +531,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }
         URL url = new URL(name, host, port, (contextPath == null || contextPath.length() == 0 ? "" : contextPath + "/") + path, map);
 
-        if (ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)
+        if (ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)  //TODO 此处配置啥？
                 .hasExtension(url.getProtocol())) {
             url = ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)
                     .getExtension(url.getProtocol()).getConfigurator(url).configure(url);
@@ -563,7 +563,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         }
                         Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
 
-                        Exporter<?> exporter = protocol.export(invoker);
+                        Exporter<?> exporter = protocol.export(invoker);   //service export 步骤07 协议暴露
                         exporters.add(exporter);
                     }
                 } else {
@@ -578,7 +578,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void exportLocal(URL url) {
+    private void exportLocal(URL url) { //service export 步骤06
         if (!Constants.LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) {
             URL local = URL.valueOf(url.toFullString())
                     .setProtocol(Constants.LOCAL_PROTOCOL)

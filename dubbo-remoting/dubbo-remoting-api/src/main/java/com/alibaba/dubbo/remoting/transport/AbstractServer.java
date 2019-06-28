@@ -50,7 +50,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
     private int idleTimeout = 600; //600 seconds
 
     /**@c */
-    public AbstractServer(URL url, ChannelHandler handler) throws RemotingException {
+    public AbstractServer(URL url, ChannelHandler handler) throws RemotingException { //service export 步骤15
         super(url, handler);
         localAddress = getUrl().toInetSocketAddress();
         String host = url.getParameter(Constants.ANYHOST_KEY, false)
