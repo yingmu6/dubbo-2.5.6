@@ -387,7 +387,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         return client;
     }
 
-    public void destroy() {
+    public void destroy() { //TODO 当服务停止时，zk上的节点没删除，只是内容清空了，哪里实现清空zk内容的？
         for (String key : new ArrayList<String>(serverMap.keySet())) {
             ExchangeServer server = serverMap.remove(key);
             if (server != null) {

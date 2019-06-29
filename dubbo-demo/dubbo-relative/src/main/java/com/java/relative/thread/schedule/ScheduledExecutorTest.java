@@ -27,13 +27,13 @@ public class ScheduledExecutorTest {
 
         ScheduledExecutorTest executorTest = new ScheduledExecutorTest();
         //多线程执行
-        //executorTest.delay();
+        executorTest.delay();
 
         //executeFixedRate();
 
         //executeFixedDelay();
 
-        executorTest.executeEightAtNightPerDay();
+       // executorTest.executeEightAtNightPerDay();
 
         System.out.println("主线程 耗时 " + (System.currentTimeMillis() - start));
         System.in.read();

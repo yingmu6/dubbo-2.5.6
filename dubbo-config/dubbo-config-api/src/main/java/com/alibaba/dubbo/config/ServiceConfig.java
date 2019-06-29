@@ -48,6 +48,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -194,7 +195,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
      */
 
     /**@c 接口暴露是在提供方，接口引用是在消费方 */
-    public synchronized void export() { //service export 步骤01
+    public synchronized void exportOrgin() { //service export 步骤01
         logger.info("export测试:" + this.getExportedUrls());
         if (provider != null) {/**@c 在ServiceConfig接口参数为空的时候，从提供者ProviderConfig参数获取 */
             if (export == null) {
@@ -732,4 +733,41 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     public void setProviders(List<ProviderConfig> providers) {
         this.protocols = convertProviderToProtocol(providers);
     }
+
+
+    // ---------overwrite begin-------
+
+    /**
+     * export重写
+     * 1）判断export（暴露）、delay（延迟属性）
+     * 2）优先去ServiceConfig的值，若ServiceConfig没设置并且ProviderConfig设置了，就取ProviderConfig的值
+     * 3）判断是否需要暴露，若不要直接返回
+     * 4）判断是否需要延迟，若需要使用定时类延迟指定的时间后暴露
+     */
+    public synchronized void export() {
+        if (provider != null) {
+            if (export == null) {
+                export = provider.getExport();
+            }
+            if (delay == null) {
+                delay = provider.getDelay();
+            }
+        }
+        if (export != null && !export) {
+            return;
+        }
+        if (delay != null && delay > 0) { //定时任务，没用类变量 delayExportExecutor，没有指定ThreadFactory
+            ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+            executorService.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    doExport();
+                }
+            }, delay, TimeUnit.MILLISECONDS); //延时时间为毫秒
+        } else {
+            doExport();
+        }
+    }
+
+    // ---------end----------
 }
