@@ -200,7 +200,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                 break;
             }
         }
-        tag = tag.toLowerCase();
+        tag = tag.toLowerCase(); //将标签名变为小写
         return tag;
     }
 
@@ -289,39 +289,39 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
      * 7）从特定的map中legacyProperties获取值，若没有取到值，本地设置值终止
      */
 
-    protected static void appendProperties(AbstractConfig abstractConfig) {
+    protected static void appendProperties(AbstractConfig abstractConfig) { //设置config类的属性值，使用setter方式  IOC方式
         if (abstractConfig == null) {
             return;
         }
 
         Class configClass = abstractConfig.getClass();
-        String prefix = "dubbo." + getTagName(configClass) + ".";
+        String prefix = "dubbo." + getTagName(configClass) + ".";  //如ProviderConfig类对应的标签名前缀为 dubbo.provider.
         Method[] methods = configClass.getMethods();
         String configId = abstractConfig.getId();
-        for (Method method : methods) {
+        for (Method method : methods) { //遍历配置类中的方法，对符合条件的set方法处理
             try {
                 String name = method.getName();
                 String value = null;
                 String property = "";
                 if (name.startsWith("set") && name.length() > 3 && Modifier.isPublic(method.getModifiers())
                         && (method.getParameterCount() == 1) && isPrimitive(method.getParameterTypes()[0])) {
-                    //将属性名格式化
+                    //将属性名格式化(取set以后的字符串，按分隔符分隔作为属性名)
                     property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), "-");
-                    if (StringUtils.isNotEmpty(configId)) { //从系统属性获取
-                        value = System.getProperty(prefix + configId + property);
+                    if (StringUtils.isNotEmpty(configId)) {
+                        value = System.getProperty(prefix + configId + property); //配置id不为空时，加上配置id作为前缀，key如 dubbo.id1.provider.codec
                         if (StringUtils.isNotEmpty(value)) {
                             logger.info("use system properties , key=" + (prefix + configId + property) + ", value=" + value);
                         }
                     }
                     if (StringUtils.isEmpty(value)) {
-                        value = System.getProperty(prefix + property);
+                        value = System.getProperty(prefix + property); //若值为空，去掉配置id为key，继续查询，key如 dubbo.provider.codec
                         if (StringUtils.isNotEmpty(value)) {
                             logger.info("use system properties , key=" + (prefix + property) + ", value=" + value);
                         }
                     }
-                    if (StringUtils.isEmpty(value)) {   //从config bean中获取
+                    if (StringUtils.isEmpty(value)) {
                         Method getter;
-                        try { //从get方法获取值，若没有get方法从is方法获取
+                        try { //从get或is方法获取值判断 getCodec()
                             getter = configClass.getMethod("get" + name.substring(3), new Class[0]);
                         } catch (Exception e) {
                             try {
@@ -331,7 +331,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                             }
                         }
                         if (getter != null) {
-                            if (getter.invoke(abstractConfig, new Object[0]) == null) {
+                            if (getter.invoke(abstractConfig, new Object[0]) == null) { //在配置类对应的get方法或is方法返回值为空时，从配置文件中查找属性值
                                 if (StringUtils.isEmpty(value)) {   //从属性文件中获取
                                     if (StringUtils.isNotEmpty(configId)) {
                                         value = ConfigUtils.getProperty(prefix + configId + property);
@@ -346,7 +346,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                                         logger.info("use dubbo properties file, key=" + (prefix + property) + ", value=" + value);
                                     }
                                 }
-                                if (StringUtils.isEmpty(value)) {  //从预定义的key获取
+                                if (StringUtils.isEmpty(value)) {  //从预定义的key获取（若在系统属性、get方法、配置文件中都没找到，则将key换位预定义的key继续查）
                                     String key = legacyProperties.get(prefix + property); //将指定的key转换
                                     if (key != null && key.length() > 0) {
                                         value = convertLegacyValue(key, ConfigUtils.getProperty(key)); //过滤特殊的key值
@@ -356,7 +356,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                         }
                     }
 
-                    if (StringUtils.isNotEmpty(value)) { //设置属性值
+                    if (StringUtils.isNotEmpty(value)) { //执行对应的方法，设置属性值
                         try {
                             method.invoke(abstractConfig, value);
                         } catch (Exception e) {
@@ -368,6 +368,8 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                 logger.error(e.getMessage(), e);
             }
         }
+
+        logger.info("设置配置类属性值：" + abstractConfig.toString());
     }
 
     /**

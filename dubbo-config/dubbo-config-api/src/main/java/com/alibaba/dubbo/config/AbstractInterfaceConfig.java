@@ -98,7 +98,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     // 服务暴露或引用的scope,如果为local，则表示只在当前JVM内查找.
     private String scope;
 
-    protected void checkRegistry() {
+    protected void checkRegistry() { //检测注册中心的配置，并设置属性值
         // 兼容旧版本
         if (registries == null || registries.size() == 0) {
             String address = ConfigUtils.getProperty("dubbo.registry.address");
@@ -132,15 +132,16 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         if (application == null) {
             String applicationName = ConfigUtils.getProperty("dubbo.application.name");
             if (applicationName != null && applicationName.length() > 0) {
-                application = new ApplicationConfig();
+                application = new ApplicationConfig(); //TODO 此处为啥不把应用名设置进入
             }
         }
         if (application == null) {/**@c Application 应用配置不能为空 */
-            throw new IllegalStateException(
+            throw new IllegalStateException( //TODO 为啥此处的异常没有抛出来？
                     "No such application config! Please add <dubbo:application name=\"...\" /> to your spring config.");
         }
         appendProperties(application);
 
+        //从配置文件中获取优雅停机的时间，并且设置到系统属性中
         String wait = ConfigUtils.getProperty(Constants.SHUTDOWN_WAIT_KEY);/**@ 优雅停机的等待时间 */
         if (wait != null && wait.trim().length() > 0) {
             System.setProperty(Constants.SHUTDOWN_WAIT_KEY, wait.trim());
@@ -239,6 +240,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         return null;
     }
 
+    //判断接口中是否存在方法列表，若包含接口中没有的方法，则抛出异常
     protected void checkInterfaceAndMethods(Class<?> interfaceClass, List<MethodConfig> methods) {
         // 接口不能为空
         if (interfaceClass == null) {
@@ -248,7 +250,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         if (!interfaceClass.isInterface()) {
             throw new IllegalStateException("The interface class " + interfaceClass + " is not a interface!");
         }
-        // 检查方法是否在接口中存在
+        // 检查方法是否在接口中存在（若没设置就不比较）
         if (methods != null && methods.size() > 0) {/**@c 将ServiceConfig中声明的方法与接口中实际的方法比较  */
             for (MethodConfig methodBean : methods) {
                 String methodName = methodBean.getName();
@@ -282,7 +284,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                 throw new IllegalStateException("No such constructor \"public " + localClass.getSimpleName() + "(" + interfaceClass.getName() + ")\" in local implementation class " + localClass.getName());
             }
         }
-        if (ConfigUtils.isNotEmpty(stub)) {
+        if (ConfigUtils.isNotEmpty(stub)) { //在客户端实现部分逻辑
             Class<?> localClass = ConfigUtils.isDefault(stub) ? ReflectUtils.forName(interfaceClass.getName() + "Stub") : ReflectUtils.forName(stub);
             if (!interfaceClass.isAssignableFrom(localClass)) {
                 throw new IllegalStateException("The local implementation class " + localClass.getName() + " not implement interface " + interfaceClass.getName());
@@ -293,7 +295,8 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                 throw new IllegalStateException("No such constructor \"public " + localClass.getSimpleName() + "(" + interfaceClass.getName() + ")\" in local implementation class " + localClass.getName());
             }
         }
-        if (ConfigUtils.isNotEmpty(mock)) {
+        //TODO mock使用
+        if (ConfigUtils.isNotEmpty(mock)) { //开发自测，联调过程中，经常碰到一些下游服务调用不通的场景，这个时候我们如何不依赖于下游系统，就业务系统独立完成自测。服务调不通时，调用mock类
             if (mock.startsWith(Constants.RETURN_PREFIX)) {
                 String value = mock.substring(Constants.RETURN_PREFIX.length());
                 try {

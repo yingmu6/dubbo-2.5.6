@@ -143,12 +143,11 @@ public class ConfigUtils {
         return sb.toString();
     }
 
-    public static Properties getProperties() {
-        //获取属性的值：先从系统变量获取，若无从环境变量中获取，都无从配置文件中获取
+    public static Properties getProperties() { //读取dubbo的属性文件，并把键值对写到Properties类的属性中
         if (PROPERTIES == null) {
             synchronized (ConfigUtils.class) {
                 if (PROPERTIES == null) {
-                    String path = System.getProperty(Constants.DUBBO_PROPERTIES_KEY);
+                    String path = System.getProperty(Constants.DUBBO_PROPERTIES_KEY); //查找属性文件的路径，依次查找指定文件名的路径
                     if (path == null || path.length() == 0) {
                         path = System.getenv(Constants.DUBBO_PROPERTIES_KEY);
                         if (path == null || path.length() == 0) {
@@ -180,7 +179,7 @@ public class ConfigUtils {
 
     @SuppressWarnings({"unchecked", "rawtypes"}) /**@c 从System获取指定的值，如果不存在使用默认值 */
     public static String getProperty(String key, String defaultValue) {
-        String value = System.getProperty(key);
+        String value = System.getProperty(key); //此处为啥再从系统属性中查一次，都是系统属性中没值才去加载配置文件的？ 1）因为开发时查没有，但到此处时，可能其它的线程把值设置进入了。起再次确认的作用 2）还有单独调用的地方
         if (value != null && value.length() > 0) {
             return value;
         }
@@ -209,9 +208,11 @@ public class ConfigUtils {
      * </ul>
      * @throws IllegalStateException not allow multi-file, but multi-file exsit on class path.
      */
+
+    //加载指定文件名的dubbo属性文件，并且写到Properties对象中
     public static Properties loadProperties(String fileName, boolean allowMultiFile, boolean optional) {
         Properties properties = new Properties();
-        if (fileName.startsWith("/")) {/**@c 本地文件 */
+        if (fileName.startsWith("/")) {/**@c 读取本地文件，写到Properties，绝对路径 */
             try {
                 FileInputStream input = new FileInputStream(fileName);
                 try {
@@ -225,7 +226,7 @@ public class ConfigUtils {
             return properties;
         }
 
-        List<java.net.URL> list = new ArrayList<java.net.URL>();/**@c 远程文件URL */
+        List<java.net.URL> list = new ArrayList<java.net.URL>();/**@c 获取指定文件名对应的URL列表 */
         try {
             Enumeration<java.net.URL> urls = ClassHelper.getClassLoader().getResources(fileName);
             list = new ArrayList<java.net.URL>();
@@ -243,7 +244,7 @@ public class ConfigUtils {
             return properties;
         }
 
-        if (!allowMultiFile) {
+        if (!allowMultiFile) { //不允许多文件
             if (list.size() > 1) {/**@c 在不允许多文件时，不能超过一个问题 */
                 String errMsg = String.format("only 1 %s file is expected, but %d dubbo.properties files found on class path: %s",
                         fileName, list.size(), list.toString());
@@ -262,7 +263,7 @@ public class ConfigUtils {
 
         logger.info("load " + fileName + " properties file from " + list);
 
-        for (java.net.URL url : list) {
+        for (java.net.URL url : list) { //有多个url时，加每个url中对应的属性值设置到Properties
             try {
                 Properties p = new Properties();
                 InputStream input = url.openStream();

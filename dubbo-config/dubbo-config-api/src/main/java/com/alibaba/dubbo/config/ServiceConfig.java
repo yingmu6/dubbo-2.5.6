@@ -74,22 +74,24 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     private static final ScheduledExecutorService delayExportExecutor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("DubboServiceDelayExporter", true));
     private final List<URL> urls = new ArrayList<URL>(); /**@ list中的E 表示元素类型，泛型表示 */
     private final List<Exporter<?>> exporters = new ArrayList<Exporter<?>>();
-    // 接口类型
+    // 接口名称（暴露的接口名）
     private String interfaceName;
+    // 接口类型（暴露的接口）
     private Class<?> interfaceClass;
-    // 接口实现类引用
+    // 接口的实现类
     private T ref;
     // 服务名称
     private String path;
     // 方法配置
     private List<MethodConfig> methods;
     private ProviderConfig provider;
-    /**@ volatile 原子安全 */
+    /**@ volatile 原子安全 是否已暴露 */
     private transient volatile boolean exported;
 
-    private transient volatile boolean unexported;
+    // unexported是否已经解除暴露
+    private transient volatile boolean unexported; //boolean 类型的成员变量，默认false
 
-    private volatile String generic;
+    private volatile String generic; //是否是通用接口
 
     public ServiceConfig() {
     }
@@ -222,18 +224,18 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }
     }
 
-    protected synchronized void doExport() { //service export 步骤02
+    protected synchronized void doExportOrigin() { //service export 步骤02
         if (unexported) {/**@c 解除暴露*/
             throw new IllegalStateException("Already unexported!");
         }
-        if (exported) {/**@c 已经暴露过*/
+        if (exported) {/**@c 已经暴露过*/ // 同一个接口，不同应用端口以及同一个端口 启动看看： 已处理
             return;
         }
         exported = true;
         if (interfaceName == null || interfaceName.length() == 0) {/**@c 暴露的接口不能为空 */
             throw new IllegalStateException("<dubbo:service interface=\"\" /> interface not allow null!");
         }
-        checkDefault();
+        checkDefault(); //检查ProviderConfig中的配置以及设置
         if (provider != null) {/**@c ServiceConfig中的配置，依次从ProviderConfig、ModuleConfig、ApplicationConfig获取，由小到大，类似局部、全局变量 */
             if (application == null) {
                 application = provider.getApplication();
@@ -251,7 +253,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 protocols = provider.getProtocols();
             }
         }
-        if (module != null) {
+        if (module != null) { //module：可能来自ServiceConfig，也可能来自ProviderConfig
             if (registries == null) {
                 registries = module.getRegistries();
             }
@@ -264,32 +266,33 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 registries = application.getRegistries();
             }
             if (monitor == null) {
-                monitor = application.getMonitor();
+                MonitorConfig monitor = application.getMonitor();
+                this.monitor = monitor;
             }
         }
-        if (ref instanceof GenericService) { //TODO 此分支作用
+        if (ref instanceof GenericService) { /**@c 通用接口的判断 */
             interfaceClass = GenericService.class;
             if (StringUtils.isEmpty(generic)) {
                 generic = Boolean.TRUE.toString();
             }
         } else {
             try {
-                interfaceClass = Class.forName(interfaceName, true, Thread.currentThread()
+                interfaceClass = Class.forName(interfaceName, true, Thread.currentThread() //TODO service.setInterface(ApiDemo.class) 已经设置了class，为啥此处还要获取class
                         .getContextClassLoader()); //使用类加载返回类对象
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
-            checkInterfaceAndMethods(interfaceClass, methods);/**@c 检查配置中声明的方法是否在接口中 */
+            checkInterfaceAndMethods(interfaceClass, methods);/**@c 检查设置的方法config是否在暴露的接口 */ // methods是否哪里设置的？并没有显示设置 : 可以调用ServiceConfig的setMethods()
             checkRef();/**@c 检查引用ref */
             generic = Boolean.FALSE.toString();
         }
-        if (local != null) {/**@c 本地服务 */
+        if (local != null) {/**@c 本地服务 dubbo:service local机制，已经废弃，被stub属性所替换 */
             if ("true".equals(local)) {
                 local = interfaceName + "Local";
             }
             Class<?> localClass;
             try {
-                localClass = ClassHelper.forNameWithThreadContextClassLoader(local);
+                localClass = ClassHelper.forNameWithThreadContextClassLoader(local); //TODO 用途是啥？创建指定名称的class吗？
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
@@ -297,7 +300,8 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 throw new IllegalStateException("The local implementation class " + localClass.getName() + " not implement interface " + interfaceName);
             }
         }
-        if (stub != null) { /**@c 本地存根 */
+        //本地存根：对真正调用的对象进行代理
+        if (stub != null) { /**@c 本地存根 (远程服务后，客户端通常只剩下接口，而实现全在服务器端，但提供方有些时候想在客户端也执行部分逻辑，比如：做 ThreadLocal 缓存，提前验证参数，调用失败后伪造容错数据等) */
             if ("true".equals(stub)) {/**@c interfaceName接口名如： com.alibaba.dubbo.config.api.DemoService*/
                 stub = interfaceName + "Stub";
             }
@@ -311,6 +315,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 throw new IllegalStateException("The stub implementation class " + stubClass.getName() + " not implement interface " + interfaceName);
             }
         }
+        //TODO 检测逻辑细节待调试
         checkApplication();/**@c 暴露服务前检查配置，如果配置满足条件，则创建相应的配置对象，并且添加属性 */
         checkRegistry();
         checkProtocol();
@@ -319,7 +324,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (path == null || path.length() == 0) {
             path = interfaceName;
         }
-        doExportUrls();/**@c TODO goto */
+        doExportUrls();
     }
 
     private void checkRef() {
@@ -334,7 +339,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }
     }
 
-    public synchronized void unexport() {
+    public synchronized void unexport() { //解决暴露
         if (!exported) {
             return;
         }
@@ -596,11 +601,11 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (provider == null) {
             provider = new ProviderConfig();
         }
-        appendProperties(provider);
+        appendProperties(provider); //从系统属性、配置bean、属性文件中取出值，并设置到ProviderConfig
     }
 
     private void checkProtocol() {
-        if ((protocols == null || protocols.size() == 0)
+        if ((protocols == null || protocols.size() == 0) //若ServiceConfig没有设置协议，则取ProviderConfig中的协议配置
                 && provider != null) {
             setProtocols(provider.getProtocols());
         }
@@ -610,7 +615,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }
         for (ProtocolConfig protocolConfig : protocols) {
             if (StringUtils.isEmpty(protocolConfig.getName())) {
-                protocolConfig.setName("dubbo");
+                protocolConfig.setName("dubbo"); //默认协议：dubbo
             }
             appendProperties(protocolConfig);
         }
@@ -654,7 +659,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }
     }
 
-    public void setInterface(Class<?> interfaceClass) {
+    public void setInterface(Class<?> interfaceClass) { //设置接口class同时，也设置接口名称
         if (interfaceClass != null && !interfaceClass.isInterface()) {
             throw new IllegalStateException("The interface class " + interfaceClass + " is not a interface!");
         }
@@ -740,7 +745,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     /**
      * export重写
      * 1）判断export（暴露）、delay（延迟属性）
-     * 2）优先去ServiceConfig的值，若ServiceConfig没设置并且ProviderConfig设置了，就取ProviderConfig的值
+     * 2）在ProviderConfig不为空的情况，若ServiceConfig没设置取ProviderConfig的值，否则取ServiceConfig的值
      * 3）判断是否需要暴露，若不要直接返回
      * 4）判断是否需要延迟，若需要使用定时类延迟指定的时间后暴露
      */
@@ -768,6 +773,153 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             doExport();
         }
     }
+
+    /**
+     * doExport重写
+     * 1)判断unexported、exported属性值，若已经移除暴露，则抛非法状态异常；若exported暴露过的，则不再暴露
+     *  1.1 将exported置为true
+     *  1.2 判断接口名是否为空
+     *  1.3 检查默认的providerConfig配置
+     * 2）取值处理
+     *   2.1） 若provider配置不为空，取出application、module、registries、monitor、protocols
+     *   2.2） 若module配置不为空,取出monitor、registries
+     *   2.3)  若application配置不为空，则取出monitor、registries
+     * 3)判断ref是否是通用接口GenericService的实现类,若是将通用接口赋值给interfaceClass，并generic置为"true", 若不是获取interfaceName对应的类
+     * 4)判断是否是本地服务local,若是附加 "Local",获取到类localClass
+     * 5)判断是否是stub本地存根，若是附加 "Stub"，获取到类stubClass
+     * 6）检查配置 checkApplication();checkRegistry();checkRef();
+     *    设置当前ServiceConfig的属性值
+     *    检查存根和mock checkStubAndMock
+     * 7）检查完成后，暴露url， doExportUrlsFor1Protocol();
+     */
+    protected synchronized void doExport() {
+        if (unexported) {
+            throw new IllegalStateException("Already unexported！");
+        }
+
+        if (exported) {
+            return;
+        }
+
+        exported = true;
+        if (interfaceName == null || interfaceName.length() == 0) {
+            throw new IllegalStateException("interface name is null");
+        }
+
+        checkDefault();
+        if (provider != null) {
+            if (application == null) {
+                application = provider.getApplication();
+            }
+            if (module == null) {
+                module = provider.getModule();
+            }
+            if (registries == null) {
+                registries = provider.getRegistries();
+            }
+            if (monitor == null) {
+                monitor = provider.getMonitor();
+            }
+            if (protocols == null) {
+                protocols = provider.getProtocols();
+            }
+        }
+
+        if (module != null) {
+            if (monitor == null) {
+                monitor = module.getMonitor();
+            }
+            if (registries == null) {
+                registries = module.getRegistries();
+            }
+        }
+        if (application != null) {
+            if (monitor == null) {
+                MonitorConfig monitor = application.getMonitor();
+                this.monitor = monitor;
+            }
+            if (registries == null) {
+                registries = application.getRegistries();
+            }
+        }
+
+        if (ref instanceof GenericService) {
+            interfaceClass = GenericService.class;
+            if (StringUtils.isEmpty(generic)) {
+                generic = Boolean.TRUE.toString();
+            }
+        } else {
+            try {
+                interfaceClass = Class.forName(interfaceName, true, Thread.currentThread()
+                        .getContextClassLoader());
+            } catch (ClassNotFoundException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
+
+            checkInterfaceAndMethods(interfaceClass, methods); //检查接口与设置的方法是否一致
+            checkRef();
+            generic = Boolean.FALSE.toString();
+        }
+
+        if (local != null) {
+            if (local.equals("true")) {
+                local = interfaceName + "Local"; //拼接接口名
+            }
+            Class<?> localClass;
+            try {
+                localClass = ClassHelper.forNameWithThreadContextClassLoader(local); //从线程中获取类加载器
+            } catch (ClassNotFoundException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
+            if (!interfaceClass.isAssignableFrom(localClass)) { //判断loadClass是否是接口interfaceClass的实现类
+                throw new IllegalStateException(localClass + "localClass not implement interface " + interfaceClass);
+            }
+        }
+
+        if (stub != null) {
+            if (stub.equals("true")) {
+                stub = interfaceName + "Stub";
+            }
+            Class<?> stubClass;
+            try {
+                stubClass = ClassHelper.forNameWithThreadContextClassLoader(stub);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
+            if (!interfaceClass.isAssignableFrom(stubClass)) {
+                throw new IllegalStateException(stubClass + "stubClass not implement interface " + interfaceClass);
+            }
+        }
+
+        checkApplication();
+        checkRegistry();
+        checkProtocol();
+        appendProperties(this);
+        checkStubAndMock(interfaceClass);
+        if (path == null || path.length() == 0) {
+            path = interfaceName;
+        }
+        doExportUrls();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // ---------end----------
 }

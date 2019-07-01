@@ -2,13 +2,12 @@ package com.alibaba.dubbo.demo.provider.self.provider;
 
 import com.alibaba.dubbo.config.*;
 import com.alibaba.dubbo.demo.ApiDemo;
-import com.alibaba.dubbo.demo.ApiDemo2;
 
 /**
  * @author chensy
  * @date 2019-05-29 08:13
  */
-public class ApiProvider {
+public class ApiProvider2 {
     public static void main(String[] args) throws Exception {
         //配置优先级别  方法级别 > 接口级别 > 全局级别 ； 消费者级别 > 提供者级别
 
@@ -27,7 +26,7 @@ public class ApiProvider {
         //协议测试
         ProtocolConfig protocol = new ProtocolConfig();
         protocol.setName("dubbo");
-        protocol.setPort(20881);
+        protocol.setPort(20880);
 
         //提供者设置(可以被一个应用下的所有接口引用)
         ProviderConfig provider = new ProviderConfig();
@@ -52,26 +51,7 @@ public class ApiProvider {
 
         service.export();
 
-        //暴露接口2
-//        ApiDemo2 apiDemo2 = new ApiDemoImpl2();
-//        ServiceConfig service2 = new ServiceConfig();
-//        service2.setApplication(application);
-//        service2.setRegistry(registry);
-//        service2.setProtocol(protocol);
-//        service2.setProvider(provider);
-//
-//        service2.setInterface(ApiDemo2.class);
-//        service2.setRef(apiDemo2);
-//        service2.export();
-
-
         System.in.read();
 
     }
-
-    /**
-     * 同一台机器、同一个端口、同一个接口只暴露一个
-     *
-     * 同一台机器、不同端口、同一个接口暴露的服务不同
-     */
 }

@@ -394,7 +394,7 @@ public final class StringUtils {
      * 3.之后的字符，若是小写字母直接添加，若是大写字符，转换为小写字母添加
      *
      */
-    public static String camelToSplitName(String camelName, String split) {
+    public static String camelToSplitName(String camelName, String split) { //将有大写字母的地方用指定的分隔符分隔
         if (camelName == null || camelName.length() == 0) {
             return camelName;
         }
