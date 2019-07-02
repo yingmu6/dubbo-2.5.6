@@ -181,7 +181,7 @@ public class Constants {
 
     public static final String ANYHOST_KEY = "anyhost";
 
-    public static final String ANYHOST_VALUE = "0.0.0.0";
+    public static final String ANYHOST_VALUE = "0.0.0.0"; //在服务器端它表示本机上的所有IPV4地址
 
     public static final String LOCALHOST_KEY = "localhost";
 

@@ -806,7 +806,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             throw new IllegalStateException("interface name is null");
         }
 
-        checkDefault();
+        checkDefault(); //检查ProviderConfig，并设置属性值
         if (provider != null) {
             if (application == null) {
                 application = provider.getApplication();

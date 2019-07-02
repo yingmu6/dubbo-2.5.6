@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class RegistryConfig extends AbstractConfig {
 
-    public static final String NO_AVAILABLE = "N/A";
+    public static final String NO_AVAILABLE = "N/A"; // ”N/A”代表不能获取注册中心  https://blog.csdn.net/quhongwei_zhanqiu/article/details/41683143
     private static final long serialVersionUID = 5508512956753757169L;
     // 注册中心地址
     private String address;

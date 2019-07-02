@@ -28,6 +28,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.dubbo.config.support.Parameter;
 import com.alibaba.dubbo.monitor.MonitorFactory;
 import com.alibaba.dubbo.monitor.MonitorService;
+import com.alibaba.dubbo.registry.Registry;
 import com.alibaba.dubbo.registry.RegistryFactory;
 import com.alibaba.dubbo.registry.RegistryService;
 import com.alibaba.dubbo.rpc.Filter;
@@ -100,7 +101,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
 
     protected void checkRegistry() { //检测注册中心的配置，并设置属性值
         // 兼容旧版本
-        if (registries == null || registries.size() == 0) {
+        if (registries == null || registries.size() == 0) { //注册配置列表为空时，从系统属性中查找
             String address = ConfigUtils.getProperty("dubbo.registry.address");
             if (address != null && address.length() > 0) {
                 registries = new ArrayList<RegistryConfig>();
@@ -154,28 +155,28 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     }
 
     /**@c 加载注册配置map，并把参数附加到URL中*/
-    protected List<URL> loadRegistries(boolean provider) { //service export 步骤04
+    protected List<URL> loadRegistriesOrgin(boolean provider) { //service export 步骤04  provider是否是提供者
         checkRegistry();
         List<URL> registryList = new ArrayList<URL>();
         if (registries != null && registries.size() > 0) {
             for (RegistryConfig config : registries) {
                 String address = config.getAddress();
                 if (address == null || address.length() == 0) {
-                    address = Constants.ANYHOST_VALUE;
+                    address = Constants.ANYHOST_VALUE; //取服务器端任意IPV4地址
                 }
                 String sysaddress = System.getProperty("dubbo.registry.address");
-                if (sysaddress != null && sysaddress.length() > 0) {
+                if (sysaddress != null && sysaddress.length() > 0) { //若系统属性中存在注册地址，优先使用系统属性的值
                     address = sysaddress;
                 }
                 if (address != null && address.length() > 0
                         && !RegistryConfig.NO_AVAILABLE.equalsIgnoreCase(address)) {
                     Map<String, String> map = new HashMap<String, String>();
-                    appendParameters(map, application);
+                    appendParameters(map, application); //将配置对象的属性设置的url参数中
                     appendParameters(map, config);
                     map.put("path", RegistryService.class.getName());
                     map.put("dubbo", Version.getVersion());
                     map.put(Constants.TIMESTAMP_KEY, String.valueOf(System.currentTimeMillis()));
-                    if (ConfigUtils.getPid() > 0) {
+                    if (ConfigUtils.getPid() > 0) { //获取进程的pid
                         map.put(Constants.PID_KEY, String.valueOf(ConfigUtils.getPid()));
                     }
                     if (!map.containsKey("protocol")) {
@@ -186,17 +187,19 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                         }
                     }
                     List<URL> urls = UrlUtils.parseURLs(address, map);
+                    //此处生成的url： zookeeper://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&pid=36916&timestamp=1562032607782
                     for (URL url : urls) {
                         url = url.addParameter(Constants.REGISTRY_KEY, url.getProtocol());
                         url = url.setProtocol(Constants.REGISTRY_PROTOCOL);
-                        if ((provider && url.getParameter(Constants.REGISTER_KEY, true))
-                                || (!provider && url.getParameter(Constants.SUBSCRIBE_KEY, true))) {
+                        if ((provider && url.getParameter(Constants.REGISTER_KEY, true)) //提供者
+                                || (!provider && url.getParameter(Constants.SUBSCRIBE_KEY, true))) { //消费者
                             registryList.add(url);
                         }
                     }
                 }
             }
         }
+        //此处Registry的url： registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&pid=36972&registry=zookeeper&timestamp=1562032865696
         return registryList;
     }
 
@@ -442,7 +445,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         return registries == null || registries.size() == 0 ? null : registries.get(0);
     }
 
-    public void setRegistry(RegistryConfig registry) {
+    public void setRegistry(RegistryConfig registry) { //设置一个注册配置到注册列表
         List<RegistryConfig> registries = new ArrayList<RegistryConfig>(1);
         registries.add(registry);
         this.registries = registries;
@@ -510,4 +513,77 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         this.scope = scope;
     }
 
+    // -------overwrite begin
+
+    /**
+     * overwrite 加载注册中心配置，并且生成url
+     * 1）检查注册中心，并设置到注册中心config中checkRegistry
+     *    1.1) 对registries列表进行非空判断
+     * 2）组装注册中心url
+     *    2.0) 循环遍历注册中心config列表
+     *    2.1）从注册config获取address，若address为空赋值任意地址ANYHOST_VALUE。从系统属性中dubbo.registry.address获取address，若存在sysaddress，则覆盖之前的地址
+     *    2.2）若address不为空，且可用（!NO_AVAILABLE）时继续。将应用配置application、config添加到url参数map中
+     *    2.3) 分析path（注册中心接口名称）、dubbo（版本号version）、pid（进程id，ConfigUtils.getPid()）、timestamp（时间戳）等键
+     *    2.4）在map中不存在protocol键时，判断RegistryFactory中是否有remote扩展。若有则把协议protocal置为remote，否则置为dubbo
+     *    2.5）将address以及url的参数map，生成UrlUtils.parseURLs(address, map);
+     *    2.6）对每个url处理，url增加registry键，替换protocol协议名称
+     *    2.7）若是满足条件的提供者或消费者 （provider && REGISTRY） || (!provider && SUBSCRIBE) ，将组装的url添加到url列表中 registryList.add(url);
+     */
+    //加载配置此处生成的url： zookeeper://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&pid=36916&timestamp=1562032607782
+    //返回的Registry的url： registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&pid=36972&registry=zookeeper&timestamp=1562032865696
+
+    protected List<URL> loadRegistries(boolean provider) {
+        checkRegistry();
+        List<URL> registryUrls = new ArrayList<>();
+        if (registries != null && registries.size() > 0) {
+            for (RegistryConfig config : registries) {
+                String address = config.getAddress();
+                if (address == null || address.length() == 0) {
+                    address = Constants.ANYHOST_VALUE;
+                }
+                String sysaddress = System.getProperty("dubbo.registry.address");
+                if (sysaddress != null && sysaddress.length() > 0) {
+                    address = sysaddress;
+                }
+                if (address != null && address.length() > 0 &&
+                        !RegistryConfig.NO_AVAILABLE.equalsIgnoreCase(address)) {
+                    Map<String, String> map = new HashMap<>();
+                    appendParameters(map, application);
+                    appendParameters(map, config);
+                    map.put("path", RegistryService.class.getName());
+                    map.put("dubbo", Version.getVersion());
+                    if (ConfigUtils.getPid() > 0) { // pid值可用常量Constants.PID_KEY
+                        map.put("pid", String.valueOf(ConfigUtils.getPid()));
+                    }
+                    //timestamp可用常量Constants.TIMESTAMP_KEY
+                    map.put("timestamp", String.valueOf(System.currentTimeMillis()));
+
+                    if (!map.keySet().contains("protocol")) {
+                        boolean isHasExtend = ExtensionLoader.getExtensionLoader(RegistryFactory.class).hasExtension("remote");
+                        if (isHasExtend) {
+                            map.put("protocol", "remote");
+                        } else {
+                            map.put("protocol", "dubbo");
+                        }
+                    }
+
+                    List<URL> urlList = UrlUtils.parseURLs(address, map);
+                    for (URL url : urlList) {
+                        url = url.addParameter(Constants.REGISTRY_KEY, config.getProtocol());
+                        url = url.setProtocol(Constants.REGISTRY_PROTOCOL);
+                        if ((provider && url.getParameter(Constants.REGISTER_KEY, true)) ||
+                                (!provider && url.getParameter(Constants.SUBSCRIBE_KEY, true))) {
+                            registryUrls.add(url);
+                        }
+                    }
+                }
+            }
+        }
+        return registryUrls;
+    }
+
+
+
+
+    // ------overwrite end
 }
