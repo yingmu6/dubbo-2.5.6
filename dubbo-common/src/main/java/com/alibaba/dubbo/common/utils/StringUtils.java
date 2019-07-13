@@ -308,7 +308,7 @@ public final class StringUtils {
         if (coll.isEmpty()) return "";
 
         StringBuilder sb = new StringBuilder();
-        boolean isFirst = true;
+        boolean isFirst = true; //根据是否是第一个，拼接分隔符，很简洁
         for (String s : coll) {
             if (isFirst) isFirst = false;
             else sb.append(split);

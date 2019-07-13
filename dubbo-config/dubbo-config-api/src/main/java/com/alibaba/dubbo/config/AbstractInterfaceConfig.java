@@ -203,7 +203,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         return registryList;
     }
 
-    protected URL loadMonitor(URL registryURL) { //service export 步骤06 TODO
+    protected URL loadMonitor(URL registryURL) { //service export 步骤06 TODO dubbo监控界面怎么搭建使用？
         if (monitor == null) {
             String monitorAddress = ConfigUtils.getProperty("dubbo.monitor.address");
             String monitorProtocol = ConfigUtils.getProperty("dubbo.monitor.protocol");

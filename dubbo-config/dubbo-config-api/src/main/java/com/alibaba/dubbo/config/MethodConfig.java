@@ -102,7 +102,7 @@ public class MethodConfig extends AbstractMethodConfig {
     }
 
     @Deprecated
-    public void setRetry(Boolean retry) {
+    public void setRetry(Boolean retry) { //弃用的方法
         this.retry = retry;
     }
 

@@ -7,7 +7,7 @@ import com.alibaba.dubbo.demo.ApiDemo;
  * @author chensy
  * @date 2019-05-29 08:13
  */
-public class ApiProvider2 {
+public class providerStart2 {
     public static void main(String[] args) throws Exception {
         //配置优先级别  方法级别 > 接口级别 > 全局级别 ； 消费者级别 > 提供者级别
 

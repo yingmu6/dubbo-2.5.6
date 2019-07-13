@@ -225,7 +225,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                         && isPrimitive(method.getReturnType())) {
                     /**@ 通过反射机制获取注解 获取方法上的注解，注解的值若没有设置，则取默认值 */
                     Parameter parameter = method.getAnnotation(Parameter.class);
-                    if (method.getReturnType() == Object.class || parameter != null && parameter.excluded()) {
+                    if (method.getReturnType() == Object.class || parameter != null && parameter.excluded()) { //excluded表示的方法对应的字段，不会出现在url中
                         continue;
                     }
                     int i = name.startsWith("get") ? 3 : 2;
@@ -373,7 +373,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
     }
 
     /**
-     * 添加处理URL中的参数,将config配置中的属性添加到参数map中
+     * 添加处理URL中的参数,将config配置中的符合条件的属性以及属性值添加到map中
      * 算法思路：
      * 1）判断config是否为空
      * 2）config不为空的时候，对get方法或is或getParameters方法进行处理

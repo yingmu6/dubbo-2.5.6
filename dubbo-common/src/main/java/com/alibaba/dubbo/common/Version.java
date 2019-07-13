@@ -18,6 +18,7 @@ package com.alibaba.dubbo.common;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.ClassHelper;
+import com.alibaba.fastjson.JSONObject;
 
 import java.net.URL;
 import java.security.CodeSource;
@@ -34,8 +35,8 @@ public final class Version {
 
     private static final Logger logger = LoggerFactory.getLogger(Version.class);
     private static final String VERSION = getVersion(Version.class, "2.0.0");
-    private static final boolean INTERNAL = hasResource("com/alibaba/dubbo/registry/internal/RemoteRegistry.class");
-    private static final boolean COMPATIBLE = hasResource("com/taobao/remoting/impl/ConnectionRequest.class");
+    private static final boolean INTERNAL = hasResource("com/alibaba/dubbo/registry/internal/RemoteRegistry.class"); //内部的
+    private static final boolean COMPATIBLE = hasResource("com/taobao/remoting/impl/ConnectionRequest.class"); //兼容
 
     static {
         // 检查是否存在重复的jar包
@@ -74,13 +75,18 @@ public final class Version {
             }
             if (version == null || version.length() == 0) {
                 // 如果规范中没有版本号，基于jar包名获取版本号
+                /**
+                 * ProtectionDomain(保护域)、codeSource（代码源）    https://blog.csdn.net/yfqnihao/article/details/8271415
+                 * 在java.security包，安全处理
+                 * https://www.cnblogs.com/f1194361820/p/4189269.html
+                 */
                 CodeSource codeSource = cls.getProtectionDomain().getCodeSource();
-                if (codeSource == null) {
+                if (codeSource == null) { //使用默认的版本号
                     logger.info("No codeSource for class " + cls.getName() + " when getVersion, use default version " + defaultVersion);
-                } else {
+                } else { //存在jar包，从jar的包名中获取到版本号
                     String file = codeSource.getLocation().getFile();
                     if (file != null && file.length() > 0 && file.endsWith(".jar")) {
-                        file = file.substring(0, file.length() - 4);
+                        file = file.substring(0, file.length() - 4); //jar包的包名
                         int i = file.lastIndexOf('/');
                         if (i >= 0) {
                             file = file.substring(i + 1);
@@ -89,7 +95,7 @@ public final class Version {
                         if (i >= 0) {
                             file = file.substring(i + 1);
                         }
-                        while (file.length() > 0 && !Character.isDigit(file.charAt(0))) {
+                        while (file.length() > 0 && !Character.isDigit(file.charAt(0))) { //文件名不是以数字开头
                             i = file.indexOf("-");
                             if (i >= 0) {
                                 file = file.substring(i + 1);
@@ -144,6 +150,11 @@ public final class Version {
         } catch (Throwable e) { // 防御性容错
             logger.error(e.getMessage(), e);
         }
+    }
+
+    //Test
+    public static void main(String[] args) {
+        System.out.println(getVersion(com.alibaba.dubbo.common.URL.class, "1.3.3"));
     }
 
 }

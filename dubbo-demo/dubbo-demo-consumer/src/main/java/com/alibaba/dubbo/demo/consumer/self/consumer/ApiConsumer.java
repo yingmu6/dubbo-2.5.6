@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ReferenceConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.demo.ApiDemo;
+import com.alibaba.dubbo.rpc.service.GenericService;
 
 /**
  * @author chensy
@@ -24,7 +25,7 @@ public class ApiConsumer {
         reference.setInterface(ApiDemo.class);
 
         ApiDemo apiDemo = (ApiDemo) reference.get();
-        System.out.println(apiDemo.sayApi("haha "));
+        System.out.println(apiDemo.sayApi("haha ",12, 13.45, "张三"));
 
         System.in.read();
     }

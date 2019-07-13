@@ -15,6 +15,8 @@
  */
 package com.alibaba.dubbo.common.bytecode;
 
+import com.alibaba.dubbo.common.logger.Logger;
+import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.ClassHelper;
 import com.alibaba.dubbo.common.utils.ReflectUtils;
 
@@ -34,14 +36,19 @@ import java.util.regex.Matcher;
 /**
  * Wrapper.
  *
+ * Dubbo解析-动态代理(Proxy)与包装(Wrapper)
+ * https://my.oschina.net/u/2377110/blog/1835417
+ *
  * @author qian.lei
  */
 
 public abstract class Wrapper {/**@c 包装类 */
+    protected static final Logger logger = LoggerFactory.getLogger(Wrapper.class);
+
     private static final Map<Class<?>, Wrapper> WRAPPER_MAP = new ConcurrentHashMap<Class<?>, Wrapper>(); //class wrapper map
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
     private static final String[] OBJECT_METHODS = new String[]{"getClass", "hashCode", "toString", "equals"};
-    private static final Wrapper OBJECT_WRAPPER = new Wrapper() {
+    private static final Wrapper OBJECT_WRAPPER = new Wrapper() { //匿名类实现抽象类
         public String[] getMethodNames() {
             return OBJECT_METHODS;
         }
@@ -70,8 +77,9 @@ public abstract class Wrapper {/**@c 包装类 */
             return false;
         }
 
+        //对Object中的特定方法处理，若不在指定范围，则抛出异常
         public Object invokeMethod(Object instance, String mn, Class<?>[] types, Object[] args) throws NoSuchMethodException {
-            if ("getClass".equals(mn)) return instance.getClass();
+            if ("getClass".equals(mn)) return instance.getClass(); //getClass 是native方法，java看不见实现
             if ("hashCode".equals(mn)) return instance.hashCode();
             if ("toString".equals(mn)) return instance.toString();
             if ("equals".equals(mn)) {
@@ -89,7 +97,7 @@ public abstract class Wrapper {/**@c 包装类 */
      * @param c Class instance.
      * @return Wrapper instance(not null).
      */
-    public static Wrapper getWrapper(Class<?> c) {
+    public static Wrapper getWrapper(Class<?> c) { //TODO 封装类的用涂？
         while (ClassGenerator.isDynamicClass(c)) // can not wrapper on dynamic class.
             c = c.getSuperclass();
 
@@ -104,6 +112,7 @@ public abstract class Wrapper {/**@c 包装类 */
         return ret;
     }
 
+    //TODO 用途？ 待调试
     private static Wrapper makeWrapper(Class<?> c) {/**@c 运行时根据反射机制解析Class，构造java文件*/
         if (c.isPrimitive())/**@c 判断是否是基本类型 */
             throw new IllegalArgumentException("Can not create wrapper for primitive type: " + c);
@@ -245,6 +254,8 @@ public abstract class Wrapper {/**@c 包装类 */
             int ix = 0;
             for (Method m : ms.values())
                 wc.getField("mts" + ix++).set(null, m.getParameterTypes());
+
+            logger.info("封装类处理结果: "+ wc.toString());
             return (Wrapper) wc.newInstance();
         } catch (RuntimeException e) {
             throw e;

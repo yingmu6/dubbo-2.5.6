@@ -44,4 +44,8 @@ https://blog.csdn.net/wp94302948/article/details/79724342
 2.本地存根
 3.mock使用
 
+19/7/3
+异常处理，为啥异常没抛出来
+参数回调：与调用本地 callback 或 listener 相同，当服务端有变更时，可以调用客户端逻辑，通知客户端
+
 

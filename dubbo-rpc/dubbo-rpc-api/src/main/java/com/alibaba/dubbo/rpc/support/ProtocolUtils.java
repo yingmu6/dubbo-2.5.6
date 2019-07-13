@@ -36,10 +36,10 @@ public class ProtocolUtils {
 
     public static boolean isGeneric(String generic) {
         return generic != null
-                && !"".equals(generic)
-                && (Constants.GENERIC_SERIALIZATION_DEFAULT.equalsIgnoreCase(generic)  /* 正常的泛化调用 */
-                || Constants.GENERIC_SERIALIZATION_NATIVE_JAVA.equalsIgnoreCase(generic) /* 支持java序列化的流式泛化调用 */
-                || Constants.GENERIC_SERIALIZATION_BEAN.equalsIgnoreCase(generic));
+                && !"".equals(generic) //泛化类型
+                && (Constants.GENERIC_SERIALIZATION_DEFAULT.equalsIgnoreCase(generic)  /* 正常的泛化调用 */ //默认的值
+                || Constants.GENERIC_SERIALIZATION_NATIVE_JAVA.equalsIgnoreCase(generic) /* 支持java序列化的流式泛化调用 */  //java原生的泛化
+                || Constants.GENERIC_SERIALIZATION_BEAN.equalsIgnoreCase(generic)); //序列化为JavaBeanDescriptor
     }
 
     public static boolean isDefaultGenericSerialization(String generic) {

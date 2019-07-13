@@ -49,12 +49,12 @@ public class NetUtils {
     private static final int MIN_PORT = 0;
     private static final int MAX_PORT = 65535;
     private static final Pattern ADDRESS_PATTERN = Pattern.compile("^\\d{1,3}(\\.\\d{1,3}){3}\\:\\d{1,5}$");
-    private static final Pattern LOCAL_IP_PATTERN = Pattern.compile("127(\\.\\d{1,3}){3}$");
+    private static final Pattern LOCAL_IP_PATTERN = Pattern.compile("127(\\.\\d{1,3}){3}$"); //以127开头的本地地址
     private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
     private static final Map<String, String> hostNameCache = new LRUCache<String, String>(1000);
     private static volatile InetAddress LOCAL_ADDRESS = null;
 
-    public static int getRandomPort() {
+    public static int getRandomPort() { //随机端口从3000开始，随机值的返回是10000，所以随机端口 30000 - 40000
         return RND_PORT_START + RANDOM.nextInt(RND_PORT_RANGE);
     }
 
@@ -83,7 +83,7 @@ public class NetUtils {
         for (int i = port; i < MAX_PORT; i++) {
             ServerSocket ss = null;
             try {
-                ss = new ServerSocket(i);
+                ss = new ServerSocket(i); //将端口数值依次递增，不断带上端口尝试连接连接
                 return i;
             } catch (IOException e) {
                 // continue
@@ -117,12 +117,12 @@ public class NetUtils {
         return "0.0.0.0".equals(host);
     }
 
-    public static boolean isInvalidLocalHost(String host) {
+    public static boolean isInvalidLocalHost(String host) { //判断是否是无效的ip
         return host == null
                 || host.length() == 0
                 || host.equalsIgnoreCase("localhost")
                 || host.equals("0.0.0.0")
-                || (LOCAL_IP_PATTERN.matcher(host).matches());
+                || (LOCAL_IP_PATTERN.matcher(host).matches()); //为空，localhost，0.0.0.0，127...都是无效的ip
     }
 
     public static boolean isValidLocalHost(String host) {
@@ -202,7 +202,7 @@ public class NetUtils {
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             if (interfaces != null) {
-                while (interfaces.hasMoreElements()) {
+                while (interfaces.hasMoreElements()) { //遍历网卡，找到有效的本地地址
                     try {
                         NetworkInterface network = interfaces.nextElement();
                         Enumeration<InetAddress> addresses = network.getInetAddresses();
