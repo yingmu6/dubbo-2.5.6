@@ -68,12 +68,12 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
         try {
             for (Registry registry : getRegistries()) {
                 try {
-                    registry.destroy();//销毁节点Node
+                    registry.destroy(); //销毁节点Node
                 } catch (Throwable e) {
                     LOGGER.error(e.getMessage(), e);
                 }
             }
-            REGISTRIES.clear();//移除map中的所有映射
+            REGISTRIES.clear(); //移除map中的所有映射
         } finally {
             // 释放锁
             LOCK.unlock();
@@ -92,11 +92,11 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
             if (registry != null) {
                 return registry;
             }
-            registry = createRegistry(url);
+            registry = createRegistry(url); //获取注册实例
             if (registry == null) {
                 throw new IllegalStateException("Can not create registry " + url);
             }
-            REGISTRIES.put(key, registry);
+            REGISTRIES.put(key, registry); //注册url与注册实例映射起来
             return registry;
         } finally {
             // 释放锁

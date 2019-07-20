@@ -140,17 +140,17 @@ public class ProtocolConfig extends AbstractConfig {
     }
 
     // TODO: 2017/8/30 to move this method somewhere else
-    public static void destroyAll() {//销毁注册中心内容、释放协议
+    public static void destroyAll() { //销毁注册中心内容、释放协议
         if (!destroyed.compareAndSet(false, true)) {
             return;
         }
-        AbstractRegistryFactory.destroyAll();
+        AbstractRegistryFactory.destroyAll(); //销毁注册节点
         ExtensionLoader<Protocol> loader = ExtensionLoader.getExtensionLoader(Protocol.class);
         for (String protocolName : loader.getLoadedExtensions()) {
             try {
                 Protocol protocol = loader.getLoadedExtension(protocolName);
                 if (protocol != null) {
-                    protocol.destroy();//释放协议
+                    protocol.destroy(); //释放协议
                 }
             } catch (Throwable t) {
                 logger.warn(t.getMessage(), t);

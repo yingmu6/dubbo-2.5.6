@@ -52,7 +52,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 
     private final Set<String> anyServices = new ConcurrentHashSet<String>();
 
-    /**@c TODO 此数据结构的理解 */
+    /**@c 线程安全的map */
     private final ConcurrentMap<URL, ConcurrentMap<NotifyListener, ChildListener>> zkListeners = new ConcurrentHashMap<URL, ConcurrentMap<NotifyListener, ChildListener>>();
 
     private final ZookeeperClient zkClient;
@@ -62,12 +62,12 @@ public class ZookeeperRegistry extends FailbackRegistry {
         if (url.isAnyHost()) {
             throw new IllegalStateException("registry address == null");
         }
-        String group = url.getParameter(Constants.GROUP_KEY, DEFAULT_ROOT);
-        if (!group.startsWith(Constants.PATH_SEPARATOR)) {
+        String group = url.getParameter(Constants.GROUP_KEY, DEFAULT_ROOT); //若没设置group，就以dubbo为根目录
+        if (!group.startsWith(Constants.PATH_SEPARATOR)) { //若不带分隔符，则添加分隔符
             group = Constants.PATH_SEPARATOR + group;
         }
-        this.root = group;
-        zkClient = zookeeperTransporter.connect(url);
+        this.root = group; //zk中的根目录
+        zkClient = zookeeperTransporter.connect(url); //在运行调用时进入自适应扩展，获取到指定扩展名，得到指定实例，然后调用对应实例中方法,默认zkclient客户端
         zkClient.addStateListener(new StateListener() {
             public void stateChanged(int state) {
                 if (state == RECONNECTED) {
@@ -106,9 +106,10 @@ public class ZookeeperRegistry extends FailbackRegistry {
         }
     }
 
-    protected void doRegister(URL url) {
+    protected void doRegister(URL url) { //注册节点数据
         try {
-            zkClient.create(toUrlPath(url), url.getParameter(Constants.DYNAMIC_KEY, true));
+            //此处清空zk，看变化
+            zkClient.create(toUrlPath(url), url.getParameter(Constants.DYNAMIC_KEY, true)); //创建节点数据，前面的节点是持久节点，最后一个是临时节点
         } catch (Throwable e) {
             throw new RpcException("Failed to register " + url + " to zookeeper " + getUrl() + ", cause: " + e.getMessage(), e);
         }
@@ -215,23 +216,23 @@ public class ZookeeperRegistry extends FailbackRegistry {
         }
     }
 
-    private String toRootDir() {
+    private String toRootDir() { //获取根目录  root的值如 /dubbo
         if (root.equals(Constants.PATH_SEPARATOR)) {
             return root;
         }
-        return root + Constants.PATH_SEPARATOR;
+        return root + Constants.PATH_SEPARATOR; //根目录： /dubbo/
     }
 
     private String toRootPath() {
         return root;
     }
 
-    private String toServicePath(URL url) {
+    private String toServicePath(URL url) { //服务路径： 根目录 + 接口名编码
         String name = url.getServiceInterface();
         if (Constants.ANY_VALUE.equals(name)) {
             return toRootPath();
         }
-        return toRootDir() + URL.encode(name);
+        return toRootDir() + URL.encode(name); //如 /dubbo/com.alibaba.dubbo.demo.ApiDemo
     }
 
     private String[] toCategoriesPath(URL url) {
@@ -250,11 +251,11 @@ public class ZookeeperRegistry extends FailbackRegistry {
     }
 
     private String toCategoryPath(URL url) {
-        return toServicePath(url) + Constants.PATH_SEPARATOR + url.getParameter(Constants.CATEGORY_KEY, Constants.DEFAULT_CATEGORY);
+        return toServicePath(url) + Constants.PATH_SEPARATOR + url.getParameter(Constants.CATEGORY_KEY, Constants.DEFAULT_CATEGORY); //默认分类providers
     }
 
     private String toUrlPath(URL url) {
-        return toCategoryPath(url) + Constants.PATH_SEPARATOR + URL.encode(url.toFullString());
+        return toCategoryPath(url) + Constants.PATH_SEPARATOR + URL.encode(url.toFullString()); //返回值，如：/dubbo/com.alibaba.dubbo.demo.ApiDemo/providers/dubbo%3A%2F%2F10.118.32.189%3A20881%2Fcom.alibaba.dubbo.demo.ApiDemo...
     }
 
     private List<URL> toUrlsWithoutEmpty(URL consumer, List<String> providers) {

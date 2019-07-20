@@ -33,15 +33,24 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
         return url;
     }
 
-    public void create(String path, boolean ephemeral) {
-        int i = path.lastIndexOf('/');
-        if (i > 0) {
-            create(path.substring(0, i), false);
+    /**
+     * zookeeper创建节点逻辑
+     * 1）将暴露的路径从后到前递归拆分路径，知道不能拆分位置
+     * 2）从前到后，即从根节点开始创建节点，前面的节点都是持久节点，最后一个节点是临时节点
+     * 3）但提供接口不再暴露时，临时节点会被删除，但是持久会被保存，除非主动删除
+     *
+     * @param path  创建的路径，如：/dubbo/com.alibaba.dubbo.demo.ApiDemo/providers/dubbo%3A%2F%2F10.118.32.189...
+     * @param ephemeral 是否是临时节点，最后一个节点是临时节点，前面的节点都是持久节点
+     */
+    public void create(String path, boolean ephemeral) { //path的值如：/dubbo/com.alibaba.dubbo.demo.ApiDemo/providers/dubbo%3A%2F%2F10.118.32.189
+        int i = path.lastIndexOf('/'); //查找最后一个符号出现的位置
+        if (i > 0) { //从后面向前递归查拆分，当i=0时，即path为/dubbo时，跳出递归，执行后面操作
+            create(path.substring(0, i), false); //递归创建目录
         }
         if (ephemeral) {
-            createEphemeral(path);
+            createEphemeral(path); //最后一个结点的时候，ephemeral为true了
         } else {
-            createPersistent(path);
+            createPersistent(path); //ephemeral为false时（非临时节点），表示创建持久节点
         }
     }
 
@@ -87,6 +96,10 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
         }
     }
 
+    /**
+     * 1)创建持久化节点，连接关闭后节点依然存在
+     * 2)创建非持久化节点，连接关闭后节点将被删除
+     */
     public void close() {
         if (closed) {
             return;
@@ -101,9 +114,9 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
 
     protected abstract void doClose();
 
-    protected abstract void createPersistent(String path);
+    protected abstract void createPersistent(String path); //创建持久节点
 
-    protected abstract void createEphemeral(String path);
+    protected abstract void createEphemeral(String path); //创建临时节点
 
     protected abstract TargetChildListener createTargetChildListener(String path, ChildListener listener);
 

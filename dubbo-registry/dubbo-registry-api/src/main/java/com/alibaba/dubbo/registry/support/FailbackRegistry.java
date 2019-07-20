@@ -128,11 +128,11 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         if (destroyed.get()){
             return;
         }
-        super.register(url);
+        super.register(url); //调用父类的方法，将注册的url存储下来
         failedRegistered.remove(url);
         failedUnregistered.remove(url);
         try {
-            // 向服务器端发送注册请求
+            // 向注册服务器端发送注册请求
             doRegister(url);/**@c 由子类实现注册 */
         } catch (Exception e) {
             Throwable t = e;
@@ -140,14 +140,14 @@ public abstract class FailbackRegistry extends AbstractRegistry {
             // 如果开启了启动时检测，则直接抛出异常
             boolean check = getUrl().getParameter(Constants.CHECK_KEY, true)
                     && url.getParameter(Constants.CHECK_KEY, true)
-                    && !Constants.CONSUMER_PROTOCOL.equals(url.getProtocol());
+                    && !Constants.CONSUMER_PROTOCOL.equals(url.getProtocol()); //设置了check=true，并且不是消费方，抛出异常
             boolean skipFailback = t instanceof SkipFailbackWrapperException;
-            if (check || skipFailback) {/**@c 注册失败*/
+            if (check || skipFailback) {/**@c 注册失败 抛出异常*/
                 if (skipFailback) {
                     t = t.getCause();
                 }
                 throw new IllegalStateException("Failed to register " + url + " to registry " + getUrl().getAddress() + ", cause: " + t.getMessage(), t);
-            } else {
+            } else { // 不检查是否注册成功
                 logger.error("Failed to register " + url + ", waiting for retry, cause: " + t.getMessage(), t);
             }
 

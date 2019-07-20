@@ -22,13 +22,13 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
 
     public ZkclientZookeeperClient(URL url) {/**@c 创建zk客户端，并且监听状态改变 */
         super(url);
-        client = new ZkClient(url.getBackupAddress());
+        client = new ZkClient(url.getBackupAddress()); //回路地址：localhost:2181
         client.subscribeStateChanges(new IZkStateListener() {
             public void handleStateChanged(KeeperState state) throws Exception {
                 ZkclientZookeeperClient.this.state = state;
                 if (state == KeeperState.Disconnected) {/**@c 状态转换，将zk中的状态转换为dubbo的状态 */
                     stateChanged(StateListener.DISCONNECTED);
-                } else if (state == KeeperState.SyncConnected) {
+                } else if (state == KeeperState.SyncConnected) { //监听两种状态Disconnected（断开连接）、SyncConnected（建立连接，以及数据节点创建、删除、变更等等）
                     stateChanged(StateListener.CONNECTED);
                 }
             }
@@ -39,14 +39,18 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
         });
     }
 
-    public void createPersistent(String path) {
+    /**
+     *  ZkClient创建的节点：create(final String path, Object data, final CreateMode mode)
+     *  包含三个内容：path(路径)、data(数据)、mode(创建模型)
+     */
+    public void createPersistent(String path) { //创建持久节点，但是没指定节点数据，默认为null
         try {
             client.createPersistent(path, true);
         } catch (ZkNodeExistsException e) {
         }
     }
 
-    public void createEphemeral(String path) {
+    public void createEphemeral(String path) { //调用zkClient api创建临时节点
         try {
             client.createEphemeral(path);
         } catch (ZkNodeExistsException e) {

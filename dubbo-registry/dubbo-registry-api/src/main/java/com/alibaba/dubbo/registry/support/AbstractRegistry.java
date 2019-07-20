@@ -70,7 +70,7 @@ public abstract class AbstractRegistry implements Registry {
     //是否是同步保存文件
     private final boolean syncSaveFile;
     private final AtomicLong lastCacheChanged = new AtomicLong();
-    private final Set<URL> registered = new ConcurrentHashSet<URL>();/**@c 注册、取消注册数据结构 */
+    private final Set<URL> registered = new ConcurrentHashSet<URL>(); /**@c 需要注册的数据 */
     private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();/**@c 订阅、取消订阅，一个主题URL被多个监听者NotifyListener监听 */
     private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>();/**@c TODO 通知的数据结构不理解 */
     private URL registryUrl;
@@ -144,7 +144,7 @@ public abstract class AbstractRegistry implements Registry {
     }
 
     public void doSaveProperties(long version) {
-        if (version < lastCacheChanged.get()) {/**@c 版本号比较，乐观锁处理 */
+        if (version < lastCacheChanged.get()) { /**@c 版本号比较，乐观锁处理 */
             return;
         }
         if (file == null) {
@@ -307,6 +307,11 @@ public abstract class AbstractRegistry implements Registry {
         registered.remove(url);
     }
 
+    /**
+     * 订阅： 将监听器加到url对应的集合中
+     * @param url      订阅条件，不允许为空，如：consumer://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
+     * @param listener 变更事件监听器，不允许为空
+     */
     public void subscribe(URL url, NotifyListener listener) {/**@c 一个URL对应多个NotifyListener */
         if (url == null) {
             throw new IllegalArgumentException("subscribe url == null");
@@ -317,14 +322,20 @@ public abstract class AbstractRegistry implements Registry {
         if (logger.isInfoEnabled()) {
             logger.info("Subscribe: " + url);
         }
+        /**
+         * 若url对应的集合不存在，先创建集合后添加监听器
+         */
         Set<NotifyListener> listeners = subscribed.get(url);
         if (listeners == null) {
             subscribed.putIfAbsent(url, new ConcurrentHashSet<NotifyListener>());
             listeners = subscribed.get(url);
         }
-        listeners.add(listener);//TODO 此处并没有往subscribed 添加内容，是怎样添加监听者的？
+        listeners.add(listener); //TODO 此处并没有往subscribed 添加内容，是怎样添加监听者的？
     }
 
+    /**
+     * 取消订阅，将监听器从集合中移除
+     */
     public void unsubscribe(URL url, NotifyListener listener) {
         if (url == null) {
             throw new IllegalArgumentException("unsubscribe url == null");

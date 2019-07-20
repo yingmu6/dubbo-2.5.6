@@ -173,7 +173,7 @@ public class Constants {
 
     public static final String DEFAULT_REGISTRY = "dubbo";
 
-    public static final String BACKUP_KEY = "backup";
+    public static final String BACKUP_KEY = "backup"; //回路地址
 
     public static final String DIRECTORY_KEY = "directory";
 

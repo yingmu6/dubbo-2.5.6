@@ -1181,9 +1181,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                        if (monitorUrl != null) {
                            url.addParameterAndEncoded(Constants.MONITOR_KEY, monitorUrl.toFullString());
                        }
-                       // 存在注册url，根据注册url创建invoker
+                       // 存在注册url，根据注册url创建invoker，把暴露的url做用EXPORT_KEY的值，附加到register的url中
                        Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class)interfaceClass, registerUrl.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
-                       Exporter<?> exporter = protocol.export(invoker);
+                       Exporter<?> exporter = protocol.export(invoker); //因为协议是以registry开头的，所以先暴露RegistryProtocol协议
                        exporters.add(exporter);
                    }
                } else {

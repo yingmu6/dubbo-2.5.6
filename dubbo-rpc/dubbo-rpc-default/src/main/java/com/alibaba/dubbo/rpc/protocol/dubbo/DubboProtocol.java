@@ -226,16 +226,17 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         URL url = invoker.getUrl();
 
         // export service.（根据执行者信息，构造服务暴露引用的信息）
-        String key = serviceKey(url);
+        String key = serviceKey(url); //与exporter映射的key（格式：group/path:version:port）
         DubboExporter<T> exporter = new DubboExporter<T>(invoker, key, exporterMap);
         exporterMap.put(key, exporter);
 
         //export an stub service for dispaching event
-        //stub method方法是啥？ 解：本地存根，把部分逻辑放在客户端实现
+        //stub method方法是啥？ 解：本地存根，把部分逻辑放在客户端实现,默认为false
         Boolean isStubSupportEvent = url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT);
-        /**@c TODO 回调方法的用途？ */
+        /**@c 回调方法的用途？ 服务端调用客户端逻辑（一般都是客户端调用服务端）TODO 参数回调待实现 */
         Boolean isCallbackservice = url.getParameter(Constants.IS_CALLBACK_SERVICE, false);
-        if (isStubSupportEvent && !isCallbackservice) {/**@c */
+        if (isStubSupportEvent && !isCallbackservice) {/**@c 是本地存根 但不是参数回调*/
+            //获取本地存根方法，若为空，则打印非法状态异常，否则记录下存根方法
             String stubServiceMethods = url.getParameter(Constants.STUB_EVENT_METHODS_KEY);
             if (stubServiceMethods == null || stubServiceMethods.length() == 0) {
                 if (logger.isWarnEnabled()) {//若支持了stub，就需要stud method
@@ -246,7 +247,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
                 stubServiceMethodsMap.put(url.getServiceKey(), stubServiceMethods);
             }
         }
-
+        //打开服务
         openServer(url);
 
         return exporter;
@@ -387,7 +388,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         return client;
     }
 
-    public void destroy() { //TODO 当服务停止时，zk上的节点没删除，只是内容清空了，哪里实现清空zk内容的？
+    public void destroy() { // 当服务停止时，临时节点被删除
         for (String key : new ArrayList<String>(serverMap.keySet())) {
             ExchangeServer server = serverMap.remove(key);
             if (server != null) {

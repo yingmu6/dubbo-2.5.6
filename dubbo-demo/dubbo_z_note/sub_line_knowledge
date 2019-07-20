@@ -48,4 +48,6 @@ https://blog.csdn.net/wp94302948/article/details/79724342
 异常处理，为啥异常没抛出来
 参数回调：与调用本地 callback 或 listener 相同，当服务端有变更时，可以调用客户端逻辑，通知客户端
 
-
+19/7/19
+使用delete path 删除zk结点时，如果有子节点，会报 Node not empty，需要先删除子节点
+可以使用 rmr path 可循环删除结点

@@ -38,6 +38,8 @@ public interface RegistryService {/**@c */
      * 4. 当注册中心重启，网络抖动，不能丢失数据，包括断线自动删除数据。<br>
      * 5. 允许URI相同但参数不同的URL并存，不能覆盖。<br>
      *
+     * 参数说明：
+     * category：设置了表示是否分类，check：表示是否注册检查，dynamic：表示是否持久分类
      * @param url 注册信息，不允许为空，如：dubbo://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
      */
     void register(URL url);

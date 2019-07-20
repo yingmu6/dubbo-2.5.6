@@ -91,7 +91,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                 if (logger.isInfoEnabled()) {
                     logger.info("Run shutdown hook now.");
                 }
-                ProtocolConfig.destroyAll();//停机时，销毁协议配置
+                ProtocolConfig.destroyAll(); //停机时，销毁协议配置（移除节点）
             }
         }, "DubboShutdownHook"));
     }
@@ -240,7 +240,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                     String str = String.valueOf(value).trim();
                     if (value != null && str.length() > 0) {
                         if (parameter != null && parameter.escaped()) {
-                            str = URL.encode(str);
+                            str = URL.encode(str); //将参数对应的值进行url编码
                         }
                         if (parameter != null && parameter.append()) {
                             String pre = (String) parameters.get(Constants.DEFAULT_KEY + "." + key);

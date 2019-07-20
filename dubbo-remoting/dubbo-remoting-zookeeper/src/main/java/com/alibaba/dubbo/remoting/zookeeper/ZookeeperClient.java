@@ -4,7 +4,7 @@ import com.alibaba.dubbo.common.URL;
 
 import java.util.List;
 
-public interface ZookeeperClient {/**@c zk的客户端 对节点的操作*/
+public interface ZookeeperClient {/**@c zk的客户端 对节点的增删查改操作*/
 
     void create(String path, boolean ephemeral);/**@c 是否创建短暂的、临时的节点 */
 
