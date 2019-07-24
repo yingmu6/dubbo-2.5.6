@@ -146,7 +146,7 @@ public class Constants {
 
     public static final int MIN_BUFFER_SIZE = 1 * 1024;
 
-    public static final String REMOVE_VALUE_PREFIX = "-";
+    public static final String REMOVE_VALUE_PREFIX = "-";  //移除前缀符号-
 
     public static final String HIDE_KEY_PREFIX = ".";
 
@@ -451,7 +451,7 @@ public class Constants {
     /**
      * 重试周期
      */
-    public static final int DEFAULT_REGISTRY_RETRY_PERIOD = 5 * 1000;
+    public static final int DEFAULT_REGISTRY_RETRY_PERIOD = 5 * 1000; //注册中心重试默认为5秒执行一次
 
     /**
      * 注册中心自动重连时间

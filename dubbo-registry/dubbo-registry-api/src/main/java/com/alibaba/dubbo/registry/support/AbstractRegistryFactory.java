@@ -96,7 +96,7 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
             if (registry == null) {
                 throw new IllegalStateException("Can not create registry " + url);
             }
-            REGISTRIES.put(key, registry); //注册url与注册实例映射起来
+            REGISTRIES.put(key, registry); //注册url与注册实例映射起来,key 如：zookeeper://127.0.0.1:2181/com.alibaba.dubbo.registry.RegistryService
             return registry;
         } finally {
             // 释放锁

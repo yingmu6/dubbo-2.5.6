@@ -340,6 +340,13 @@ public class UrlUtils {
                 + (version == null ? "" : "&" + Constants.VERSION_KEY + "=" + version));
     }
 
+    /**
+     * 分类是否匹配
+     * 1）第二个参数categories若为空时，判断第一个参数是否是空
+     * 2）判断第二个参数是否是任意类型 *
+     * 3）判断是否包含移除前缀
+     * 4）判断第二个参数是否包含constains第一个参数
+     */
     public static boolean isMatchCategory(String category, String categories) {
         if (categories == null || categories.length() == 0) {
             return Constants.DEFAULT_CATEGORY.equals(category);
@@ -352,10 +359,15 @@ public class UrlUtils {
         }
     }
 
-    /**@c 比较两个URL是否相等，interfaceName、group、version、classifier 比较*/
+    /**@c 比较两个URL是否相等，interfaceName、group、version、classifier 都要相等 */
     public static boolean isMatch(URL consumerUrl, URL providerUrl) {
         String consumerInterface = consumerUrl.getServiceInterface();
         String providerInterface = providerUrl.getServiceInterface();
+        /**
+         * 1.若consumerInterface是泛化接口 或consumerInterface与providerInterface相等，继续后面的操作
+         * 2.若consumerInterface不是泛化接口，并且不等于providerInterface，则认为不相等，返回false
+         * 非运算，取反运算， !true == false, !false == true
+         */
         if (!(Constants.ANY_VALUE.equals(consumerInterface) || StringUtils.isEquals(consumerInterface, providerInterface)))
             return false;
 

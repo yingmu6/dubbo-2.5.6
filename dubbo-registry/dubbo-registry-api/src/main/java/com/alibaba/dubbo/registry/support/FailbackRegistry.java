@@ -48,9 +48,9 @@ public abstract class FailbackRegistry extends AbstractRegistry {
     // 失败重试定时器，定时检查是否有请求失败，如有，无限次重试
     private final ScheduledFuture<?> retryFuture;
 
-    private final Set<URL> failedRegistered = new ConcurrentHashSet<URL>();
+    private final Set<URL> failedRegistered = new ConcurrentHashSet<URL>(); //注册失败的url列表
 
-    private final Set<URL> failedUnregistered = new ConcurrentHashSet<URL>();
+    private final Set<URL> failedUnregistered = new ConcurrentHashSet<URL>(); //取消注册失败的url列表
 
     private final ConcurrentMap<URL, Set<NotifyListener>> failedSubscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();
 
@@ -60,11 +60,11 @@ public abstract class FailbackRegistry extends AbstractRegistry {
 
     private AtomicBoolean destroyed = new AtomicBoolean(false);
 
-    public FailbackRegistry(URL url) {
+    public FailbackRegistry(URL url) { //默认每5秒进行失败检查尝试
         super(url);
         int retryPeriod = url.getParameter(Constants.REGISTRY_RETRY_PERIOD_KEY, Constants.DEFAULT_REGISTRY_RETRY_PERIOD);
-        this.retryFuture = retryExecutor.scheduleWithFixedDelay(new Runnable() {
-            public void run() {/**@c 失败后重试，怎样设置重试次数 ：无限次重试 */
+        this.retryFuture = retryExecutor.scheduleWithFixedDelay(new Runnable() { //按固定的时间间隔执行任务
+            public void run() { /**@c 失败后重试，怎样设置重试次数 ：无限次重试 */
                 // 检测并连接注册中心
                 try {
                     retry();
@@ -262,6 +262,9 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         }
     }
 
+    /**
+     * 通知
+     */
     @Override
     protected void notify(URL url, NotifyListener listener, List<URL> urls) {
         if (url == null) {
@@ -289,7 +292,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
     }
 
     @Override
-    protected void recover() throws Exception {/**@c recover恢复 */
+    protected void recover() throws Exception {/**@c recover重新注册或订阅，把url放到失败的列表中，就会定时轮询尝试重新恢复了 */
         // register
         Set<URL> recoverRegistered = new HashSet<URL>(getRegistered());
         if (!recoverRegistered.isEmpty()) {
@@ -315,9 +318,12 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         }
     }
 
-    // 重试失败的动作
+    /**
+     * 重试失败的动作 (每隔指定时间，比如5秒，执行失败检查)，若重试成功，从错误列表中移除
+     * 总之，哪个失败集合中存在失败的url，就对应重试相应的功能，若成功，则把失败记录移除
+     */
     protected void retry() {/**@c 重试失败的集合 注册、取消注册、订阅、取消订阅*/
-        if (!failedRegistered.isEmpty()) {
+        if (!failedRegistered.isEmpty()) { //注册失败，就尝试重新注册，若成功，将url从失败列表中移除
             Set<URL> failed = new HashSet<URL>(failedRegistered);
             if (failed.size() > 0) {
                 if (logger.isInfoEnabled()) {
@@ -357,7 +363,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
                 }
             }
         }
-        if (!failedSubscribed.isEmpty()) {
+        if (!failedSubscribed.isEmpty()) { //是否有订阅者
             Map<URL, Set<NotifyListener>> failed = new HashMap<URL, Set<NotifyListener>>(failedSubscribed);
             for (Map.Entry<URL, Set<NotifyListener>> entry : new HashMap<URL, Set<NotifyListener>>(failed).entrySet()) {
                 if (entry.getValue() == null || entry.getValue().size() == 0) {

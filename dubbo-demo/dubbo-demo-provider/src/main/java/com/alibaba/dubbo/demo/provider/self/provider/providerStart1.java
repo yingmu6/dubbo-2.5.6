@@ -26,6 +26,7 @@ public class providerStart1 {
         RegistryConfig registry = new RegistryConfig();
         registry.setAddress("localhost:2181");
         registry.setProtocol("zookeeper");
+        //registry.setFile();
 
         //协议测试
         ProtocolConfig protocol = new ProtocolConfig();

@@ -52,7 +52,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 
     private final Set<String> anyServices = new ConcurrentHashSet<String>();
 
-    /**@c 线程安全的map */
+    /**@c 线程安全的map 以对象最为键 比较少见*/
     private final ConcurrentMap<URL, ConcurrentMap<NotifyListener, ChildListener>> zkListeners = new ConcurrentHashMap<URL, ConcurrentMap<NotifyListener, ChildListener>>();
 
     private final ZookeeperClient zkClient;
@@ -70,7 +70,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
         zkClient = zookeeperTransporter.connect(url); //在运行调用时进入自适应扩展，获取到指定扩展名，得到指定实例，然后调用对应实例中方法,默认zkclient客户端
         zkClient.addStateListener(new StateListener() {
             public void stateChanged(int state) {
-                if (state == RECONNECTED) {
+                if (state == RECONNECTED) { //当监听到重连的状态变更时，重新注册和订阅
                     try {
                         recover();
                     } catch (Exception e) {
@@ -125,7 +125,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 
     protected void doSubscribe(final URL url, final NotifyListener listener) {
         try {
-            if (Constants.ANY_VALUE.equals(url.getServiceInterface())) {
+            if (Constants.ANY_VALUE.equals(url.getServiceInterface())) { //泛型接口 TODO 待测试用例覆盖
                 String root = toRootPath();
                 ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
                 if (listeners == null) {
@@ -158,30 +158,30 @@ public class ZookeeperRegistry extends FailbackRegistry {
                                 Constants.CHECK_KEY, String.valueOf(false)), listener);
                     }
                 }
-            } else {
+            } else { //不是泛型接口
                 List<URL> urls = new ArrayList<URL>();
-                for (String path : toCategoriesPath(url)) {
-                    ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
-                    if (listeners == null) {
+                for (String path : toCategoriesPath(url)) { //创建分类节点，并建立当前节点与子节点的监听器
+                    ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url); //TODO 当前节点与子节点的监听器吗？
+                    if (listeners == null) { //监听map为空时，初始化map
                         zkListeners.putIfAbsent(url, new ConcurrentHashMap<NotifyListener, ChildListener>());
                         listeners = zkListeners.get(url);
                     }
                     ChildListener zkListener = listeners.get(listener);
                     if (zkListener == null) {
                         listeners.putIfAbsent(listener, new ChildListener() {
-                            public void childChanged(String parentPath, List<String> currentChilds) {
+                            public void childChanged(String parentPath, List<String> currentChilds) { //TODO ZookeeperRegistry.this.notify() 这种调用方式待了解？
                                 ZookeeperRegistry.this.notify(url, listener, toUrlsWithEmpty(url, parentPath, currentChilds));
                             }
                         });
                         zkListener = listeners.get(listener);
                     }
-                    zkClient.create(path, false);
-                    List<String> children = zkClient.addChildListener(path, zkListener);
+                    zkClient.create(path, false); //创建持久节点 ，如：/dubbo/com.alibaba.dubbo.demo.ApiDemo/configurators
+                    List<String> children = zkClient.addChildListener(path, zkListener); //子节点url列表
                     if (children != null) {
                         urls.addAll(toUrlsWithEmpty(url, path, children));
                     }
                 }
-                notify(url, listener, urls);
+                notify(url, listener, urls); //通知
             }
         } catch (Throwable e) {
             throw new RpcException("Failed to subscribe " + url + " to zookeeper " + getUrl() + ", cause: " + e.getMessage(), e);
@@ -235,14 +235,19 @@ public class ZookeeperRegistry extends FailbackRegistry {
         return toRootDir() + URL.encode(name); //如 /dubbo/com.alibaba.dubbo.demo.ApiDemo
     }
 
-    private String[] toCategoriesPath(URL url) {
+    private String[] toCategoriesPath(URL url) { //获取分类对应的路径
         String[] categroies;
-        if (Constants.ANY_VALUE.equals(url.getParameter(Constants.CATEGORY_KEY))) {
+        if (Constants.ANY_VALUE.equals(url.getParameter(Constants.CATEGORY_KEY))) { //若分类设置为任意分类，则包含providers、consumers、routers、configurators
             categroies = new String[]{Constants.PROVIDERS_CATEGORY, Constants.CONSUMERS_CATEGORY,
                     Constants.ROUTERS_CATEGORY, Constants.CONFIGURATORS_CATEGORY};
-        } else {
+        } else { //获取url设置的一个分类参数，默认providers
             categroies = url.getParameter(Constants.CATEGORY_KEY, new String[]{Constants.DEFAULT_CATEGORY});
         }
+        /**
+         * 路径如：
+         * path[0] = "/dubbo/com.alibaba.dubbo.demo.ApiDemo/providers";
+         * path[1] = "/dubbo/com.alibaba.dubbo.demo.ApiDemo/configurators";
+         */
         String[] paths = new String[categroies.length];
         for (int i = 0; i < categroies.length; i++) {
             paths[i] = toServicePath(url) + Constants.PATH_SEPARATOR + categroies[i];
@@ -260,7 +265,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 
     private List<URL> toUrlsWithoutEmpty(URL consumer, List<String> providers) {
         List<URL> urls = new ArrayList<URL>();
-        if (providers != null && providers.size() > 0) {
+        if (providers != null && providers.size() > 0) { //遍历providers列表，判断consumer是否与provider相等，若相等则添加到url列表
             for (String provider : providers) {
                 provider = URL.decode(provider);
                 if (provider.contains("://")) {
@@ -274,11 +279,11 @@ public class ZookeeperRegistry extends FailbackRegistry {
         return urls;
     }
 
-    private List<URL> toUrlsWithEmpty(URL consumer, String path, List<String> providers) {
+    private List<URL> toUrlsWithEmpty(URL consumer, String path, List<String> providers) { //将url置为空协议empty
         List<URL> urls = toUrlsWithoutEmpty(consumer, providers);
         if (urls == null || urls.isEmpty()) {
             int i = path.lastIndexOf('/');
-            String category = i < 0 ? path : path.substring(i + 1);
+            String category = i < 0 ? path : path.substring(i + 1); //TODO empty协议的用途？
             URL empty = consumer.setProtocol(Constants.EMPTY_PROTOCOL).addParameter(Constants.CATEGORY_KEY, category);
             urls.add(empty);
         }

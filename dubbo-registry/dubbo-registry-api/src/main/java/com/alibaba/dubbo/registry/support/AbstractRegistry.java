@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author chao.liuc
  * @author william.liangf
  */
-public abstract class AbstractRegistry implements Registry {
+public abstract class AbstractRegistry implements Registry { //将公共信息放到抽象类，供子类调用
 
     // URL地址分隔符，用于文件缓存中，服务提供者URL分隔
     private static final char URL_SEPARATOR = ' ';
@@ -63,9 +63,9 @@ public abstract class AbstractRegistry implements Registry {
     private static final String URL_SPLIT = "\\s+";
     // 日志输出
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    // 本地磁盘缓存，其中特殊的key值.registies记录注册中心列表，其它均为notified服务提供者列表
+    // 本地磁盘缓存，其中特殊的key值.registies记录注册中心列表，其它均为notified服务提供者列表 (从缓存文件中，读取属性写到Properties)
     private final Properties properties = new Properties();
-    // 文件缓存定时写入
+    // 文件缓存定时写入（线程为SaveProperties）
     private final ExecutorService registryCacheExecutor = Executors.newFixedThreadPool(1, new NamedThreadFactory("DubboSaveRegistryCache", true));
     //是否是同步保存文件
     private final boolean syncSaveFile;
@@ -83,18 +83,23 @@ public abstract class AbstractRegistry implements Registry {
     public AbstractRegistry(URL url) {
         setUrl(url);
         // 启动文件保存定时器
-        syncSaveFile = url.getParameter(Constants.REGISTRY_FILESAVE_SYNC_KEY, false);
+        syncSaveFile = url.getParameter(Constants.REGISTRY_FILESAVE_SYNC_KEY, false); //TODO 此处的属性 save.file在哪里设置？
+        /**
+         * 1) 本地文件存储路径如： /Users/chenshengyong/.dubbo/dubbo-registry-localhost.cache
+         * 2) 文件中的内容格式：com.csy.dubbo.provider.api.test.ApiDemo\:1.0.0=empty\://192.168.0.101/com.csy.dubbo.provider.api.test.ApiDemo?application......
+         *    接口名=暴露的url
+         */
         String filename = url.getParameter(Constants.FILE_KEY, System.getProperty("user.home") + "/.dubbo/dubbo-registry-" + url.getHost() + ".cache");
         File file = null;
-        if (ConfigUtils.isNotEmpty(filename)) {
+        if (ConfigUtils.isNotEmpty(filename)) { //文件名：/Users/chenshengyong/.dubbo/dubbo-registry-localhost.cache
             file = new File(filename);
-            if (!file.exists() && file.getParentFile() != null && !file.getParentFile().exists()) {
-                if (!file.getParentFile().mkdirs()) {
+            if (!file.exists() && file.getParentFile() != null && !file.getParentFile().exists()) { //文件不存在，并且父目录不存在
+                if (!file.getParentFile().mkdirs()) { //创建父目录：如 /Users/chenshengyong/.dubbo
                     throw new IllegalArgumentException("Invalid registry store file " + file + ", cause: Failed to create directory " + file.getParentFile() + "!");
                 }
             }
         }
-        this.file = file;
+        this.file = file; //TODO 文件是在哪里写入的？
         loadProperties();
         notify(url.getBackupUrls());
     }
@@ -215,7 +220,7 @@ public abstract class AbstractRegistry implements Registry {
     }
 
     private void loadProperties() {
-        if (file != null && file.exists()) {
+        if (file != null && file.exists()) { //若存在文件，如：/Users/chenshengyong/.dubbo/dubbo-registry-localhost.cache，则从文件中读取属性值
             InputStream in = null;
             try {
                 in = new FileInputStream(file);
@@ -381,7 +386,7 @@ public abstract class AbstractRegistry implements Registry {
     protected void notify(List<URL> urls) {
         if (urls == null || urls.isEmpty()) return;
 
-        for (Map.Entry<URL, Set<NotifyListener>> entry : getSubscribed().entrySet()) {
+        for (Map.Entry<URL, Set<NotifyListener>> entry : getSubscribed().entrySet()) { //遍历订阅的集合subscribed
             URL url = entry.getKey();
 
             if (!UrlUtils.isMatch(url, urls.get(0))) {
@@ -401,6 +406,10 @@ public abstract class AbstractRegistry implements Registry {
         }
     }
 
+    /**
+     * 通知机制：
+     *
+     */
     protected void notify(URL url, NotifyListener listener, List<URL> urls) {
         if (url == null) {/**@c 主题节点的URL，订阅者的url列表urls */
             throw new IllegalArgumentException("notify url == null");
@@ -441,11 +450,11 @@ public abstract class AbstractRegistry implements Registry {
             List<URL> categoryList = entry.getValue();
             categoryNotified.put(category, categoryList);
             saveProperties(url);
-            listener.notify(categoryList);
+            listener.notify(categoryList); //通知
         }
     }
 
-    private void saveProperties(URL url) {
+    private void saveProperties(URL url) { //TODO
         if (file == null) {
             return;
         }
@@ -520,7 +529,7 @@ public abstract class AbstractRegistry implements Registry {
         return getUrl().toString();
     }
 
-    private class SaveProperties implements Runnable {
+    private class SaveProperties implements Runnable { //保存文件线程
         private long version;
 
         private SaveProperties(long version) {

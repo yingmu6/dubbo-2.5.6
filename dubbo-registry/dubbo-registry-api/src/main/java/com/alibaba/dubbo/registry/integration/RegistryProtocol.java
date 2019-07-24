@@ -115,6 +115,8 @@ public class RegistryProtocol implements Protocol {
      * 暴露注册协议 是怎么先到RegistryProtocol，然后再到Dubbo的？在什么地方选择的？
      * 解：若配置了注册中心时，组装暴露的url时，会先把协议名置为registry，并把要暴露的协议放在registry的url中，键位export
      * 根据自适应扩展时加载选择的实例，一开始时registry协议名
+     *
+     * 注册中心注册、并订阅节点
      */
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException { //originInvoker的值注册协议：registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&export=dubbo%3A%2F%2F10.118.32.69%3A20881%2Fcom.alibaba.dubbo.demo....
         //export invoker(使用dubbo协议暴露)
@@ -128,9 +130,10 @@ public class RegistryProtocol implements Protocol {
         // 订阅override数据（由dubbo协议转换为provider协议）
         // FIXME（需要修复的代码） 提供者订阅时，会影响同一JVM即暴露服务，又引用同一服务的的场景，因为subscribed以服务名为缓存的key，导致订阅信息覆盖。
         final URL overrideSubscribeUrl = getSubscribedOverrideUrl(registedProviderUrl);
-        // 监听器的使用, url如：provider://192.168.1.103:20881/com.alibaba.dubbo.demo.ApiDemo?anyhost=true&application=api_demo&category=configurators&check=false...
+        // 监听器的使用, overrideSubscribeUrl如：provider://192.168.1.103:20881/com.alibaba.dubbo.demo.ApiDemo?anyhost=true&application=api_demo&category=configurators&check=false...
         final OverrideListener overrideSubscribeListener = new OverrideListener(overrideSubscribeUrl, originInvoker);
         overrideListeners.put(overrideSubscribeUrl, overrideSubscribeListener); //设置映射关系
+        //订阅节点
         registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener); //订阅/dubbo/*/configrators节点
         //保证每次export都返回一个新的exporter实例
         return new Exporter<T>() {

@@ -82,7 +82,7 @@ public final class StringUtils {
      * @param s2
      * @return equals
      */
-    public static boolean isEquals(String s1, String s2) {
+    public static boolean isEquals(String s1, String s2) { //判断两个字符串是否相等
         if (s1 == null && s2 == null)
             return true;
         if (s1 == null || s2 == null)
