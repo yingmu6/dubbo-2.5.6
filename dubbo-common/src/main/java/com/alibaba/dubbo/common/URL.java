@@ -351,7 +351,7 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     public String getAddress() {
-        return port <= 0 ? host : host + ":" + port;
+        return port <= 0 ? host : host + ":" + port; //判断port是否有效，若有效address为 host:port,否则为host
     }
 
     public URL setAddress(String address) {

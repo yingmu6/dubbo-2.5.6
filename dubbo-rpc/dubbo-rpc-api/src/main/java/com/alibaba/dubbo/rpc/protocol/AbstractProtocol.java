@@ -57,7 +57,7 @@ public abstract class AbstractProtocol implements Protocol {// read finish
 
     @SuppressWarnings("deprecation")
     //微服务架构—优雅停机方案 https://my.oschina.net/yu120/blog/1788928
-    protected static int getServerShutdownTimeout() {
+    protected static int getServerShutdownTimeout() {  //获取停机时间
         //优雅停机，超时控制，超过时间还没有完成操作，则强制退出
         int timeout = Constants.DEFAULT_SERVER_SHUTDOWN_TIMEOUT;
         String value = ConfigUtils.getProperty(Constants.SHUTDOWN_WAIT_KEY);
@@ -82,7 +82,7 @@ public abstract class AbstractProtocol implements Protocol {// read finish
     public void destroy() {
         for (Invoker<?> invoker : invokers) {
             if (invoker != null) {
-                invokers.remove(invoker);
+                invokers.remove(invoker); //缓存中移除调用者invoker
                 try {
                     if (logger.isInfoEnabled()) {
                         logger.info("Destroy reference: " + invoker.getUrl());
@@ -94,7 +94,7 @@ public abstract class AbstractProtocol implements Protocol {// read finish
             }
         }
         for (String key : new ArrayList<String>(exporterMap.keySet())) {
-            Exporter<?> exporter = exporterMap.remove(key);
+            Exporter<?> exporter = exporterMap.remove(key); //缓存中移除暴露exporter
             if (exporter != null) {
                 try {
                     if (logger.isInfoEnabled()) {

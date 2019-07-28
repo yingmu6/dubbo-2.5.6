@@ -44,7 +44,7 @@ public class RemotingException extends Exception {
     }
 
     public RemotingException(InetSocketAddress localAddress, InetSocketAddress remoteAddress, String message) {
-        super(message);
+        super(message); //记录下错误信息，并且记录本地和远程地址
 
         this.localAddress = localAddress;
         this.remoteAddress = remoteAddress;

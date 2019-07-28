@@ -159,7 +159,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         // 保存之前先读取一遍，防止多个注册中心之间冲突
         InputStream in = null;
         try {
-            if (file.exists()) {
+            if (file.exists()) { //若文件存在，将之前的配置加载到属性配置中，保留老的配置，在老的配置上增加配置
                 in = new FileInputStream(file);
                 newProperties.load(in);
             }
@@ -191,7 +191,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
                     }
                     // 保存
                     try {
-                        if (!file.exists()) {
+                        if (!file.exists()) { //创建本地缓存文件,如../dubbo-registry-localhost.cache
                             file.createNewFile();
                         }
                         FileOutputStream outputFile = new FileOutputStream(file);
@@ -472,7 +472,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
                     }
                 }
             }
-            properties.setProperty(url.getServiceKey(), buf.toString());
+            properties.setProperty(url.getServiceKey(), buf.toString()); //本地缓存文件中存储的内容，dubbo-registry-localhost.cache，键值对的
             long version = lastCacheChanged.incrementAndGet();
             if (syncSaveFile) {//TODO 此处的逻辑？
                 doSaveProperties(version);

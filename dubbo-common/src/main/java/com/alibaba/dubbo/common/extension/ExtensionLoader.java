@@ -1276,7 +1276,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
             Enumeration<java.net.URL> urls;
             ClassLoader classLoader = findClassLoader();
             if (classLoader != null) {
-                urls = classLoader.getResources(fileName);
+                urls = classLoader.getResources(fileName); //TODO 文件是从哪个目录取的？相对目录还是绝对目录？
             } else {
                 urls = ClassLoader.getSystemResources(fileName);
             }

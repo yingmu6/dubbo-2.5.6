@@ -369,7 +369,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
             }
         }
 
-        logger.info("设置配置类属性值：" + abstractConfig.toString());
+        //logger.info("设置配置类属性值：" + abstractConfig.toString());
     }
 
     /**

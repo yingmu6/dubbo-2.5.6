@@ -104,13 +104,13 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
         }
         try {
             if (url.hasParameter(Constants.THREADS_KEY)
-                    && executor instanceof ThreadPoolExecutor && !executor.isShutdown()) {
+                    && executor instanceof ThreadPoolExecutor && !executor.isShutdown()) { //TODO 线程池使用
                 ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
                 int threads = url.getParameter(Constants.THREADS_KEY, 0);
                 int max = threadPoolExecutor.getMaximumPoolSize();
                 int core = threadPoolExecutor.getCorePoolSize();
-                if (threads > 0 && (threads != max || threads != core)) {
-                    if (threads < core) {
+                if (threads > 0 && (threads != max || threads != core)) { //在线程数大于0 并且不等于最大线程数max或核心线程数core
+                    if (threads < core) { //TODO threads、threads、max三者的联系
                         threadPoolExecutor.setCorePoolSize(threads);
                         if (core == max) {
                             threadPoolExecutor.setMaximumPoolSize(threads);
