@@ -61,10 +61,14 @@ public class NettyServer extends AbstractServer implements Server {//netty服务
 
     /**@c */
     public NettyServer(URL url, ChannelHandler handler) throws RemotingException {
-        super(url, ChannelHandlers.wrap(handler, ExecutorUtil.setThreadName(url, SERVER_THREAD_POOL_NAME)));
+        //由抽象类AbstractServer构建参数，并调用doOpen方法
+        super(url, ChannelHandlers.wrap(handler, ExecutorUtil.setThreadName(url, SERVER_THREAD_POOL_NAME))); //TODO ChannelHandlers中wrap？
     }
 
-    /**@c */
+    /**
+     * 打开Netty服务、绑定暴露地址
+     * 绑定解码、编码、netty事件
+     */
     @Override
     protected void doOpen() throws Throwable {  //service export 步骤16
         NettyHelper.setNettyLoggerFactory();
@@ -93,7 +97,7 @@ public class NettyServer extends AbstractServer implements Server {//netty服务
             }
         });
         /**@c   bind (使用Netty中ServerBootstrap启动服务) */
-        channel = bootstrap.bind(getBindAddress());
+        channel = bootstrap.bind(getBindAddress()); //Create a new {@link Channel} and bind it. 创建一个通道channel并且绑定它
     }
 
     @Override

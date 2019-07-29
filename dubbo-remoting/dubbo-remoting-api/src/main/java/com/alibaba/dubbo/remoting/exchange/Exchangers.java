@@ -60,7 +60,7 @@ public class Exchangers {
         return bind(URL.valueOf(url), handler);
     }
 
-    /**@c */
+    /**@c 静态方法 */
     public static ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException { //service export 步骤11
         if (url == null) {
             throw new IllegalArgumentException("url == null");
@@ -68,7 +68,7 @@ public class Exchangers {
         if (handler == null) {
             throw new IllegalArgumentException("handler == null");
         }
-        url = url.addParameterIfAbsent(Constants.CODEC_KEY, "exchange");
+        url = url.addParameterIfAbsent(Constants.CODEC_KEY, "exchange"); // codec用途：编码、解码
         return getExchanger(url).bind(url, handler);
     }
 
@@ -114,7 +114,7 @@ public class Exchangers {
 
     /**@c */
     public static Exchanger getExchanger(URL url) {
-        String type = url.getParameter(Constants.EXCHANGER_KEY, Constants.DEFAULT_EXCHANGER);
+        String type = url.getParameter(Constants.EXCHANGER_KEY, Constants.DEFAULT_EXCHANGER); //exchanger交换协议，默认header
         return getExchanger(type);
     }
 

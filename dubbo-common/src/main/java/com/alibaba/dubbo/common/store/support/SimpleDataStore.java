@@ -29,9 +29,8 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class SimpleDataStore implements DataStore {
 
-    // <组件类名或标识, <数据名, 数据值>>
-    private ConcurrentMap<String, ConcurrentMap<String, Object>> data =
-            new ConcurrentHashMap<String, ConcurrentMap<String, Object>>();
+    // 数据接口：<组件类名或标识, <数据名, 数据值>>
+    private ConcurrentMap<String, ConcurrentMap<String, Object>> data = new ConcurrentHashMap<String, ConcurrentMap<String, Object>>();
 
     public Map<String, Object> get(String componentName) {
         ConcurrentMap<String, Object> value = data.get(componentName);
@@ -48,7 +47,7 @@ public class SimpleDataStore implements DataStore {
     }
 
     public void put(String componentName, String key, Object value) {
-        Map<String, Object> componentData = data.get(componentName);
+        Map<String, Object> componentData = data.get(componentName); //先从缓存获取指定对象，若没有则新建对象，若有使用已有对象
         if (null == componentData) {
             data.putIfAbsent(componentName, new ConcurrentHashMap<String, Object>());
             componentData = data.get(componentName);

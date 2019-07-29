@@ -57,11 +57,11 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
                 || NetUtils.isInvalidLocalHost(getUrl().getHost())
                 ? NetUtils.ANYHOST : getUrl().getHost();
         bindAddress = new InetSocketAddress(host, getUrl().getPort());
-        this.accepts = url.getParameter(Constants.ACCEPTS_KEY, Constants.DEFAULT_ACCEPTS);
+        this.accepts = url.getParameter(Constants.ACCEPTS_KEY, Constants.DEFAULT_ACCEPTS); //TODO accepts默认值为0，表示不接受新的请求？
         this.idleTimeout = url.getParameter(Constants.IDLE_TIMEOUT_KEY, Constants.DEFAULT_IDLE_TIMEOUT);
         try {
-            doOpen();
-            if (logger.isInfoEnabled()) {/**@c 启动服务成功*/
+            doOpen(); //
+            if (logger.isInfoEnabled()) { /**@c 启动服务成功*/
                 logger.info("Start " + getClass().getSimpleName() + " bind " + getBindAddress() + ", export " + getLocalAddress());
             }
         } catch (Throwable t) {
@@ -69,8 +69,8 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
                     + " on " + getLocalAddress() + ", cause: " + t.getMessage(), t);
         }
         //fixme replace this with better method
-        DataStore dataStore = ExtensionLoader.getExtensionLoader(DataStore.class).getDefaultExtension();
-        executor = (ExecutorService) dataStore.get(Constants.EXECUTOR_SERVICE_COMPONENT_KEY, Integer.toString(url.getPort()));
+        DataStore dataStore = ExtensionLoader.getExtensionLoader(DataStore.class).getDefaultExtension(); //是在哪里设置的？ 在WrappedChannelHandler构造函数中设置
+        executor = (ExecutorService) dataStore.get(Constants.EXECUTOR_SERVICE_COMPONENT_KEY, Integer.toString(url.getPort())); //从缓存中指定的线程池
     }
 
     /**@ */

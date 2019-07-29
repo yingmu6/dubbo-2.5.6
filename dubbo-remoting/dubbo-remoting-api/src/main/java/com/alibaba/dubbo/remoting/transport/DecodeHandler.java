@@ -28,7 +28,7 @@ import com.alibaba.dubbo.remoting.exchange.Response;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public class DecodeHandler extends AbstractChannelHandlerDelegate {
+public class DecodeHandler extends AbstractChannelHandlerDelegate { //解码处理器
 
     private static final Logger log = LoggerFactory.getLogger(DecodeHandler.class);
 
@@ -37,6 +37,7 @@ public class DecodeHandler extends AbstractChannelHandlerDelegate {
         super(handler);
     }
 
+    //接收通道中数据，然后进行解码
     public void received(Channel channel, Object message) throws RemotingException {
         if (message instanceof Decodeable) {
             decode(message);

@@ -38,7 +38,6 @@ public interface Codec2 {
     @Adaptive({Constants.CODEC_KEY})
     Object decode(Channel channel, ChannelBuffer buffer) throws IOException;
 
-    //TODO 枚举值的用途？是指参数齐全和不齐全吗？
     enum DecodeResult {
         NEED_MORE_INPUT, SKIP_SOME_INPUT
     }

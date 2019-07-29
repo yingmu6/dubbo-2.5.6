@@ -282,7 +282,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         //默认开启server关闭时发送readonly事件（TODO server都关闭了，还能读吗？）
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
         //默认开启heartbeat(设置心跳检测时间，默认每隔60秒检查一次)
-        url = url.addParameterIfAbsent(Constants.HEARTBEAT_KEY, String.valueOf(Constants.DEFAULT_HEARTBEAT));/**@c 会启动心跳定时任务，每隔指定时间检查心跳*/
+        url = url.addParameterIfAbsent(Constants.HEARTBEAT_KEY, String.valueOf(Constants.DEFAULT_HEARTBEAT)); /**@c 会启动心跳定时任务，每隔指定时间检查心跳*/
         /**@c 默认使用Netty作为服务端 */
         String str = url.getParameter(Constants.SERVER_KEY, Constants.DEFAULT_REMOTING_SERVER);
 
@@ -294,7 +294,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         ExchangeServer server;
         try {
             //重要：requestHandler 请求处理器，注意看初始化的地方，匿名对象
-            server = Exchangers.bind(url, requestHandler);/**@c 构建服务并且打开服务*/
+            server = Exchangers.bind(url, requestHandler); /**@c 构建服务并且打开服务*/
         } catch (RemotingException e) {
             throw new RpcException("Fail to start server(url: " + url + ") " + e.getMessage(), e);
         }

@@ -61,14 +61,13 @@ public class HeaderExchangeServer implements ExchangeServer {
     private int heartbeatTimeout;
     private AtomicBoolean closed = new AtomicBoolean(false);
 
-    /**@c */
-    public HeaderExchangeServer(Server server) {
+    public HeaderExchangeServer(Server server) { //设置心跳检测时间、心跳超时时间、并将心跳检测任务放入线程池
         if (server == null) {
             throw new IllegalArgumentException("server == null");
         }
         this.server = server;
         this.heartbeat = server.getUrl().getParameter(Constants.HEARTBEAT_KEY, 0);
-        this.heartbeatTimeout = server.getUrl().getParameter(Constants.HEARTBEAT_TIMEOUT_KEY, heartbeat * 3);
+        this.heartbeatTimeout = server.getUrl().getParameter(Constants.HEARTBEAT_TIMEOUT_KEY, heartbeat * 3); //心跳超时时间默认是心跳检测时间的3倍
         if (heartbeatTimeout < heartbeat * 2) {
             throw new IllegalStateException("heartbeatTimeout < heartbeatInterval * 2");
         }
@@ -236,7 +235,7 @@ public class HeaderExchangeServer implements ExchangeServer {
 
     /**@c 启动心跳定时器*/
     private void startHeatbeatTimer() {
-        stopHeartbeatTimer();
+        stopHeartbeatTimer(); //先停止之前的心跳服务，然后心跳时间大于0时再启动心跳检测定时器
         if (heartbeat > 0) {
             heatbeatTimer = scheduled.scheduleWithFixedDelay(
                     new HeartBeatTask(new HeartBeatTask.ChannelProvider() {

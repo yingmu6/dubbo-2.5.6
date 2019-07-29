@@ -27,15 +27,15 @@ import java.util.Collection;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-final class HeartBeatTask implements Runnable {//心跳定时任务
+final class HeartBeatTask implements Runnable { //心跳检查定时任务
 
     private static final Logger logger = LoggerFactory.getLogger(HeartBeatTask.class);
 
     private ChannelProvider channelProvider;
 
-    private int heartbeat;
+    private int heartbeat; //心跳检测时间间隔，比如60000，一分钟检查一次
 
-    private int heartbeatTimeout;
+    private int heartbeatTimeout; //心跳超时时间
 
     HeartBeatTask(ChannelProvider provider, int heartbeat, int heartbeatTimeout) {
         this.channelProvider = provider;
@@ -43,7 +43,7 @@ final class HeartBeatTask implements Runnable {//心跳定时任务
         this.heartbeatTimeout = heartbeatTimeout;
     }
 
-    public void run() {
+    public void run() { //TODO 心跳检测是哪方到哪方的检测，哪方发起的？
         try {
             long now = System.currentTimeMillis();
             for (Channel channel : channelProvider.getChannels()) {
@@ -56,7 +56,7 @@ final class HeartBeatTask implements Runnable {//心跳定时任务
                     Long lastWrite = (Long) channel.getAttribute(
                             HeaderExchangeHandler.KEY_WRITE_TIMESTAMP);
                     if ((lastRead != null && now - lastRead > heartbeat)
-                            || (lastWrite != null && now - lastWrite > heartbeat)) {
+                            || (lastWrite != null && now - lastWrite > heartbeat)) { //判断是否达到应该读写的时间
                         Request req = new Request();
                         req.setVersion("2.0.0");
                         req.setTwoWay(true);

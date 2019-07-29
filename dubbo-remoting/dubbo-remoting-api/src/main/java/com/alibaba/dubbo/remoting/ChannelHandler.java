@@ -29,7 +29,7 @@ import com.alibaba.dubbo.common.extension.SPI;
 //ChannelHandler是通道的事件处理器
 //Netty中描述 Handles an I/O event or intercepts（监听、拦截） an I/O operation, and forwards（向前） it to its next handler in its ChannelPipeline.
 @SPI
-public interface ChannelHandler {//发生事件时，回调对应的函数
+public interface ChannelHandler { //发生事件时，回调对应的函数
     // 连接通道，是ChannelHandler与channel单向连接吗？那通道与通道怎么连接？
     // 解：不管是否是单向，通道与通道可以用Channel中transport(通道传输)
     /**
