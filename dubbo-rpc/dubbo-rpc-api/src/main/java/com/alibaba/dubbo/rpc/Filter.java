@@ -41,7 +41,7 @@ public interface Filter {  // read finish
      * @throws RpcException
      * @see com.alibaba.dubbo.rpc.Invoker#invoke(Invocation)
      */
-    //在执行invoke之前、之后过滤
+    //在执行invoke之前、之后过滤（传入调用者、调用的上下文信息）
     Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException;
 
 }

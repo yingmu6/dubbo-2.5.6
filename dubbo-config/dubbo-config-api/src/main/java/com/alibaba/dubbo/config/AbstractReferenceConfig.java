@@ -51,7 +51,7 @@ public abstract class AbstractReferenceConfig extends AbstractInterfaceConfig {
 
     protected String reconnect;
 
-    protected Boolean sticky;
+    protected Boolean sticky; //TODO 记住上次结果？
 
     //stub是否支持event事件. //TODO slove merge problem 
     protected Boolean stubevent;//= Constants.DEFAULT_STUB_EVENT;

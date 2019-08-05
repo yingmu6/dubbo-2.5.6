@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author qian.lei
  */
 
-public abstract class Proxy {
+public abstract class Proxy { //TODO 获取代理处理
     public static final InvocationHandler RETURN_NULL_INVOKER = new InvocationHandler() {
         public Object invoke(Object proxy, Method method, Object[] args) {
             return null;

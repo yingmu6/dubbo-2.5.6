@@ -24,6 +24,8 @@ public class ApiConsumer {
         reference.setRegistry(registry);
         reference.setInterface(ApiDemo.class);
 
+        //reference.setMethods(); 可以指定调用的方法列表
+
         ApiDemo apiDemo = (ApiDemo) reference.get();
         System.out.println(apiDemo.sayApi("haha ",12, 13.45, "张三"));
 

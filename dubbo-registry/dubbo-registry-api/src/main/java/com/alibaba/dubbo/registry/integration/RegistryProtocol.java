@@ -265,16 +265,16 @@ public class RegistryProtocol implements Protocol {
 
     @SuppressWarnings("unchecked")
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
-        url = url.setProtocol(url.getParameter(Constants.REGISTRY_KEY, Constants.DEFAULT_REGISTRY)).removeParameter(Constants.REGISTRY_KEY);
-        Registry registry = registryFactory.getRegistry(url);
-        if (RegistryService.class.equals(type)) {
+        url = url.setProtocol(url.getParameter(Constants.REGISTRY_KEY, Constants.DEFAULT_REGISTRY)).removeParameter(Constants.REGISTRY_KEY); //协议替换为,并且移除键registry zookeeper://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=...
+        Registry registry = registryFactory.getRegistry(url); //通过工厂方法创建注册实例Registry
+        if (RegistryService.class.equals(type)) { //TODO 此处怎么会有相等的可能？RegistryServicer.class为com.alibaba.dubbo.registry.RegistryService，而暴露的接口为com.alibaba.dubbo.demo.ApiDemo
             return proxyFactory.getInvoker((T) registry, type, url);
         }
 
         // group="a,b" or group="*"
-        Map<String, String> qs = StringUtils.parseQueryString(url.getParameterAndDecoded(Constants.REFER_KEY));
+        Map<String, String> qs = StringUtils.parseQueryString(url.getParameterAndDecoded(Constants.REFER_KEY)); //将refer引用部分解析到map中
         String group = qs.get(Constants.GROUP_KEY);
-        if (group != null && group.length() > 0) {
+        if (group != null && group.length() > 0) { //TODO 接口分组
             if ((Constants.COMMA_SPLIT_PATTERN.split(group)).length > 1
                     || "*".equals(group)) {
                 return doRefer(getMergeableCluster(), registry, type, url);
@@ -295,12 +295,12 @@ public class RegistryProtocol implements Protocol {
         if (!Constants.ANY_VALUE.equals(url.getServiceInterface())
                 && url.getParameter(Constants.REGISTER_KEY, true)) {
             registry.register(subscribeUrl.addParameters(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY,
-                    Constants.CHECK_KEY, String.valueOf(false)));
+                    Constants.CHECK_KEY, String.valueOf(false))); //subscribeUrl内容为 consumer://192.168.1.102/com.alibaba.dubbo.demo.ApiDemo?application=api_demo&dubbo=2.0.0&interface=com.alibaba.dubbo.demo.ApiDemo&methods=sayApi,sayHello&pid=32927&side=consumer&timestamp=1564673239256
         }
         directory.subscribe(subscribeUrl.addParameter(Constants.CATEGORY_KEY,
                 Constants.PROVIDERS_CATEGORY
                         + "," + Constants.CONFIGURATORS_CATEGORY
-                        + "," + Constants.ROUTERS_CATEGORY));
+                        + "," + Constants.ROUTERS_CATEGORY)); //第二个参数，"providers,configurators,routers"
         return cluster.join(directory);
     }
 

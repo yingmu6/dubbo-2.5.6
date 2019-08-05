@@ -51,7 +51,9 @@ public class providerStart1 {
 
         service.setInterface(ApiDemo.class);
         service.setRef(apiDemo);
-        service.setVersion("1.3.4");
+
+
+//        service.setVersion("1.3.4");
         //设置演示暴露
 //        service.setDelay(15000);
 
@@ -72,12 +74,12 @@ public class providerStart1 {
         ArgumentConfig argumentConfig2 = new ArgumentConfig(); //检验下标与类型是否对应
         argumentConfig2.setIndex(2);
         argumentConfig2.setType("java.lang.Double");
-        argumentConfig2.setCallback(true);
+        //argumentConfig2.setCallback(true); //java.lang.RuntimeException: java.lang.Double is not a interface 回调的参数需要接口形式，不能是个简单类型
 
         ArgumentConfig argumentConfig3 = new ArgumentConfig(); //检验下标与类型是否对应
         argumentConfig3.setIndex(3);
         argumentConfig3.setType("java.lang.String");
-        argumentConfig3.setCallback(true);           //若没设置，以同类型的值为准，若设置了，以设置为准
+        //argumentConfig3.setCallback(true);           //若没设置，以同类型的值为准，若设置了，以设置为准
 
         List<ArgumentConfig> argumentConfigList = new ArrayList<>();
         argumentConfigList.add(argumentConfig0);

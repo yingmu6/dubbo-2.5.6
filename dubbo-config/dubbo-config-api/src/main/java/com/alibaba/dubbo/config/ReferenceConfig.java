@@ -60,11 +60,11 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
 
     private static final long serialVersionUID = -5864351140409987595L;
 
-    private static final Protocol refprotocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
+    private static final Protocol refprotocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension(); //默认dubboProtocol
 
-    private static final Cluster cluster = ExtensionLoader.getExtensionLoader(Cluster.class).getAdaptiveExtension();
+    private static final Cluster cluster = ExtensionLoader.getExtensionLoader(Cluster.class).getAdaptiveExtension(); //默认failover(失败转移)
 
-    private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
+    private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension(); //默认javassist产生代理对象
     private final List<URL> urls = new ArrayList<URL>();
     // 接口类型
     private String interfaceName;
@@ -79,15 +79,15 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
     private ConsumerConfig consumer;
     private String protocol;
     // 接口代理类引用
-    private transient volatile T ref;
-    private transient volatile Invoker<?> invoker;
-    private transient volatile boolean initialized;
+    private transient volatile T ref; //引用实例
+    private transient volatile Invoker<?> invoker; //不序列化、线程安全
+    private transient volatile boolean initialized; //默认值false
     private transient volatile boolean destroyed;
     @SuppressWarnings("unused")
     private final Object finalizerGuardian = new Object() {
         @Override
         protected void finalize() throws Throwable {
-            super.finalize();
+            super.finalize(); //提示垃圾回收
 
             if (!ReferenceConfig.this.destroyed) {
                 logger.warn("ReferenceConfig(" + url + ") is not DESTROYED when FINALIZE");
@@ -178,8 +178,8 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
         ref = null;
     }
 
-    private void init() {
-        if (initialized) {
+    private void init() { //初始化属性值，并创建引用对象ref
+        if (initialized) { //若已经初始化，直接返回
             return;
         }
         initialized = true;
@@ -187,12 +187,12 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
             throw new IllegalStateException("<dubbo:reference interface=\"\" /> interface not allow null!");
         }
         // 获取消费者全局配置
-        checkDefault();
-        appendProperties(this);
-        if (getGeneric() == null && getConsumer() != null) {
+        checkDefault(); //为ConsumerConfig设置属性值
+        appendProperties(this); //为ReferenceConfig设置属性值
+        if (getGeneric() == null && getConsumer() != null) { //若泛化参数没设置，去消费者的设置（消费者优于提供者配置）
             setGeneric(getConsumer().getGeneric());
         }
-        if (ProtocolUtils.isGeneric(getGeneric())) {
+        if (ProtocolUtils.isGeneric(getGeneric())) { //判断是否是泛化接口，若是则用GenericService接口处理
             interfaceClass = GenericService.class;
         } else {
             try {
@@ -201,19 +201,23 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
-            checkInterfaceAndMethods(interfaceClass, methods);
+            checkInterfaceAndMethods(interfaceClass, methods); //若设置了methods，校验这些methods是否在接口中interfaceClass
         }
         String resolve = System.getProperty(interfaceName);
         String resolveFile = null;
         if (resolve == null || resolve.length() == 0) {
+            /**
+             * 服务映射文件：dubbo-resolve.properties，如果服务比较多，也可以用文件映射里面存在(key为服务名，value为服务提供者url)
+             * 如com.alibaba.xxx.XxxService=dubbo://localhost:20890，配置优先级高于<dubbo:reference>中的配置，  https://www.jianshu.com/p/bf4b4604f648
+             */
             resolveFile = System.getProperty("dubbo.resolve.file");
-            if (resolveFile == null || resolveFile.length() == 0) {
+            if (resolveFile == null || resolveFile.length() == 0) { //尝试读取属性文件
                 File userResolveFile = new File(new File(System.getProperty("user.home")), "dubbo-resolve.properties");
                 if (userResolveFile.exists()) {
                     resolveFile = userResolveFile.getAbsolutePath();
                 }
             }
-            if (resolveFile != null && resolveFile.length() > 0) {
+            if (resolveFile != null && resolveFile.length() > 0) { //将文件中的属性集加到Properties
                 Properties properties = new Properties();
                 FileInputStream fis = null;
                 try {
@@ -241,7 +245,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
                 }
             }
         }
-        if (consumer != null) {
+        if (consumer != null) { //取值选择设置
             if (application == null) {
                 application = consumer.getApplication();
             }
@@ -287,7 +291,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
                 map.put("revision", revision);
             }
 
-            String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames();
+            String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames(); //TODO Wrapper待调试
             if (methods.length == 0) {
                 logger.warn("NO method found in service interface " + interfaceClass.getName());
                 map.put("methods", Constants.ANY_VALUE);
@@ -296,12 +300,12 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
             }
         }
         map.put(Constants.INTERFACE_KEY, interfaceName);
-        appendParameters(map, application);
+        appendParameters(map, application); //组装url参数
         appendParameters(map, module);
         appendParameters(map, consumer, Constants.DEFAULT_KEY);
         appendParameters(map, this);
         String prifix = StringUtils.getServiceKey(map);
-        if (methods != null && methods.size() > 0) {
+        if (methods != null && methods.size() > 0) { //若设置方法级别的调用
             for (MethodConfig method : methods) {
                 appendParameters(map, method, method.getName());
                 String retryKey = method.getName() + ".retry";
@@ -321,8 +325,8 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
     }
 
     @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
-    private T createProxy(Map<String, String> map) {
-        URL tmpUrl = new URL("temp", "localhost", 0, map);
+    private T createProxy(Map<String, String> map) { //创建代理
+        URL tmpUrl = new URL("temp", "localhost", 0, map); //tepUrl的值如：temp://localhost?application=api_demo&dubbo=2.0.0&interface=com.alibaba.dubbo.demo.ApiDemo&methods=sayHello,sayApi&pid=20130&side=consumer&timestamp=1564548724133
         final boolean isJvmRefer;
         if (isInjvm() == null) {
             if (url != null && url.length() > 0) { //指定URL的情况下，不做本地引用
@@ -337,13 +341,13 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
             isJvmRefer = isInjvm().booleanValue();
         }
 
-        if (isJvmRefer) {
+        if (isJvmRefer) { //本地JVM引用
             URL url = new URL(Constants.LOCAL_PROTOCOL, NetUtils.LOCALHOST, 0, interfaceClass.getName()).addParameters(map);
             invoker = refprotocol.refer(interfaceClass, url);
             if (logger.isInfoEnabled()) {
                 logger.info("Using injvm service " + interfaceClass.getName());
             }
-        } else {
+        } else { //远程引用
             if (url != null && url.length() > 0) { // 用户指定URL，指定的URL可能是对点对直连地址，也可能是注册中心URL
                 String[] us = Constants.SEMICOLON_SPLIT_PATTERN.split(url);
                 if (us != null && us.length > 0) {
@@ -360,7 +364,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
                     }
                 }
             } else { // 通过注册中心配置拼装URL
-                List<URL> us = loadRegistries(false);
+                List<URL> us = loadRegistries(false); //注册url，如registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&pid=20130&registry=zookeeper&timestamp=1564551081553
                 if (us != null && us.size() > 0) {
                     for (URL u : us) {
                         URL monitorUrl = loadMonitor(u);
@@ -376,11 +380,11 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
             }
 
             if (urls.size() == 1) {
-                invoker = refprotocol.refer(interfaceClass, urls.get(0));
+                invoker = refprotocol.refer(interfaceClass, urls.get(0)); //若是注册协议registry，会先到RegistryProtocol中的refer
             } else {
                 List<Invoker<?>> invokers = new ArrayList<Invoker<?>>();
                 URL registryURL = null;
-                for (URL url : urls) {
+                for (URL url : urls) { //多个注册中心
                     invokers.add(refprotocol.refer(interfaceClass, url));
                     if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
                         registryURL = url; // 用了最后一个registry url
@@ -400,7 +404,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
         if (c == null && consumer != null) {
             c = consumer.isCheck();
         }
-        if (c == null) {
+        if (c == null) { //默认检查提供者节点是否可用
             c = true; // default true
         }
         if (c && !invoker.isAvailable()) {

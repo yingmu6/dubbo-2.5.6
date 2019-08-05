@@ -27,8 +27,8 @@ import java.util.Map;
  * @see com.alibaba.dubbo.rpc.RpcInvocation
  */
 
-//Invocation，一个调用方法的具体信息，包含方法名、参数类型、参数、调用者信息
-public interface Invocation {// read finish
+//Invocation，一个调用方法的具体信息，包含方法名、参数类型、参数、调用者信息（会话信息，上下文信息）
+public interface Invocation { // read finish
     /**
      * get method name.
      *

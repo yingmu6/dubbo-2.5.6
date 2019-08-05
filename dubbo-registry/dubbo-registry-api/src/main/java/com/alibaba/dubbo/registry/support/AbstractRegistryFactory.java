@@ -92,7 +92,7 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
             if (registry != null) {
                 return registry;
             }
-            registry = createRegistry(url); //获取注册实例
+            registry = createRegistry(url); //获取注册实例（创建对象，如ZookeeperRegistry，并做初始化）
             if (registry == null) {
                 throw new IllegalStateException("Can not create registry " + url);
             }

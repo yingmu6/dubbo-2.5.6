@@ -57,7 +57,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 
     private final ZookeeperClient zkClient;
 
-    public ZookeeperRegistry(URL url, ZookeeperTransporter zookeeperTransporter) {
+    public ZookeeperRegistry(URL url, ZookeeperTransporter zookeeperTransporter) { //url如：zookeeper://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&interface=com.alibaba.dubbo.registry.RegistryService&pid=32489&timestamp=1564672337238
         super(url);
         if (url.isAnyHost()) {
             throw new IllegalStateException("registry address == null");
