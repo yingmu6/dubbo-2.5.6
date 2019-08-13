@@ -569,7 +569,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
 
                     List<URL> urlList = UrlUtils.parseURLs(address, map);
                     for (URL url : urlList) {
-                        url = url.addParameter(Constants.REGISTRY_KEY, config.getProtocol());
+                        url = url.addParameter(Constants.REGISTRY_KEY, url.getProtocol()); //是从url中获取protocol，不是从config获取
                         url = url.setProtocol(Constants.REGISTRY_PROTOCOL);
                         if ((provider && url.getParameter(Constants.REGISTER_KEY, true)) ||
                                 (!provider && url.getParameter(Constants.SUBSCRIBE_KEY, true))) {

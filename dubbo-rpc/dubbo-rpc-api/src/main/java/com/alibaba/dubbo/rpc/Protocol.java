@@ -62,7 +62,7 @@ public interface Protocol {// read finish
      * @throws RpcException 当连接服务提供方失败时抛出
      */
     @Adaptive
-    <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException;
+    <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException; //引用某个类型type的服务，传输的数据放入url
 
     /**
      * 释放协议：<br>

@@ -101,7 +101,7 @@ public class RpcContext {// read finish
      *
      * @return provider side.
      */
-    public boolean isProviderSide() {
+    public boolean isProviderSide() { //TODO 怎样根据IP地址判断提供方还是消费方？
         URL url = getUrl();
         if (url == null) {
             return false;
@@ -558,14 +558,14 @@ public class RpcContext {// read finish
      * @return 通过future.get()获取返回结果.
      */
     @SuppressWarnings("unchecked")
-    public <T> Future<T> asyncCall(Callable<T> callable) {
+    public <T> Future<T> asyncCall(Callable<T> callable) { //TODO 待理解
         try {
             try {
                 setAttachment(Constants.ASYNC_KEY, Boolean.TRUE.toString());
                 final T o = callable.call();
                 //local调用会直接返回结果.
                 if (o != null) {
-                    FutureTask<T> f = new FutureTask<T>(new Callable<T>() {
+                    FutureTask<T> f = new FutureTask<T>(new Callable<T>() { //执行任务
                         public T call() throws Exception {
                             return o;
                         }

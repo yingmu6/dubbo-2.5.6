@@ -10,7 +10,7 @@ public class ApiDemoImpl implements ApiDemo {
 
     @Override
     public String sayApi(String str, Integer age, Double price, String name) {
-        return "API :" + str + ", age:" + ",price:" + price + ",name" + name;
+        return "API :" + str + ", age:" + ",price:" + price + ",name：" + name;
     }
 
     @Override

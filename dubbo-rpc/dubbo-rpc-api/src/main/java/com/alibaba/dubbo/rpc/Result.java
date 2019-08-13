@@ -26,7 +26,7 @@ import java.util.Map;
  * @see com.alibaba.dubbo.rpc.Invoker#invoke(Invocation)
  * @see com.alibaba.dubbo.rpc.RpcResult
  */
-public interface Result {// read finish
+public interface Result { // read finish （执行调用返回的结果：包含返回值（对象、Map形式）、异常信息）
 
     /**
      * Get invoke result.

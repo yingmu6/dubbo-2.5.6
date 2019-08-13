@@ -194,6 +194,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         if (destroyed.get()){
             return;
         }
+        //url = URL.valueOf("zookeeper://127.0.0.1:2181/com.alibaba.dubbo.registry.RegistryService?application=demo-provider&callbacks=10000&check=true&connect.timeout=10000&dubbo=2.0.0&interface=com.alibaba.dubbo.registry.RegistryService&lazy=true&methods=lookup,subscribe,unsubscribe,unregister,register&pid=21003&reconnect=false&sticky=true&subscribe.1.callback=true&timeout=10000&timestamp=1565075252678&unsubscribe.1.callback=false");
         super.subscribe(url, listener);
         removeFailedSubscribed(url, listener);
         try {
