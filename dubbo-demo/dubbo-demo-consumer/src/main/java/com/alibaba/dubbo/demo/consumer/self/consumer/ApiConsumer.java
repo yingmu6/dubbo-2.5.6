@@ -24,11 +24,20 @@ public class ApiConsumer {
         reference.setRegistry(registry);
         reference.setInterface(ApiDemo.class);
 
+        reference.setMock("return 112233");
+
         //reference.setMethods(); 可以指定调用的方法列表
 
         ApiDemo apiDemo = (ApiDemo) reference.get();
-        System.out.println(apiDemo.sayApi("haha ",12, 13.45, "张三"));
+        System.out.println("调用输出值：" + apiDemo.sayApi("haha ",12, 13.45, "张三"));
 
         System.in.read();
     }
+
+    /**
+     * mock使用(两种方式)
+     * https://blog.csdn.net/wsm0712syb/article/details/61413276
+     * 1) mock配置方式，setMock("return 112233")
+     * 2）mock实现接口方式 （在提供方增加mock实现类）
+     */
 }
