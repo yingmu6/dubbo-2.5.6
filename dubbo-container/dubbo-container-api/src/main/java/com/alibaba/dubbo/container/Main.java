@@ -51,17 +51,17 @@ public class Main {
     public static void main(String[] args) {
         try {
             if (args == null || args.length == 0) {
-                String config = ConfigUtils.getProperty(CONTAINER_KEY, loader.getDefaultExtensionName());
+                String config = ConfigUtils.getProperty(CONTAINER_KEY, loader.getDefaultExtensionName()); //默认使用spring容器
                 args = Constants.COMMA_SPLIT_PATTERN.split(config);
             }
 
             final List<Container> containers = new ArrayList<Container>();
             for (int i = 0; i < args.length; i++) {
-                containers.add(loader.getExtension(args[i]));
+                containers.add(loader.getExtension(args[i])); //获取指定扩展名的实例
             }
             logger.info("Use container type(" + Arrays.toString(args) + ") to run dubbo serivce.");
 
-            if ("true".equals(System.getProperty(SHUTDOWN_HOOK_KEY))) {
+            if ("true".equals(System.getProperty(SHUTDOWN_HOOK_KEY))) { //判断是否优雅停机，若是，在停机时，关闭容器
                 Runtime.getRuntime().addShutdownHook(new Thread() {
                     public void run() {
                         for (Container container : containers) {
@@ -73,7 +73,7 @@ public class Main {
                             }
                             try {
                                 LOCK.lock();
-                                STOP.signal();
+                                STOP.signal(); //TODO 待了解
                             } finally {
                                 LOCK.unlock();
                             }
@@ -90,7 +90,7 @@ public class Main {
         } catch (RuntimeException e) {
             e.printStackTrace();
             logger.error(e.getMessage(), e);
-            System.exit(1);
+            System.exit(1); //TODO 待了解
         }
         try {
             LOCK.lock();

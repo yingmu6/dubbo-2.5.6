@@ -32,6 +32,6 @@ public interface PageHandler {/**@c */
      * @param url
      * @return the page.
      */
-    Page handle(URL url);
+    Page handle(URL url); //通过url构建页面Page
 
 }

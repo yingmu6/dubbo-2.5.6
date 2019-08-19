@@ -30,7 +30,10 @@
 
 
     <!-- 用dubbo协议在20880端口暴露服务 -->
-    <dubbo:protocol name="dubbo" port="20883" />
+    <!--<dubbo:protocol name="dubbo" port="20883" />-->
+
+    <!-- 本地调用 -->
+    <dubbo:protocol name="injvm" />
 
     <!-- 和本地bean一样实现服务 -->
     <bean id="demoService" class="com.alibaba.dubbo.demo.provider.DemoServiceImpl"/>
@@ -43,3 +46,8 @@
     <!-- <dubbo:method name="" timeout="" async="" loadbalance="" /> -->
 
 </beans>
+
+<!--
+   远程暴露： dubbo://172.16.91.8:20883/com.alibaba.dubbo.demo.DemoService?anyhost=true&application=demo-provider&dubbo=2.0.0&generic=false&interface=com.alibaba.dubbo.demo.DemoService&methods=sayHello&pid=8515&side=provider×tamp=1565679629992
+   本地暴露： injvm://172.16.91.8:56290/com.alibaba.dubbo.demo.DemoService?anyhost=true&application=demo-provider&dubbo=2.0.0&generic=false&interface=com.alibaba.dubbo.demo.DemoService&methods=sayHello¬ify=false&pid=8528&side=provider×tamp=1565679700261
+-->

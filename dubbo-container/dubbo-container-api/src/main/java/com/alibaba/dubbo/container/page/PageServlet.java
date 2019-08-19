@@ -45,17 +45,29 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PageServlet extends HttpServlet {/**@c 页面处理 */
 
     protected static final Logger logger = LoggerFactory.getLogger(PageServlet.class);
+    /**
+     * Java serialVersionUID 有什么作用？ - 简书
+     * https://www.jianshu.com/p/91fa3d2ac892
+     */
     private static final long serialVersionUID = -8370312705453328501L;
     private static PageServlet INSTANCE;
     protected final Random random = new Random();
     protected final Map<String, PageHandler> pages = new ConcurrentHashMap<String, PageHandler>();
     protected final List<PageHandler> menus = new ArrayList<PageHandler>();
 
-    public static PageServlet getInstance() {
+    /**
+     * 第1项 考虑静态工厂方法而不是构造函数 - 简书
+     * https://www.jianshu.com/p/360d5e847853
+     */
+    public static PageServlet getInstance() { //不对外提供公有构造函数，statis方式给出
         return INSTANCE;
     }
 
     public List<PageHandler> getMenus() {
+        /**
+         * unmodifiableList用来获取一个只可读，不可写的指定的list。如果试图去写入或者改变这个list，例如remove,add,replaceAll,之类的操作
+         * 则会抛出一个UnsupportedOperationException异常。
+         */
         return Collections.unmodifiableList(menus);
     }
 
@@ -107,7 +119,7 @@ public class PageServlet extends HttpServlet {/**@c 页面处理 */
                 }
             }
             if (uri.endsWith("favicon.ico")) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND); //响应Http中404错误
                 return;
             }
             ExtensionLoader<PageHandler> pageHandlerLoader = ExtensionLoader.getExtensionLoader(PageHandler.class);
@@ -123,7 +135,7 @@ public class PageServlet extends HttpServlet {/**@c 页面处理 */
                     String query = request.getQueryString();
                     page = pageHandler.handle(URL.valueOf(request.getRequestURL().toString()
                             + (query == null || query.length() == 0 ? "" : "?" + query)));
-                } catch (Throwable t) {
+                } catch (Throwable t) { //构建异常页面
                     logger.warn(t.getMessage(), t);
                     String msg = t.getMessage();
                     if (msg == null) {

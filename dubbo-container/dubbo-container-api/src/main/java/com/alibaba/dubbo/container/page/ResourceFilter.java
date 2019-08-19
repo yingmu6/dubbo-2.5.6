@@ -40,7 +40,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public class ResourceFilter implements Filter {/**@c */
+public class ResourceFilter implements Filter { //资源过滤
 
     private static final String CLASSPATH_PREFIX = "classpath:";
 
@@ -48,7 +48,7 @@ public class ResourceFilter implements Filter {/**@c */
 
     private final List<String> resources = new ArrayList<String>();
 
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) throws ServletException { //TODO 待调试
         String config = filterConfig.getInitParameter("resources");
         if (config != null && config.length() > 0) {
             String[] configs = Constants.COMMA_SPLIT_PATTERN.split(config);
@@ -58,7 +58,7 @@ public class ResourceFilter implements Filter {/**@c */
                     if (c.endsWith("/")) {
                         c = c.substring(0, c.length() - 1);
                     }
-                    resources.add(c);
+                    resources.add(c); //获取资源路径列表
                 }
             }
         }
@@ -85,8 +85,8 @@ public class ResourceFilter implements Filter {/**@c */
             uri = "/" + uri;
         }
         long lastModified = getLastModified(uri);
-        long since = request.getDateHeader("If-Modified-Since");
-        if (since >= lastModified) {
+        long since = request.getDateHeader("If-Modified-Since"); //TODO request与response中的DateHeader为啥不一样？
+        if (since >= lastModified) { //判断文件在指定的时间后是否有变更
             response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
             return;
         }
@@ -98,7 +98,7 @@ public class ResourceFilter implements Filter {/**@c */
         }
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
-            byte[] buffer = new byte[8192];
+            byte[] buffer = new byte[8192]; //最大 1024 * 8，为8M
             int n = 0;
             while (-1 != (n = input.read(buffer))) {
                 output.write(buffer, 0, n);
@@ -124,7 +124,7 @@ public class ResourceFilter implements Filter {/**@c */
                 if (isFile(path)) {
                     File file = new File(path);
                     if (file.exists()) {
-                        return file.lastModified();
+                        return file.lastModified(); //获取文件最后更新时间
                     }
                 }
             }

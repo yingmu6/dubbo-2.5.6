@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public class Page {/**@c 页面属性 */
+public class Page { /**@c 页面属性 */
 
     private final String navigation;
 
