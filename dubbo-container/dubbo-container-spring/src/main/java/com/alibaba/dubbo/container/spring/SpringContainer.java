@@ -39,7 +39,7 @@ public class SpringContainer implements Container {
     }
 
     //test
-    public void start() {/**@c 启动spring容器*/
+    public void start() {/**@c 通过应用上下文，启动spring容器*/
         String configPath = ConfigUtils.getProperty(SPRING_CONFIG);
         if (configPath == null || configPath.length() == 0) {
             configPath = DEFAULT_SPRING_CONFIG;

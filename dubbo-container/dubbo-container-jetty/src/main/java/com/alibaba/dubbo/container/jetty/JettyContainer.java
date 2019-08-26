@@ -46,7 +46,7 @@ public class JettyContainer implements Container {
 
     public void start() {/**@c 嵌入式启动 */
         String serverPort = ConfigUtils.getProperty(JETTY_PORT);
-        int port;
+        int port; //查询接口
         if (serverPort == null || serverPort.length() == 0) {
             port = DEFAULT_JETTY_PORT;
         } else {
@@ -56,7 +56,7 @@ public class JettyContainer implements Container {
         connector.setPort(port);
         ServletHandler handler = new ServletHandler();
 
-        String resources = ConfigUtils.getProperty(JETTY_DIRECTORY);
+        String resources = ConfigUtils.getProperty(JETTY_DIRECTORY); //TODO resources用途？
         if (resources != null && resources.length() > 0) {
             FilterHolder resourceHolder = handler.addFilterWithMapping(ResourceFilter.class, "/*", Handler.DEFAULT);
             resourceHolder.setInitParameter("resources", resources);

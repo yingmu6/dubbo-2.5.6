@@ -6,3 +6,6 @@ ctrl+u 向上翻半页
 
 zc折叠代码ctrl + - 全部折叠Ctrl + Shift + -
 zo打开代码ctrl + + 全部打开Ctrl + Shift + +
+
+2.打包命令 如dubbo-admin
+mvn package -Dmaven.skip.test=true
