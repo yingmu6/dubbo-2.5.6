@@ -57,6 +57,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author william.liangf
  * @export
  */
+//TODO 该类用途？
 public class AnnotationBean extends AbstractConfig implements DisposableBean, BeanFactoryPostProcessor, BeanPostProcessor, ApplicationContextAware {
 
     private static final long serialVersionUID = -7582802454287589552L;

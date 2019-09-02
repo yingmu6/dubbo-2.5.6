@@ -42,9 +42,9 @@ public class SpringExtensionFactory implements ExtensionFactory { //从 Spring �
     @SuppressWarnings("unchecked")
     public <T> T getExtension(Class<T> type, String name) {
         for (ApplicationContext context : contexts) {/**@c 从spring bean中获取实例 */
-            if (context.containsBean(name)) {
+            if (context.containsBean(name)) { //判断是否包含指定名称的bean
                 Object bean = context.getBean(name);
-                if (type.isInstance(bean)) {
+                if (type.isInstance(bean)) { //若包含，再看下bean的类型
                     return (T) bean;
                 }
             }

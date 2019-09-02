@@ -73,13 +73,17 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         this.required = required;
     }
 
+    /**
+     * 1.通过spring 解析到 xml对应的元素、属性值
+     * 2.写到dubbo的config对象中，如ServiceConfig、ReferenceConfig等
+     */
     @SuppressWarnings("unchecked")
     private static BeanDefinition parse(Element element, ParserContext parserContext, Class<?> beanClass, boolean required) {
         RootBeanDefinition beanDefinition = new RootBeanDefinition();
         beanDefinition.setBeanClass(beanClass);
         beanDefinition.setLazyInit(false);
         String id = element.getAttribute("id");
-        if ((id == null || id.length() == 0) && required) {
+        if ((id == null || id.length() == 0) && required) { //元素id为空且为必须的情况，取属性name、interface、或者beanClass的名字做为id
             String generatedBeanName = element.getAttribute("name");
             if (generatedBeanName == null || generatedBeanName.length() == 0) {
                 if (ProtocolConfig.class.equals(beanClass)) {
@@ -98,12 +102,13 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
             }
         }
         if (id != null && id.length() > 0) {
-            if (parserContext.getRegistry().containsBeanDefinition(id)) {
+            if (parserContext.getRegistry().containsBeanDefinition(id)) { //bean的id不能重复
                 throw new IllegalStateException("Duplicate spring bean id " + id);
             }
-            parserContext.getRegistry().registerBeanDefinition(id, beanDefinition);
+            parserContext.getRegistry().registerBeanDefinition(id, beanDefinition); //注册id与bean的关系
             beanDefinition.getPropertyValues().addPropertyValue("id", id);
         }
+        //对ProtocolConfig、ServiceBean、ProviderConfig、ConsumerConfig解析处理
         if (ProtocolConfig.class.equals(beanClass)) {/**@c TODO 调用spring API 生成自定义bean */
             for (String name : parserContext.getRegistry().getBeanDefinitionNames()) {
                 BeanDefinition definition = parserContext.getRegistry().getBeanDefinition(name);
@@ -131,12 +136,12 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         }
         Set<String> props = new HashSet<String>();
         ManagedMap parameters = null;
-        for (Method setter : beanClass.getMethods()) {
-            String name = setter.getName();
+        for (Method setter : beanClass.getMethods()) { //TODO 待调试 beanClass是否是  **Config 对象吗
+            String name = setter.getName(); //方法解析
             if (name.length() > 3 && name.startsWith("set")
                     && Modifier.isPublic(setter.getModifiers())
                     && setter.getParameterTypes().length == 1) {
-                Class<?> type = setter.getParameterTypes()[0];
+                Class<?> type = setter.getParameterTypes()[0]; //参数类型
                 /**@c 解析属性名称 */
                 String property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), "-");
                 props.add(property);
@@ -154,18 +159,18 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                         || !type.equals(getter.getReturnType())) {
                     continue;
                 }
-                if ("parameters".equals(property)) {
+                if ("parameters".equals(property)) { //解析<dubbo:parameter>
                     parameters = parseParameters(element.getChildNodes(), beanDefinition);
-                } else if ("methods".equals(property)) {
+                } else if ("methods".equals(property)) { //解析<dubbo:method>
                     parseMethods(id, element.getChildNodes(), beanDefinition, parserContext);
-                } else if ("arguments".equals(property)) {
+                } else if ("arguments".equals(property)) { //解析<dubbo:argument>
                     parseArguments(id, element.getChildNodes(), beanDefinition, parserContext);
                 } else {
                     String value = element.getAttribute(property);
                     if (value != null) {
                         value = value.trim();
                         if (value.length() > 0) {
-                            if ("registry".equals(property) && RegistryConfig.NO_AVAILABLE.equalsIgnoreCase(value)) {
+                            if ("registry".equals(property) && RegistryConfig.NO_AVAILABLE.equalsIgnoreCase(value)) { //读取xml中的值，写到config bean中
                                 RegistryConfig registryConfig = new RegistryConfig();
                                 registryConfig.setAddress(RegistryConfig.NO_AVAILABLE);
                                 beanDefinition.getPropertyValues().addPropertyValue(property, registryConfig);
@@ -175,7 +180,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                                 parseMultiRef("providers", value, beanDefinition, parserContext);
                             } else if ("protocol".equals(property) && value.indexOf(',') != -1) {
                                 parseMultiRef("protocols", value, beanDefinition, parserContext);
-                            } else {/**@c TODO goto */
+                            } else {
                                 Object reference;
                                 if (isPrimitive(type)) {
                                     if ("async".equals(property) && "false".equals(value)
@@ -204,7 +209,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                                         || !MonitorConfig.class.getName().equals(parserContext.getRegistry().getBeanDefinition(value).getBeanClassName()))) {
                                     // 兼容旧版本配置
                                     reference = convertMonitor(value);
-                                } else if ("onreturn".equals(property)) {
+                                } else if ("onreturn".equals(property)) { //TODO onreturn、onthrow 了解
                                     int index = value.lastIndexOf(".");
                                     String returnRef = value.substring(0, index);
                                     String returnMethod = value.substring(index + 1);
@@ -251,7 +256,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         return beanDefinition;
     }
 
-    protected static MonitorConfig convertMonitor(String monitor) {
+    protected static MonitorConfig convertMonitor(String monitor) { //创建监控配置
         if (monitor == null || monitor.length() == 0) {
             return null;
         }
@@ -314,7 +319,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                                 beanDefinition.getPropertyValues().addPropertyValue("default", "false");
                             }
                         }
-                        BeanDefinition subDefinition = parse((Element) node, parserContext, beanClass, required);
+                        BeanDefinition subDefinition = parse((Element) node, parserContext, beanClass, required); //递归循环解析
                         if (subDefinition != null && ref != null && ref.length() > 0) {
                             subDefinition.getPropertyValues().addPropertyValue(property, new RuntimeBeanReference(ref));
                         }
@@ -324,7 +329,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         }
     }
 
-    private static void parseProperties(NodeList nodeList, RootBeanDefinition beanDefinition) {
+    private static void parseProperties(NodeList nodeList, RootBeanDefinition beanDefinition) { //解析属性
         if (nodeList != null && nodeList.getLength() > 0) {
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);

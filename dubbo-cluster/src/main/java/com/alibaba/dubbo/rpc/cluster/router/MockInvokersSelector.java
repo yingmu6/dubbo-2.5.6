@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author chao.liuc
  */
-public class MockInvokersSelector implements Router {
+public class MockInvokersSelector implements Router { //TODO 用途？
 
     public <T> List<Invoker<T>> route(final List<Invoker<T>> invokers,
                                       URL url, final Invocation invocation) throws RpcException {

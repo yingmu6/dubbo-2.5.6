@@ -36,11 +36,11 @@ public class AvailableCluster implements Cluster {
 
     public <T> Invoker<T> join(Directory<T> directory) throws RpcException {
 
-        return new AbstractClusterInvoker<T>(directory) {
+        return new AbstractClusterInvoker<T>(directory) { //匿名类
             public Result doInvoke(Invocation invocation, List<Invoker<T>> invokers, LoadBalance loadbalance) throws RpcException {
-                for (Invoker<T> invoker : invokers) {
+                for (Invoker<T> invoker : invokers) { //TODO 此处没用到loadbalance ？
                     if (invoker.isAvailable()) {
-                        return invoker.invoke(invocation);
+                        return invoker.invoke(invocation); //依次执行有效invoker的调用
                     }
                 }
                 throw new RpcException("No provider available in " + invokers);

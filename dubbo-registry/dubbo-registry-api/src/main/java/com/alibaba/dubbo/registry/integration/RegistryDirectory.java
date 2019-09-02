@@ -586,7 +586,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                     && (args[0] instanceof String || args[0].getClass().isEnum())) {
                 invokers = localMethodInvokerMap.get(methodName + "." + args[0]); // 可根据第一个参数枚举路由
             }
-            if (invokers == null) {
+            if (invokers == null) { //从本地缓存中获取调用列表
                 invokers = localMethodInvokerMap.get(methodName);
             }
             if (invokers == null) {

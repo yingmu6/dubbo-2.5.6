@@ -59,7 +59,7 @@ public class DataSourceStatusChecker implements StatusChecker {
             }
             buf.append(entry.getKey());
             try {
-                Connection connection = dataSource.getConnection();
+                Connection connection = dataSource.getConnection(); //TODO 支持数据源到数据库查询？
                 try {
                     DatabaseMetaData metaData = connection.getMetaData();
                     ResultSet resultSet = metaData.getTypeInfo();

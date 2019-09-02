@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD})
-public @interface Reference {/**@ 采用注解配置 */
+public @interface Reference {/**@ 采用注解配置 引用注解*/
 
     Class<?> interfaceClass() default void.class;
 

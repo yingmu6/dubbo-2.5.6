@@ -61,7 +61,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
             throw new IllegalArgumentException("service directory == null");
 
         this.directory = directory;
-        //sticky 需要检测 avaliablecheck 
+        //集群时是否排除非available的invoker
         this.availablecheck = url.getParameter(Constants.CLUSTER_AVAILABLE_CHECK_KEY, Constants.DEFAULT_CLUSTER_AVAILABLE_CHECK);
     }
 
@@ -243,8 +243,8 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
         return getInterface() + " -> " + getUrl().toString();
     }
 
-    protected void checkInvokers(List<Invoker<T>> invokers, Invocation invocation) {
-        if (invokers == null || invokers.size() == 0) {/**@c 经常报出的日志 */
+    protected void checkInvokers(List<Invoker<T>> invokers, Invocation invocation) { //检测执行者是否可用
+        if (invokers == null || invokers.size() == 0) {/**@c 经常报出的日志，没有服务提供者 */
             throw new RpcException("Failed to invoke the method "
                     + invocation.getMethodName() + " in the service " + getInterface().getName()
                     + ". No provider available for the service " + directory.getUrl().getServiceKey()

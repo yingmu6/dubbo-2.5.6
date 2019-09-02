@@ -26,22 +26,23 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * a simple util class for cache {@link ReferenceConfig}.
  * <p>
- * {@link ReferenceConfig} is a heavy Object, it's necessary to cache these object
+ * {@link ReferenceConfig} is a heavy Object, it's necessary to cache these object （ReferenceConfig是很重的对象，需要进行缓存）
  * for the framework which create {@link ReferenceConfig} frequently.
  * <p>
- * You can implement and use your own {@link ReferenceConfig} cache if you need use complicate strategy.
+ * You can implement and use your own {@link ReferenceConfig} cache if you need use complicate（复杂的） strategy（策略）.
  *
  * @author ding.lid
  */
 public class ReferenceConfigCache {
     public static final String DEFAULT_NAME = "_DEFAULT_";
     /**
+     * 缓存的key
      * Create the key with the <b>Group</b>, <b>Interface</b> and <b>version</b> attribute of {@link ReferenceConfig}.
      * <p>
      * key example: <code>group1/com.alibaba.foo.FooService:1.0.0</code>.
      */
-    public static final KeyGenerator DEFAULT_KEY_GENERATOR = new KeyGenerator() {
-        public String generateKey(ReferenceConfig<?> referenceConfig) {
+    public static final KeyGenerator DEFAULT_KEY_GENERATOR = new KeyGenerator() { //匿名类
+        public String generateKey(ReferenceConfig<?> referenceConfig) { //组装缓存的key
             String iName = referenceConfig.getInterface();
             if (StringUtils.isBlank(iName)) {
                 Class<?> clazz = referenceConfig.getInterfaceClass();
@@ -147,7 +148,7 @@ public class ReferenceConfigCache {
                 + ")";
     }
 
-    public static interface KeyGenerator {
+    public static interface KeyGenerator { //内部接口
         String generateKey(ReferenceConfig<?> referenceConfig);
     }
 }
