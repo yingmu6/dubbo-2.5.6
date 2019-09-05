@@ -69,7 +69,7 @@ public abstract class AbstractConfigurator implements Configurator {
         return url;
     }
 
-    private URL configureIfMatch(String host, URL url) {/**@c TODO */
+    private URL configureIfMatch(String host, URL url) {/**@c TODO 代码覆盖 */
         if (Constants.ANYHOST_VALUE.equals(configuratorUrl.getHost()) || host.equals(configuratorUrl.getHost())) {
             String configApplication = configuratorUrl.getParameter(Constants.APPLICATION_KEY,
                     configuratorUrl.getUsername());

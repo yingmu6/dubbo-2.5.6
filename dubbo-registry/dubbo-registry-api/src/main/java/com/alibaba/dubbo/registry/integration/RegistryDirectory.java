@@ -95,7 +95,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     // Set<invokerUrls> cache invokeUrls to invokers mapping.
     private volatile Set<URL> cachedInvokerUrls; // 初始为null以及中途可能被赋为null，请使用局部变量引用
 
-    public RegistryDirectory(Class<T> serviceType, URL url) {
+    public RegistryDirectory(Class<T> serviceType, URL url) { /** 初始化相关参数 */
         super(url);
         if (serviceType == null) //com.alibaba.dubbo.demo.ApiDemo
             throw new IllegalArgumentException("service type is null.");
@@ -103,7 +103,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
             throw new IllegalArgumentException("registry serviceKey is null.");
         this.serviceType = serviceType;
         this.serviceKey = url.getServiceKey();
-        this.queryMap = StringUtils.parseQueryString(url.getParameterAndDecoded(Constants.REFER_KEY));
+        this.queryMap = StringUtils.parseQueryString(url.getParameterAndDecoded(Constants.REFER_KEY)); //通过url的参数构建查询map
         //多个赋值方式
         this.overrideDirectoryUrl = this.directoryUrl = url.setPath(url.getServiceInterface()).clearParameters().addParameters(queryMap).removeParameter(Constants.MONITOR_KEY);
         String group = directoryUrl.getParameter(Constants.GROUP_KEY, "");
@@ -160,7 +160,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         registry.subscribe(url, this);
     }
 
-    public void destroy() {
+    public void destroy() { //取消订阅；销毁Invoker
         if (isDestroyed()) {
             return;
         }
@@ -180,7 +180,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
-    public synchronized void notify(List<URL> urls) {
+    public synchronized void notify(List<URL> urls) { //TODO 通知处理？ 待覆盖调试
         List<URL> invokerUrls = new ArrayList<URL>();
         List<URL> routerUrls = new ArrayList<URL>();
         List<URL> configuratorUrls = new ArrayList<URL>();
@@ -579,7 +579,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
         List<Invoker<T>> invokers = null;
         Map<String, List<Invoker<T>>> localMethodInvokerMap = this.methodInvokerMap; // local reference
-        if (localMethodInvokerMap != null && localMethodInvokerMap.size() > 0) {
+        if (localMethodInvokerMap != null && localMethodInvokerMap.size() > 0) { //TODO 待调试覆盖，根据方法名从本地缓存map中获取调用列表
             String methodName = RpcUtils.getMethodName(invocation);
             Object[] args = RpcUtils.getArguments(invocation);
             if (args != null && args.length > 0 && args[0] != null
@@ -589,7 +589,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
             if (invokers == null) { //从本地缓存中获取调用列表
                 invokers = localMethodInvokerMap.get(methodName);
             }
-            if (invokers == null) {
+            if (invokers == null) { //TODO 哪种场景进入
                 invokers = localMethodInvokerMap.get(Constants.ANY_VALUE);
             }
             if (invokers == null) {

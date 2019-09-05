@@ -79,7 +79,7 @@ public class Constants {
 
     public static final String DEFAULT_PROXY = "javassist";
 
-    //TODO 默认负载，是指每秒能传输的数据吗？还是一次性能传输的数据
+    // 默认负载，是指每秒能传输的数据吗？还是一次性能传输的数据 ： 一次调用能传输的数据
     public static final int DEFAULT_PAYLOAD = 8 * 1024 * 1024;                      // 8M
 
     public static final String DEFAULT_CLUSTER = "failover";

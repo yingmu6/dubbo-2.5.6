@@ -35,7 +35,7 @@ public interface Invocation { // read finish
      * @return method name.
      * @serial
      */
-    String getMethodName();
+    String getMethodName(); //方法名称
 
     /**
      * get parameter types.
@@ -43,7 +43,7 @@ public interface Invocation { // read finish
      * @return parameter types.
      * @serial
      */
-    Class<?>[] getParameterTypes();
+    Class<?>[] getParameterTypes(); //方法中参数类型
 
     /**
      * get arguments.
@@ -51,7 +51,7 @@ public interface Invocation { // read finish
      * @return arguments.
      * @serial
      */
-    Object[] getArguments();
+    Object[] getArguments(); //方法中参数值
 
     /**
      * get attachments.以map形式存储参数
@@ -59,7 +59,7 @@ public interface Invocation { // read finish
      * @return attachments.
      * @serial
      */
-    Map<String, String> getAttachments();
+    Map<String, String> getAttachments(); //附加参数
 
     /**
      * get attachment（附着点） by key.
@@ -83,6 +83,6 @@ public interface Invocation { // read finish
      * @return invoker.
      * @transient
      */
-    Invoker<?> getInvoker();
+    Invoker<?> getInvoker(); //获取执行者
 
 }

@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author william.liangf
  * @author chao.liuc
  */
-public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
+public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象集群调用
 
     private static final Logger logger = LoggerFactory
             .getLogger(AbstractClusterInvoker.class);
@@ -73,7 +73,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
         return directory.getUrl();
     }
 
-    public boolean isAvailable() {
+    public boolean isAvailable() { //判断调用者是否可用
         Invoker<T> invoker = stickyInvoker;
         if (invoker != null) {
             return invoker.isAvailable();
@@ -83,7 +83,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
 
     public void destroy() {
         if (destroyed.compareAndSet(false, true)) {
-            directory.destroy();
+            directory.destroy(); //将节点invoker设置无效available
         }
     }
 
@@ -128,13 +128,13 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
             return invokers.get(0);
         // 如果只有两个invoker，退化成轮循
         if (invokers.size() == 2 && selected != null && selected.size() > 0) {
-            return selected.get(0) == invokers.get(0) ? invokers.get(1) : invokers.get(0);
+            return selected.get(0) == invokers.get(0) ? invokers.get(1) : invokers.get(0); //判断调用者是否已经选择，若已经选择过，选另一个
         }
         Invoker<T> invoker = loadbalance.select(invokers, getUrl(), invocation);
 
         //如果 selected中包含（优先判断） 或者 不可用&&availablecheck=true 则重试.
         if ((selected != null && selected.contains(invoker))
-                || (!invoker.isAvailable() && getUrl() != null && availablecheck)) {
+                || (!invoker.isAvailable() && getUrl() != null && availablecheck)) { //TODO 重选逻辑
             try {
                 Invoker<T> rinvoker = reselect(loadbalance, invocation, invokers, selected, availablecheck);
                 if (rinvoker != null) {
@@ -259,7 +259,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
                                        LoadBalance loadbalance) throws RpcException;
 
     protected List<Invoker<T>> list(Invocation invocation) throws RpcException {
-        List<Invoker<T>> invokers = directory.list(invocation);
+        List<Invoker<T>> invokers = directory.list(invocation); //
         return invokers;
     }
 }

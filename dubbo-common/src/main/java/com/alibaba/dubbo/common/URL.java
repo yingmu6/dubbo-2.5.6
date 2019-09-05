@@ -96,7 +96,7 @@ public final class URL implements Serializable {//可进行序列化
 
     private final String path;//就是接口的完整名称，如com.alibaba.dubbo.rpc.protocol.dubbo.support.DemoService
 
-    //参数集合
+    //参数集合(附加参数集合，如side、application、generic等)
     private final Map<String, String> parameters;
 
     // ==== cache ====  TODO URL中怎样使用缓存的？
@@ -436,7 +436,7 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     public String getParameter(String key) {
-        /**@c 从内存中获取参数的值，如果没有就取default.+key 默认键对应的值*/
+        /**@c 从缓存参数Map中获取参数的值，如果没有就取default.+key 默认键对应的值*/
         String value = parameters.get(key);
         if (value == null || value.length() == 0) {
             value = parameters.get(Constants.DEFAULT_KEY_PREFIX + key);
@@ -672,9 +672,9 @@ public final class URL implements Serializable {//可进行序列化
         return URL.decode(getMethodParameter(method, key, defaultValue));
     }
 
-    //TODO 方法参数是指method列表中内容吗？还是指特定方法中的参数吗？
+    //方法参数是指method列表中内容吗？还是指特定方法中的参数吗？ ： 附加参数map中取值，如"side" -> "consumer"
     public String getMethodParameter(String method, String key) {
-        String value = parameters.get(method + "." + key);
+        String value = parameters.get(method + "." + key); //TODO 哪种情况是method + key作为键的
         if (value == null || value.length() == 0) {
             return getParameter(key);
         }

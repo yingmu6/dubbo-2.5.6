@@ -30,7 +30,7 @@ import com.alibaba.dubbo.rpc.cluster.support.FailoverCluster;
  * @author william.liangf
  */
 @SPI(FailoverCluster.NAME)
-public interface Cluster {/**@c 从入口出发 */
+public interface Cluster {/**@c 从入口出发，默认失败转移其它服务器 */
 
     /**
      * Merge the directory invokers to a virtual invoker.

@@ -52,9 +52,9 @@ public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {/**@c 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Result doInvoke(Invocation invocation, final List<Invoker<T>> invokers, LoadBalance loadbalance) throws RpcException {
         List<Invoker<T>> copyinvokers = invokers;
-        checkInvokers(copyinvokers, invocation);
+        checkInvokers(copyinvokers, invocation); //校验Invoker列表是否为空
         int len = getUrl().getMethodParameter(invocation.getMethodName(), Constants.RETRIES_KEY, Constants.DEFAULT_RETRIES) + 1;
-        if (len <= 0) {
+        if (len <= 0) { //获取重试次数
             len = 1;
         }
         // retry loop.
@@ -64,9 +64,9 @@ public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {/**@c 
         for (int i = 0; i < len; i++) {
             //重试时，进行重新选择，避免重试时invoker列表已发生变化.
             //注意：如果列表发生了变化，那么invoked判断会失效，因为invoker示例已经改变
-            if (i > 0) {
+            if (i > 0) { //失败过一次，i=0时
                 checkWhetherDestroyed();
-                copyinvokers = list(invocation);
+                copyinvokers = list(invocation); //根据方法名从本地缓存中找到Invoker列表
                 //重新检查一下
                 checkInvokers(copyinvokers, invocation);
             }

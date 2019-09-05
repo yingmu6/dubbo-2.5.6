@@ -35,7 +35,7 @@ import java.util.List;
  * @see com.alibaba.dubbo.rpc.cluster.Cluster#join(Directory)
  */
 @SPI(RandomLoadBalance.NAME)
-public interface LoadBalance {/**@c 负载均衡 在执行列表中选择一个执行者 */
+public interface LoadBalance {/**@c 负载均衡 在执行列表中选择一个执行者 默认随机算法*/
 
     /**
      * select one invoker in list.

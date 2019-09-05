@@ -31,7 +31,7 @@ import java.util.List;
 /**@c TODO 算法理解 */
 public abstract class AbstractLoadBalance implements LoadBalance {
     /**@c  用于计算预热权重 */
-    static int calculateWarmupWeight(int uptime, int warmup, int weight) {
+    static int calculateWarmupWeight(int uptime, int warmup, int weight) { //TODO 待调试
         int ww = (int) ((float) uptime / ((float) warmup / (float) weight));
         return ww < 1 ? 1 : (ww > weight ? weight : ww);
     }
@@ -49,7 +49,7 @@ public abstract class AbstractLoadBalance implements LoadBalance {
 
     protected int getWeight(Invoker<?> invoker, Invocation invocation) {
         int weight = invoker.getUrl().getMethodParameter(invocation.getMethodName(), Constants.WEIGHT_KEY, Constants.DEFAULT_WEIGHT);
-        if (weight > 0) {
+        if (weight > 0) { //若有权重，直接返回，否则重新计算权重
             long timestamp = invoker.getUrl().getParameter(Constants.REMOTE_TIMESTAMP_KEY, 0L);
             if (timestamp > 0L) {/**@c 预热时间，默认10分钟，只有达到预热时间，才能调用方法 */
                 int uptime = (int) (System.currentTimeMillis() - timestamp);

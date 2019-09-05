@@ -101,7 +101,7 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         String routerkey = url.getParameter(Constants.ROUTER_KEY);
         if (routerkey != null && routerkey.length() > 0) {
             RouterFactory routerFactory = ExtensionLoader.getExtensionLoader(RouterFactory.class).getExtension(routerkey);
-            routers.add(routerFactory.getRouter(url));
+            routers.add(routerFactory.getRouter(url)); //往路由规则列表里加路由
         }
         // append mock invoker selector
         routers.add(new MockInvokersSelector());
