@@ -9,6 +9,11 @@ public class DemoServiceMock implements DemoService {
     public String sayHello(String name) {
         return "使用mock数据";
     }
+
+    @Override
+    public String sayLang(String who, String lang, Integer time) {
+        return null;
+    }
 }
 
 /**

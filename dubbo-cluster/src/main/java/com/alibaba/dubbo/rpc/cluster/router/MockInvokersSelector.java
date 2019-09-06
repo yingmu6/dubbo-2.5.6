@@ -30,18 +30,18 @@ import java.util.List;
  *
  * @author chao.liuc
  */
-public class MockInvokersSelector implements Router { //TODO 用途？
+public class MockInvokersSelector implements Router {
 
     public <T> List<Invoker<T>> route(final List<Invoker<T>> invokers,
                                       URL url, final Invocation invocation) throws RpcException {
         if (invocation.getAttachments() == null) {
             return getNormalInvokers(invokers);
         } else {
-            String value = invocation.getAttachments().get(Constants.INVOCATION_NEED_MOCK);
+            String value = invocation.getAttachments().get(Constants.INVOCATION_NEED_MOCK); //根据附加的值是否带上invocation.need.mock，判断是否选择mock invoker
             if (value == null)
-                return getNormalInvokers(invokers);
+                return getNormalInvokers(invokers); //正常Invoker
             else if (Boolean.TRUE.toString().equalsIgnoreCase(value)) {
-                return getMockedInvokers(invokers);
+                return getMockedInvokers(invokers); //mock Invoker
             }
         }
         return invokers;
@@ -61,7 +61,7 @@ public class MockInvokersSelector implements Router { //TODO 用途？
     }
 
     private <T> List<Invoker<T>> getNormalInvokers(final List<Invoker<T>> invokers) {
-        if (!hasMockProviders(invokers)) {
+        if (!hasMockProviders(invokers)) { //判断是否有mock 提供者
             return invokers;
         } else {
             List<Invoker<T>> sInvokers = new ArrayList<Invoker<T>>(invokers.size());
@@ -77,7 +77,7 @@ public class MockInvokersSelector implements Router { //TODO 用途？
     private <T> boolean hasMockProviders(final List<Invoker<T>> invokers) {
         boolean hasMockProvider = false;
         for (Invoker<T> invoker : invokers) {
-            if (invoker.getUrl().getProtocol().equals(Constants.MOCK_PROTOCOL)) {
+            if (invoker.getUrl().getProtocol().equals(Constants.MOCK_PROTOCOL)) { //判断协议是否包含mock协议
                 hasMockProvider = true;
                 break;
             }

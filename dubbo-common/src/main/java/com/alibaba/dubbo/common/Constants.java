@@ -414,7 +414,7 @@ public class Constants {
     public static final boolean DEFAULT_CLUSTER_AVAILABLE_CHECK = true;
 
     /**
-     * 集群时是否启用sticky策略
+     * 集群时是否启用sticky策略(总是向同一提供者发起调用，除非改提供者挂了，再连接另一台)
      */
     public static final String CLUSTER_STICKY_KEY = "sticky";
 

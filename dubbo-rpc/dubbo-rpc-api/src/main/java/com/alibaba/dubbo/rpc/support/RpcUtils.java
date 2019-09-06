@@ -99,7 +99,7 @@ public class RpcUtils {// read finish
         }
     }
 
-    private static boolean isAttachInvocationId(URL url, Invocation invocation) {
+    private static boolean isAttachInvocationId(URL url, Invocation invocation) { //url包含如：zookeeper://localhost:2181/com.alibaba.dubbo.registry.RegistryService?anyhost=true&application=demo-consumer&check=false&dubbo=2.0.0&generic=false&interface=com.alibaba.dubbo.demo.DemoService&methods=sayHello,sayLang&pid=41499&remote.timestamp=1567680484403&side=consumer&timestamp=1567680683818
         String value = url.getMethodParameter(invocation.getMethodName(), Constants.AUTO_ATTACH_INVOCATIONID_KEY);
         if (value == null) {
             //异步操作默认添加invocationid

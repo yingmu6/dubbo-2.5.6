@@ -33,4 +33,9 @@ public class DemoServiceImpl implements DemoService {
         return "Hello " + name + ", response form provider: " + RpcContext.getContext().getLocalAddress();
     }
 
+    @Override
+    public String sayLang(String who, String lang, Integer time) {
+        return who + ", response form provider: " + lang + ":" + time;
+    }
+
 }

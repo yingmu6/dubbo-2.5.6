@@ -46,7 +46,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
             .getLogger(AbstractClusterInvoker.class);
     protected final Directory<T> directory;
 
-    protected final boolean availablecheck;
+    protected final boolean availablecheck; //是否需要检测服务可用
 
     private AtomicBoolean destroyed = new AtomicBoolean(false);
 
@@ -214,7 +214,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
 
     public Result invoke(final Invocation invocation) throws RpcException {
 
-        checkWhetherDestroyed();
+        checkWhetherDestroyed(); //检查是否销毁
 
         LoadBalance loadbalance;
 

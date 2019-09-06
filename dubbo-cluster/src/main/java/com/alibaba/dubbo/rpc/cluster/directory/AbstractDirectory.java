@@ -36,6 +36,16 @@ import java.util.List;
  * 增加router的Directory
  *
  * @author chao.liuc
+ *
+ * 设计模式-模板方法模式   https://juejin.im/post/5a2e42a06fb9a0452936b4f7
+ * 模板方法优点
+ * 1）良好的封装性。把公有的不变的方法封装在父类，而子类负责实现具体逻辑。
+ * 2）良好的扩展性：增加功能由子类实现基本方法扩展，符合单一职责原则和开闭原则。
+ * 3）复用代码
+ *
+ * 缺点
+ * 1）由于是通过继承实现代码复用来改变算法，灵活度会降低。
+ * 2）子类的执行影响父类的结果，增加代码阅读难度。
  */
 public abstract class AbstractDirectory<T> implements Directory<T> {
 
@@ -70,8 +80,8 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         if (destroyed) {
             throw new RpcException("Directory already destroyed .url: " + getUrl());
         }
-        List<Invoker<T>> invokers = doList(invocation);
-        List<Router> localRouters = this.routers; // local reference
+        List<Invoker<T>> invokers = doList(invocation); //获取会话中方法对应的invoker列表，
+        List<Router> localRouters = this.routers; // local reference     MockInvokersSelector
         if (localRouters != null && localRouters.size() > 0) {
             for (Router router : localRouters) {
                 try {

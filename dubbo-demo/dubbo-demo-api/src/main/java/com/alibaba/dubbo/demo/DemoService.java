@@ -19,4 +19,6 @@ public interface DemoService {
 
     String sayHello(String name);
 
+    String sayLang(String who, String lang, Integer time);
+
 }

@@ -57,7 +57,18 @@ import java.util.Set;
  *
  * @author william.liangf
  * @author chao.liuc
+ *
+ *
+ * Dubbo的目录服务简单来说就是消费者将自己能够调用的服务提供者的信息缓存到本地Directory中，当服务提供者有所变化时会通知到注册中心，
+ * 消费者会监听注册中心相关服务的消息，当收到相关服务提供者变动的消息时会更新本地服务目录Directory，实现类RegistryDirectory中主要提供了两个功能接口
+ *
+ * （1）notify(List<URL> urls)：当注册中心有通知变化时会通知服务消费者更新本地的服务目录
+ * （2）List<Invoker<T>> doList(Invo
+ * 服务目录Directory简单来说就是维护了一个List，提供两个接口分别通知修改list和获取符合消费者要求的服务列表
+ *
+ * https://blog.csdn.net/qq924862077/article/details/79897435
  */
+
 public class RegistryDirectory<T> extends AbstractDirectory<T> implements NotifyListener {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryDirectory.class);
@@ -180,11 +191,11 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
-    public synchronized void notify(List<URL> urls) { //TODO 通知处理？ 待覆盖调试
+    public synchronized void notify(List<URL> urls) { //服务提供者出现变化时注册中心会将消息通知到消息者，消费者收到通知消息会调用notify函数，完成消费者本地服务目录相关信息的刷新
         List<URL> invokerUrls = new ArrayList<URL>();
         List<URL> routerUrls = new ArrayList<URL>();
         List<URL> configuratorUrls = new ArrayList<URL>();
-        for (URL url : urls) {
+        for (URL url : urls) { //将url分类
             String protocol = url.getProtocol();
             String category = url.getParameter(Constants.CATEGORY_KEY, Constants.DEFAULT_CATEGORY);
             if (Constants.ROUTERS_CATEGORY.equals(category)
@@ -578,21 +589,21 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                     + " use dubbo version " + Version.getVersion() + ", may be providers disabled or not registered ?");
         }
         List<Invoker<T>> invokers = null;
-        Map<String, List<Invoker<T>>> localMethodInvokerMap = this.methodInvokerMap; // local reference
-        if (localMethodInvokerMap != null && localMethodInvokerMap.size() > 0) { //TODO 待调试覆盖，根据方法名从本地缓存map中获取调用列表
+        Map<String, List<Invoker<T>>> localMethodInvokerMap = this.methodInvokerMap; // local reference  为啥会有key为*的键 ： 设置进入的，表示所有列表
+        if (localMethodInvokerMap != null && localMethodInvokerMap.size() > 0) { //获取调用Invoker列表
             String methodName = RpcUtils.getMethodName(invocation);
-            Object[] args = RpcUtils.getArguments(invocation);
+            Object[] args = RpcUtils.getArguments(invocation); //参数值
             if (args != null && args.length > 0 && args[0] != null
                     && (args[0] instanceof String || args[0].getClass().isEnum())) {
-                invokers = localMethodInvokerMap.get(methodName + "." + args[0]); // 可根据第一个参数枚举路由
+                invokers = localMethodInvokerMap.get(methodName + "." + args[0]); // 可根据第一个参数枚举路由 如sayHello.world（方法名 + 第一个参数值）,书上说这种应用场景暂时没看到
             }
             if (invokers == null) { //从本地缓存中获取调用列表
                 invokers = localMethodInvokerMap.get(methodName);
             }
-            if (invokers == null) { //TODO 哪种场景进入
+            if (invokers == null) { //若根据方法名没有找到Invoker列表，则取出所有列表
                 invokers = localMethodInvokerMap.get(Constants.ANY_VALUE);
             }
-            if (invokers == null) {
+            if (invokers == null) { //兜底操作
                 Iterator<List<Invoker<T>>> iterator = localMethodInvokerMap.values().iterator();
                 if (iterator.hasNext()) {
                     invokers = iterator.next();
