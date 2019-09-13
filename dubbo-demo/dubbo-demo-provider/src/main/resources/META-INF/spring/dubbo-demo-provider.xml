@@ -45,6 +45,7 @@
     <dubbo:protocol name="" buffer="" transporter=""/> 协议配置 方法配置 该元素不能被加载-->
     <!-- <dubbo:method name="" timeout="" async="" loadbalance="" /> -->
 
+    <dubbo:monitor protocol="registry"/>
 </beans>
 
 <!--
