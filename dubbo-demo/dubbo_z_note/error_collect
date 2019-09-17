@@ -1,4 +1,10 @@
 代码错误搜集
+19/9/17
+自定义的Filter不生效、SelfFilter
+1）加上 @Activate(group = Constants.PROVIDER)
+2）不加上
+
+
 1.java.lang.IllegalStateException: fail to create adaptive instance: java.lang.IllegalStateException: Can not create adaptive extenstion
 interface com.alibaba.dubbo.remoting.TransporterSelf, cause: Format specifier '%d'
 
