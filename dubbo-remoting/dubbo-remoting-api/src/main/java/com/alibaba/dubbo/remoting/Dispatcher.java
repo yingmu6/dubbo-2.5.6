@@ -36,7 +36,7 @@ public interface Dispatcher {
      * @param url
      * @return channel handler
      */
-    @Adaptive({Constants.DISPATCHER_KEY, "dispather", "channel.handler"})
+    @Adaptive({Constants.DISPATCHER_KEY, "dispather", "channel.handler"}) //自动激活条件
     // 后两个参数为兼容旧配置
     ChannelHandler dispatch(ChannelHandler handler, URL url);
 

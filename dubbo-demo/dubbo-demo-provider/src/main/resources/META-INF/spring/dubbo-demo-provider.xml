@@ -38,9 +38,9 @@
     <!-- 和本地bean一样实现服务 -->
     <bean id="demoService" class="com.alibaba.dubbo.demo.provider.DemoServiceImpl"/>
 
-    <dubbo:provider filter="selfFilter" />
+    <!--<dubbo:provider filter="selfFilter" />-->
     <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService" filter="selfFilter"/>
 
     <!--
     <dubbo:protocol name="" buffer="" transporter=""/> 协议配置 方法配置 该元素不能被加载-->

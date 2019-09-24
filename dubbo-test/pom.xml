@@ -33,6 +33,5 @@
         <module>dubbo-test-compatibility</module>
         <module>dubbo-test-integration</module>
         <module>dubbo-test-examples</module>
-        <module>dubbo-csy-test</module>
     </modules>
 </project>

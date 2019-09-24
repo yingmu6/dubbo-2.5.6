@@ -23,7 +23,7 @@ import com.alibaba.dubbo.remoting.ChannelHandler;
 /**
  * @author chao.liuc
  */
-public class ChannelEventRunnable implements Runnable {
+public class ChannelEventRunnable implements Runnable { //通道事件线程
     private static final Logger logger = LoggerFactory.getLogger(ChannelEventRunnable.class);
 
     private final ChannelHandler handler;

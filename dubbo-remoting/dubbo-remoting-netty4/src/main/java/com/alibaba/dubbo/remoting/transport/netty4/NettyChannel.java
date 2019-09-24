@@ -55,12 +55,12 @@ final class NettyChannel extends AbstractChannel {
         this.channel = channel;
     }
 
-    static NettyChannel getOrAddChannel(Channel ch, URL url, ChannelHandler handler) {
+    static NettyChannel getOrAddChannel(Channel ch, URL url, ChannelHandler handler) { //获取或添加通道
         if (ch == null) {
             return null;
         }
         NettyChannel ret = channelMap.get(ch);
-        if (ret == null) {
+        if (ret == null) { //判断本地缓存map中是否存在，不存在则设备到map中
             NettyChannel nettyChannel = new NettyChannel(ch, url, handler);
             if (ch.isActive()) {
                 ret = channelMap.putIfAbsent(ch, nettyChannel);
@@ -72,7 +72,7 @@ final class NettyChannel extends AbstractChannel {
         return ret;
     }
 
-    static void removeChannelIfDisconnected(Channel ch) {
+    static void removeChannelIfDisconnected(Channel ch) { //在拒绝连接时移除通道
         if (ch != null && !ch.isActive()) {
             channelMap.remove(ch);
         }
@@ -97,7 +97,7 @@ final class NettyChannel extends AbstractChannel {
         int timeout = 0;
         try {
             ChannelFuture future = channel.writeAndFlush(message);
-            if (sent) {
+            if (sent) { //TODO 是指延迟发送？
                 timeout = getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
                 success = future.await(timeout);
             }

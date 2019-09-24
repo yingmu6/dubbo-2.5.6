@@ -4,6 +4,9 @@
 1）加上 @Activate(group = Constants.PROVIDER)
 2）不加上
 
+思路：
+从本地已经加载扩展名，应该是被过滤排除掉了
+
 
 1.java.lang.IllegalStateException: fail to create adaptive instance: java.lang.IllegalStateException: Can not create adaptive extenstion
 interface com.alibaba.dubbo.remoting.TransporterSelf, cause: Format specifier '%d'

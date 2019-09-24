@@ -53,7 +53,7 @@ public class AllChannelHandler extends WrappedChannelHandler {
         }
     }
 
-    public void received(Channel channel, Object message) throws RemotingException {
+    public void received(Channel channel, Object message) throws RemotingException { //TODO 待调试
         ExecutorService cexecutor = getExecutorService();
         try {
             cexecutor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));
