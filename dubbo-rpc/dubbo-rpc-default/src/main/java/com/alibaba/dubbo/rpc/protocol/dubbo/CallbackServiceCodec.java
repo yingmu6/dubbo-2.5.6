@@ -46,7 +46,7 @@ class CallbackServiceCodec {// read finish hh
 
     private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
     private static final DubboProtocol protocol = DubboProtocol.getDubboProtocol();
-    private static final byte CALLBACK_NONE = 0x0;
+    private static final byte CALLBACK_NONE = 0x0; //用16进制的0、1、2表示是否回调
     private static final byte CALLBACK_CREATE = 0x1;
     private static final byte CALLBACK_DESTROY = 0x2;
     private static final String INV_ATT_CALLBACK_KEY = "sys_callback_arg-";
@@ -133,6 +133,7 @@ class CallbackServiceCodec {// read finish hh
      * @param url
      */
     @SuppressWarnings("unchecked")
+    // TODO 待调试覆盖
     private static Object referOrdestroyCallbackService(Channel channel, URL url, Class<?> clazz, Invocation inv, int instid, boolean isRefer) {
         Object proxy = null;
         String invokerCacheKey = getServerSideCallbackInvokerCacheKey(channel, clazz.getName(), instid);
@@ -141,7 +142,7 @@ class CallbackServiceCodec {// read finish hh
         String countkey = getServerSideCountKey(channel, clazz.getName());
         if (isRefer) {
             if (proxy == null) {
-                //回调url格式？
+                //回调url格式？ callback://172.16.90.239:20883/java.lang.String?interface=java.lang.String
                 URL referurl = URL.valueOf("callback://" + url.getAddress() + "/" + clazz.getName() + "?" + Constants.INTERFACE_KEY + "=" + clazz.getName());
                 referurl = referurl.addParametersIfAbsent(url.getParameters()).removeParameter(Constants.METHODS_KEY);
                 if (!isInstancesOverLimit(channel, referurl, clazz.getName(), instid, true)) {
@@ -284,7 +285,7 @@ class CallbackServiceCodec {// read finish hh
         switch (callbackstatus) {
             case CallbackServiceCodec.CALLBACK_NONE:
                 return inObject;
-            case CallbackServiceCodec.CALLBACK_CREATE:
+            case CallbackServiceCodec.CALLBACK_CREATE:  //需要回调
                 try {
                     return referOrdestroyCallbackService(channel, url, pts[paraIndex], inv, Integer.parseInt(inv.getAttachment(INV_ATT_CALLBACK_KEY + paraIndex)), true);
                 } catch (Exception e) {

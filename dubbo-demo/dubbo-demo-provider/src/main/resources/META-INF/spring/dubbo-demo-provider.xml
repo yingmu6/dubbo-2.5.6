@@ -40,7 +40,11 @@
 
     <!--<dubbo:provider filter="selfFilter" />-->
     <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService" filter="selfFilter"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService" filter="selfFilter">
+        <dubbo:method name="sayHello" >
+            <dubbo:argument index="0" callback="true"/>
+        </dubbo:method>
+    </dubbo:service>
 
     <!--
     <dubbo:protocol name="" buffer="" transporter=""/> 协议配置 方法配置 该元素不能被加载-->

@@ -36,10 +36,11 @@ import java.util.concurrent.ConcurrentMap;
  * @author qian.lei
  * @author william.liangf
  */
-final class NettyChannel extends AbstractChannel {
+final class NettyChannel extends AbstractChannel { //默认Netty传输
 
     private static final Logger logger = LoggerFactory.getLogger(NettyChannel.class);
 
+    //channelMap 是netty中的通道和dubbo自定义的NettyChannel的映射
     private static final ConcurrentMap<org.jboss.netty.channel.Channel, NettyChannel> channelMap = new ConcurrentHashMap<org.jboss.netty.channel.Channel, NettyChannel>();
 
     private final org.jboss.netty.channel.Channel channel;
@@ -54,7 +55,8 @@ final class NettyChannel extends AbstractChannel {
         this.channel = channel;
     }
 
-    static NettyChannel getOrAddChannel(org.jboss.netty.channel.Channel ch, URL url, ChannelHandler handler) {
+    //若存在channel直接返回，不存在则先创建后返回
+    static NettyChannel getOrAddChannel(org.jboss.netty.channel.Channel ch, URL url, ChannelHandler handler) { //默认情况：Channel实现类NioClientSocketChannel, ChannelHandler实现类为NettyClient
         if (ch == null) {
             return null;
         }
@@ -89,6 +91,7 @@ final class NettyChannel extends AbstractChannel {
         return channel.isConnected();
     }
 
+    //消息格式如：Request [id=1, version=2.0.0, twoway=true, event=false, broken=false, data=RpcInvocation [methodName=sayHello, parameterTypes=[class java.lang.String], arguments=[world : ], attachments={path=com.alibaba.dubbo.demo.DemoService, interface=com.alibaba.dubbo.demo.DemoService, version=0.0.0}]]
     public void send(Object message, boolean sent) throws RemotingException {
         super.send(message, sent);
 

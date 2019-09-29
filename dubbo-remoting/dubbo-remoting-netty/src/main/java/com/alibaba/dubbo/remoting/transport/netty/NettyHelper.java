@@ -42,7 +42,7 @@ final class NettyHelper {
         }
     }
 
-    static class DubboLogger extends AbstractInternalLogger {
+    static class DubboLogger extends AbstractInternalLogger { //继承Netty日志
 
         private Logger logger;
 

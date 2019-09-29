@@ -47,7 +47,7 @@ public abstract class AbstractPeer implements Endpoint, ChannelHandler {
         if (handler == null) {
             throw new IllegalArgumentException("handler == null");
         }
-        this.url = url;
+        this.url = url; //url如：dubbo://172.16.90.239:20883/com.alibaba.dubbo.demo.DemoService?anyhost=true&application=demo-provider&channel.readonly.sent=true&codec=dubbo&dubbo=2.0.0&generic=false&heartbeat=60000&interface=com.alibaba.dubbo.demo.DemoService&methods=sayLang,sayHello&pid=50341&service.filter=selfFilter&side=provider&timestamp=1569496786254
         this.handler = handler;
     }
 

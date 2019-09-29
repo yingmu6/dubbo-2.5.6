@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Sharable
 public class NettyHandler extends SimpleChannelHandler {
 
-    private final Map<String, Channel> channels = new ConcurrentHashMap<String, Channel>(); // <ip:port, channel>
+    private final Map<String, Channel> channels = new ConcurrentHashMap<String, Channel>(); // <ip:port, channel>   IP:端口 与通道的映射
 
     private final URL url;
 

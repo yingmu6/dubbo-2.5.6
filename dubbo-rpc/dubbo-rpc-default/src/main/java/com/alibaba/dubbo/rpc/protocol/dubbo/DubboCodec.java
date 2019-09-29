@@ -65,7 +65,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {// read finish
         Serialization s = CodecSupport.getSerialization(channel.getUrl(), proto);
         // get request id.
         long id = Bytes.bytes2long(header, 4);
-        if ((flag & FLAG_REQUEST) == 0) {
+        if ((flag & FLAG_REQUEST) == 0) { //TODO 此处含义？
             // decode response.
             Response res = new Response(id);
             if ((flag & FLAG_EVENT) != 0) {
