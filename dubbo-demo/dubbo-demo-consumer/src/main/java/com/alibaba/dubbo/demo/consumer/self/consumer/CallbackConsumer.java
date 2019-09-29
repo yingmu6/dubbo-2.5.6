@@ -23,10 +23,11 @@ public class CallbackConsumer {
         });
 
         /**
-         * TODO 为啥此处加上removeListener方法 报错
+         * 为啥此处加上removeListener方法 报错
          * com.alibaba.dubbo.common.bytecode.NoSuchMethodException: Not found method "removeListener" in class com.alibaba.dubbo.demo.provider.CallbackServiceImpl.
+         * 解答：需要编译一下  mvn clean install
          */
-        //callbackService.removeListener("foo.bar");
+        callbackService.removeListener("foo.bar");
         System.in.read();
     }
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 参数回调 ： 服务端 -》 客户端，即服务端调用客户端逻辑
  * @author chensy
  * @date 2019-09-29 22:43
  */
