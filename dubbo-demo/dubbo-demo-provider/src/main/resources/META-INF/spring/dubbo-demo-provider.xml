@@ -40,17 +40,19 @@
 
     <!--<dubbo:provider filter="selfFilter" />-->
     <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService" filter="selfFilter">
-        <dubbo:method name="sayHello" >
-            <dubbo:argument index="0" callback="true"/>
-        </dubbo:method>
-    </dubbo:service>
+    <!--<dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService" filter="selfFilter">-->
+        <!--<dubbo:method name="sayHello" >-->
+            <!--<dubbo:argument index="0" callback="true"/>-->
+        <!--</dubbo:method>-->
+    <!--</dubbo:service>-->
+    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService"/>
 
     <!--
     <dubbo:protocol name="" buffer="" transporter=""/> 协议配置 方法配置 该元素不能被加载-->
     <!-- <dubbo:method name="" timeout="" async="" loadbalance="" /> -->
 
-    <dubbo:monitor protocol="registry"/>
+    <!--TODO 此处出现 failed to connect to server /192.168.1.100:7070, error message is:connection timed out， 该监控ip地址从哪里来的，没看到配置地方-->
+    <!--<dubbo:monitor protocol="registry"/>-->
 </beans>
 
 <!--

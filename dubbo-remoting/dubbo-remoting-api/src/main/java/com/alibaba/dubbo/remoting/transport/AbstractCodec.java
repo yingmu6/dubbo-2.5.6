@@ -36,7 +36,7 @@ public abstract class AbstractCodec implements Codec2 {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractCodec.class);
 
-    //检查有效负荷
+    //检查通道中传输的数据是否超过有效负荷，默认最大负荷为8M
     protected static void checkPayload(Channel channel, long size) throws IOException {
         int payload = Constants.DEFAULT_PAYLOAD;
         if (channel != null && channel.getUrl() != null) {
@@ -62,6 +62,7 @@ public abstract class AbstractCodec implements Codec2 {
         } else if ("server".equals(side)) {
             return false;
         } else {
+            // 根据ip和port判断是否是client
             InetSocketAddress address = channel.getRemoteAddress();
             URL url = channel.getUrl();
             boolean client = url.getPort() == address.getPort()
@@ -75,6 +76,7 @@ public abstract class AbstractCodec implements Codec2 {
     }
 
     protected boolean isServerSide(Channel channel) {
+        // 非客户端，即为服务端
         return !isClientSide(channel);
     }
 

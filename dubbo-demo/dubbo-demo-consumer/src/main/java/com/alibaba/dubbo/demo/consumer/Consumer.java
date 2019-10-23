@@ -19,7 +19,7 @@ public class Consumer {
 //            String hello = demoService.sayHello("world : " + i); // 执行远程方法
 //            System.out.println("消费者：" + i + "," + hello); // 显示调用结果
 //        }
-        String hello = demoService.sayHello("world : "); // 执行远程方法
+        String hello = demoService.sayHello("你好！"); // 执行远程方法
         System.out.println("消费者：" + hello); // 显示调用结果
         System.in.read();
     }

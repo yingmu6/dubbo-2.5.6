@@ -66,8 +66,7 @@ public class ExchangeCodec extends TelnetCodec {
     }
 
     public void encode(Channel channel, ChannelBuffer buffer, Object msg) throws IOException {
-        //TODO Request、Response需要了解一下
-        if (msg instanceof Request) {
+        if (msg instanceof Request) { //例Request [id=0, version=2.0.0, twoway=true, event=false, broken=false, data=RpcInvocation [methodName=sayHello, parameterTypes=[class java.lang.String], arguments=[world : ], attachments={path=com.alibaba.dubbo.demo.DemoService, interface=com.alibaba.dubbo.demo.DemoService, version=0.0.0}]]
             encodeRequest(channel, buffer, (Request) msg);
         } else if (msg instanceof Response) {
             encodeResponse(channel, buffer, (Response) msg);
@@ -84,12 +83,11 @@ public class ExchangeCodec extends TelnetCodec {
         return decode(channel, buffer, readable, header);
     }
 
-    //TODO 解码逻辑比较模糊？
+    //解码逻辑比较模糊？ 将字符数组转换为对象
     protected Object decode(Channel channel, ChannelBuffer buffer, int readable, byte[] header) throws IOException {
         // check magic number.
-        //TODO 此处判断逻辑整理一下
-        if (readable > 0 && header[0] != MAGIC_HIGH
-                || readable > 1 && header[1] != MAGIC_LOW) {
+        // 此处运算顺序等价为 (readable > 0 && header[0] != MAGIC_HIGH)  || (readable > 1 && header[1] != MAGIC_LOW)  &&的优先级大于||，并且从左到右结合
+        if (readable > 0 && header[0] != MAGIC_HIGH || readable > 1 && header[1] != MAGIC_LOW) {
             int length = header.length;
             if (header.length < readable) {
                 // TODO 拷贝逻辑整理一下
@@ -105,7 +103,7 @@ public class ExchangeCodec extends TelnetCodec {
             }
             return super.decode(channel, buffer, readable, header);
         }
-        // check length.
+        // check length. （数据编码在16字后）
         if (readable < HEADER_LENGTH) {
             return DecodeResult.NEED_MORE_INPUT;
         }
@@ -211,7 +209,7 @@ public class ExchangeCodec extends TelnetCodec {
     }
 
     protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req) throws IOException {
-        //获取序列化方式
+        //获取序列化方式（默认Hessian2序列化）
         Serialization serialization = getSerialization(channel);
         // header.  组装header字节数组 （固定的16字节）
         byte[] header = new byte[HEADER_LENGTH];

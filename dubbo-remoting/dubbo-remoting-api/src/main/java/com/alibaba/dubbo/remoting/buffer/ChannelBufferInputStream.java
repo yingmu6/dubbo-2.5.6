@@ -28,7 +28,7 @@ public class ChannelBufferInputStream extends InputStream {
     //重新实现InputStream的实现
     private final ChannelBuffer buffer;
     //索引不同于ChannelBuffer，开始下标、结束下标
-    private final int startIndex;
+    private final int startIndex; //TODO 位置是按字节、还是比特位算？
     private final int endIndex;
 
     public ChannelBufferInputStream(ChannelBuffer buffer) {

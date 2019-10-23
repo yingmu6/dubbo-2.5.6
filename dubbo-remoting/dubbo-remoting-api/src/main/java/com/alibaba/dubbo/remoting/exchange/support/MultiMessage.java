@@ -33,6 +33,7 @@ public final class MultiMessage implements Iterable {
     //包含对象list
     private final List messages = new ArrayList();
 
+    // 对外不提供公有构造函数
     private MultiMessage() {
     }
 
@@ -46,7 +47,7 @@ public final class MultiMessage implements Iterable {
         return createFromCollection(Arrays.asList(args));
     }
 
-    //TODO 此处调用无参数、无实现的构造函数，那么成员变量的值messages是不是为Null
+    //此处调用无参数、无实现的构造函数，那么成员变量的值messages是不是为Null
     public static MultiMessage create() {
         return new MultiMessage();
     }

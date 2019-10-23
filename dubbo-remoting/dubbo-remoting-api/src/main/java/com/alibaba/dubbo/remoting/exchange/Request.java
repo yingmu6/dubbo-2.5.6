@@ -33,11 +33,11 @@ public class Request {
 
     private static final AtomicLong INVOKE_ID = new AtomicLong(0);
 
-    private final long mId;
+    private final long mId; //id
 
-    private String mVersion;
+    private String mVersion; //版本号
 
-    private boolean mTwoWay = true;
+    private boolean mTwoWay = true; //是否双向通讯
 
     private boolean mEvent = false;
 

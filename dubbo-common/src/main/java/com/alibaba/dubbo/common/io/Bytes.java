@@ -34,7 +34,6 @@ import java.util.zip.InflaterInputStream;
  *
  * @author qian.lei
  */
-//TODO 此工具的常用方法调试一下
 public class Bytes {
     private static final String C64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="; //default base64.
 
@@ -95,6 +94,11 @@ public class Bytes {
     public static void short2bytes(short v, byte[] b, int off) {
         b[off + 1] = (byte) v;
         b[off + 0] = (byte) (v >>> 8);
+    }
+
+    public static void main(String[] args) {
+        short v = -9541;
+        System.out.println((byte)v + ";" + (byte) (v >>> 8)); //结果  -69;-38
     }
 
     /**

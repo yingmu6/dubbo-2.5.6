@@ -101,7 +101,7 @@ public class Constants {
 
     public static final String DEFAULT_REMOTING_CODEC = "dubbo";
 
-    public static final String DEFAULT_REMOTING_SERIALIZATION = "hessian2";
+    public static final String DEFAULT_REMOTING_SERIALIZATION = "hessian2"; //默认的序列化方式
 
     public static final String DEFAULT_HTTP_SERVER = "servlet";
 

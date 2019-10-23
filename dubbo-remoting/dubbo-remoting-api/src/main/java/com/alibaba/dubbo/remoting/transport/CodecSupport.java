@@ -58,11 +58,10 @@ public class CodecSupport {
         return ID_SERIALIZATION_MAP.get(id);
     }
 
+    //通过扩展名实例化扩展类，扩展名从url参数中获取serialization的值，若没设置，默认hessian2
     public static Serialization getSerialization(URL url) {
-        //TODO 通过使用SPI选择相应的实现类
         return ExtensionLoader.getExtensionLoader(Serialization.class).getExtension(
                 url.getParameter(Constants.SERIALIZATION_KEY, Constants.DEFAULT_REMOTING_SERIALIZATION));
-        //通过扩展名实例化扩展类，扩展名从url参数中获取
     }
 
     public static Serialization getSerialization(URL url, Byte id) {

@@ -39,6 +39,7 @@
     <!-- mock实现接口方式 -->
     <!--<dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService" mock="true" timeout="1000"/>-->
 
-    <dubbo:monitor protocol="registry"/>
+    <!-- -->
+    <!--<dubbo:monitor protocol="registry"/>-->
 
 </beans>
