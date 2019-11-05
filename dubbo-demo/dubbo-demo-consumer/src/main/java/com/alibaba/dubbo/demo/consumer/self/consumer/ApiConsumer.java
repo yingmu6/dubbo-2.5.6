@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ReferenceConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.demo.ApiDemo;
+import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.service.GenericService;
 
 /**
@@ -31,6 +32,8 @@ public class ApiConsumer {
         ApiDemo apiDemo = (ApiDemo) reference.get();
         System.out.println("调用输出值：" + apiDemo.sayApi("haha ",12, 13.45, "张三"));
 
+        RpcContext rpcContext = RpcContext.getContext();
+        System.out.println("上下文信息：" + rpcContext.getUrl());
         System.in.read();
     }
 

@@ -42,7 +42,7 @@ public class providerStart2 {
         //若service和provider都配置了 export的值，以service为主
         service.setExport(true);
         service.setProvider(provider);
-        service.setDelay(5);
+        //service.setDelay(5);
 
         service.setInterface(ApiDemo.class);
         service.setRef(apiDemo);
