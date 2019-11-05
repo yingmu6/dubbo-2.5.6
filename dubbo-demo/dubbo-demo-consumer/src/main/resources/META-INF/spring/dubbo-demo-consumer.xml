@@ -30,8 +30,10 @@
     <!-- 生成远程服务代理，可以和本地bean一样使用demoService -->
     <!--<dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService" injvm="true"/>-->
 
-    <dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService"/>
+    <!-- TODO 此处加上injvm=true, 报错 com.alibaba.dubbo.rpc.RpcException: Service [com.alibaba.dubbo.demo.DemoService] not found.-->
+    <!-- <dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService" injvm="true"/> -->
 
+    <dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService"/>
 
     <!-- mock的配置方式（异常信息还是会打印出来的，只是出现异常，返回数据使用mock）-->
     <!--<dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService" mock="return 112"/> -->

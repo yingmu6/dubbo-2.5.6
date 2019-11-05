@@ -2,6 +2,7 @@ package com.alibaba.dubbo.demo.consumer;
 
 import com.alibaba.dubbo.demo.DemoService;
 
+import com.alibaba.dubbo.rpc.RpcContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -21,6 +22,18 @@ public class Consumer {
 //        }
         String hello = demoService.sayHello("你好！"); // 执行远程方法
         System.out.println("消费者：" + hello); // 显示调用结果
+
+        new Consumer().showRpcContext();
         System.in.read();
+    }
+
+    /**
+     * RpcContext上下文信息问题：
+     * 1）RpcContext是在哪里设置的？
+     */
+    public void showRpcContext() {
+        // 获取上线
+        RpcContext rpcContext = RpcContext.getContext();
+        System.out.println("RpcContext内容=" + rpcContext.getUrl());
     }
 }
