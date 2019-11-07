@@ -17,9 +17,10 @@ public class ProtocolUtils {
                 url.getParameter(Constants.GROUP_KEY));
     }
 
-    //拼接服务的key
+    //拼接服务的key (服务的key，会存入Map<String, Exporter<?>> exporterMap，根据可以找出暴露的服务)
     public static String serviceKey(int port, String serviceName, String serviceVersion, String serviceGroup) {
         StringBuilder buf = new StringBuilder();
+        // ServiceKey格式  serviceGroup/serviceName:serviceVersion:port
         if (serviceGroup != null && serviceGroup.length() > 0) {
             buf.append(serviceGroup);
             buf.append("/");

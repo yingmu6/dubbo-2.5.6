@@ -33,7 +33,12 @@
     <!-- TODO 此处加上injvm=true, 报错 com.alibaba.dubbo.rpc.RpcException: Service [com.alibaba.dubbo.demo.DemoService] not found.-->
     <!-- <dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService" injvm="true"/> -->
 
-    <dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService"/>
+    <dubbo:reference id="demoService" check="false" group="A" interface="com.alibaba.dubbo.demo.DemoService"/>
+
+    <dubbo:reference id="demoChinese" check="false" group="B" interface="com.alibaba.dubbo.demo.DemoService"/>
+
+    <dubbo:reference id="demoAny" check="false" group="*" interface="com.alibaba.dubbo.demo.DemoService"/>
+
 
     <!-- mock的配置方式（异常信息还是会打印出来的，只是出现异常，返回数据使用mock）-->
     <!--<dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService" mock="return 112"/> -->

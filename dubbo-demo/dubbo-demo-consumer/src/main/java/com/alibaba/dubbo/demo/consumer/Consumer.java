@@ -16,16 +16,9 @@ public class Consumer {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/dubbo-demo-consumer.xml"});
         context.start();
 
-        DemoService demoService = (DemoService) context.getBean("demoService"); // 获取远程服务代理
-        //循环调用3次
-//        for (int i = 0; i < 3; i++) {
-//            String hello = demoService.sayHello("world : " + i); // 执行远程方法
-//            System.out.println("消费者：" + i + "," + hello); // 显示调用结果
-//        }
-        String hello = demoService.sayHello("你好！"); // 执行远程方法
-        System.out.println("消费者：" + hello); // 显示调用结果
-
-        new Consumer().showRpcContext();
+        Consumer test = new Consumer();
+        //test.showRpcContext();
+        test.serviceGroup(context);
         System.in.read();
     }
 
@@ -40,4 +33,30 @@ public class Consumer {
 
         System.out.println("RpcContext内容=" + rpcContext.getUrl());
     }
+
+    /**
+     * 服务分组
+     * 同一个接口有不同的实现，需要分组管理，若不分组管理，获取的实例会随机
+     * 1）接口调用A=Hello aaa ...  , 接口调用B=Hello bbb
+     * 2) 接口调用A=Hello aaa... , 接口调用B=你好
+     */
+    public void serviceGroup(ClassPathXmlApplicationContext context) {
+        DemoService demoService = (DemoService) context.getBean("demoChinese"); // 获取远程服务代理
+        String hello = demoService.sayHello("aaa！"); // 执行远程方法
+        System.out.println("接口调用A=" + hello); // 显示调用结果
+
+        DemoService demoService2 = (DemoService) context.getBean("demoService"); // 获取远程服务代理
+        System.out.println("接口调用B=" + demoService2.sayHello("bbb"));
+
+        /**
+         * group="*" 配置任意分组
+         * 1) 任意调用=Hello any
+         * 2) 任意调用=Hello any
+         * 调用多次都是同一个结果，没有任意选择？
+         * 解：若选择*，则由负载均衡算法计算使用哪个服务，如果计算条件不变，就总是同一个接口。测试中将不同服务的权重变更，发现group=*的值会变为具体的分组
+         */
+        DemoService anyService = (DemoService) context.getBean("demoAny");
+        System.out.println("任意调用=" + anyService.sayHello("any"));
+    }
+
 }
