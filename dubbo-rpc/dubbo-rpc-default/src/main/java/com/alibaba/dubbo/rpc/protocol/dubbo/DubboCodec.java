@@ -61,6 +61,8 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {// read finish
     private static final Logger log = LoggerFactory.getLogger(DubboCodec.class);
 
     protected Object decodeBody(Channel channel, InputStream is, byte[] header) throws IOException {
+        // 嵌入test
+//        log.info("是否客户端判断：" + isClientSide(channel));
         byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK); //逻辑与
         Serialization s = CodecSupport.getSerialization(channel.getUrl(), proto);
         // get request id.

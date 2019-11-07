@@ -44,7 +44,7 @@ import java.io.InputStream;
  * @author qianlei
  * @author william.liangf
  */
-//编解码共有类
+//编解码公有类
 public class ExchangeCodec extends TelnetCodec {
 
     // header length.

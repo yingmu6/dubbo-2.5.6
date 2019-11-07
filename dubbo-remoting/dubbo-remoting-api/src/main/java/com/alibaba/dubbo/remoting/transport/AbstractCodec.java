@@ -54,7 +54,7 @@ public abstract class AbstractCodec implements Codec2 {
         return CodecSupport.getSerialization(channel.getUrl());
     }
 
-    //判断是否是客户端
+    //判断是否是客户端(根据channel中的side判断，若没设置按ip和port判断)
     protected boolean isClientSide(Channel channel) {
         String side = (String) channel.getAttribute(Constants.SIDE_KEY);
         if ("client".equals(side)) {

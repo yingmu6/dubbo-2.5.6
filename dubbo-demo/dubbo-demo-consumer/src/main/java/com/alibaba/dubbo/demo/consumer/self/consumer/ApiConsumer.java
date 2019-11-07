@@ -29,11 +29,18 @@ public class ApiConsumer {
 
         //reference.setMethods(); 可以指定调用的方法列表
 
-        ApiDemo apiDemo = (ApiDemo) reference.get();
-        System.out.println("调用输出值：" + apiDemo.sayApi("haha ",12, 13.45, "张三"));
+        RpcContext rpcContext1 = RpcContext.getContext();
 
-        RpcContext rpcContext = RpcContext.getContext();
-        System.out.println("上下文信息：" + rpcContext.getUrl());
+        ApiDemo apiDemo = (ApiDemo) reference.get();
+        RpcContext rpcContext2 = RpcContext.getContext();
+        System.out.println("上下文信息：" + rpcContext2.getUrl());
+
+        System.out.println("调用输出值：" + apiDemo.sayApi("haha ",12, 13.45, "张三"));
+        // 接口调用后，信息会设置到RpcContext
+        RpcContext rpcContext3 = RpcContext.getContext();
+
+        // rpcContext1、rpcContext2、rpcContext3三个对象是同一个对象，static final
+        // RpcContext消费者或提供者一方都是一个对象，但消费者和提供者的对象不一样，各管各的
         System.in.read();
     }
 

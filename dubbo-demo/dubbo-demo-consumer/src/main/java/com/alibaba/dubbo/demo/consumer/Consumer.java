@@ -5,6 +5,8 @@ import com.alibaba.dubbo.demo.DemoService;
 import com.alibaba.dubbo.rpc.RpcContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.util.Map;
+
 /**
  * Created by ken.lj on 2017/7/31.
  */
@@ -32,8 +34,10 @@ public class Consumer {
      * 1）RpcContext是在哪里设置的？
      */
     public void showRpcContext() {
-        // 获取上线
+        // 获取上下文信息
         RpcContext rpcContext = RpcContext.getContext();
+        Map<String, Object> map =  rpcContext.get();
+
         System.out.println("RpcContext内容=" + rpcContext.getUrl());
     }
 }

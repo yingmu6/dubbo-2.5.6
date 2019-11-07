@@ -2,6 +2,7 @@ package com.alibaba.dubbo.demo.provider.self.provider;
 
 import com.alibaba.dubbo.config.*;
 import com.alibaba.dubbo.demo.ApiDemo;
+import com.alibaba.dubbo.rpc.RpcContext;
 
 /**
  * @author chensy
@@ -49,7 +50,9 @@ public class providerStart2 {
         //设置演示暴露
 //        service.setDelay(15000);
 
+        RpcContext rpcContext = RpcContext.getContext();
         service.export();
+        RpcContext rpcContext1 = RpcContext.getContext();
 
         System.in.read();
 
