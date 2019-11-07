@@ -10,16 +10,17 @@ import java.util.Map;
 /**
  * Created by ken.lj on 2017/7/31.
  */
-public class Consumer {
+public class ConsumerForGroup {
 
     public static void main(String[] args) throws Exception {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/dubbo-demo-consumer.xml"});
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/dubbo-demo-consumer-group.xml"});
         context.start();
 
-        Consumer test = new Consumer();
+        ConsumerForGroup test = new ConsumerForGroup();
         //test.showRpcContext();
-        //test.serviceGroup(context);
-        test.serviceVersion(context);
+        test.serviceGroup(context);
+        //test.serviceVersion(context);
+        test.servicePort(context);
         System.in.read();
     }
 
@@ -77,6 +78,15 @@ public class Consumer {
 
         DemoService demoServiceV2 = (DemoService) context.getBean("demoServiceV2");
         System.out.println("版本V2=" + demoServiceV2.sayHello("李四"));
+    }
+
+    /**
+     * 同一个接口，不同应用提供，不同的端口，根据负载均衡进行筛选
+     * 消费的时候指定不了端口port
+     */
+    public void servicePort(ClassPathXmlApplicationContext context) {
+        DemoService demoPort = (DemoService) context.getBean("demoPort");
+        System.out.println("port=" + demoPort.sayHello("Test"));
     }
 
 }

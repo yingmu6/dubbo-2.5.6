@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ - Copyright 1999-2011 Alibaba Group.
+ -  
+ - Licensed under the Apache License, Version 2.0 (the "License");
+ - you may not use this file except in compliance with the License.
+ - You may obtain a copy of the License at
+ -  
+ -      http://www.apache.org/licenses/LICENSE-2.0
+ -  
+ - Unless required by applicable law or agreed to in writing, software
+ - distributed under the License is distributed on an "AS IS" BASIS,
+ - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ - See the License for the specific language governing permissions and
+ - limitations under the License.
+-->
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="demo-provider"/>
+
+    <!-- 使用multicast广播注册中心暴露服务地址 -->
+    <!--<dubbo:registry address="multicast://224.5.6.7:1234"/>-->
+    <!--<dubbo:registry address="zookeeper://localhost:2181"/>-->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181" check="true"/>  <!-- 注册地址里需要指定协议如 zookeeper，否则默认dubbo，就会出现无法注册的问题-->
+
+
+    <!-- 用dubbo协议在20880端口暴露服务 -->
+    <dubbo:protocol name="dubbo" port="20883"/>
+
+    <!-- 本地调用 -->
+    <!--<dubbo:protocol name="injvm" />-->
+
+
+
+    <!--<dubbo:provider filter="selfFilter" />-->
+    <!-- 声明需要暴露的服务接口 -->
+    <!--<dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService" filter="selfFilter">-->
+        <!--<dubbo:method name="sayHello" >-->
+            <!--<dubbo:argument index="0" callback="true"/>-->
+        <!--</dubbo:method>-->
+    <!--</dubbo:service>-->
+
+    <!-- 同一个接口不同实现,用分组区分 -->
+    <bean id="demoChinese" class="com.alibaba.dubbo.demo.provider.DemoChineseImpl"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" group="A" ref="demoChinese"/>
+
+    <!-- 和本地bean一样实现服务 -->
+    <bean id="demoService" class="com.alibaba.dubbo.demo.provider.DemoServiceImpl"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" group="B" ref="demoService"/>
+
+    <!-- 多版本控制 -->
+    <bean id="demoServiceV1" class="com.alibaba.dubbo.demo.provider.DemoServiceImpl"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" version="1.0.0" ref="demoServiceV1"/>
+
+    <bean id="demoServiceV2" class="com.alibaba.dubbo.demo.provider.DemoChineseImpl"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" version="2.0.0" ref="demoServiceV2"/>
+
+    <bean id="demoPort" class="com.alibaba.dubbo.demo.provider.DemoServicePortImpl"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoPort"/>
+
+    <!--
+    <dubbo:protocol name="" buffer="" transporter=""/> 协议配置 方法配置 该元素不能被加载-->
+    <!-- <dubbo:method name="" timeout="" async="" loadbalance="" /> -->
+
+    <!--TODO 此处出现 failed to connect to server /192.168.1.100:7070, error message is:connection timed out， 该监控ip地址从哪里来的，没看到配置地方-->
+    <!--<dubbo:monitor protocol="registry"/>-->
+</beans>
+
+<!--
+   远程暴露： dubbo://172.16.91.8:20883/com.alibaba.dubbo.demo.DemoService?anyhost=true&application=demo-provider&dubbo=2.0.0&generic=false&interface=com.alibaba.dubbo.demo.DemoService&methods=sayHello&pid=8515&side=provider×tamp=1565679629992
+   本地暴露： injvm://172.16.91.8:56290/com.alibaba.dubbo.demo.DemoService?anyhost=true&application=demo-provider&dubbo=2.0.0&generic=false&interface=com.alibaba.dubbo.demo.DemoService&methods=sayHello¬ify=false&pid=8528&side=provider×tamp=1565679700261
+-->
