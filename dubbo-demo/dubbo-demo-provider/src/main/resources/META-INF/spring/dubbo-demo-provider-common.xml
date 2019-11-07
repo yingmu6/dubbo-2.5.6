@@ -23,31 +23,16 @@
     <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="demo-provider"/>
 
-    <!-- 使用multicast广播注册中心暴露服务地址 -->
-    <!--<dubbo:registry address="multicast://224.5.6.7:1234"/>-->
-    <!--<dubbo:registry address="zookeeper://localhost:2181"/>-->
     <dubbo:registry address="zookeeper://127.0.0.1:2181" check="true"/>  <!-- 注册地址里需要指定协议如 zookeeper，否则默认dubbo，就会出现无法注册的问题-->
 
-
     <!-- 用dubbo协议在20880端口暴露服务 -->
-    <dubbo:protocol name="dubbo" port="20884" />
-
-    <!-- 本地调用 -->
-    <!--<dubbo:protocol name="injvm" />-->
+    <dubbo:protocol name="dubbo" port="20885" />
 
     <!-- 和本地bean一样实现服务 -->
-    <bean id="demoService" class="com.alibaba.dubbo.demo.provider.DemoServiceImpl"/>
+    <bean id="commonService" class="com.alibaba.dubbo.demo.provider.impl.CommonServiceImpl"/>
 
     <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService"/>
 
-    <!--
-    <dubbo:protocol name="" buffer="" transporter=""/> 协议配置 方法配置 该元素不能被加载-->
-    <!-- <dubbo:method name="" timeout="" async="" loadbalance="" /> -->
 
 </beans>
-
-<!--
-   远程暴露： dubbo://172.16.91.8:20883/com.alibaba.dubbo.demo.DemoService?anyhost=true&application=demo-provider&dubbo=2.0.0&generic=false&interface=com.alibaba.dubbo.demo.DemoService&methods=sayHello&pid=8515&side=provider×tamp=1565679629992
-   本地暴露： injvm://172.16.91.8:56290/com.alibaba.dubbo.demo.DemoService?anyhost=true&application=demo-provider&dubbo=2.0.0&generic=false&interface=com.alibaba.dubbo.demo.DemoService&methods=sayHello¬ify=false&pid=8528&side=provider×tamp=1565679700261
--->

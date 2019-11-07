@@ -1,4 +1,4 @@
-package com.alibaba.dubbo.demo.provider;
+package com.alibaba.dubbo.demo.provider.impl;
 
 import com.alibaba.dubbo.demo.CallbackListener;
 import com.alibaba.dubbo.demo.CallbackService;

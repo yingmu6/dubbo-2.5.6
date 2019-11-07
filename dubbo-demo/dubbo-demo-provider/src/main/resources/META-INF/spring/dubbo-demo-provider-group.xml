@@ -46,21 +46,21 @@
     <!--</dubbo:service>-->
 
     <!-- 同一个接口不同实现,用分组区分 -->
-    <bean id="demoChinese" class="com.alibaba.dubbo.demo.provider.DemoChineseImpl"/>
+    <bean id="demoChinese" class="com.alibaba.dubbo.demo.provider.impl.DemoChineseImpl"/>
     <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" group="A" ref="demoChinese"/>
 
     <!-- 和本地bean一样实现服务 -->
-    <bean id="demoService" class="com.alibaba.dubbo.demo.provider.DemoServiceImpl"/>
+    <bean id="demoService" class="com.alibaba.dubbo.demo.provider.impl.DemoServiceImpl"/>
     <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" group="B" ref="demoService"/>
 
     <!-- 多版本控制 -->
-    <bean id="demoServiceV1" class="com.alibaba.dubbo.demo.provider.DemoServiceImpl"/>
+    <bean id="demoServiceV1" class="com.alibaba.dubbo.demo.provider.impl.DemoServiceImpl"/>
     <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" version="1.0.0" ref="demoServiceV1"/>
 
-    <bean id="demoServiceV2" class="com.alibaba.dubbo.demo.provider.DemoChineseImpl"/>
+    <bean id="demoServiceV2" class="com.alibaba.dubbo.demo.provider.impl.DemoChineseImpl"/>
     <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" version="2.0.0" ref="demoServiceV2"/>
 
-    <bean id="demoPort" class="com.alibaba.dubbo.demo.provider.DemoServicePortImpl"/>
+    <bean id="demoPort" class="com.alibaba.dubbo.demo.provider.impl.DemoServicePortImpl"/>
     <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoPort"/>
 
     <!--
