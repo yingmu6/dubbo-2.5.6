@@ -3,7 +3,6 @@ package com.alibaba.dubbo.demo.provider.impl;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.demo.CommonService;
-import com.alibaba.dubbo.rpc.RpcContext;
 
 /**
  * @author chensy
@@ -14,8 +13,8 @@ public class CommonServiceImpl implements CommonService {
 
     // 上下文信息处理
     @Override
-    public void dealRpcContext() {
-        RpcContext rpcContext = RpcContext.getContext();
-        logger.info("上下文：" + rpcContext.getUrl());
+    public void sayHello() {
+        // logger.info("你好 Common");
+        System.out.println("hello 你好");
     }
 }

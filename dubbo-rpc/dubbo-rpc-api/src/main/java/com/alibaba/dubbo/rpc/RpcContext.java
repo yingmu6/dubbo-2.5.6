@@ -51,9 +51,9 @@ public class RpcContext {// read finish
             return new RpcContext();
         }
     };
-    private final Map<String, String> attachments = new HashMap<String, String>();
-    private final Map<String, Object> values = new HashMap<String, Object>();
-    private Future<?> future;
+    private final Map<String, String> attachments = new HashMap<String, String>();  //附加参数
+    private final Map<String, Object> values = new HashMap<String, Object>(); //TODO 用途及含义
+    private Future<?> future; //TODO 待了解
 
     private List<URL> urls;
 
@@ -75,7 +75,7 @@ public class RpcContext {// read finish
     @Deprecated
     private Invocation invocation;
 
-    protected RpcContext() {
+    protected RpcContext() { //没有公有的构造函数
     }
 
     /**
@@ -98,10 +98,12 @@ public class RpcContext {// read finish
 
     /**
      * is provider side.
+     * 怎样根据IP地址判断提供方还是消费方？
+     * 将URL中的远端port、ip与RpcContext中存储内容进行比较，若都相等则为消费端，不相等则为提供端
      *
      * @return provider side.
      */
-    public boolean isProviderSide() { //TODO 怎样根据IP地址判断提供方还是消费方？
+    public boolean isProviderSide() {
         URL url = getUrl();
         if (url == null) {
             return false;
@@ -126,7 +128,7 @@ public class RpcContext {// read finish
      * @return consumer side.
      */
     public boolean isConsumerSide() {
-        //与isProviderSide有啥不同？
+        //与isProviderSide有啥不同？ port、ip判断不同
         URL url = getUrl();
         if (url == null) {
             return false;

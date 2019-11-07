@@ -6,5 +6,5 @@ package com.alibaba.dubbo.demo;
  * @date 2019-11-07 17:51
  */
 public interface CommonService {
-    void dealRpcContext();
+    void sayHello();
 }

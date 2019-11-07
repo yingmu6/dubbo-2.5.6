@@ -197,11 +197,12 @@ public class Routes extends Restful {
         if (service != null && service.length() > 0 && !service.contains("*")) {
             context.put("service", service);
             context.put("methods", CollectionUtils.sort(new ArrayList<String>(providerService.findMethodsByService(service))));
-        } else {
+        } else { //任意服务，获取服务列表
             List<String> serviceList = Tool.sortSimpleName(new ArrayList<String>(providerService.findServices()));
             context.put("serviceList", serviceList);
         }
 
+        //TODO input的值为数值，代表什么？ 如input = 189
         if (context.get("input") != null) context.put("input", context.get("input"));
 
     }
