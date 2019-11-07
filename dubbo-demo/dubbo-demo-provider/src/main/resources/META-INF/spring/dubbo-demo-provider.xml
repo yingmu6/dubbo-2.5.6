@@ -53,6 +53,13 @@
     <bean id="demoService" class="com.alibaba.dubbo.demo.provider.DemoServiceImpl"/>
     <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" group="B" ref="demoService"/>
 
+    <!-- 多版本控制 -->
+    <bean id="demoServiceV1" class="com.alibaba.dubbo.demo.provider.DemoServiceImpl"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" version="1.0.0" ref="demoServiceV1"/>
+
+    <bean id="demoServiceV2" class="com.alibaba.dubbo.demo.provider.DemoChineseImpl"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" version="2.0.0" ref="demoServiceV2"/>
+
 
     <!--
     <dubbo:protocol name="" buffer="" transporter=""/> 协议配置 方法配置 该元素不能被加载-->

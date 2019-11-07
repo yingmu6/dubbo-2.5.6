@@ -18,11 +18,14 @@ public class Consumer {
 
         Consumer test = new Consumer();
         //test.showRpcContext();
-        test.serviceGroup(context);
+        //test.serviceGroup(context);
+        test.serviceVersion(context);
         System.in.read();
     }
 
     /**
+     * 上下文中存放的是当前调用过程中所需的环境信息 http://dubbo.apache.org/zh-cn/docs/user/demos/context.html
+     * RpcContext 是一个 ThreadLocal 的临时状态记录器
      * RpcContext上下文信息问题：
      * 1）RpcContext是在哪里设置的？
      */
@@ -35,7 +38,7 @@ public class Consumer {
     }
 
     /**
-     * 服务分组
+     * 服务分组: 当一个接口有多种实现时，可以用 group 区分。 http://dubbo.apache.org/zh-cn/docs/user/demos/multi-versions.html
      * 同一个接口有不同的实现，需要分组管理，若不分组管理，获取的实例会随机
      * 1）接口调用A=Hello aaa ...  , 接口调用B=Hello bbb
      * 2) 接口调用A=Hello aaa... , 接口调用B=你好
@@ -57,6 +60,23 @@ public class Consumer {
          */
         DemoService anyService = (DemoService) context.getBean("demoAny");
         System.out.println("任意调用=" + anyService.sayHello("any"));
+    }
+
+    /**
+     * 当一个接口实现，出现不兼容升级时，可以用版本号过渡，版本号不同的服务相互间不引用。 http://dubbo.apache.org/zh-cn/docs/user/demos/multi-versions.html
+     * 可以按照以下的步骤进行版本迁移：
+     * 1) 在低压力时间段，先升级一半提供者为新版本
+     * 2) 再将所有消费者升级为新版本
+     * 3) 然后将剩下的一半提供者升级为新版本
+     *
+     * 一个接口多个实现时，zk中的接口会加上序号com.alibaba.dubbo.demo.DemoService2, ***.DemoService3, ***.DemoService4
+     */
+    public void serviceVersion(ClassPathXmlApplicationContext context) {
+        DemoService demoServiceV1 = (DemoService) context.getBean("demoServiceV1");
+        System.out.println("版本V1=" + demoServiceV1.sayHello("张三"));
+
+        DemoService demoServiceV2 = (DemoService) context.getBean("demoServiceV2");
+        System.out.println("版本V2=" + demoServiceV2.sayHello("李四"));
     }
 
 }

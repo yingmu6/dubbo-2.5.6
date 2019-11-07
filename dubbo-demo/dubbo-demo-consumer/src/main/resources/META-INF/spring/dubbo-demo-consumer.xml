@@ -39,6 +39,10 @@
 
     <dubbo:reference id="demoAny" check="false" group="*" interface="com.alibaba.dubbo.demo.DemoService"/>
 
+    <!-- 多版本管理 -->
+    <dubbo:reference id="demoServiceV1" version="1.0.0" interface="com.alibaba.dubbo.demo.DemoService"/>
+    <dubbo:reference id="demoServiceV2" version="2.0.0" interface="com.alibaba.dubbo.demo.DemoService"/>
+
 
     <!-- mock的配置方式（异常信息还是会打印出来的，只是出现异常，返回数据使用mock）-->
     <!--<dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService" mock="return 112"/> -->
