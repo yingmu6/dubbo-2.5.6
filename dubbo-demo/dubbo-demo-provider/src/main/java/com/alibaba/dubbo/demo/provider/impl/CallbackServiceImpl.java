@@ -1,7 +1,7 @@
 package com.alibaba.dubbo.demo.provider.impl;
 
-import com.alibaba.dubbo.demo.CallbackListener;
-import com.alibaba.dubbo.demo.CallbackService;
+import com.alibaba.dubbo.demo.callback.CallbackListener;
+import com.alibaba.dubbo.demo.callback.CallbackService;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

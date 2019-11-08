@@ -26,8 +26,8 @@
     <!-- 使用multicast广播注册中心暴露发现服务地址 -->
     <dubbo:registry address="zookeeper://localhost:2181"/>
 
-    <dubbo:reference id="callbackService" interface="com.alibaba.dubbo.demo.CallbackService" />
+    <dubbo:reference id="callbackService" interface="com.alibaba.dubbo.demo.callback.CallbackService" />
 
-    <dubbo:monitor protocol="registry"/>
+    <!--<dubbo:monitor protocol="registry"/>-->
 
 </beans>

@@ -1,7 +1,7 @@
 package com.alibaba.dubbo.demo.consumer.self.consumer;
 
-import com.alibaba.dubbo.demo.CallbackListener;
-import com.alibaba.dubbo.demo.CallbackService;
+import com.alibaba.dubbo.demo.callback.CallbackListener;
+import com.alibaba.dubbo.demo.callback.CallbackService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -13,12 +13,11 @@ public class CallbackConsumer {
     public static void main(String[] args) throws Exception{
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/dubbo-callback-consumer.xml"});
         context.start();
-
         CallbackService callbackService = (CallbackService) context.getBean("callbackService");
 
         callbackService.addListener("foo.bar", new CallbackListener() {
             public void changed(String msg) {
-                System.out.println("callback1:" + msg);
+                System.out.println("客户端收到信息:" + msg);
             }
         });
 

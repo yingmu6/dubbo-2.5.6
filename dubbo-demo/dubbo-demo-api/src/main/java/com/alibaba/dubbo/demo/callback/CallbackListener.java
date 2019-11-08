@@ -1,4 +1,4 @@
-package com.alibaba.dubbo.demo;
+package com.alibaba.dubbo.demo.callback;
 
 /**
  * @author chensy
