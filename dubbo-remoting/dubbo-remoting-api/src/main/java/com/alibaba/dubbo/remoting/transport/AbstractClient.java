@@ -313,6 +313,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         }
     }
 
+    // 重新连接：取消连接、建立连接
     public void reconnect() throws RemotingException {
         disconnect();
         connect();

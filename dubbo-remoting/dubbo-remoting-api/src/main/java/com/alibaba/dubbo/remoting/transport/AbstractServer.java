@@ -83,7 +83,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
             return;
         }
         try {
-            if (url.hasParameter(Constants.ACCEPTS_KEY)) {
+            if (url.hasParameter(Constants.ACCEPTS_KEY)) { // TODO 可接收的线程数？
                 int a = url.getParameter(Constants.ACCEPTS_KEY, 0);
                 if (a > 0) {
                     this.accepts = a;
@@ -93,7 +93,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
             logger.error(t.getMessage(), t);
         }
         try {
-            if (url.hasParameter(Constants.IDLE_TIMEOUT_KEY)) {
+            if (url.hasParameter(Constants.IDLE_TIMEOUT_KEY)) { // TODO 空闲时间？
                 int t = url.getParameter(Constants.IDLE_TIMEOUT_KEY, 0);
                 if (t > 0) {
                     this.idleTimeout = t;
@@ -104,13 +104,13 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
         }
         try {
             if (url.hasParameter(Constants.THREADS_KEY)
-                    && executor instanceof ThreadPoolExecutor && !executor.isShutdown()) { //TODO 线程池使用
+                    && executor instanceof ThreadPoolExecutor && !executor.isShutdown()) { //TODO 线程池使用？
                 ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
                 int threads = url.getParameter(Constants.THREADS_KEY, 0);
                 int max = threadPoolExecutor.getMaximumPoolSize();
                 int core = threadPoolExecutor.getCorePoolSize();
                 if (threads > 0 && (threads != max || threads != core)) { //在线程数大于0 并且不等于最大线程数max或核心线程数core
-                    if (threads < core) { //TODO threads、threads、max三者的联系
+                    if (threads < core) { //TODO threads、threads、max三者的联系，此处的比较逻辑
                         threadPoolExecutor.setCorePoolSize(threads);
                         if (core == max) {
                             threadPoolExecutor.setMaximumPoolSize(threads);

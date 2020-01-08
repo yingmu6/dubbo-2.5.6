@@ -53,7 +53,7 @@ public class RpcContext {// read finish
     };
     private final Map<String, String> attachments = new HashMap<String, String>();  //附加参数
     private final Map<String, Object> values = new HashMap<String, Object>(); //TODO 用途及含义
-    private Future<?> future; //TODO 待了解
+    private Future<?> future;  //TODO 待了解
 
     private List<URL> urls;
 

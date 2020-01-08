@@ -17,7 +17,7 @@ package com.alibaba.dubbo.common;
 
 /**
  * Resetable.
- * 重置什么？ 更新服务中url内容
+ * TODO 重置什么？ 更新服务中url内容?
  * @author william.liangf
  */
 public interface Resetable {
