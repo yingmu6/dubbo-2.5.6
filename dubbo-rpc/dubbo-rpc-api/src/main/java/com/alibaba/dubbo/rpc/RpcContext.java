@@ -43,7 +43,7 @@ import java.util.concurrent.TimeoutException;
  * @export
  * @see com.alibaba.dubbo.rpc.filter.ContextFilter
  */
-public class RpcContext {// read finish
+public class RpcContext { // read finish
 
     private static final ThreadLocal<RpcContext> LOCAL = new ThreadLocal<RpcContext>() {
         @Override
