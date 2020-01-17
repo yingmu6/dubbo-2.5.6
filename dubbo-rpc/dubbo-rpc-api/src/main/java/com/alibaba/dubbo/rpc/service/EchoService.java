@@ -21,7 +21,7 @@ package com.alibaba.dubbo.rpc.service;
  * @author qian.lei
  * @export
  */
-public interface EchoService {// read finish
+public interface EchoService {// todo @chenSy 为啥没有实现类？用途是啥？
 
     /**
      * echo test.

@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  */
 public final class ReflectUtils {
 
-    //类型符号简写
+    //类型符号简写 todo JVM首字母含义？
     /**
      * void(V).
      */

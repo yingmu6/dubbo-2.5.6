@@ -120,7 +120,7 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {// read finish
         return getInterface() + " -> " + (getUrl() == null ? "" : getUrl().toString());
     }
 
-    public Result invoke(Invocation inv) throws RpcException {
+    public Result invoke(Invocation inv) throws RpcException { //todo @chenSy 方法debug分析调试
         if (destroyed.get()) {//当前服务执行者已被删除
             throw new RpcException("Rpc invoker for service " + this + " on consumer " + NetUtils.getLocalHost()
                     + " use dubbo version " + Version.getVersion()

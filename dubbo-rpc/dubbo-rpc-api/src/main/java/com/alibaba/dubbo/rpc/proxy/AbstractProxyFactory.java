@@ -29,7 +29,7 @@ import com.alibaba.dubbo.rpc.service.EchoService;
  */
 public abstract class AbstractProxyFactory implements ProxyFactory {// read finish
 
-    public <T> T getProxy(Invoker<T> invoker) throws RpcException { //TODO 代理待了解
+    public <T> T getProxy(Invoker<T> invoker) throws RpcException { //@chenSy 待调试了解
         Class<?>[] interfaces = null;
         String config = invoker.getUrl().getParameter("interfaces");
         if (config != null && config.length() > 0) {

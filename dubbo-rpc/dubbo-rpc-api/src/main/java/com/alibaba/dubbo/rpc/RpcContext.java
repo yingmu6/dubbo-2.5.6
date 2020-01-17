@@ -45,6 +45,9 @@ import java.util.concurrent.TimeoutException;
  */
 public class RpcContext { // read finish
 
+    /**
+     * todo @chenSy ThreadLocal学习实践
+     */
     private static final ThreadLocal<RpcContext> LOCAL = new ThreadLocal<RpcContext>() {
         @Override
         protected RpcContext initialValue() {
@@ -52,8 +55,11 @@ public class RpcContext { // read finish
         }
     };
     private final Map<String, String> attachments = new HashMap<String, String>();  //附加参数
-    private final Map<String, Object> values = new HashMap<String, Object>(); //TODO 用途及含义
-    private Future<?> future;  //TODO 待了解
+    private final Map<String, Object> values = new HashMap<String, Object>(); //用途及含义：存储上下文的值
+    /**
+     * todo @chenSy Future学习实践
+     */
+    private Future<?> future;
 
     private List<URL> urls;
 
@@ -65,6 +71,9 @@ public class RpcContext { // read finish
 
     private Object[] arguments;
 
+    /**
+     * todo @chenSy InetSocketAddress学习实践
+     */
     private InetSocketAddress localAddress;
 
     private InetSocketAddress remoteAddress;
@@ -453,7 +462,7 @@ public class RpcContext { // read finish
      * @return context
      */
     public RpcContext set(String key, Object value) {
-        if (value == null) {
+        if (value == null) { // 设置值时判断value是否为空，若为空则移除，否则添加key、value
             values.remove(key);
         } else {
             values.put(key, value);

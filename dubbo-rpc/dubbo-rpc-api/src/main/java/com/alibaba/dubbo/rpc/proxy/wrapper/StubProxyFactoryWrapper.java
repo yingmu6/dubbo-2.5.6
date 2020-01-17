@@ -36,10 +36,10 @@ import java.lang.reflect.Constructor;
 
 /**
  * StubProxyFactoryWrapper
- *
+ * todo @chenSy 什么叫本地存根？学习实践
  * @author william.liangf
  */
-public class StubProxyFactoryWrapper implements ProxyFactory {
+public class StubProxyFactoryWrapper implements ProxyFactory { // todo @chenSy Wrapper涉及的是哪种设计模式？
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StubProxyFactoryWrapper.class);
 
@@ -59,7 +59,7 @@ public class StubProxyFactoryWrapper implements ProxyFactory {
     public <T> T getProxy(Invoker<T> invoker) throws RpcException {
         T proxy = proxyFactory.getProxy(invoker);
         if (GenericService.class != invoker.getInterface()) {
-            //stub值的形式？Stub与Local区别？
+            //todo @chenSy stub值的形式？Stub与Local区别？
             String stub = invoker.getUrl().getParameter(Constants.STUB_KEY, invoker.getUrl().getParameter(Constants.LOCAL_KEY));
             if (ConfigUtils.isNotEmpty(stub)) {
                 Class<?> serviceType = invoker.getInterface();

@@ -76,6 +76,10 @@ import java.util.concurrent.ConcurrentHashMap;
  &methods=updateModifyTime,abateSession,getSessionByUid,getUserIdBySession,getUser,abateUserSessionList,getSession&pid=693
  &revision=0.0.2-20151209.122336-7&side=provider&threadpool=fixed&threads=300×tamp=1531221686039  **/
 // dubbo的URL采用总线型方法，即配置都放在url里面的参数
+
+/**
+ * todo @chenSy URL学习实践
+ */
 public final class URL implements Serializable {//可进行序列化
 
     // 网络URL学习一下，对比一下与dubbo的自定义的URL的异同
@@ -183,6 +187,7 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     /**
+     * todo @chenSy String与Url转换
      * Parse url string
      *
      * @param url URL string

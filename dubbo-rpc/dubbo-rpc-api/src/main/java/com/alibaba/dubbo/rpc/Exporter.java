@@ -27,7 +27,7 @@ package com.alibaba.dubbo.rpc;
 public interface Exporter<T> {// read finish
 
     /**
-     * get invoker.
+     * get invoker. todo @chenSy 方法debug调试分析
      * 获取服务的执行者
      * @return invoker
      */
