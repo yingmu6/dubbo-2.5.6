@@ -23,6 +23,7 @@
     <!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
     <dubbo:application name="demo-consumer"/>
 
+    <!-- group="test-dubbo" 可以自定义group，但provider与consumer中要一致，在注册中心的目录 即为根目录，若没填，默认/dubbo -->
     <dubbo:registry address="zookeeper://localhost:2181"/>
 
     <dubbo:reference id="commonService" check="false" interface="com.alibaba.dubbo.demo.CommonService"/>

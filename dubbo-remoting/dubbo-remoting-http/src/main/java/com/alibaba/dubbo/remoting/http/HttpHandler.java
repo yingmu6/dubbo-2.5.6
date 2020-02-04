@@ -29,7 +29,7 @@ public interface HttpHandler {
 
     /**
      * invoke.
-     *
+     * todo @chenSy HttpServletRequest、HttpServletResponse学习实践
      * @param request  request.
      * @param response response.
      * @throws IOException

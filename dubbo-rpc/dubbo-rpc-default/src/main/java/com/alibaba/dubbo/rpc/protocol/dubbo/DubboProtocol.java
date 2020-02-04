@@ -266,7 +266,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         //client 也可以暴露一个只有server可以调用的服务。
         boolean isServer = url.getParameter(Constants.IS_SERVER_KEY, true);
         if (isServer) {
-            /**@c TODO 服务端、客户端待了解 */
+            /**@c todo @chenSy 服务端、客户端待了解 */
             ExchangeServer server = serverMap.get(key);
             if (server == null) {
                 serverMap.put(key, createServer(url)); //重点：创建服务
@@ -279,7 +279,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
 
     // 创建服务
     private ExchangeServer createServer(URL url) {  //service export 步骤10
-        //默认开启server关闭时发送readonly事件（TODO server都关闭了，还能读吗？）
+        //默认开启server关闭时发送readonly事件（todo @chenSy server都关闭了，还能读吗？）
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
         //默认开启heartbeat(设置心跳检测时间，默认每隔60秒检查一次)
         url = url.addParameterIfAbsent(Constants.HEARTBEAT_KEY, String.valueOf(Constants.DEFAULT_HEARTBEAT)); /**@c 会启动心跳定时任务，每隔指定时间检查心跳*/

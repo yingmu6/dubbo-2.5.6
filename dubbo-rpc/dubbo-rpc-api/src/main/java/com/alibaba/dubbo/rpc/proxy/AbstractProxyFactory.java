@@ -49,6 +49,7 @@ public abstract class AbstractProxyFactory implements ProxyFactory {// read fini
         return getProxy(invoker, interfaces);/**@c 构造接口类型 */
     }
 
+    // todo @chenSy 代理待学习实践 Java以及Javassist
     public abstract <T> T getProxy(Invoker<T> invoker, Class<?>[] types);
 
 }

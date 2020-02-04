@@ -67,7 +67,7 @@ public class HessianProtocol extends AbstractProxyProtocol { //todo @chenSy hess
     protected <T> Runnable doExport(T impl, Class<T> type, URL url) throws RpcException {
         String addr = url.getIp() + ":" + url.getPort();
         HttpServer server = serverMap.get(addr);
-        if (server == null) {
+        if (server == null) { // 若本地缓存没有，则绑定url生成server
             server = httpBinder.bind(url, new HessianHandler());
             serverMap.put(addr, server);
         }
@@ -76,7 +76,7 @@ public class HessianProtocol extends AbstractProxyProtocol { //todo @chenSy hess
         skeletonMap.put(path, skeleton);
         return new Runnable() {
             public void run() {
-                skeletonMap.remove(path);
+                skeletonMap.remove(path); // todo @chenSy 此处为啥要移除key？
             }
         };
     }

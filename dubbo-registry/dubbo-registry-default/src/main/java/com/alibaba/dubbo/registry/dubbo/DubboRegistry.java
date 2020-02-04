@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * Dubbo基于内存的实现，不支持集群
  * DubboRegistry
  *
  * @author william.liangf
