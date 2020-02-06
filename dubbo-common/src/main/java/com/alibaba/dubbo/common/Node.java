@@ -21,26 +21,25 @@ package com.alibaba.dubbo.common;
  * @author william.liangf
  */
 // 哪些内容算节点？ 解：看有哪些实现类或子接口
-// Java中解释：网络中的每台机器称为一个节点
+// Java中解释：网络中的每台机器称为一个节点（集群中的每台机器都是一个节点）
 public interface Node { // read finish
 
-    //节点的信息：url、是否可利用
     /**
-     * get url.
+     * get url.（获取节点url）
      *
      * @return url.
      */
     URL getUrl();
 
     /**
-     * is available.
+     * is available.（节点是否可用）
      *
      * @return available.
      */
     boolean isAvailable();
 
     /**
-     * destroy.
+     * destroy.（销毁节点）
      */
     void destroy();
 

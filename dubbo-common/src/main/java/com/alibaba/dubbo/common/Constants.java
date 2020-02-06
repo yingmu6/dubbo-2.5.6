@@ -40,7 +40,7 @@ public class Constants {
 
     public static final String CATEGORY_KEY = "category";
 
-    public static final String PROVIDERS_CATEGORY = "providers";/**@c URL分类 */
+    public static final String PROVIDERS_CATEGORY = "providers";
 
     public static final String CONSUMERS_CATEGORY = "consumers";
 
@@ -48,7 +48,7 @@ public class Constants {
 
     public static final String CONFIGURATORS_CATEGORY = "configurators";
 
-    public static final String DEFAULT_CATEGORY = PROVIDERS_CATEGORY;
+    public static final String DEFAULT_CATEGORY = PROVIDERS_CATEGORY; // 默认注册中心中节点分类
 
     public static final String ENABLED_KEY = "enabled";
 

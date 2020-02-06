@@ -27,8 +27,9 @@ import java.util.List;
  * @see com.alibaba.dubbo.registry.RegistryFactory#getRegistry(URL)
  */
 public interface RegistryService {/**@c */
-     //注册是针对提供者
     /**
+     * （例如zookeeper的注册目录，providers、consumers、routers、configurators，若实现是zk，那么注册就是创建一个目标）
+     * （提供者启动时，会注册providers元数据信息，并监听configurators，消费者启动时，会注册consumers元数据信息，并监听providers、routers、configurators）
      * 注册数据，比如：提供者地址，消费者地址，路由规则，覆盖规则，等数据。
      * <p>
      * 注册需处理契约：<br>
@@ -39,13 +40,13 @@ public interface RegistryService {/**@c */
      * 5. 允许URI相同但参数不同的URL并存，不能覆盖。<br>
      *
      * 参数说明：
-     * category：设置了表示是否分类，check：表示是否注册检查，dynamic：表示是否持久分类
+     * category：设置了表示注册的分类，check：表示是否注册时检查，dynamic：表示是否持久化
      * @param url 注册信息，不允许为空，如：dubbo://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
      */
     void register(URL url);
 
     /**
-     * 取消注册.
+     * 取消注册.（若实现是zk，则是删除目录）
      * <p>
      * 取消注册需处理契约：<br>
      * 1. 如果是dynamic=false的持久存储数据，找不到注册数据，则抛IllegalStateException，否则忽略。<br>
@@ -55,9 +56,8 @@ public interface RegistryService {/**@c */
      */
     void unregister(URL url);
 
-    //订阅是针对消费者
     /**
-     * 订阅符合条件的已注册数据，当有注册数据变更时自动推送.
+     * 订阅符合条件的已注册数据，当有注册数据变更时自动推送.（订阅采取pull+push，及第一次全量拉取 + 事件变更推送）
      * <p>
      * 订阅需处理契约：<br>
      * 1. 当URL设置了check=false时，订阅失败后不报错，在后台定时重试。<br>

@@ -67,23 +67,27 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
     private final Properties properties = new Properties();
     // 文件缓存定时写入（线程为SaveProperties）
     private final ExecutorService registryCacheExecutor = Executors.newFixedThreadPool(1, new NamedThreadFactory("DubboSaveRegistryCache", true));
-    //是否是同步保存文件
+    //是否同步保存文件（若是异步，则用线程池）
     private final boolean syncSaveFile;
     private final AtomicLong lastCacheChanged = new AtomicLong();
     private final Set<URL> registered = new ConcurrentHashSet<URL>(); /**@c 需要注册的数据 */
-    private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();/**@c 订阅、取消订阅，一个主题URL被多个监听者NotifyListener监听 */
-    private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>();/**@c TODO 通知的数据结构不理解 */
+    // todo @chenSy 订阅和通知的数据结构待了解
+    private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>(); /**@c 订阅、取消订阅，一个主题URL被多个监听者NotifyListener监听 */
+    private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>(); /**@c 通知的集合 */
     private URL registryUrl;
     // 本地磁盘缓存文件
     private File file;
 
     private AtomicBoolean destroyed = new AtomicBoolean(false);
 
-    /** dubbo本地缓存文件地址 */
+    /**
+     * dubbo本地缓存文件地址
+     * 加载时从本地文件中读取配置，加载到properties中，并通知notify 相关的回路url
+     */
     public AbstractRegistry(URL url) {
         setUrl(url);
-        // 启动文件保存定时器
-        syncSaveFile = url.getParameter(Constants.REGISTRY_FILESAVE_SYNC_KEY, false); //TODO 此处的属性 save.file在哪里设置？
+        // 启动文件保存定时器（同步或异步保存）
+        syncSaveFile = url.getParameter(Constants.REGISTRY_FILESAVE_SYNC_KEY, false); //此处的属性 save.file在哪里设置？ 解：url中设置
         /**
          * 1) 本地文件存储路径如： /Users/chenshengyong/.dubbo/dubbo-registry-localhost.cache
          * 2) 文件中的内容格式：com.csy.dubbo.provider.api.test.ApiDemo\:1.0.0=empty\://192.168.0.101/com.csy.dubbo.provider.api.test.ApiDemo?application......
@@ -99,8 +103,8 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
                 }
             }
         }
-        this.file = file; //TODO 文件是在哪里写入的？
-        loadProperties();
+        this.file = file; //文件是在哪里写入的？ 解：上文通过new File创建的
+        loadProperties(); //加载文件中的值，写到proprties，做本地缓存
         notify(url.getBackupUrls());
     }
 
@@ -386,10 +390,13 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
     protected void notify(List<URL> urls) {
         if (urls == null || urls.isEmpty()) return;
 
-        for (Map.Entry<URL, Set<NotifyListener>> entry : getSubscribed().entrySet()) { //遍历订阅的集合subscribed
+        /**
+         * 遍历订阅的集合subscribed
+         */
+        for (Map.Entry<URL, Set<NotifyListener>> entry : getSubscribed().entrySet()) {
             URL url = entry.getKey();
 
-            if (!UrlUtils.isMatch(url, urls.get(0))) {
+            if (!UrlUtils.isMatch(url, urls.get(0))) { // todo @chenSy 为啥url只和列表的第一个比较？
                 continue;
             }
 
@@ -408,10 +415,10 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
 
     /**
      * 通知机制：
-     *
+     * todo @chenSy 参数url与urls的差异？
      */
     protected void notify(URL url, NotifyListener listener, List<URL> urls) {
-        if (url == null) {/**@c 主题节点的URL，订阅者的url列表urls */
+        if (url == null) {
             throw new IllegalArgumentException("notify url == null");
         }
         if (listener == null) {
@@ -426,8 +433,8 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
             logger.info("Notify urls for subscribe url " + url + ", urls: " + urls);
         }
         Map<String, List<URL>> result = new HashMap<String, List<URL>>();
-        for (URL u : urls) {
-            if (UrlUtils.isMatch(url, u)) {/**@c URL分类 */
+        for (URL u : urls) { //构建需要通知的URL列表
+            if (UrlUtils.isMatch(url, u)) {
                 String category = u.getParameter(Constants.CATEGORY_KEY, Constants.DEFAULT_CATEGORY);
                 List<URL> categoryList = result.get(category);
                 if (categoryList == null) {
@@ -448,13 +455,13 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         for (Map.Entry<String, List<URL>> entry : result.entrySet()) {
             String category = entry.getKey();
             List<URL> categoryList = entry.getValue();
-            categoryNotified.put(category, categoryList);
+            categoryNotified.put(category, categoryList); //通知的分类以及分类下的URL列表
             saveProperties(url);
             listener.notify(categoryList); //通知
         }
     }
 
-    private void saveProperties(URL url) { //TODO
+    private void saveProperties(URL url) {
         if (file == null) {
             return;
         }
@@ -462,6 +469,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         try {
             StringBuilder buf = new StringBuilder();
             Map<String, List<URL>> categoryNotified = notified.get(url);
+            // 将按分类通知的URL，进行拼接，并按分隔符分隔
             if (categoryNotified != null) {
                 for (List<URL> us : categoryNotified.values()) {
                     for (URL u : us) {
@@ -472,9 +480,12 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
                     }
                 }
             }
+            // 将服务key作为属性键key，将需要通知的url字符串作为属性值value
             properties.setProperty(url.getServiceKey(), buf.toString()); //本地缓存文件中存储的内容，dubbo-registry-localhost.cache，键值对的
+            // 每次变更都要将版本号加一，不管内容是否有变更
             long version = lastCacheChanged.incrementAndGet();
-            if (syncSaveFile) {//TODO 此处的逻辑？
+            // 同步保存或异步保存（异步使用线程池）
+            if (syncSaveFile) { // todo @书签 待阅读
                 doSaveProperties(version);
             } else {
                 registryCacheExecutor.execute(new SaveProperties(version));

@@ -98,7 +98,7 @@ public final class URL implements Serializable {//可进行序列化
 
     private final int port;
 
-    private final String path;//就是接口的完整名称，如com.alibaba.dubbo.rpc.protocol.dubbo.support.DemoService
+    private final String path; //就是接口的完整名称，如com.alibaba.dubbo.rpc.protocol.dubbo.support.DemoService
 
     //参数集合(附加参数集合，如side、application、generic等)
     private final Map<String, String> parameters;
@@ -359,16 +359,18 @@ public final class URL implements Serializable {//可进行序列化
         return port <= 0 ? host : host + ":" + port; //判断port是否有效，若有效address为 host:port,否则为host
     }
 
+    // 将字符串地址解析为URL
     public URL setAddress(String address) {
         int i = address.lastIndexOf(':');
         String host;
         int port = this.port;
-        if (i >= 0) {
+        if (i >= 0) { //包含分隔符":"，则截取出host、post
             host = address.substring(0, i);
             port = Integer.parseInt(address.substring(i + 1));
         } else {
             host = address;
         }
+        // 构造URL
         return new URL(protocol, username, password, host, port, path, getParameters());
     }
 
@@ -388,9 +390,9 @@ public final class URL implements Serializable {//可进行序列化
         return address.toString();
     }
 
-    public List<URL> getBackupUrls() {//获取备份url
+    public List<URL> getBackupUrls() { //获取回路Url
         List<URL> urls = new ArrayList<URL>();
-        urls.add(this);
+        urls.add(this); //将当前Url加入列表
         String[] backups = getParameter(Constants.BACKUP_KEY, new String[0]);
         if (backups != null && backups.length > 0) {
             for (String backup : backups) {
@@ -440,8 +442,11 @@ public final class URL implements Serializable {//可进行序列化
         return decode(getParameter(key, defaultValue));
     }
 
+    /**
+     * 获取参数中指定key对应的value
+     * 若没有查询到，则查询默认key对应的值（即default.+key）
+     */
     public String getParameter(String key) {
-        /**@c 从缓存参数Map中获取参数的值，如果没有就取default.+key 默认键对应的值*/
         String value = parameters.get(key);
         if (value == null || value.length() == 0) {
             value = parameters.get(Constants.DEFAULT_KEY_PREFIX + key);
@@ -449,7 +454,7 @@ public final class URL implements Serializable {//可进行序列化
         return value;
     }
 
-    public String getParameter(String key, String defaultValue) {//TODO defaultValue从哪里传入
+    public String getParameter(String key, String defaultValue) {
         String value = getParameter(key);
         if (value == null || value.length() == 0) {
             return defaultValue;
@@ -1244,11 +1249,14 @@ public final class URL implements Serializable {//可进行序列化
         return new InetSocketAddress(host, port);
     }
 
+    /**
+     * 获取服务key，格式如："group/interface:version"
+     */
     public String getServiceKey() {
-        String inf = getServiceInterface();
+        String inf = getServiceInterface(); //从URL中获取接口的完整名称
         if (inf == null) return null;
         StringBuilder buf = new StringBuilder();
-        String group = getParameter(Constants.GROUP_KEY);
+        String group = getParameter(Constants.GROUP_KEY); //从URL中获取分组名称
         if (group != null && group.length() > 0) {
             buf.append(group).append("/");
         }
