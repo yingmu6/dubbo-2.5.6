@@ -48,6 +48,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author qian.lei
  * @author chao.liuc
  */
+
+/**
+ * todo @chenSy 了解面对抽象编程思想
+ */
 public abstract class AbstractClient extends AbstractEndpoint implements Client {
 
     protected static final String CLIENT_THREAD_POOL_NAME = "DubboClientHandler";

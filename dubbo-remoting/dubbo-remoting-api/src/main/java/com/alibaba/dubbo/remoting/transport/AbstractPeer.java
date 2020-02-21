@@ -23,7 +23,7 @@ import com.alibaba.dubbo.remoting.Endpoint;
 import com.alibaba.dubbo.remoting.RemotingException;
 
 /**
- * AbstractPeer
+ * AbstractPeer //todo @chenSy AbstractPeer的含义与用途？
  *
  * @author qian.lei
  * @author william.liangf

@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
  * @author qian.lei
  * @author william.liangf
  */
-public class NettyClient extends AbstractClient {
+public class NettyClient extends AbstractClient { //使用的是netty 3.* 的包
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 

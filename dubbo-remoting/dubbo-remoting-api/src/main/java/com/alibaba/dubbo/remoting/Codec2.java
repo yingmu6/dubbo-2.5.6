@@ -25,7 +25,7 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:gang.lvg@taobao.com">kimi</a>
  */
-//为什么要编解码
+//为什么要编解码（因为调用信息要通过网络传输到被调用方）
 //可以理解为序列化和反序列，序列化是轻量级的持久化，网络传输时需要将转换为字节序列进行传输。
 @SPI
 public interface Codec2 {

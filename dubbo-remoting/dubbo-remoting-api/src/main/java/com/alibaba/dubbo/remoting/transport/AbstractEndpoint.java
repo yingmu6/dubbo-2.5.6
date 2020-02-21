@@ -27,7 +27,7 @@ import com.alibaba.dubbo.remoting.Codec2;
 import com.alibaba.dubbo.remoting.transport.codec.CodecAdapter;
 
 /**
- * AbstractEndpoint
+ * AbstractEndpoint（抽象节点）
  *
  * @author william.liangf
  */
@@ -42,7 +42,7 @@ public abstract class AbstractEndpoint extends AbstractPeer implements Resetable
     private int connectTimeout;
 
     /**@c */
-    public AbstractEndpoint(URL url, ChannelHandler handler) {
+    public AbstractEndpoint(URL url, ChannelHandler handler) { //todo @chenSy 抽象方法不能直接实例化，这里的构造函数的用途？
         super(url, handler);
         this.codec = getChannelCodec(url);
         this.timeout = url.getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
@@ -51,7 +51,8 @@ public abstract class AbstractEndpoint extends AbstractPeer implements Resetable
 
     protected static Codec2 getChannelCodec(URL url) {
         String codecName = url.getParameter(Constants.CODEC_KEY, "telnet");
-        if (ExtensionLoader.getExtensionLoader(Codec2.class).hasExtension(codecName)) {
+        // 判断Codec2是否有扩展类，若有根据SPI获取对应的实例，若没有则返回Codec的适配器
+        if (ExtensionLoader.getExtensionLoader(Codec2.class).hasExtension(codecName)) { //todo @chenSy 待调试，感觉if、else都是同一个
             return ExtensionLoader.getExtensionLoader(Codec2.class).getExtension(codecName);
         } else {
             return new CodecAdapter(ExtensionLoader.getExtensionLoader(Codec.class)
@@ -59,6 +60,9 @@ public abstract class AbstractEndpoint extends AbstractPeer implements Resetable
         }
     }
 
+    /**
+     * 从url取值重置timeout、connectTimeout、codec
+     */
     public void reset(URL url) {
         if (isClosed()) {
             throw new IllegalStateException("Failed to reset parameters "

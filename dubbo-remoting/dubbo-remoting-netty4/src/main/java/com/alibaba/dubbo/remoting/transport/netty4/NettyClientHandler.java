@@ -28,7 +28,7 @@ import io.netty.channel.ChannelPromise;
  * @author qinliujie
  */
 @io.netty.channel.ChannelHandler.Sharable
-public class NettyClientHandler extends ChannelDuplexHandler {
+public class NettyClientHandler extends ChannelDuplexHandler { //todo @chenSy netty的ChannelDuplexHandler双工处理器了解
 
     private final URL url;
 
@@ -52,7 +52,7 @@ public class NettyClientHandler extends ChannelDuplexHandler {
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception { // Inactive 不活跃的
         ctx.fireChannelInactive();
     }
 

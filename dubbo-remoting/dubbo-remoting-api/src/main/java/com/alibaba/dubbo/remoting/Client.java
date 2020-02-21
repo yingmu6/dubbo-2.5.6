@@ -18,14 +18,14 @@ package com.alibaba.dubbo.remoting;
 import com.alibaba.dubbo.common.Resetable;
 
 /**
- * Remoting Client. (API/SPI, Prototype, ThreadSafe)
+ * Remoting Client. (API/SPI, Prototype, ThreadSafe（线程安全）)
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Client%E2%80%93server_model">Client/Server</a>
  *
  * @author qian.lei
  * @see com.alibaba.dubbo.remoting.Transporter#connect(com.alibaba.dubbo.common.URL, ChannelHandler)
  */
-public interface Client extends Endpoint, Channel, Resetable {
+public interface Client extends Endpoint, Channel, Resetable { // todo @chensy Client、Server模式待了解
 
     /**
      * reconnect.

@@ -133,9 +133,9 @@ public class Constants {
 
     public static final int DEFAULT_HEARTBEAT = 60 * 1000;
 
-    public static final int DEFAULT_TIMEOUT = 1000;
+    public static final int DEFAULT_TIMEOUT = 1000; //业务执行的超时时间
 
-    public static final int DEFAULT_CONNECT_TIMEOUT = 3000;
+    public static final int DEFAULT_CONNECT_TIMEOUT = 3000; //网络连接超时时间
 
     public static final int DEFAULT_RETRIES = 2;
 
