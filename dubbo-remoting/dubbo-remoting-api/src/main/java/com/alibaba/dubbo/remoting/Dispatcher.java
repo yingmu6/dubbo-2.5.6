@@ -27,7 +27,7 @@ import com.alibaba.dubbo.remoting.transport.dispatcher.all.AllDispatcher;
  * @author chao.liuc
  */
 @SPI(AllDispatcher.NAME)
-public interface Dispatcher {
+public interface Dispatcher { //todo @chenSy 拦截器了解以及在dubbo中的使用，与filter区别？
 
     /**
      * dispatch the message to threadpool.

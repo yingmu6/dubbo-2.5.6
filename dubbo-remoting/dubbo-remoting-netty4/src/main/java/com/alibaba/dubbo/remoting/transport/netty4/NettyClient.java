@@ -94,6 +94,9 @@ public class NettyClient extends AbstractClient { // 使用的是netty 4.x版本
 
     protected void doConnect() throws Throwable {
         long start = System.currentTimeMillis();
+        /**
+         * ChannelFuture：The result of an asynchronous Channel I/O operation (异步处理I/O的通道)
+         */
         ChannelFuture future = bootstrap.connect(getConnectAddress());
         try {
             boolean ret = future.awaitUninterruptibly(3000, TimeUnit.MILLISECONDS);
@@ -113,7 +116,7 @@ public class NettyClient extends AbstractClient { // 使用的是netty 4.x版本
                             NettyChannel.removeChannelIfDisconnected(oldChannel);
                         }
                     }
-                } finally {
+                } finally { //todo @chenSy 为啥要关闭新老channel，若都关闭了，用哪个channel来连接？
                     if (NettyClient.this.isClosed()) {
                         try {
                             if (logger.isInfoEnabled()) {

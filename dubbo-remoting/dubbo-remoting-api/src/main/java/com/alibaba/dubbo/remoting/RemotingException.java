@@ -30,7 +30,7 @@ import java.net.InetSocketAddress;
  * @see com.alibaba.dubbo.remoting.Transporter#bind(com.alibaba.dubbo.common.URL, ChannelHandler)
  * @see com.alibaba.dubbo.remoting.Transporter#connect(com.alibaba.dubbo.common.URL, ChannelHandler)
  */
-public class RemotingException extends Exception {
+public class RemotingException extends Exception { //超时异常
 
     private static final long serialVersionUID = -3160452149606778709L;
 

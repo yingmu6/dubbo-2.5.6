@@ -1245,7 +1245,7 @@ public final class URL implements Serializable {//可进行序列化
         }
     }
 
-    public InetSocketAddress toInetSocketAddress() {
+    public InetSocketAddress toInetSocketAddress() { //构建InetSocketAddress地址
         return new InetSocketAddress(host, port);
     }
 

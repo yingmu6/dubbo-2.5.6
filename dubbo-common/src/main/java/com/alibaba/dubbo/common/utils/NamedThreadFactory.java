@@ -33,6 +33,10 @@ public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，�
 
     private final boolean mDaemo;
 
+    /**
+     * 线程组 ThreadGroup：A thread group represents a set of threads.（一组线程的集合）
+     * todo @chenSy 学习实践
+     */
     private final ThreadGroup mGroup;
 
     public NamedThreadFactory() {
@@ -43,6 +47,10 @@ public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，�
         this(prefix, false);
     }
 
+    /**
+     * daemo : 守护线程吗
+     * todo @chenSy 守护线程了解
+     */
     public NamedThreadFactory(String prefix, boolean daemo) {
         mPrefix = prefix + "-thread-";
         mDaemo = daemo;

@@ -149,6 +149,9 @@ public class NetUtils {
         return address == null ? LOCALHOST : address.getHostAddress();
     }
 
+    /**
+     * todo @chenSy 待调试；过滤啥
+     */
     public static String filterLocalHost(String host) {
         if (host == null || host.length() == 0) {
             return host;
@@ -173,7 +176,7 @@ public class NetUtils {
 
     /**
      * 遍历本地网卡，返回第一个合理的IP。
-     *
+     * todo @chenSy 待调试观察
      * @return 本地网卡IP
      */
     public static InetAddress getLocalAddress() {

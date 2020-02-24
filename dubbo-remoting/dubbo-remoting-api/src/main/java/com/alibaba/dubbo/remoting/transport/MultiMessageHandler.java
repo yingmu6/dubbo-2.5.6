@@ -11,7 +11,7 @@ import com.alibaba.dubbo.remoting.exchange.support.MultiMessage;
  */
 public class MultiMessageHandler extends AbstractChannelHandlerDelegate {
 
-    /**@ */
+    //
     public MultiMessageHandler(ChannelHandler handler) {
         super(handler);
     }

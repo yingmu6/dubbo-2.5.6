@@ -24,7 +24,7 @@ import java.util.Map;
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
 @SPI("simple")
-public interface DataStore { /**@c 用作数据存储 */
+public interface DataStore { /**@c 用作数据存储缓存 */
 
     /**
      * return a snapshot value of componentName

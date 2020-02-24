@@ -35,7 +35,7 @@ public class FailsafeLogger implements Logger {
         this.logger = logger;
     }
 
-    private String appendContextMessage(String msg) {
+    private String appendContextMessage(String msg) { //在打印的日志中加上信息
         return " [DUBBO] " + msg + ", dubbo version: " + Version.getVersion() + ", current host: " + NetUtils.getLogHost();
     }
 

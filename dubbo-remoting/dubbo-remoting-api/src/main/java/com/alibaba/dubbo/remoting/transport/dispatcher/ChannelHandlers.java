@@ -45,7 +45,9 @@ public class ChannelHandlers {
         INSTANCE = instance;
     }
 
-    /**  */
+    /**
+     * todo @chenSy 此处是指封装心跳处理类？用途是啥
+     */
     protected ChannelHandler wrapInternal(ChannelHandler handler, URL url) {
         return new MultiMessageHandler(new HeartbeatHandler(ExtensionLoader.getExtensionLoader(Dispatcher.class)
                 .getAdaptiveExtension().dispatch(handler, url)));

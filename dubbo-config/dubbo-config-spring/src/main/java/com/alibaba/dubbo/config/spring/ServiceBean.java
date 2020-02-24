@@ -100,7 +100,10 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
         this.beanName = name;
     }
 
-    /**@c 启动spring时，注册URL  核心流程*/
+    /**
+     * 启动spring时，注册URL  核心流程
+     * todo @chenSy 此处Spring实践回调待调试理解
+     */
     public void onApplicationEvent(ApplicationEvent event) {
         if (ContextRefreshedEvent.class.getName().equals(event.getClass().getName())) {
             if (isDelay() && !isExported() && !isUnexported()) {

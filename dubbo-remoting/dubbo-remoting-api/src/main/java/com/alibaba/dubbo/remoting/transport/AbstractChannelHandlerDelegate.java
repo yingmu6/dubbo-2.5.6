@@ -8,7 +8,7 @@ import com.alibaba.dubbo.remoting.RemotingException;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public abstract class AbstractChannelHandlerDelegate implements ChannelHandlerDelegate {
+public abstract class AbstractChannelHandlerDelegate implements ChannelHandlerDelegate { //channel委派处理类handler
 
     protected ChannelHandler handler;
 
