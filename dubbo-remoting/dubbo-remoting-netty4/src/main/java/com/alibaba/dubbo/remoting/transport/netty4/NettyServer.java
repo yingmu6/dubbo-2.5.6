@@ -69,7 +69,7 @@ public class NettyServer extends AbstractServer implements Server {
     }
 
     @Override
-    protected void doOpen() throws Throwable {
+    protected void doOpen() throws Throwable { //打开Netty服务端
         NettyHelper.setNettyLoggerFactory();
 
         bootstrap = new ServerBootstrap();

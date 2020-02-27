@@ -27,6 +27,10 @@ import org.junit.Test;
 
 /**
  * ChanelHandlerTest
+ * 测试用例：（带着问题去测试）
+ * 1）预期输出什么
+ * 2）实际输出什么
+ * 3）结果比较以及数据分析
  * <p>
  * mvn clean test -Dtest=*PerformanceClientTest -Dserver=10.20.153.187:9911
  *
@@ -72,8 +76,16 @@ public class ChanelHandlerTest extends TestCase {
         }
     }
 
+    /**
+     * 测试客户端连接
+     * 预期结果：客户端能连上服务端
+     * 问题集：1）服务端什么时候被启动的？ 2）怎么体现连接成功的？
+     */
     @Test
     public void testClient() throws Throwable {
+        //todo 暂时先手动设置，待在maven设备
+        System.setProperty("server", "127.0.0.1:9911");
+
         // 读取参数
         if (PerformanceUtils.getProperty("server", null) == null) {
             logger.warn("Please set -Dserver=127.0.0.1:9911");
@@ -86,10 +98,21 @@ public class ChanelHandlerTest extends TestCase {
         int sleep = PerformanceUtils.getIntProperty("sleep", 60 * 1000 * 60);
 
         final String url = "exchange://" + server + "?transporter=" + transporter + "&serialization=" + serialization + "&timeout=" + timeout;
-        ExchangeClient exchangeClient = initClient(url);
+        ExchangeClient exchangeClient = initClient(url); // url的值 exchange://127.0.0.1:9911?transporter=netty&serialization=hessian2&timeout=1000
         Thread.sleep(sleep);
         closeClient(exchangeClient);
     }
+
+    /**
+     * 启动testClient 报查找不到扩展的问题？
+     * java.lang.IllegalStateException: No such extension com.alibaba.dubbo.remoting.Transporter by name netty
+     * 	at com.alibaba.dubbo.common.extension.ExtensionLoader.findException(ExtensionLoader.java:662)
+     * 	at com.alibaba.dubbo.common.extension.ExtensionLoader.createExtension(ExtensionLoader.java:732)
+     * 	at com.alibaba.dubbo.common.extension.ExtensionLoader.getExtension(ExtensionLoader.java:511)
+     *
+     *  推测：加载不了目录，读取不了文件，已debug，是加载不了文件
+     *  解决方案：1）对比其他能加载的SPI扩展 2）按正常启动，看是否能正常通讯  3）是不是没有maven clean test 没有编译成功，看Class目录情况
+     */
 
     static class PeformanceTestHandler extends ExchangeHandlerAdapter {
         String url = "";

@@ -40,12 +40,12 @@ public interface Server extends Endpoint, Resetable {
     /**
      * get channels.
      *
-     * @return channels
+     * @return channels（获取通道列表）
      */
     Collection<Channel> getChannels();
 
     /**
-     * get channel.
+     * get channel.（获取绑定指定地址的通道）
      *
      * @param remoteAddress
      * @return channel

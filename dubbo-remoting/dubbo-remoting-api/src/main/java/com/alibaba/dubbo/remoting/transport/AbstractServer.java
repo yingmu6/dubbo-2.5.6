@@ -45,7 +45,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
     private static final Logger logger = LoggerFactory.getLogger(AbstractServer.class);
     ExecutorService executor;
     private InetSocketAddress localAddress;
-    private InetSocketAddress bindAddress;
+    private InetSocketAddress bindAddress; //todo @chenSy localAddress与bindAddress的区别？bindAddress是远程地址吗
     private int accepts;
     private int idleTimeout = 600; //600 seconds
 
@@ -56,9 +56,9 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
         String host = url.getParameter(Constants.ANYHOST_KEY, false)
                 || NetUtils.isInvalidLocalHost(getUrl().getHost())
                 ? NetUtils.ANYHOST : getUrl().getHost();
-        bindAddress = new InetSocketAddress(host, getUrl().getPort());
+        bindAddress = new InetSocketAddress(host, getUrl().getPort()); //构建socket地址
         this.accepts = url.getParameter(Constants.ACCEPTS_KEY, Constants.DEFAULT_ACCEPTS); //TODO accepts默认值为0，表示不接受新的请求？
-        this.idleTimeout = url.getParameter(Constants.IDLE_TIMEOUT_KEY, Constants.DEFAULT_IDLE_TIMEOUT);
+        this.idleTimeout = url.getParameter(Constants.IDLE_TIMEOUT_KEY, Constants.DEFAULT_IDLE_TIMEOUT); // todo @chenSy 空闲时间的使用场景
         try {
             doOpen(); //
             if (logger.isInfoEnabled()) { /**@c 启动服务成功*/
@@ -104,7 +104,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
         }
         try {
             if (url.hasParameter(Constants.THREADS_KEY)
-                    && executor instanceof ThreadPoolExecutor && !executor.isShutdown()) { //TODO 线程池使用？
+                    && executor instanceof ThreadPoolExecutor && !executor.isShutdown()) { //todo @chenSy 原生的线程池使用？
                 ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
                 int threads = url.getParameter(Constants.THREADS_KEY, 0);
                 int max = threadPoolExecutor.getMaximumPoolSize();

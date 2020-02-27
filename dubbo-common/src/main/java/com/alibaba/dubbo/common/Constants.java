@@ -179,7 +179,7 @@ public class Constants {
 
     public static final String DEPRECATED_KEY = "deprecated";
 
-    public static final String ANYHOST_KEY = "anyhost";
+    public static final String ANYHOST_KEY = "anyhost"; //todo @chenSy 什么事任意主机？
 
     public static final String ANYHOST_VALUE = "0.0.0.0"; //在服务器端它表示本机上的所有IPV4地址
 

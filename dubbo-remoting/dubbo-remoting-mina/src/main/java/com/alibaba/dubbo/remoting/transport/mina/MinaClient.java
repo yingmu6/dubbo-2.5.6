@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Mina client.
  *
+ * todo @chenSy mina环境搭建，并基本使用
  * @author qian.lei
  * @author william.liangf
  */

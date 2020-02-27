@@ -1,9 +1,9 @@
 #netty
-#netty=com.alibaba.dubbo.remoting.transport.netty.NettyTransporter
+netty=com.alibaba.dubbo.remoting.transport.netty.NettyTransporter
 
 # 可以的配置case
 # case : 1 (去掉键)
-com.alibaba.dubbo.remoting.transport.netty.NettyTransporter
+#com.alibaba.dubbo.remoting.transport.netty.NettyTransporter
 
 # case : 2 (多个key)
 # test,netty=com.alibaba.dubbo.remoting.transport.netty.NettyTransporter

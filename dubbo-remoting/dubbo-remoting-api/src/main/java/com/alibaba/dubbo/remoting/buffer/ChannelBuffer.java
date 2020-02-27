@@ -212,6 +212,11 @@ import java.nio.ByteBuffer;
 //点击实现的时候，会把直接实现类和间接实现类展示出来
 
 //数据缓冲区、类似java 中ByteBuffer
+
+/**
+ * todo @chenSy 1）Java Buffer使用 2）Netty Buffer使用 3）Dubbo Buffer使用
+ *
+ */
 public interface ChannelBuffer extends Comparable<ChannelBuffer> {//finish understand(完成理解)
 
     /** TODO AbstractChannelBuffer 内容是使用ByteBuffer、索引使用的是readIndex、writeIndex
