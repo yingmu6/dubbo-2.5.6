@@ -33,7 +33,7 @@ public interface Server extends Endpoint, Resetable {
     /**
      * is bound.
      *
-     * @return bound
+     * @return bound  
      */
     boolean isBound();
 

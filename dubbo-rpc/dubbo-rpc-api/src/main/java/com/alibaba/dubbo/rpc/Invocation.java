@@ -29,7 +29,7 @@ import java.util.Map;
 
 // todo @chenSy Invocation调用信息，调试看数据
 //Invocation，一个调用方法的具体信息，包含方法名、参数类型、参数、调用者信息（会话信息）
-public interface Invocation { // read finish
+public interface Invocation { // invocation（调用信息）
     /**
      * get method name.
      *

@@ -112,6 +112,8 @@ public class ChanelHandlerTest extends TestCase {
      *
      *  推测：加载不了目录，读取不了文件，已debug，是加载不了文件
      *  解决方案：1）对比其他能加载的SPI扩展 2）按正常启动，看是否能正常通讯  3）是不是没有maven clean test 没有编译成功，看Class目录情况
+     *
+     *  此处用原生的代码跑也是同样的错，表明是环境问题或是代码本身的bug
      */
 
     static class PeformanceTestHandler extends ExchangeHandlerAdapter {

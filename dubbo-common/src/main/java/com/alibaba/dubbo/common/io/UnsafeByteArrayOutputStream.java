@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
  *
  * @author qian.lei
  */
-//TODO 当前类的用途是什么？与netty 中Unsafe有没有相似之处
+//TODO 当前类的用途是什么？与netty 中Unsafe有没有相似之处 ，不安全是指使用直接内存吗？
 public class UnsafeByteArrayOutputStream extends OutputStream {
     protected byte mBuffer[];
 
@@ -43,7 +43,7 @@ public class UnsafeByteArrayOutputStream extends OutputStream {
 
     public void write(int b) {
         int newcount = mCount + 1;
-        if (newcount > mBuffer.length)
+        if (newcount > mBuffer.length) //容量不够了，就扩容，按两倍扩容
             mBuffer = Bytes.copyOf(mBuffer, Math.max(mBuffer.length << 1, newcount));
         mBuffer[mCount] = (byte) b;
         mCount = newcount;

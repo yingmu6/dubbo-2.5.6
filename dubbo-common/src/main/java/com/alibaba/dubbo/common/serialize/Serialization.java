@@ -34,14 +34,14 @@ import java.io.OutputStream;
 public interface Serialization {
 
     /**
-     * get content type id
+     * get content type id（获取序列化的id）
      *
      * @return content type id
      */
     byte getContentTypeId();
 
     /**
-     * get content type
+     * get content type（获取序列化的类型）
      *
      * @return content type
      */

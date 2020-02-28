@@ -81,7 +81,7 @@ public class NettyServer extends AbstractServer implements Server {
         final NettyServerHandler nettyServerHandler = new NettyServerHandler(getUrl(), this);
         channels = nettyServerHandler.getChannels();
 
-        bootstrap.group(bossGroup, workerGroup)
+        bootstrap.group(bossGroup, workerGroup) //todo 参数配置待了解
                 .channel(NioServerSocketChannel.class)
                 .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
                 .childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)

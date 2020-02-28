@@ -24,7 +24,7 @@ import java.io.InputStream;
  * @author qian.lei
  */
 
-public class UnsafeByteArrayInputStream extends InputStream {
+public class UnsafeByteArrayInputStream extends InputStream { // todo @chenSy 不安全是指什么、
     protected byte mData[];
 
     protected int mPosition, mLimit, mMark = 0;

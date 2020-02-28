@@ -22,7 +22,7 @@ import java.io.IOException;
  *
  * @author qian.lei
  */
-public interface ObjectOutput extends DataOutput {
+public interface ObjectOutput extends DataOutput { //既能写入对象，也能写入基本类型
 
     /**
      * write object.

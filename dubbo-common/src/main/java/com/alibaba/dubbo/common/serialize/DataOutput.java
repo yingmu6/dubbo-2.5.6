@@ -22,9 +22,7 @@ import java.io.IOException;
  *
  * @author qian.lei
  */
-//TODO DataOutput,DataInput用在网络传输吗？与Channel、ChannelBuffer的用途区别
-public interface DataOutput {
-    //支持写入多种类型，适配多种类型
+public interface DataOutput { //支持写入多种基础类型，适配多种基础类型
     /**
      * Write boolean.
      *

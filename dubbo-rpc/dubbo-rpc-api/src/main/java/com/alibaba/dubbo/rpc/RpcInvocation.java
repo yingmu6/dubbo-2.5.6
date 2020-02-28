@@ -30,7 +30,7 @@ import java.util.Map;
  * @author qian.lei
  * @serial Don't change the class name and properties.
  */
-public class RpcInvocation implements Invocation, Serializable {// read finish
+public class RpcInvocation implements Invocation, Serializable { // RpcContext是上下文，状态记录器；而RpcInvocation是具体的调用信息
 
     private static final long serialVersionUID = -4355285085441097045L;
 
@@ -38,9 +38,9 @@ public class RpcInvocation implements Invocation, Serializable {// read finish
 
     private Class<?>[] parameterTypes;
 
-    private Object[] arguments;
+    private Object[] arguments; // todo @chenSy debug调试看arguments与attachments有啥不同
 
-    private Map<String, String> attachments;
+    private Map<String, String> attachments; //附属参数
 
     private transient Invoker<?> invoker;
 
@@ -51,7 +51,7 @@ public class RpcInvocation implements Invocation, Serializable {// read finish
         this(invocation.getMethodName(), invocation.getParameterTypes(),
                 invocation.getArguments(), new HashMap<String, String>(invocation.getAttachments()),
                 invocation.getInvoker());
-        if (invoker != null) {
+        if (invoker != null) {  //将一些参数放到附属参数中
             URL url = invoker.getUrl();
             setAttachment(Constants.PATH_KEY, url.getPath());
             //判断url中是否存在一些参数，如group、version、timeout等
@@ -76,6 +76,9 @@ public class RpcInvocation implements Invocation, Serializable {// read finish
         }
     }
 
+    /**
+     * 提供多种构造函数，方便选择
+     */
     public RpcInvocation(Invocation invocation) {
         this(invocation.getMethodName(), invocation.getParameterTypes(),
                 invocation.getArguments(), invocation.getAttachments(), invocation.getInvoker());

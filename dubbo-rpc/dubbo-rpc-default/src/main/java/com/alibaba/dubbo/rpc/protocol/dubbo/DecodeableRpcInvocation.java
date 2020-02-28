@@ -53,7 +53,7 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
 
     private Request request;//请求的公有信息
 
-    private volatile boolean hasDecoded;
+    private volatile boolean hasDecoded;  //todo DecodeableRpcInvocation，可解码的RpcInvocation
 
     public DecodeableRpcInvocation(Channel channel, Request request, InputStream is, byte id) {
         Assert.notNull(channel, "channel == null");
@@ -82,7 +82,7 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
         }
     }
 
-    //为啥此处没有实现体
+    //为啥此处没有实现体：此处编码操作不支持
     public void encode(Channel channel, OutputStream output, Object message) throws IOException {
         throw new UnsupportedOperationException();
     }

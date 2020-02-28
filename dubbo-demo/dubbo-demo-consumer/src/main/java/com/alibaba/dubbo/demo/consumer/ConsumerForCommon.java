@@ -14,11 +14,13 @@ public class ConsumerForCommon {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static void main(String[] args) throws Exception {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/dubbo-demo-consumer-common.xml"});
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/dubbo-demo-consumer.xml"});
         context.start();
 
-        ConsumerForCommon test = new ConsumerForCommon();
-        test.dealRpcContext(context);
+        CommonService commonService = (CommonService) context.getBean("commonService");
+        commonService.sayHello();
+//        ConsumerForCommon test = new ConsumerForCommon();
+//        test.dealRpcContext(context);
         System.in.read();
     }
 

@@ -65,7 +65,7 @@ public abstract class AbstractCodec implements Codec2 {
             // 根据ip和port判断是否是client
             InetSocketAddress address = channel.getRemoteAddress();
             URL url = channel.getUrl();
-            boolean client = url.getPort() == address.getPort()
+            boolean client = url.getPort() == address.getPort() // todo @chenSy 待调试，为啥是这个判断逻辑
                     && NetUtils.filterLocalHost(url.getIp()).equals(
                     NetUtils.filterLocalHost(address.getAddress()
                             .getHostAddress()));

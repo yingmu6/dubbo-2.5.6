@@ -26,7 +26,7 @@ import java.io.OutputStream;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public class NativeJavaObjectOutput implements ObjectOutput {
+public class NativeJavaObjectOutput implements ObjectOutput { //使用Java的ObjectOutputStream实现各种类型写入
 
     private final ObjectOutputStream outputStream;
 

@@ -29,7 +29,7 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public class CodecAdapter implements Codec2 {
+public class CodecAdapter implements Codec2 { //todo @chenSy 此处适配器的用途
 
     private Codec codec;
 
