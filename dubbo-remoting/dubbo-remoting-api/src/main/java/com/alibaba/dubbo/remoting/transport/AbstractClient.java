@@ -63,6 +63,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     protected static final String CLIENT_THREAD_POOL_NAME = "DubboClientHandler";
     private static final Logger logger = LoggerFactory.getLogger(AbstractClient.class);
     private static final AtomicInteger CLIENT_THREAD_POOL_ID = new AtomicInteger();
+    // ScheduledThreadPoolExecutor 可定时执行或延迟执行的线程池
     private static final ScheduledThreadPoolExecutor reconnectExecutorService = new ScheduledThreadPoolExecutor(2, new NamedThreadFactory("DubboClientReconnectTimer", true));
     private final Lock connectLock = new ReentrantLock();
     private final boolean send_reconnect;
@@ -198,7 +199,14 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
             };
 
             /**
-             * todo @chenSy 延时任务中long initialDelay,long delay,两个参数的含义研究
+             * 延时任务中initialDelay, delay,两个参数的含义研究
+             * 解：initialDelay： 第一次执行时，延后多少时间执行
+             * delay：第一次执行以后，按相同的延迟时间执行，
+             * 比如initialDelay=2000，delay=3000 时间单位TimeUnit.MILLISECONDS、第一次延迟2秒，后面每次延迟3秒 ，如
+             * 调用前时间：20200229 21:36:08
+             * 调用后时间：20200229 21:38:08
+             * 调用后时间：20200229 21:41:08
+             * 调用后时间：20200229 21:44:08
              */
             reconnectExecutorFuture = reconnectExecutorService.scheduleWithFixedDelay(connectStatusCheckCommand, reconnect, reconnect, TimeUnit.MILLISECONDS);
         }
@@ -216,7 +224,27 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     }
 
     /**
-     * todo @chenSy 线程池工具类Executors使用，以及原生ThreadPoolExecutor使用
+     * 线程池工具类Executors使用，以及原生ThreadPoolExecutor使用
+     *  Executors 1）Executors.newFixedThreadPool(...) 创建固定数量的线程池， 2）Executors.newCachedThreadPool()创建不限数量的线程池
+     *  ThreadPoolExecutor 参数说明：
+     *
+     *  https://blog.csdn.net/Jack_SivenChen/article/details/53394058  ThreadPoolExecutor 参数详解（图解）
+     *  https://www.jianshu.com/p/6f82b738ac58 todo @chenSy 参数还需再了解
+     *  https://www.jianshu.com/p/67add4f5939c   http://www.matools.com/api/java8(Java API)
+     *  corePoolSize ：核心线程数，即线程池中能运行的线程数
+     *  maximumPoolSize：线程池的最大线程数
+     *  keepAliveTime：非核心线程的闲置超时时间，超过这个时间就会被回收
+     *  workQueue 创建工作队列，用于存放提交的等待执行任务
+     *
+     *  初步思路：使用execute()添加一个任务时
+     *  1）若正在运行的线程小于corePoolSize，则马上创建线程运行任务
+     *  2）若正在运行的线程数量大于或等于 corePoolSize，那么将这个任务放入队列
+     *  3）若队列满了
+     *     3.1）若正在运行的数量小于maximumPoolSize，则创建线程运行任务
+     *     3.2）若正在运行的数量大于或等于maximumPoolSize，则抛出异常，不再接受任务
+     *  4) 当一个线程完成任务时，它会从队列中取下一个任务来执行
+     *  5）当一个线程无事可做，超过一定的时间keepAliveTime，会做判断是否停掉线程
+     *
      */
     protected ExecutorService createExecutor() {
         return Executors.newCachedThreadPool(new NamedThreadFactory(CLIENT_THREAD_POOL_NAME + CLIENT_THREAD_POOL_ID.incrementAndGet() + "-" + getUrl().getAddress(), true));
@@ -227,7 +255,8 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     }
 
     /**
-     * todo dubbo本地地址与远程的区分？
+     *  dubbo本地地址与远程的区分
+     *  本地地址和远程地址是相对的：对于消费者来说，提供者的地址就是远程地址；对于提供者来说，消费者的地址就是远程地址
      */
     public InetSocketAddress getRemoteAddress() {
         Channel channel = getChannel();

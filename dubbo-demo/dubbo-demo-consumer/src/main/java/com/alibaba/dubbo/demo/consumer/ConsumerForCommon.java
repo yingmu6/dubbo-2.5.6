@@ -20,7 +20,7 @@ public class ConsumerForCommon {
         CommonService commonService = (CommonService) context.getBean("commonService");
         commonService.sayHello();
 //        ConsumerForCommon test = new ConsumerForCommon();
-//        test.dealRpcContext(context);
+//        test.dealRpcContext(context);1
         System.in.read();
     }
 
