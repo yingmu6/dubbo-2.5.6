@@ -32,7 +32,7 @@ public class MessageOnlyChannelHandler extends WrappedChannelHandler {
         super(handler, url);
     }
 
-    public void received(Channel channel, Object message) throws RemotingException {
+    public void received(Channel channel, Object message) throws RemotingException { // 只有接收received 消息message使用线程池
         ExecutorService cexecutor = executor;
         if (cexecutor == null || cexecutor.isShutdown()) {
             cexecutor = SHARED_EXECUTOR;

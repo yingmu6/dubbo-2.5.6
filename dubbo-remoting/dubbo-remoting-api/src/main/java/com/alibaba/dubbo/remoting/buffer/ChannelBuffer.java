@@ -214,8 +214,18 @@ import java.nio.ByteBuffer;
 //数据缓冲区、类似java 中ByteBuffer
 
 /**
- * todo @chenSy 1）Java Buffer使用 2）Netty Buffer使用 3）Dubbo Buffer使用
+ * 1）Java Buffer使用 2）Netty Buffer使用 3）Dubbo Buffer使用
+ * 1.1) https://tech.meituan.com/2016/11/04/nio.html  http://ifeve.com/java-nio-all/  java NIO教程
+ * I/O与NIO的比较
+ * 1.1.1) IO面向流，只能逐字节读取，不能前后移动，NIO是面向缓冲区的，可以启动移动
+ * 1.1.2）IO是阻塞的，当线程调用read()或write()时，线程会被阻塞，知道读取或写入完成
+ * 1.1.3）Java NIO的选择器允许一个单独的线程来监视多个输入通道，你可以注册多个通道使用一个选择器，使用选择器“选择”通道。
  *
+ * Buffer缓冲区：本质上是一块既能写入又能从中读取的内存块。包含几个参数capacity（容量），position（从0开始，读或写后向前移动到下一个位置）和limit（限制数）
+ * flip()方法：翻转方法，将position置为0，写模式与读模式切换。 写或读可以通过put()、get()，也可以从通道channel里读取或往通道里写入，
+ * ByteBuffer.allocate(num) 使用allocate分配
+ * 通道Channel：用来处理Buffer，和Buffer进行数据交互。类似于流，但Channel是双向的
+ * 从通道中读取数据read()写到缓冲区buffer，把缓冲区的数据写到write() 通道
  */
 public interface ChannelBuffer extends Comparable<ChannelBuffer> {//finish understand(完成理解)
 

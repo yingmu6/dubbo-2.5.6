@@ -55,7 +55,7 @@ public class AbortPolicyWithReport extends ThreadPoolExecutor.AbortPolicy {
     }
 
     @Override
-    public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
+    public void rejectedExecution(Runnable r, ThreadPoolExecutor e) { // 线程池拒绝连接时，打印异常
         String msg = String.format("Thread pool is EXHAUSTED!" +
                         " Thread Name: %s, Pool Size: %d (active: %d, core: %d, max: %d, largest: %d), Task: %d (completed: %d)," +
                         " Executor status:(isShutdown:%s, isTerminated:%s, isTerminating:%s), in %s://%s:%d!",

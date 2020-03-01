@@ -27,9 +27,15 @@ import com.alibaba.dubbo.remoting.buffer.ChannelBuffer;
 import java.io.IOException;
 
 /**
- * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
+ *  1）此处适配器的用途？ 采取对象适配器方式 2）适配模式设计模式学习
+ * 适配器模式：进行接口转化，将一个接口转换为另一个接口形式。适配器分为对象适配器、类适配器，是一个中间者的角色
+ * 默认适配器，实现了接口中所有方法，子类可以选择实现执行的方法
+ * 类适配器：采用继承被适配对象方式，进行接口适配
+ * 对象适配器：采取组合被适配对象的方式，进行接口适配
+ * https://www.cnblogs.com/java-my-life/archive/2012/04/13/2442795.html
+ * https://design-patterns.readthedocs.io/zh_CN/latest/structural_patterns/adapter.html
  */
-public class CodecAdapter implements Codec2 { //todo @chenSy 此处适配器的用途
+public class CodecAdapter implements Codec2 {
 
     private Codec codec;
 
@@ -59,3 +65,4 @@ public class CodecAdapter implements Codec2 { //todo @chenSy 此处适配器的�
         return codec;
     }
 }
+

@@ -45,6 +45,9 @@ public class ConnectionOrderedChannelHandler extends WrappedChannelHandler {
     protected final ThreadPoolExecutor connectionExecutor;
     private final int queuewarninglimit;
 
+    /**
+     * todo @chenSy 此处保证顺序是指啥顺序？ 如果保证顺序，通过LinkedBlockingQueue？
+     */
     public ConnectionOrderedChannelHandler(ChannelHandler handler, URL url) {
         super(handler, url);
         String threadName = url.getParameter(Constants.THREAD_NAME_KEY, Constants.DEFAULT_THREAD_NAME);

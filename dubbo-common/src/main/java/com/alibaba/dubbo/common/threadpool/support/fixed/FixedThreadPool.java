@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class FixedThreadPool implements ThreadPool {
 
-    public Executor getExecutor(URL url) {
+    public Executor getExecutor(URL url) { //从URL中获取线程池参数，并构建线程池
         String name = url.getParameter(Constants.THREAD_NAME_KEY, Constants.DEFAULT_THREAD_NAME);
         int threads = url.getParameter(Constants.THREADS_KEY, Constants.DEFAULT_THREADS);
         int queues = url.getParameter(Constants.QUEUES_KEY, Constants.DEFAULT_QUEUES);

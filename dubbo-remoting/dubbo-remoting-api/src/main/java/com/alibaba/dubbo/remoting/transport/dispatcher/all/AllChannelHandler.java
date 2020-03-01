@@ -29,6 +29,11 @@ import com.alibaba.dubbo.remoting.transport.dispatcher.WrappedChannelHandler;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
+/**
+ * todo @chenSy
+ * 1）AllChannelHandler表明所有的事件执行都使用线程池吗？包含send吗
+ * 2）与ExecutionChannelHandler有啥不同？感觉都是一样的
+ */
 public class AllChannelHandler extends WrappedChannelHandler {
 
     public AllChannelHandler(ChannelHandler handler, URL url) {
@@ -38,6 +43,7 @@ public class AllChannelHandler extends WrappedChannelHandler {
     public void connected(Channel channel) throws RemotingException {
         ExecutorService cexecutor = getExecutorService();
         try {
+            // 将通道事件的线程提交到线程池中
             cexecutor.execute(new ChannelEventRunnable(channel, handler, ChannelState.CONNECTED));
         } catch (Throwable t) {
             throw new ExecutionException("connect event", channel, getClass() + " error when process connected event .", t);

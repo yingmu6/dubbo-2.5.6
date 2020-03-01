@@ -40,7 +40,7 @@ public abstract class AbstractChannel extends AbstractPeer implements Channel {
     }
 
     @Override
-    public String toString() {
+    public String toString() { //打印通道调用的本地地址和远程地址
         return getLocalAddress() + " -> " + getRemoteAddress();
     }
 

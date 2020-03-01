@@ -35,7 +35,6 @@ public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，�
 
     /**
      * 线程组 ThreadGroup：A thread group represents a set of threads.（一组线程的集合）
-     * todo @chenSy 学习实践
      */
     private final ThreadGroup mGroup;
 
@@ -54,7 +53,7 @@ public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，�
     public NamedThreadFactory(String prefix, boolean daemo) {
         mPrefix = prefix + "-thread-";
         mDaemo = daemo;
-        SecurityManager s = System.getSecurityManager();
+        SecurityManager s = System.getSecurityManager(); // todo @chenSy SecurityManager了解
         mGroup = (s == null) ? Thread.currentThread().getThreadGroup() : s.getThreadGroup();
     }
 
