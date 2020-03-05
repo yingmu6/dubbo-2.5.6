@@ -34,7 +34,7 @@ import java.util.List;
  * @author qian.lei
  * @author qinliujie
  */
-final class NettyCodecAdapter { //todo @chenSy netty编码适配器待了解
+final class NettyCodecAdapter { //todo @csy-v1 netty编码适配器待了解
 
     private final ChannelHandler encoder = new InternalEncoder();
     

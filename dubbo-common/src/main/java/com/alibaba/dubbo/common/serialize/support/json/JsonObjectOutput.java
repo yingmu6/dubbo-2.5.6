@@ -93,7 +93,7 @@ public class JsonObjectOutput implements ObjectOutput {
     }
 
     public void writeObject(Object obj) throws IOException {
-        JSON.json(obj, writer, writeClass);//TODO 用途？
+        JSON.json(obj, writer, writeClass);//todo @csy-h2 用途？
         writer.println();
         writer.flush();
     }

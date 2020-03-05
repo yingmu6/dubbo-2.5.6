@@ -133,11 +133,11 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         if (application == null) {
             String applicationName = ConfigUtils.getProperty("dubbo.application.name");
             if (applicationName != null && applicationName.length() > 0) {
-                application = new ApplicationConfig(); //TODO 此处为啥不把应用名设置进入
+                application = new ApplicationConfig(); //todo @csy-h3 此处为啥不把应用名设置进入
             }
         }
         if (application == null) {/**@c Application 应用配置不能为空 */
-            throw new IllegalStateException( //TODO 为啥此处的异常没有抛出来？
+            throw new IllegalStateException( //todo @csy-h3 为啥此处的异常没有抛出来？
                     "No such application config! Please add <dubbo:application name=\"...\" /> to your spring config.");
         }
         appendProperties(application);
@@ -203,7 +203,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         return registryList;
     }
 
-    protected URL loadMonitor(URL registryURL) { //service export 步骤06 TODO dubbo监控界面怎么搭建使用？
+    protected URL loadMonitor(URL registryURL) { //service export 步骤06 todo @csy-h3 dubbo监控界面怎么搭建使用？
         if (monitor == null) {
             String monitorAddress = ConfigUtils.getProperty("dubbo.monitor.address");
             String monitorProtocol = ConfigUtils.getProperty("dubbo.monitor.protocol");
@@ -298,12 +298,12 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                 throw new IllegalStateException("No such constructor \"public " + localClass.getSimpleName() + "(" + interfaceClass.getName() + ")\" in local implementation class " + localClass.getName());
             }
         }
-        //TODO mock使用
+        //todo @csy-h3 mock使用
         if (ConfigUtils.isNotEmpty(mock)) { //开发自测，联调过程中，经常碰到一些下游服务调用不通的场景，这个时候我们如何不依赖于下游系统，就业务系统独立完成自测。服务调不通时，调用mock类
             if (mock.startsWith(Constants.RETURN_PREFIX)) {
                 String value = mock.substring(Constants.RETURN_PREFIX.length());
                 try {
-                    MockInvoker.parseMockValue(value);/**@c TODO mock值都有哪些形式*/
+                    MockInvoker.parseMockValue(value);/**@c todo @csy-h3 mock值都有哪些形式*/
                 } catch (Exception e) {
                     throw new IllegalStateException("Illegal mock json value in <dubbo:service ... mock=\"" + mock + "\" />");
                 }

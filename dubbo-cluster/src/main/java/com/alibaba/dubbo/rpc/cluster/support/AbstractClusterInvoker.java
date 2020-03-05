@@ -134,7 +134,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
 
         //如果 selected中包含（优先判断） 或者 不可用&&availablecheck=true 则重试.
         if ((selected != null && selected.contains(invoker))
-                || (!invoker.isAvailable() && getUrl() != null && availablecheck)) { //TODO 重选逻辑
+                || (!invoker.isAvailable() && getUrl() != null && availablecheck)) { //todo @csy-h1 重选逻辑
             try {
                 Invoker<T> rinvoker = reselect(loadbalance, invocation, invokers, selected, availablecheck);
                 if (rinvoker != null) {

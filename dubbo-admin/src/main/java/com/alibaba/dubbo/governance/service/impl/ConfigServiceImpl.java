@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO Comment of IbatisConfigDAO
+ * todo @csy-h2 Comment of IbatisConfigDAO
  * @author rain.chenjr
  *
  */
@@ -32,7 +32,7 @@ public class ConfigServiceImpl extends AbstractService implements ConfigService 
      * @see com.alibaba.dubbo.governance.service.ConfigService#update(java.util.List)
      */
     public void update(List<Config> configs) {
-        // TODO Auto-generated method stub
+        // todo @csy-h2 Auto-generated method stub
 
     }
 
@@ -40,7 +40,7 @@ public class ConfigServiceImpl extends AbstractService implements ConfigService 
      * @see com.alibaba.dubbo.governance.service.ConfigService#findAllConfigsMap()
      */
     public Map<String, String> findAllConfigsMap() {
-        // TODO Auto-generated method stub
+        // todo @csy-h2 Auto-generated method stub
         return null;
     }
 }

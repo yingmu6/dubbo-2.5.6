@@ -124,7 +124,7 @@ public class DynamicChannelBuffer extends AbstractChannelBuffer {
 
 
     public void setByte(int index, int value) {
-        //TODO 此处的调用方法是哪个实例的方法？即成员变量ChannelBuffer的值在哪里设置的？
+        //todo @csy-h1 此处的调用方法是哪个实例的方法？即成员变量ChannelBuffer的值在哪里设置的？
         buffer.setByte(index, value);
     }
 

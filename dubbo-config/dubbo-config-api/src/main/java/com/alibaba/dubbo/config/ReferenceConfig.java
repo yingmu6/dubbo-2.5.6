@@ -115,7 +115,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
         if (Boolean.FALSE.equals(method.isReturn()) && (method.getOnreturn() != null || method.getOnthrow() != null)) {
             throw new IllegalStateException("method config error : return attribute must be set true when onreturn or onthrow has been setted.");
         }
-        //convert onreturn methodName to Method  //TODO 待理解
+        //convert onreturn methodName to Method  //todo @csy-h3 待理解
         String onReturnMethodKey = StaticContext.getKey(map, method.getName(), Constants.ON_RETURN_METHOD_KEY);
         Object onReturnMethod = attributes.get(onReturnMethodKey);
         if (onReturnMethod != null && onReturnMethod instanceof String) {
@@ -217,7 +217,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
                     resolveFile = userResolveFile.getAbsolutePath();
                 }
             }
-            if (resolveFile != null && resolveFile.length() > 0) { //将文件中的属性集加到Properties  TODO 待覆盖
+            if (resolveFile != null && resolveFile.length() > 0) { //将文件中的属性集加到Properties  todo @csy-h3 待覆盖
                 Properties properties = new Properties();
                 FileInputStream fis = null;
                 try {
@@ -276,7 +276,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
             }
         }
         checkApplication();
-        checkStubAndMock(interfaceClass); //TODO 待覆盖
+        checkStubAndMock(interfaceClass); //todo @csy-h3 待覆盖
         Map<String, String> map = new HashMap<String, String>();
         Map<Object, Object> attributes = new HashMap<Object, Object>();
         map.put(Constants.SIDE_KEY, Constants.CONSUMER_SIDE);
@@ -291,7 +291,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
                 map.put("revision", revision);
             }
 
-            String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames(); //TODO Wrapper待调试
+            String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames(); //todo @csy-h3 Wrapper待调试
             if (methods.length == 0) {
                 logger.warn("NO method found in service interface " + interfaceClass.getName());
                 map.put("methods", Constants.ANY_VALUE);
@@ -305,7 +305,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
         appendParameters(map, consumer, Constants.DEFAULT_KEY);
         appendParameters(map, this);
         String prifix = StringUtils.getServiceKey(map);
-        if (methods != null && methods.size() > 0) { //若设置方法级别的调用  TODO 待覆盖
+        if (methods != null && methods.size() > 0) { //若设置方法级别的调用  todo @csy-h3 待覆盖
             for (MethodConfig method : methods) {
                 appendParameters(map, method, method.getName());
                 String retryKey = method.getName() + ".retry";
@@ -341,13 +341,13 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
             isJvmRefer = isInjvm().booleanValue();
         }
 
-        if (isJvmRefer) { //本地JVM引用 TODO 待覆盖
+        if (isJvmRefer) { //本地JVM引用 todo @csy-h3 待覆盖
             URL url = new URL(Constants.LOCAL_PROTOCOL, NetUtils.LOCALHOST, 0, interfaceClass.getName()).addParameters(map);
             invoker = refprotocol.refer(interfaceClass, url);
             if (logger.isInfoEnabled()) {
                 logger.info("Using injvm service " + interfaceClass.getName());
             }
-        } else { //远程引用 TODO 待覆盖
+        } else { //远程引用 todo @csy-h3 待覆盖
             if (url != null && url.length() > 0) { // 用户指定URL，指定的URL可能是对点对直连地址，也可能是注册中心URL
                 String[] us = Constants.SEMICOLON_SPLIT_PATTERN.split(url);
                 if (us != null && us.length > 0) {
@@ -381,7 +381,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
 
             if (urls.size() == 1) {
                 invoker = refprotocol.refer(interfaceClass, urls.get(0)); //若是注册协议registry，会先到RegistryProtocol中的refer
-            } else { //TODO 待覆盖
+            } else { //todo @csy-h3 待覆盖
                 List<Invoker<?>> invokers = new ArrayList<Invoker<?>>();
                 URL registryURL = null;
                 for (URL url : urls) { //多个注册中心

@@ -45,7 +45,7 @@ class StatItem {
         this.token = new AtomicInteger(rate);
     }
 
-    //[TODO csy] 限流条件和逻辑还需理一下
+    //[todo @csy-h2 csy] 限流条件和逻辑还需理一下
     public boolean isAllowable(URL url, Invocation invocation) {
         long now = System.currentTimeMillis();
         //当前时间大于最后更新时间+时间间隔

@@ -21,7 +21,7 @@ package com.alibaba.dubbo.common.serialize.support.dubbo;
  * @author qian.lei
  */
 
-//TODO 数据标位怎么处理的？
+//todo @csy-h2 数据标位怎么处理的？
 public interface GenericDataFlags {
     // prefix three bits
     byte VARINT = 0, OBJECT = (byte) 0x80;

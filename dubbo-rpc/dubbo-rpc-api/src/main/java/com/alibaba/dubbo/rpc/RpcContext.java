@@ -46,7 +46,7 @@ import java.util.concurrent.TimeoutException;
 public class RpcContext { // read finish
 
     /**
-     * todo @chenSy ThreadLocal学习实践
+     * todo @csy-v1 ThreadLocal学习实践
      */
     private static final ThreadLocal<RpcContext> LOCAL = new ThreadLocal<RpcContext>() {
         @Override
@@ -57,7 +57,7 @@ public class RpcContext { // read finish
     private final Map<String, String> attachments = new HashMap<String, String>();  //附加参数
     private final Map<String, Object> values = new HashMap<String, Object>(); //用途及含义：存储上下文的值
     /**
-     * todo @chenSy Future学习实践
+     * todo @csy-v1 Future学习实践
      */
     private Future<?> future;
 
@@ -72,7 +72,7 @@ public class RpcContext { // read finish
     private Object[] arguments;
 
     /**
-     * todo @chenSy InetSocketAddress学习实践
+     * todo @csy-v1 InetSocketAddress学习实践
      */
     private InetSocketAddress localAddress;
 
@@ -569,7 +569,7 @@ public class RpcContext { // read finish
      * @return 通过future.get()获取返回结果.
      */
     @SuppressWarnings("unchecked")
-    public <T> Future<T> asyncCall(Callable<T> callable) { //TODO 待理解
+    public <T> Future<T> asyncCall(Callable<T> callable) { //todo @csy-h2 待理解
         try {
             try {
                 setAttachment(Constants.ASYNC_KEY, Boolean.TRUE.toString());

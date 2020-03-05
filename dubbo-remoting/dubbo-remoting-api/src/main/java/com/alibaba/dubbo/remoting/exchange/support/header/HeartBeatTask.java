@@ -43,7 +43,7 @@ final class HeartBeatTask implements Runnable { //心跳检查定时任务
         this.heartbeatTimeout = heartbeatTimeout;
     }
 
-    public void run() { //TODO 心跳检测是哪方到哪方的检测，哪方发起的？
+    public void run() { //todo @csy-h2 心跳检测是哪方到哪方的检测，哪方发起的？
         try {
             long now = System.currentTimeMillis();
             for (Channel channel : channelProvider.getChannels()) {

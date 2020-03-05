@@ -37,7 +37,7 @@ public interface ChannelHandler { //发生事件时，回调对应的函数
      * 与Channel建立连接
      * @param channel channel.
      */
-    void connected(Channel channel) throws RemotingException; //todo @chenSy Handler处理模式学习
+    void connected(Channel channel) throws RemotingException; //todo @csy-v1 Handler处理模式学习
 
     /**
      * on channel disconnected.（断开连接事件）

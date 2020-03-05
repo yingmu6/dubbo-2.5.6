@@ -48,12 +48,12 @@ public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，�
 
     /**
      * daemo : 守护线程吗
-     * todo @chenSy 守护线程了解
+     * todo @csy-v1 守护线程了解
      */
     public NamedThreadFactory(String prefix, boolean daemo) {
         mPrefix = prefix + "-thread-";
         mDaemo = daemo;
-        SecurityManager s = System.getSecurityManager(); // todo @chenSy SecurityManager了解
+        SecurityManager s = System.getSecurityManager(); // todo @csy-v1 SecurityManager了解
         mGroup = (s == null) ? Thread.currentThread().getThreadGroup() : s.getThreadGroup();
     }
 

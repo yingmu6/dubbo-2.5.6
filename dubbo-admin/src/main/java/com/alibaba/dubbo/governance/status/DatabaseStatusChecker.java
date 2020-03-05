@@ -48,7 +48,7 @@ public class DatabaseStatusChecker implements StatusChecker {
         check(); // init
     }
 
-    public Status check() {/**@c TODO 此处的用途是检查数据库是否能连吗？但是数据库配置在哪 */
+    public Status check() {/**@c todo @csy-h2 此处的用途是检查数据库是否能连吗？但是数据库配置在哪 */
         boolean ok;
         try {
             Connection connection = dataSource.getConnection();

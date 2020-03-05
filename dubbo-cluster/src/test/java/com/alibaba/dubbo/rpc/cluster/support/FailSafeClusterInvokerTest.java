@@ -90,7 +90,7 @@ public class FailSafeClusterInvokerTest {
         EasyMock.replay(invoker);
     }
 
-    //TODO assert error log
+    //todo @csy-h2 assert error log
     @Test
     public void testInvokeExceptoin() {
         resetInvokerToException();

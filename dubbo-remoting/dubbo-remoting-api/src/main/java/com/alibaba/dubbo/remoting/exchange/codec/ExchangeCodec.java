@@ -54,7 +54,7 @@ public class ExchangeCodec extends TelnetCodec {
     protected static final byte MAGIC_HIGH = Bytes.short2bytes(MAGIC)[0];
     protected static final byte MAGIC_LOW = Bytes.short2bytes(MAGIC)[1];
     // message flag.
-    //TODO 验证这些16进制的值
+    //todo @csy-h2 验证这些16进制的值
     protected static final byte FLAG_REQUEST = (byte) 0x80;
     protected static final byte FLAG_TWOWAY = (byte) 0x40;
     protected static final byte FLAG_EVENT = (byte) 0x20;
@@ -90,7 +90,7 @@ public class ExchangeCodec extends TelnetCodec {
         if (readable > 0 && header[0] != MAGIC_HIGH || readable > 1 && header[1] != MAGIC_LOW) {
             int length = header.length;
             if (header.length < readable) {
-                // TODO 拷贝逻辑整理一下
+                // todo @csy-h2 拷贝逻辑整理一下
                 header = Bytes.copyOf(header, readable);
                 buffer.readBytes(header, length, readable - length);
             }
@@ -219,12 +219,12 @@ public class ExchangeCodec extends TelnetCodec {
         // set request and serialization flag.
         header[2] = (byte) (FLAG_REQUEST | serialization.getContentTypeId());
 
-        //TODO |= 这个是什么运算？
+        //todo @csy-h2 |= 这个是什么运算？
         if (req.isTwoWay()) header[2] |= FLAG_TWOWAY;
         if (req.isEvent()) header[2] |= FLAG_EVENT;
 
         // set request id.
-        //TODO 位运算要了解下
+        //todo @csy-h2 位运算要了解下
         Bytes.long2bytes(req.getId(), header, 4);
 
         // encode request data.
@@ -232,7 +232,7 @@ public class ExchangeCodec extends TelnetCodec {
         buffer.writerIndex(savedWriteIndex + HEADER_LENGTH);
         ChannelBufferOutputStream bos = new ChannelBufferOutputStream(buffer);
         ObjectOutput out = serialization.serialize(channel.getUrl(), bos);
-        //TODO 基于事件和非事件的区别，只是实现类不同吗？
+        //todo @csy-h2 基于事件和非事件的区别，只是实现类不同吗？
         if (req.isEvent()) {
             encodeEventData(channel, out, req.getData());
         } else {
@@ -240,7 +240,7 @@ public class ExchangeCodec extends TelnetCodec {
         }
         out.flushBuffer();
         //ChannelBufferOutputStream重写的类，既有父类的功能，也有子类定制的功能
-        //TODO 关闭对子类有效吗？也会结束子类的资源吗？
+        //todo @csy-h2 关闭对子类有效吗？也会结束子类的资源吗？
         bos.flush();
         bos.close();
         int len = bos.writtenBytes();
@@ -256,7 +256,7 @@ public class ExchangeCodec extends TelnetCodec {
     protected void encodeResponse(Channel channel, ChannelBuffer buffer, Response res) throws IOException {
         int savedWriteIndex = buffer.writerIndex();
         try {
-            //TODO 与Request请求头部有啥不同？
+            //todo @csy-h2 与Request请求头部有啥不同？
             Serialization serialization = getSerialization(channel);
             // header.
             byte[] header = new byte[HEADER_LENGTH];
@@ -269,7 +269,7 @@ public class ExchangeCodec extends TelnetCodec {
             byte status = res.getStatus();
             header[3] = status;
             // set request id.
-            //TODO 请求id是在哪里分配的？分配策略是什么？
+            //todo @csy-h2 请求id是在哪里分配的？分配策略是什么？
             Bytes.long2bytes(res.getId(), header, 4);
 
             buffer.writerIndex(savedWriteIndex + HEADER_LENGTH);
@@ -289,7 +289,7 @@ public class ExchangeCodec extends TelnetCodec {
             bos.flush();
             bos.close();
 
-            //TODO 只是对响应头部编码吗？
+            //todo @csy-h2 只是对响应头部编码吗？
             int len = bos.writtenBytes();
             checkPayload(channel, len);
             Bytes.int2bytes(len, header, 12);
@@ -309,7 +309,7 @@ public class ExchangeCodec extends TelnetCodec {
                     logger.warn(t.getMessage(), t);
                     try {
                         r.setErrorMessage(t.getMessage());
-                        //TODO 通道是怎样发送信息的
+                        //todo @csy-h2 通道是怎样发送信息的
                         channel.send(r);
                         return;
                     } catch (RemotingException e) {
@@ -329,7 +329,7 @@ public class ExchangeCodec extends TelnetCodec {
             }
 
             // 重新抛出收到的异常
-            // TODO 怎么会重新收到异常
+            // todo @csy-h2 怎么会重新收到异常
             if (t instanceof IOException) {
                 throw (IOException) t;
             } else if (t instanceof RuntimeException) {

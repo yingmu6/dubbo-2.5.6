@@ -78,7 +78,7 @@ import java.util.concurrent.ConcurrentHashMap;
 // dubbo的URL采用总线型方法，即配置都放在url里面的参数
 
 /**
- * todo @chenSy URL学习实践
+ * todo @csy-v1 URL学习实践
  */
 public final class URL implements Serializable {//可进行序列化
 
@@ -103,7 +103,7 @@ public final class URL implements Serializable {//可进行序列化
     //参数集合(附加参数集合，如side、application、generic等)
     private final Map<String, String> parameters;
 
-    // ==== cache ====  TODO URL中怎样使用缓存的？
+    // ==== cache ====  todo @csy-h1 URL中怎样使用缓存的？
     // 原子性并且不可以被序列化
     private volatile transient Map<String, Number> numbers;
 
@@ -111,7 +111,7 @@ public final class URL implements Serializable {//可进行序列化
 
     private volatile transient String ip;
 
-    private volatile transient String full;  //TODO 用途？指完整的url吗？
+    private volatile transient String full;  //todo @csy-h1 用途？指完整的url吗？
 
     private volatile transient String identity;
 
@@ -187,7 +187,7 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     /**
-     * todo @chenSy String与Url转换
+     * todo @csy-v1 String与Url转换
      * Parse url string
      *
      * @param url URL string
@@ -684,7 +684,7 @@ public final class URL implements Serializable {//可进行序列化
 
     //方法参数是指method列表中内容吗？还是指特定方法中的参数吗？ ： 附加参数map中取值，如"side" -> "consumer"
     public String getMethodParameter(String method, String key) {
-        String value = parameters.get(method + "." + key); //TODO 哪种情况是method + key作为键的
+        String value = parameters.get(method + "." + key); //todo @csy-h1 哪种情况是method + key作为键的
         if (value == null || value.length() == 0) {
             return getParameter(key);
         }
@@ -1021,7 +1021,7 @@ public final class URL implements Serializable {//可进行序列化
         return new URL(protocol, username, password, host, port, path, map);
     }
 
-    public URL addParametersIfAbsent(Map<String, String> parameters) {/**@c TODO 没有判断是否存在 */
+    public URL addParametersIfAbsent(Map<String, String> parameters) {/**@c todo @csy-h1 没有判断是否存在 */
         if (parameters == null || parameters.size() == 0) {
             return this;
         }
@@ -1268,7 +1268,7 @@ public final class URL implements Serializable {//可进行序列化
         return buf.toString();
     }
 
-    //TODO 用途？
+    //todo @csy-h1 用途？
     public String toServiceStringWithoutResolving() {
         return buildString(true, false, false, true);
     }

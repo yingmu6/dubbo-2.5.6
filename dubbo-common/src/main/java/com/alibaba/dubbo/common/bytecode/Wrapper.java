@@ -97,7 +97,7 @@ public abstract class Wrapper {/**@c 包装类 */
      * @param c Class instance.
      * @return Wrapper instance(not null).
      */
-    public static Wrapper getWrapper(Class<?> c) { //TODO 封装类的用涂？
+    public static Wrapper getWrapper(Class<?> c) { //todo @csy-h2 封装类的用涂？
         while (ClassGenerator.isDynamicClass(c)) // can not wrapper on dynamic class.
             c = c.getSuperclass();
 
@@ -112,7 +112,7 @@ public abstract class Wrapper {/**@c 包装类 */
         return ret;
     }
 
-    //TODO 用途？ 待调试
+    //todo @csy-h2 用途？ 待调试
     private static Wrapper makeWrapper(Class<?> c) {/**@c 运行时根据反射机制解析Class，构造java文件*/
         if (c.isPrimitive())/**@c 判断是否是基本类型 */
             throw new IllegalArgumentException("Can not create wrapper for primitive type: " + c);

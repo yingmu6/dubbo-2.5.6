@@ -38,7 +38,7 @@ public class RpcInvocation implements Invocation, Serializable { // RpcContext�
 
     private Class<?>[] parameterTypes;
 
-    private Object[] arguments; // todo @chenSy debug调试看arguments与attachments有啥不同
+    private Object[] arguments; // todo @csy-v1 debug调试看arguments与attachments有啥不同
 
     private Map<String, String> attachments; //附属参数
 

@@ -31,6 +31,6 @@ public interface ExtensionFactory { /**@c 通过扩展工厂方法获取扩展�
      * @param name object name.
      * @return object instance.
      */
-    <T> T getExtension(Class<T> type, String name); //TODO 获取接口指定名称的实例
+    <T> T getExtension(Class<T> type, String name); //todo @csy-h2 获取接口指定名称的实例
 
 }

@@ -56,7 +56,7 @@ public class JettyContainer implements Container {
         connector.setPort(port);
         ServletHandler handler = new ServletHandler();
 
-        String resources = ConfigUtils.getProperty(JETTY_DIRECTORY); //TODO resources用途？
+        String resources = ConfigUtils.getProperty(JETTY_DIRECTORY); //todo @csy-h2 resources用途？
         if (resources != null && resources.length() > 0) {
             FilterHolder resourceHolder = handler.addFilterWithMapping(ResourceFilter.class, "/*", Handler.DEFAULT);
             resourceHolder.setInitParameter("resources", resources);

@@ -399,7 +399,7 @@ public class RedisRegistry extends FailbackRegistry {
         List<URL> result = new ArrayList<URL>();
         List<String> categories = Arrays.asList(url.getParameter(Constants.CATEGORY_KEY, new String[0]));
         String consumerService = url.getServiceInterface();
-        for (String key : keys) {/**@c TODO */
+        for (String key : keys) {/**@c todo @csy-h1 */
             if (!Constants.ANY_VALUE.equals(consumerService)) {
                 String prvoiderService = toServiceName(key);
                 if (!prvoiderService.equals(consumerService)) {
@@ -492,7 +492,7 @@ public class RedisRegistry extends FailbackRegistry {
                     } finally {
                         jedisPool.returnResource(jedis);
                     }
-                } catch (Throwable t) { // TODO 通知失败没有恢复机制保障
+                } catch (Throwable t) { // todo @csy-h1 通知失败没有恢复机制保障
                     logger.error(t.getMessage(), t);
                 }
             }
@@ -582,7 +582,7 @@ public class RedisRegistry extends FailbackRegistry {
                                                     }
                                                 }
                                                 resetSkip();
-                                            }/**@c TODO redis发布订阅模式待了解 */
+                                            }/**@c todo @csy-h1 redis发布订阅模式待了解 */
                                             jedis.psubscribe(new NotifySub(jedisPool), service); // 阻塞
                                         } else {
                                             if (!first) {

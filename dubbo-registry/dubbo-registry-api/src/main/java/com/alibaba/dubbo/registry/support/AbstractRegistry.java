@@ -71,7 +71,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
     private final boolean syncSaveFile;
     private final AtomicLong lastCacheChanged = new AtomicLong();
     private final Set<URL> registered = new ConcurrentHashSet<URL>(); /**@c 需要注册的数据 */
-    // todo @chenSy 订阅和通知的数据结构待了解
+    // todo @csy-v1 订阅和通知的数据结构待了解
     private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>(); /**@c 订阅、取消订阅，一个主题URL被多个监听者NotifyListener监听 */
     private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>(); /**@c 通知的集合 */
     private URL registryUrl;
@@ -179,7 +179,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
             }
         }
         // 保存
-        try {//TODO .lock 本地文件的用途？
+        try {//todo @csy-h1 .lock 本地文件的用途？
             newProperties.putAll(properties);
             File lockfile = new File(file.getAbsolutePath() + ".lock");
             if (!lockfile.exists()) {
@@ -282,7 +282,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
                     reference.set(urls);
                 }
             };
-            //TODO 此处订阅的用途？
+            //todo @csy-h1 此处订阅的用途？
             subscribe(url, listener); // 订阅逻辑保证第一次notify后再返回
             List<URL> urls = reference.get();
             if (urls != null && urls.size() > 0) {
@@ -339,7 +339,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
             subscribed.putIfAbsent(url, new ConcurrentHashSet<NotifyListener>());
             listeners = subscribed.get(url);
         }
-        listeners.add(listener); //TODO 此处并没有往subscribed 添加内容，是怎样添加监听者的？
+        listeners.add(listener); //todo @csy-h1 此处并没有往subscribed 添加内容，是怎样添加监听者的？
     }
 
     /**
@@ -361,7 +361,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         }
     }
 
-    protected void recover() throws Exception {/**@c TODO 恢复什么*/
+    protected void recover() throws Exception {/**@c todo @csy-h1 恢复什么*/
         // register
         Set<URL> recoverRegistered = new HashSet<URL>(getRegistered());
         if (!recoverRegistered.isEmpty()) {
@@ -396,7 +396,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         for (Map.Entry<URL, Set<NotifyListener>> entry : getSubscribed().entrySet()) {
             URL url = entry.getKey();
 
-            if (!UrlUtils.isMatch(url, urls.get(0))) { // todo @chenSy 为啥url只和列表的第一个比较？
+            if (!UrlUtils.isMatch(url, urls.get(0))) { // todo @csy-v1 为啥url只和列表的第一个比较？
                 continue;
             }
 
@@ -415,7 +415,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
 
     /**
      * 通知机制：
-     * todo @chenSy 参数url与urls的差异？
+     * todo @csy-v1 参数url与urls的差异？
      */
     protected void notify(URL url, NotifyListener listener, List<URL> urls) {
         if (url == null) {

@@ -67,10 +67,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     private static final long serialVersionUID = 3033787999037024738L;
 
     private static final Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
-    //TODO 代理工厂需了解
+    //todo @csy-h3 代理工厂需了解
     private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
 
-    private static final Map<String, Integer> RANDOM_PORT_MAP = new HashMap<String, Integer>(); //TODO 随机端口map
+    private static final Map<String, Integer> RANDOM_PORT_MAP = new HashMap<String, Integer>(); //todo @csy-h3 随机端口map
 
     /**@ 单例的线程池*/
     private static final ScheduledExecutorService delayExportExecutor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("DubboServiceDelayExporter", true));
@@ -279,7 +279,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             }
         } else {
             try {
-                interfaceClass = Class.forName(interfaceName, true, Thread.currentThread() //TODO service.setInterface(ApiDemo.class) 已经设置了class，为啥此处还要获取class
+                interfaceClass = Class.forName(interfaceName, true, Thread.currentThread() //todo @csy-h3 service.setInterface(ApiDemo.class) 已经设置了class，为啥此处还要获取class
                         .getContextClassLoader()); //使用类加载返回类对象
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
@@ -294,7 +294,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             }
             Class<?> localClass;
             try {
-                localClass = ClassHelper.forNameWithThreadContextClassLoader(local); //TODO 用途是啥？创建指定名称的class吗？
+                localClass = ClassHelper.forNameWithThreadContextClassLoader(local); //todo @csy-h3 用途是啥？创建指定名称的class吗？
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
@@ -395,7 +395,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                             Socket socket = new Socket();
                             try {
                                 /**@c 连接到注册中心 */
-                                SocketAddress addr = new InetSocketAddress(registryURL.getHost(), registryURL.getPort()); //TODO socket客户端连接
+                                SocketAddress addr = new InetSocketAddress(registryURL.getHost(), registryURL.getPort()); //todo @csy-h3 socket客户端连接
                                 socket.connect(addr, 1000); //此处registry设置的地址为localhost，host取到的值为127.0.0.1
                                 host = socket.getLocalAddress().getHostAddress(); // 此处socket连接，只为获取host？ 是的，只为获取host
                                 break;
@@ -478,13 +478,13 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                                             } else { //ArgumentConfig中的index以及type都是会被忽视的，即不加载url中
                                                 throw new IllegalArgumentException("argument config error : the index attribute and type attirbute not match :index :" + argument.getIndex() + ", type:" + argument.getType());
                                             }
-                                        } else { //TODO 待调试，以及callback的含义？ 参数回调，服务端可以调用客户端逻辑
+                                        } else { //todo @csy-h3 待调试，以及callback的含义？ 参数回调，服务端可以调用客户端逻辑
                                             //一个方法中多个callback
                                             for (int j = 0; j < argtypes.length; j++) { //循环结束条件：1）遍历完参数列表 2）出现异常
                                                 Class<?> argclazz = argtypes[j]; //若只设置了type，同一个方法中的相同参数的callback一样，并且后面只设置type的参数把前面替换
                                                 if (argclazz.getName().equals(argument.getType())) { //会把参数列表中的所有相同类型的callback设置为相同
                                                     appendParameters(map, argument, method.getName() + "." + j);
-                                                    if (argument.getIndex() != -1 && argument.getIndex() != j) { //TODO 为啥此处还要判断一次？
+                                                    if (argument.getIndex() != -1 && argument.getIndex() != j) { //todo @csy-h3 为啥此处还要判断一次？
                                                         throw new IllegalArgumentException("argument config error : the index attribute and type attirbute not match :index :" + argument.getIndex() + ", type:" + argument.getType());
                                                     }
                                                 }
@@ -496,7 +496,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         //在没有设置参数类型type，但设置了参数下标index
                         } else if (argument.getIndex() != -1) { //argument.getIndex() 与 argument.getType()有啥区别？为啥条件不互斥
                             appendParameters(map, argument, method.getName() + "." + argument.getIndex());
-                        } else { //参数必须指定下标或类型，若两者都没指定则抛异常(TODO 为啥此处的异常没有抛出去)
+                        } else { //参数必须指定下标或类型，若两者都没指定则抛异常(todo @csy-h3 为啥此处的异常没有抛出去)
                             throw new IllegalArgumentException("argument config must set index or type attribute.eg: <dubbo:argument index='0' .../> or <dubbo:argument type=xxx .../>");
                         }
 
@@ -518,39 +518,39 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 map.put("revision", revision);
             }
 
-            String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames(); //TODO 封装类？
+            String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames(); //todo @csy-h3 封装类？
             if (methods.length == 0) {
                 logger.warn("NO method found in service interface " + interfaceClass.getName());
                 map.put("methods", Constants.ANY_VALUE);
-            } else { //设置暴露接口的方法名，如"methods" -> "sayApi" TODO 此处会通过hashSet去重，重载的方法是否只有一个？
+            } else { //设置暴露接口的方法名，如"methods" -> "sayApi" todo @csy-h3 此处会通过hashSet去重，重载的方法是否只有一个？
                 map.put("methods", StringUtils.join(new HashSet<String>(Arrays.asList(methods)), ","));
             }
         }
-        if (!ConfigUtils.isEmpty(token)) {/**@c token生成 */  //TODO token的使用？
+        if (!ConfigUtils.isEmpty(token)) {/**@c token生成 */  //todo @csy-h3 token的使用？
             if (ConfigUtils.isDefault(token)) {
-                map.put("token", UUID.randomUUID().toString()); //TODO uuid的值？
+                map.put("token", UUID.randomUUID().toString()); //todo @csy-h3 uuid的值？
             } else {
                 map.put("token", token);
             }
         }
         if ("injvm".equals(protocolConfig.getName())) {/**@c 本地服务 若是本地服务，不设置注册中心以及通知 */
-            protocolConfig.setRegister(false);  //TODO injvm了解：
+            protocolConfig.setRegister(false);  //todo @csy-h3 injvm了解：
             map.put("notify", "false");
         }
         // 导出服务
         String contextPath = protocolConfig.getContextpath();
         if ((contextPath == null || contextPath.length() == 0) && provider != null) {
-            contextPath = provider.getContextpath(); //TODO 上下文的作用，以及具体的值？
+            contextPath = provider.getContextpath(); //todo @csy-h3 上下文的作用，以及具体的值？
         }
         URL url = new URL(name, host, port, (contextPath == null || contextPath.length() == 0 ? "" : contextPath + "/") + path, map);
 
-        if (ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)  //TODO 此处配置啥？
+        if (ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)  //todo @csy-h3 此处配置啥？
                 .hasExtension(url.getProtocol())) {
-            url = ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class) //TODO ConfiguratorFactory 待了解
+            url = ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class) //todo @csy-h3 ConfiguratorFactory 待了解
                     .getExtension(url.getProtocol()).getConfigurator(url).configure(url);
         }
 
-        String scope = url.getParameter(Constants.SCOPE_KEY); //TODO 暴露范围
+        String scope = url.getParameter(Constants.SCOPE_KEY); //todo @csy-h3 暴露范围
         //配置为none不暴露
         if (!Constants.SCOPE_NONE.toString().equalsIgnoreCase(scope)) {
 
@@ -566,8 +566,8 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 if (registryURLs != null && registryURLs.size() > 0
                         && url.getParameter("register", true)) {
                     for (URL registryURL : registryURLs) {
-                        url = url.addParameterIfAbsent("dynamic", registryURL.getParameter("dynamic")); //TODO 动态注册服务？
-                        URL monitorUrl = loadMonitor(registryURL);/**@c 加载监控 TODO */
+                        url = url.addParameterIfAbsent("dynamic", registryURL.getParameter("dynamic")); //todo @csy-h3 动态注册服务？
+                        URL monitorUrl = loadMonitor(registryURL);/**@c 加载监控 todo @csy-h3 */
                         if (monitorUrl != null) {
                             url = url.addParameterAndEncoded(Constants.MONITOR_KEY, monitorUrl.toFullString());
                         }
@@ -575,7 +575,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                             logger.info("Register dubbo service " + interfaceClass.getName() + " url " + url + " to registry " + registryURL);
                         }
 
-                        //TODO 组装invoker
+                        //todo @csy-h3 组装invoker
                         Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
                         //invoker的值 registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&export=dubbo%3A%2F%2F10.118.32.182%3A20881%2Fcom.alibaba.dubbo.demo.ApiDemo%3Fanyhost%3Dtrue%26application%3Dapi_demo%26delay%3D5%26dubbo%3D2.0.0%26export%3Dtrue%26generic%3Dfalse%26interface%3Dcom.alibaba.dubbo.demo.ApiDemo%26methods%3DsayApi%26pid%3D43951%26side%3Dprovider%26timeout%3D3000%26timestamp%3D1562072331803&pid=43951&registry=zookeeper&timestamp=1562071838319
                         Exporter<?> exporter = protocol.export(invoker);   //service export 步骤07 协议暴露
@@ -604,7 +604,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     //Export dubbo service com.alibaba.dubbo.demo.ApiDemo to url dubbo:///com.alibaba.dubbo.demo.ApiDemo?anyhost=true&application=api_demo&delay=5&dubbo=2.0.0&export=true&generic=false&interface=com.alibaba.dubbo.demo.ApiDemo&methods=sayApi&pid=44803&side=provider&timeout=3000&timestamp=1562077212572, dubbo version: 2.0.0, current host: 192.168.0.102
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void exportLocal(URL url) { //service export 步骤06  TODO 本地暴露，待调试
+    private void exportLocal(URL url) { //service export 步骤06  todo @csy-h3 本地暴露，待调试
         if (!Constants.LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) {
             URL local = URL.valueOf(url.toFullString())
                     .setProtocol(Constants.LOCAL_PROTOCOL)
@@ -1019,7 +1019,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                     for (URL url : registryURLs) { //尝试用socket连接注册中心
                         Socket socket = new Socket();
                         try {
-                            SocketAddress address = new InetSocketAddress(url.getHost(), url.getPort()); //TODO registry在哪里循环
+                            SocketAddress address = new InetSocketAddress(url.getHost(), url.getPort()); //todo @csy-h3 registry在哪里循环
                             socket.connect(address, 1000);
                             host = socket.getLocalAddress().getHostAddress();
                             break;

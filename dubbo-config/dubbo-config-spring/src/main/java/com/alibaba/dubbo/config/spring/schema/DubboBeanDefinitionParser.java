@@ -137,7 +137,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         }
         Set<String> props = new HashSet<String>();
         ManagedMap parameters = null;
-        for (Method setter : beanClass.getMethods()) { //TODO 待调试 beanClass是否是  **Config 对象吗
+        for (Method setter : beanClass.getMethods()) { //todo @csy-h2 待调试 beanClass是否是  **Config 对象吗
             String name = setter.getName(); //方法解析
             if (name.length() > 3 && name.startsWith("set")
                     && Modifier.isPublic(setter.getModifiers())
@@ -210,7 +210,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                                         || !MonitorConfig.class.getName().equals(parserContext.getRegistry().getBeanDefinition(value).getBeanClassName()))) {
                                     // 兼容旧版本配置
                                     reference = convertMonitor(value);
-                                } else if ("onreturn".equals(property)) { //TODO onreturn、onthrow 了解
+                                } else if ("onreturn".equals(property)) { //todo @csy-h2 onreturn、onthrow 了解
                                     int index = value.lastIndexOf(".");
                                     String returnRef = value.substring(0, index);
                                     String returnMethod = value.substring(index + 1);
@@ -289,7 +289,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
 
     @SuppressWarnings("unchecked")
     private static void parseMultiRef(String property, String value, RootBeanDefinition beanDefinition,
-                                      ParserContext parserContext) {/**@c TODO 解析多引用 ？*/
+                                      ParserContext parserContext) {/**@c todo @csy-h2 解析多引用 ？*/
         String[] values = value.split("\\s*[,]+\\s*");
         ManagedList list = null;
         for (int i = 0; i < values.length; i++) {

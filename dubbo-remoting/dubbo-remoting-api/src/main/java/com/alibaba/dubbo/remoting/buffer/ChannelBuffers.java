@@ -30,7 +30,7 @@ public final class ChannelBuffers {
     private ChannelBuffers() {
     }
 
-    //TODO 对外不提供公有的构造方法，而是通过静态方法创建实例，这样有啥好处
+    //todo @csy-h3 对外不提供公有的构造方法，而是通过静态方法创建实例，这样有啥好处
     public static ChannelBuffer dynamicBuffer() {
         return dynamicBuffer(256);
     }
@@ -77,7 +77,7 @@ public final class ChannelBuffers {
         return new HeapChannelBuffer(array);
     }
 
-    //TODO 待调试
+    //todo @csy-h3 待调试
     public static ChannelBuffer wrappedBuffer(ByteBuffer buffer) {
         if (!buffer.hasRemaining()) {
             return EMPTY_BUFFER;
@@ -95,7 +95,7 @@ public final class ChannelBuffers {
             return EMPTY_BUFFER;
         }
         //封装java NIO 创建的直接缓冲区
-        //TODO bigEndian 大边界、小边界区别
+        //todo @csy-h3 bigEndian 大边界、小边界区别
         ChannelBuffer buffer = new ByteBufferBackedChannelBuffer(
                 ByteBuffer.allocateDirect(capacity));
         buffer.clear();
@@ -108,7 +108,7 @@ public final class ChannelBuffers {
             return false;
         }
 
-        //TODO 为啥要与7进行与运算
+        //todo @csy-h3 为啥要与7进行与运算
         final int byteCount = aLen & 7;
 
         int aIndex = bufferA.readerIndex();

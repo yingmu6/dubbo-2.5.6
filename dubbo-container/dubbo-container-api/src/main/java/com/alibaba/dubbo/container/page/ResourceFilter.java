@@ -48,7 +48,7 @@ public class ResourceFilter implements Filter { //资源过滤
 
     private final List<String> resources = new ArrayList<String>();
 
-    public void init(FilterConfig filterConfig) throws ServletException { //TODO 待调试
+    public void init(FilterConfig filterConfig) throws ServletException { //todo @csy-h2 待调试
         String config = filterConfig.getInitParameter("resources");
         if (config != null && config.length() > 0) {
             String[] configs = Constants.COMMA_SPLIT_PATTERN.split(config);
@@ -85,7 +85,7 @@ public class ResourceFilter implements Filter { //资源过滤
             uri = "/" + uri;
         }
         long lastModified = getLastModified(uri);
-        long since = request.getDateHeader("If-Modified-Since"); //TODO request与response中的DateHeader为啥不一样？
+        long since = request.getDateHeader("If-Modified-Since"); //todo @csy-h2 request与response中的DateHeader为啥不一样？
         if (since >= lastModified) { //判断文件在指定的时间后是否有变更
             response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
             return;

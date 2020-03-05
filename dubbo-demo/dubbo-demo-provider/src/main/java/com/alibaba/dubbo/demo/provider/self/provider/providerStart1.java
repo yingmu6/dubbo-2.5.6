@@ -95,12 +95,12 @@ public class providerStart1 {
 
         service.setMethods(list);
         try {
-            service.export(); //TODO 为啥IllegalArgumentException异常不抛出来
+            service.export(); //todo @csy-h1 为啥IllegalArgumentException异常不抛出来
         } catch (Exception e) {
             System.out.println("暴露服务异常:" + e.getMessage());
         }
 
-        //暴露接口2 TODO 为啥此处的接口没暴露出
+        //暴露接口2 todo @csy-h1 为啥此处的接口没暴露出
 //        ApiDemo2 apiDemo2 = new ApiDemoImpl2();
 //        ServiceConfig service2 = new ServiceConfig();
 //        service2.setApplication(application);

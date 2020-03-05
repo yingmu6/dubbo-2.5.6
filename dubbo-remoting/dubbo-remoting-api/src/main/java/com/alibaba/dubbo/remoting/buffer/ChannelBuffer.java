@@ -206,7 +206,7 @@ import java.nio.ByteBuffer;
  *
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-//TODO 有几个方法方法中的参数就是当前的接口，接口中含有当前接口的引用，这个属于什么设计模式
+//todo @csy-h2 有几个方法方法中的参数就是当前的接口，接口中含有当前接口的引用，这个属于什么设计模式
 
 //对外以接口的形式提供出去，外部调用，内部实现接口
 //点击实现的时候，会把直接实现类和间接实现类展示出来
@@ -229,7 +229,7 @@ import java.nio.ByteBuffer;
  */
 public interface ChannelBuffer extends Comparable<ChannelBuffer> {//finish understand(完成理解)
 
-    /** TODO AbstractChannelBuffer 内容是使用ByteBuffer、索引使用的是readIndex、writeIndex
+    /** todo @csy-h2 AbstractChannelBuffer 内容是使用ByteBuffer、索引使用的是readIndex、writeIndex
     也就是既使用了Java NIO中的ByteBuffer、又使用了Netty NIO的readIndex、writeIndex，
     那么position是怎样和readIndex、writeIndex转换的 **/
 
@@ -658,7 +658,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {//finish under
      */
     //将channelBuffer指定index的字节值，替换为value值
     //set方法不会更改readerIndex，writerIndex，只是对内容进行更改
-    //TODO setByte虽然不改变readerIndex，writerIndex，但改变ByteBuffer中的position，加入多次set，会不会出现越界？
+    //todo @csy-h2 setByte虽然不改变readerIndex，writerIndex，但改变ByteBuffer中的position，加入多次set，会不会出现越界？
     void setByte(int index, int value);
 
     /**

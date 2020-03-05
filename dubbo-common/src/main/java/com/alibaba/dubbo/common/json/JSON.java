@@ -30,7 +30,7 @@ import java.io.Writer;
  * @author qian.lei
  */
 
-public class JSON { //todo @chenSy JSON原生解析了解
+public class JSON { //todo @csy-v1 JSON原生解析了解
     public static final char LBRACE = '{', RBRACE = '}';
 
     public static final char LSQUARE = '[', RSQUARE = ']';
@@ -177,7 +177,7 @@ public class JSON { //todo @chenSy JSON原生解析了解
     }
 
     /**
-     * parse json. todo @chenSy JSON解析待调试
+     * parse json. todo @csy-v1 JSON解析待调试
      *
      * @param json json string.
      * @param type target type.

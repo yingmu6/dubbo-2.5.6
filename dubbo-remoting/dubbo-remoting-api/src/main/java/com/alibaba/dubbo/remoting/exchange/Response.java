@@ -135,7 +135,7 @@ public class Response {
         mResult = event;
     }
 
-    //TODO 检查心跳的标准是什么？
+    //todo @csy-h2 检查心跳的标准是什么？
     public boolean isHeartbeat() {
         return mEvent && HEARTBEAT_EVENT == mResult;
     }

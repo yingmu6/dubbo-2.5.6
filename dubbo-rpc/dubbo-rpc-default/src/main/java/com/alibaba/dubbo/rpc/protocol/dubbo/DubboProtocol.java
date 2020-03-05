@@ -69,10 +69,10 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     //servicekey-stubmethods
     private final ConcurrentMap<String, String> stubServiceMethodsMap = new ConcurrentHashMap<String, String>();
     //创建ExchangeHandler（匿名类）
-    private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() { /**@c TODO 成员变量若有对象引用，在什么时候创建的 export中没有调用此方法*/
+    private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() { /**@c todo @csy-h1 成员变量若有对象引用，在什么时候创建的 export中没有调用此方法*/
 
         //reply 回答、答复(服务端调用、回复客户端)
-        public Object reply(ExchangeChannel channel, Object message) throws RemotingException { //TODO 逻辑待覆盖
+        public Object reply(ExchangeChannel channel, Object message) throws RemotingException { //todo @csy-h1 逻辑待覆盖
             if (message instanceof Invocation) {
                 Invocation inv = (Invocation) message; //message转化为的会话信息
                 Invoker<?> invoker = getInvoker(channel, inv);
@@ -178,7 +178,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     }
 
     //是否是消费端
-    private boolean isClientSide(Channel channel) { //TODO 判断依据
+    private boolean isClientSide(Channel channel) { //todo @csy-h1 判断依据
         InetSocketAddress address = channel.getRemoteAddress();
         URL url = channel.getUrl();
         return url.getPort() == address.getPort() &&
@@ -192,7 +192,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
      * 3）调用export中方法获取invoker，exporter.getInvoker()
      */
     Invoker<?> getInvoker(Channel channel, Invocation inv) throws RemotingException {
-        //TODO 这两个服务有啥区别？
+        //todo @csy-h1 这两个服务有啥区别？
         boolean isCallBackServiceInvoke = false;
         boolean isStubServiceInvoke = false;
         int port = channel.getLocalAddress().getPort();
@@ -239,7 +239,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         //export an stub service for dispaching event
         //stub method方法是啥？ 解：本地存根，把部分逻辑放在客户端实现,默认为false
         Boolean isStubSupportEvent = url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT);
-        /**@c 回调方法的用途？ 服务端调用客户端逻辑（一般都是客户端调用服务端）TODO 参数回调待实现 */
+        /**@c 回调方法的用途？ 服务端调用客户端逻辑（一般都是客户端调用服务端）todo @csy-h1 参数回调待实现 */
         Boolean isCallbackservice = url.getParameter(Constants.IS_CALLBACK_SERVICE, false);
         if (isStubSupportEvent && !isCallbackservice) {/**@c 是本地存根 但不是参数回调*/
             //获取本地存根方法，若为空，则打印非法状态异常，否则记录下存根方法
@@ -266,7 +266,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         //client 也可以暴露一个只有server可以调用的服务。
         boolean isServer = url.getParameter(Constants.IS_SERVER_KEY, true);
         if (isServer) {
-            /**@c todo @chenSy 服务端、客户端待了解 */
+            /**@c todo @csy-v1 服务端、客户端待了解 */
             ExchangeServer server = serverMap.get(key);
             if (server == null) {
                 serverMap.put(key, createServer(url)); //重点：创建服务
@@ -279,7 +279,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
 
     // 创建服务
     private ExchangeServer createServer(URL url) {  //service export 步骤10
-        //默认开启server关闭时发送readonly事件（todo @chenSy server都关闭了，还能读吗？）
+        //默认开启server关闭时发送readonly事件（todo @csy-v1 server都关闭了，还能读吗？）
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
         //默认开启heartbeat(设置心跳检测时间，默认每隔60秒检查一次)
         url = url.addParameterIfAbsent(Constants.HEARTBEAT_KEY, String.valueOf(Constants.DEFAULT_HEARTBEAT)); /**@c 会启动心跳定时任务，每隔指定时间检查心跳*/

@@ -21,7 +21,7 @@ import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
- * todo @chenSy 代理对象的使用？
+ * todo @csy-v1 代理对象的使用？
  * ProxyFactory. (API/SPI, Singleton, ThreadSafe)
  *
  * @author william.liangf

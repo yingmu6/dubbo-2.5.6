@@ -90,7 +90,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
 
     private volatile URL overrideDirectoryUrl; // 构造时初始化，断言不为null，并且总是赋非null值
 
-    /*override规则 TODO
+    /*override规则 todo @csy-h3
      * 优先级：override>-D>consumer>provider
      * 第一种规则：针对某个provider <ip:port,timeout=100>
      * 第二种规则：针对所有provider <* ,timeout=5000>
@@ -241,8 +241,8 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      *
      * @param invokerUrls 传入的参数不能为null
      */
-    // TODO: 2017/8/31 FIXME 使用线程池去刷新地址，否则可能会导致任务堆积
-    private void refreshInvoker(List<URL> invokerUrls) {/**@c TODO 待了解*/
+    // todo @system: 2017/8/31 FIXME 使用线程池去刷新地址，否则可能会导致任务堆积
+    private void refreshInvoker(List<URL> invokerUrls) {/**@c todo @csy-h3 待了解*/
         if (invokerUrls != null && invokerUrls.size() == 1 && invokerUrls.get(0) != null
                 && Constants.EMPTY_PROTOCOL.equals(invokerUrls.get(0).getProtocol())) {
             this.forbidden = true; // 禁止访问
@@ -278,7 +278,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
-    /**@c TODO */
+    /**@c todo @csy-h3 */
     private Map<String, List<Invoker<T>>> toMergeMethodInvokerMap(Map<String, List<Invoker<T>>> methodMap) {
         Map<String, List<Invoker<T>>> result = new HashMap<String, List<Invoker<T>>>();
         for (Map.Entry<String, List<Invoker<T>>> entry : methodMap.entrySet()) {

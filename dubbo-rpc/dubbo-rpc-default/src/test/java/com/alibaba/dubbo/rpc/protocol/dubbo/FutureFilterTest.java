@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
  * EventFilterTest.java
  *
  * @author tony.chenl
- *         TODO 暂时依赖callback集成测试，后续补充
+ *         todo @csy-h3 暂时依赖callback集成测试，后续补充
  */
 public class FutureFilterTest {
     private static RpcInvocation invocation;

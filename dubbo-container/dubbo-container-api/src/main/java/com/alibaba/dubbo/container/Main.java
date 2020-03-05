@@ -73,7 +73,7 @@ public class Main {
                             }
                             try {
                                 LOCK.lock();
-                                STOP.signal(); //TODO 待了解
+                                STOP.signal(); //todo @csy-h2 待了解
                             } finally {
                                 LOCK.unlock();
                             }
@@ -90,7 +90,7 @@ public class Main {
         } catch (RuntimeException e) {
             e.printStackTrace();
             logger.error(e.getMessage(), e);
-            System.exit(1); //TODO 待了解
+            System.exit(1); //todo @csy-h2 待了解
         }
         try {
             LOCK.lock();

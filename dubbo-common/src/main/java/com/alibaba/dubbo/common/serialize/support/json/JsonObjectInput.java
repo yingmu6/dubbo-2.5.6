@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class JsonObjectInput implements ObjectInput {
 
-    //TODO BufferedReader的用途？
+    //todo @csy-h2 BufferedReader的用途？
     private final BufferedReader reader;
 
     public JsonObjectInput(InputStream in) {

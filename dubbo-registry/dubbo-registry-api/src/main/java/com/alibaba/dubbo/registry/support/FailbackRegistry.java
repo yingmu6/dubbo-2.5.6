@@ -466,7 +466,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         }
     }
 
-    // TODO: 2017/8/30 to abstract this method
+    // todo @csy-h3: 2017/8/30 to abstract this method
     protected boolean canDestroy(){
         if (destroyed.compareAndSet(false, true)) {
             return true;

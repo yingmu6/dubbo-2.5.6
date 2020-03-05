@@ -93,7 +93,7 @@ public class DubboRegistry extends FailbackRegistry {
                 if (isAvailable()) {
                     return;
                 }
-                recover();/**@c TODO 没有看到客户端连接服务端？ */
+                recover();/**@c todo @csy-h1 没有看到客户端连接服务端？ */
             } finally {
                 clientLock.unlock();
             }
@@ -131,7 +131,7 @@ public class DubboRegistry extends FailbackRegistry {
         registryService.register(url);
     }
 
-    protected void doUnregister(URL url) {/**@c TODO dubbo registry 没有看到具体的实现 */
+    protected void doUnregister(URL url) {/**@c todo @csy-h1 dubbo registry 没有看到具体的实现 */
         registryService.unregister(url);
     }
 

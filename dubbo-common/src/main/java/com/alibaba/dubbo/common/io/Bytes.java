@@ -90,7 +90,7 @@ public class Bytes {
      * @param v value.
      * @param b byte array.
      */
-    //TODO 右移的算法？
+    //todo @csy-h1 右移的算法？
     public static void short2bytes(short v, byte[] b, int off) {
         b[off + 1] = (byte) v;
         b[off + 0] = (byte) (v >>> 8);

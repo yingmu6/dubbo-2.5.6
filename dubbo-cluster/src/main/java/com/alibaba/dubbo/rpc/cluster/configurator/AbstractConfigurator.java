@@ -48,7 +48,7 @@ public abstract class AbstractConfigurator implements Configurator {
         return configuratorUrl;
     }
 
-    public URL configure(URL url) {/**@c TODO */
+    public URL configure(URL url) {/**@c todo @csy-h1 */
         if (configuratorUrl == null || configuratorUrl.getHost() == null
                 || url == null || url.getHost() == null) {
             return url;
@@ -69,7 +69,7 @@ public abstract class AbstractConfigurator implements Configurator {
         return url;
     }
     //override://172.16.90.78:20883/com.alibaba.dubbo.demo.DemoService?category=configurators&disabled=true&dynamic=false&enabled=true
-    private URL configureIfMatch(String host, URL url) {/**@c TODO 代码覆盖 */
+    private URL configureIfMatch(String host, URL url) {/**@c todo @csy-h1 代码覆盖 */
         if (Constants.ANYHOST_VALUE.equals(configuratorUrl.getHost()) || host.equals(configuratorUrl.getHost())) { //0.0.0.0 对任意机器有效
             String configApplication = configuratorUrl.getParameter(Constants.APPLICATION_KEY,
                     configuratorUrl.getUsername());
@@ -84,7 +84,7 @@ public abstract class AbstractConfigurator implements Configurator {
                 for (Map.Entry<String, String> entry : configuratorUrl.getParameters().entrySet()) {
                     String key = entry.getKey();
                     String value = entry.getValue();
-                    if (key.startsWith("~") || Constants.APPLICATION_KEY.equals(key) || Constants.SIDE_KEY.equals(key)) { //TODO 波浪线表示啥
+                    if (key.startsWith("~") || Constants.APPLICATION_KEY.equals(key) || Constants.SIDE_KEY.equals(key)) { //todo @csy-h1 波浪线表示啥
                         condtionKeys.add(key);
                         if (value != null && !Constants.ANY_VALUE.equals(value)
                                 && !value.equals(url.getParameter(key.startsWith("~") ? key.substring(1) : key))) {

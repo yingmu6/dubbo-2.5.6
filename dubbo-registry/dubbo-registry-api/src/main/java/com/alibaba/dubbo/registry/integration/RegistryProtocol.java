@@ -57,7 +57,7 @@ public class RegistryProtocol implements Protocol {
     private final Map<String, ExporterChangeableWrapper<?>> bounds = new ConcurrentHashMap<String, ExporterChangeableWrapper<?>>(); //需要暴露协议的url与ExporterChangeableWrapper的映射，url的值如：dubbo://192.168.1.102:20881/com.alibaba.dubbo.demo.ApiDemo....
     private Cluster cluster;
     private Protocol protocol;
-    private RegistryFactory registryFactory; //TODO 注册工厂何处被实例的？
+    private RegistryFactory registryFactory; //todo @csy-h1 注册工厂何处被实例的？
     private ProxyFactory proxyFactory;
 
     public RegistryProtocol() {
@@ -267,14 +267,14 @@ public class RegistryProtocol implements Protocol {
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
         url = url.setProtocol(url.getParameter(Constants.REGISTRY_KEY, Constants.DEFAULT_REGISTRY)).removeParameter(Constants.REGISTRY_KEY); //协议替换为,并且移除键registry zookeeper://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=...
         Registry registry = registryFactory.getRegistry(url); //通过工厂方法创建注册实例Registry
-        if (RegistryService.class.equals(type)) { //TODO 此处怎么会有相等的可能？RegistryServicer.class为com.alibaba.dubbo.registry.RegistryService，而暴露的接口为com.alibaba.dubbo.demo.ApiDemo
+        if (RegistryService.class.equals(type)) { //todo @csy-h1 此处怎么会有相等的可能？RegistryServicer.class为com.alibaba.dubbo.registry.RegistryService，而暴露的接口为com.alibaba.dubbo.demo.ApiDemo
             return proxyFactory.getInvoker((T) registry, type, url);
         }
 
         // group="a,b" or group="*"
         Map<String, String> qs = StringUtils.parseQueryString(url.getParameterAndDecoded(Constants.REFER_KEY)); //将refer引用部分解析到map中
         String group = qs.get(Constants.GROUP_KEY);
-        if (group != null && group.length() > 0) { //TODO 接口分组
+        if (group != null && group.length() > 0) { //todo @csy-h1 接口分组
             if ((Constants.COMMA_SPLIT_PATTERN.split(group)).length > 1
                     || "*".equals(group)) {
                 return doRefer(getMergeableCluster(), registry, type, url);
@@ -312,7 +312,7 @@ public class RegistryProtocol implements Protocol {
         bounds.clear();
     }
 
-    public static class InvokerDelegete<T> extends InvokerWrapper<T> {/**@c TODO 此静态内部类的用途*/
+    public static class InvokerDelegete<T> extends InvokerWrapper<T> {/**@c todo @csy-h1 此静态内部类的用途*/
         private final Invoker<T> invoker;
 
         /**
@@ -415,12 +415,12 @@ public class RegistryProtocol implements Protocol {
 
     /**
      * exporter代理,建立返回的exporter与protocol export出的exporter的对应关系，在override时可以进行关系修改.
-     * TODO 对应关系是怎样体现的?
+     * todo @csy-h1 对应关系是怎样体现的?
      * @param <T>
      * @author chao.liuc
      */
     //私有内部类
-    private class ExporterChangeableWrapper<T> implements Exporter<T> {/**@c exporter实现类 TODO 用途？*/
+    private class ExporterChangeableWrapper<T> implements Exporter<T> {/**@c exporter实现类 todo @csy-h1 用途？*/
 
         private final Invoker<T> originInvoker;
         private Exporter<T> exporter;

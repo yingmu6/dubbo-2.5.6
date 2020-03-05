@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author qianlei
  */
-public class HessianProtocol extends AbstractProxyProtocol { //todo @chenSy hession序列化方式学习实践
+public class HessianProtocol extends AbstractProxyProtocol { //todo @csy-v1 hession序列化方式学习实践
 
     private final Map<String, HttpServer> serverMap = new ConcurrentHashMap<String, HttpServer>();
 
@@ -76,7 +76,7 @@ public class HessianProtocol extends AbstractProxyProtocol { //todo @chenSy hess
         skeletonMap.put(path, skeleton);
         return new Runnable() {
             public void run() {
-                skeletonMap.remove(path); // todo @chenSy 此处为啥要移除key？
+                skeletonMap.remove(path); // todo @csy-v1 此处为啥要移除key？
             }
         };
     }

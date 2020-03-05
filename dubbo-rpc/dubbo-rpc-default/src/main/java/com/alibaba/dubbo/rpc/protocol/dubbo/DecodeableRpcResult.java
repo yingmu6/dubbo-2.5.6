@@ -38,7 +38,7 @@ import java.lang.reflect.Type;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-//TODO 用途以及待了解？
+//todo @csy-h2 用途以及待了解？
 public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable {// read finish
 
     private static final Logger log = LoggerFactory.getLogger(DecodeableRpcResult.class);

@@ -81,7 +81,7 @@ public class ByteBufferBackedChannelBuffer extends AbstractChannelBuffer {
     public ChannelBuffer copy(int index, int length) {
         ByteBuffer src;
         try {
-            //TODO 待数据分析  从当前buffer拷贝数据吗？
+            //todo @csy-h1 待数据分析  从当前buffer拷贝数据吗？
             src = (ByteBuffer) buffer.duplicate().position(index).limit(index + length);
         } catch (IllegalArgumentException e) {
             throw new IndexOutOfBoundsException();
@@ -127,7 +127,7 @@ public class ByteBufferBackedChannelBuffer extends AbstractChannelBuffer {
         dst.put(data);
     }
 
-    //TODO 待调试
+    //todo @csy-h1 待调试
     public void getBytes(int index, ChannelBuffer dst, int dstIndex, int length) {
         if (dst instanceof ByteBufferBackedChannelBuffer) {
             ByteBufferBackedChannelBuffer bbdst = (ByteBufferBackedChannelBuffer) dst;
@@ -188,7 +188,7 @@ public class ByteBufferBackedChannelBuffer extends AbstractChannelBuffer {
     }
 
 
-    //TODO 此处待推理运算
+    //todo @csy-h1 此处待推理运算
     public void setBytes(int index, ChannelBuffer src, int srcIndex, int length) {
         if (src instanceof ByteBufferBackedChannelBuffer) {
             ByteBufferBackedChannelBuffer bbsrc = (ByteBufferBackedChannelBuffer) src;
@@ -214,7 +214,7 @@ public class ByteBufferBackedChannelBuffer extends AbstractChannelBuffer {
     }
 
 
-    //TODO 待调试
+    //todo @csy-h1 待调试
     public int setBytes(int index, InputStream in, int length) throws IOException {
         int readBytes = 0;
 

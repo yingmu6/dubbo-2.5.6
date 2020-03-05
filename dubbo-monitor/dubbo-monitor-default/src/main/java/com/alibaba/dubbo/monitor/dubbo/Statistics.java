@@ -127,7 +127,7 @@ public class Statistics implements Serializable {
     }
 
     @Override
-    public int hashCode() {//TODO 此处hashCode为啥这种逻辑？
+    public int hashCode() {//todo @csy-h3 此处hashCode为啥这种逻辑？
         final int prime = 31;
         int result = 1;
         result = prime * result + ((application == null) ? 0 : application.hashCode());

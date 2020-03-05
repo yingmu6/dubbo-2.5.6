@@ -50,7 +50,7 @@ public class ProtocolConfig extends AbstractConfig {
     // 服务端口
     private Integer port;
 
-    // 上下文路径 TODO 具体形式
+    // 上下文路径 todo @csy-h3 具体形式
     private String contextpath;
 
     // 线程池类型
@@ -139,7 +139,7 @@ public class ProtocolConfig extends AbstractConfig {
         setPort(port);
     }
 
-    // TODO: 2017/8/30 to move this method somewhere else
+    // todo @csy-h3: 2017/8/30 to move this method somewhere else
     public static void destroyAll() { //销毁注册中心内容、释放协议
         if (!destroyed.compareAndSet(false, true)) {
             return;

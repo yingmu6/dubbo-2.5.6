@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 /**
- * todo @chenSy netty 客户端、服务端基本使用
+ * todo @csy-v1 netty 客户端、服务端基本使用
  */
 public class NettyClient extends AbstractClient { // 使用的是netty 4.x版本以上的包
 
@@ -116,7 +116,7 @@ public class NettyClient extends AbstractClient { // 使用的是netty 4.x版本
                             NettyChannel.removeChannelIfDisconnected(oldChannel);
                         }
                     }
-                } finally { //todo @chenSy 为啥要关闭新老channel，若都关闭了，用哪个channel来连接？
+                } finally { //todo @csy-v1 为啥要关闭新老channel，若都关闭了，用哪个channel来连接？
                     if (NettyClient.this.isClosed()) {
                         try {
                             if (logger.isInfoEnabled()) {

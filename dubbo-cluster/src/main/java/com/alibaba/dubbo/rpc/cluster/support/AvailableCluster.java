@@ -38,7 +38,7 @@ public class AvailableCluster implements Cluster {
 
         return new AbstractClusterInvoker<T>(directory) { //匿名类
             public Result doInvoke(Invocation invocation, List<Invoker<T>> invokers, LoadBalance loadbalance) throws RpcException {
-                for (Invoker<T> invoker : invokers) { //TODO 此处没用到loadbalance ？
+                for (Invoker<T> invoker : invokers) { //todo @csy-h1 此处没用到loadbalance ？
                     if (invoker.isAvailable()) {
                         return invoker.invoke(invocation); //依次执行有效invoker的调用
                     }

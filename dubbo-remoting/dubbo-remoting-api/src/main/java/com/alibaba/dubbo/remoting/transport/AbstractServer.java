@@ -45,7 +45,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
     private static final Logger logger = LoggerFactory.getLogger(AbstractServer.class);
     ExecutorService executor;
     private InetSocketAddress localAddress;
-    private InetSocketAddress bindAddress; //todo @chenSy localAddress与bindAddress的区别？bindAddress是远程地址吗
+    private InetSocketAddress bindAddress; //todo @csy-v1 localAddress与bindAddress的区别？bindAddress是远程地址吗
     private int accepts;
     private int idleTimeout = 600; //600 seconds
 
@@ -57,8 +57,8 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
                 || NetUtils.isInvalidLocalHost(getUrl().getHost())
                 ? NetUtils.ANYHOST : getUrl().getHost();
         bindAddress = new InetSocketAddress(host, getUrl().getPort()); //构建socket地址
-        this.accepts = url.getParameter(Constants.ACCEPTS_KEY, Constants.DEFAULT_ACCEPTS); //TODO accepts默认值为0，表示不接受新的请求？
-        this.idleTimeout = url.getParameter(Constants.IDLE_TIMEOUT_KEY, Constants.DEFAULT_IDLE_TIMEOUT); // todo @chenSy 空闲时间的使用场景
+        this.accepts = url.getParameter(Constants.ACCEPTS_KEY, Constants.DEFAULT_ACCEPTS); //todo @csy-h2 accepts默认值为0，表示不接受新的请求？
+        this.idleTimeout = url.getParameter(Constants.IDLE_TIMEOUT_KEY, Constants.DEFAULT_IDLE_TIMEOUT); // todo @csy-v1 空闲时间的使用场景
         try {
             doOpen(); //
             if (logger.isInfoEnabled()) { /**@c 启动服务成功*/
@@ -83,7 +83,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
             return;
         }
         try {
-            if (url.hasParameter(Constants.ACCEPTS_KEY)) { // TODO 可接收的线程数？
+            if (url.hasParameter(Constants.ACCEPTS_KEY)) { // todo @csy-h2 可接收的线程数？
                 int a = url.getParameter(Constants.ACCEPTS_KEY, 0);
                 if (a > 0) {
                     this.accepts = a;
@@ -93,7 +93,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
             logger.error(t.getMessage(), t);
         }
         try {
-            if (url.hasParameter(Constants.IDLE_TIMEOUT_KEY)) { // TODO 空闲时间？
+            if (url.hasParameter(Constants.IDLE_TIMEOUT_KEY)) { // todo @csy-h2 空闲时间？
                 int t = url.getParameter(Constants.IDLE_TIMEOUT_KEY, 0);
                 if (t > 0) {
                     this.idleTimeout = t;
@@ -104,13 +104,13 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
         }
         try {
             if (url.hasParameter(Constants.THREADS_KEY)
-                    && executor instanceof ThreadPoolExecutor && !executor.isShutdown()) { //todo @chenSy 原生的线程池使用？
+                    && executor instanceof ThreadPoolExecutor && !executor.isShutdown()) { //todo @csy-v1 原生的线程池使用？
                 ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
                 int threads = url.getParameter(Constants.THREADS_KEY, 0);
                 int max = threadPoolExecutor.getMaximumPoolSize();
                 int core = threadPoolExecutor.getCorePoolSize();
                 if (threads > 0 && (threads != max || threads != core)) { //在线程数大于0 并且不等于最大线程数max或核心线程数core
-                    if (threads < core) { //TODO threads、threads、max三者的联系，此处的比较逻辑
+                    if (threads < core) { //todo @csy-h2 threads、threads、max三者的联系，此处的比较逻辑
                         threadPoolExecutor.setCorePoolSize(threads);
                         if (core == max) {
                             threadPoolExecutor.setMaximumPoolSize(threads);

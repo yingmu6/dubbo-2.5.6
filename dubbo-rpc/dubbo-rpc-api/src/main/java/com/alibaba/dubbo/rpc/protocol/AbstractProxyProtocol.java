@@ -28,14 +28,14 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * todo @chenSy 代理协议的理解？
+ * todo @csy-v1 代理协议的理解？
  * AbstractProxyProtocol
  *
  * @author william.liangf
  */
 public abstract class AbstractProxyProtocol extends AbstractProtocol {// read finish
 
-    //todo @chenSy 既有export，又有refer，用途？CopyOnWriteArrayList的用途？
+    //todo @csy-v1 既有export，又有refer，用途？CopyOnWriteArrayList的用途？
     private final List<Class<?>> rpcExceptions = new CopyOnWriteArrayList<Class<?>>();
     ;
 
@@ -73,7 +73,7 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {// read fi
         if (exporter != null) {/**@c 判断本地缓存是否存在exporter 若存在则直接返回缓存中暴露者exporter*/
             return exporter;
         }
-        // todo @chenSy 创建代理待研究 暴露了什么内容
+        // todo @csy-v1 创建代理待研究 暴露了什么内容
         final Runnable runnable = doExport(proxyFactory.getProxy(invoker), invoker.getInterface(), invoker.getUrl());
         exporter = new AbstractExporter<T>(invoker) {
             public void unexport() {

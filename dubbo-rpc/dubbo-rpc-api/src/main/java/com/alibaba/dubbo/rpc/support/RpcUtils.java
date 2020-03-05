@@ -115,7 +115,7 @@ public class RpcUtils {// read finish
 
     public static String getMethodName(Invocation invocation) {
         //为啥方法名加上$
-        if (Constants.$INVOKE.equals(invocation.getMethodName())// TODO 泛化调用的情况吗？
+        if (Constants.$INVOKE.equals(invocation.getMethodName())// todo @csy-h2 泛化调用的情况吗？
                 && invocation.getArguments() != null
                 && invocation.getArguments().length > 0
                 && invocation.getArguments()[0] instanceof String) {

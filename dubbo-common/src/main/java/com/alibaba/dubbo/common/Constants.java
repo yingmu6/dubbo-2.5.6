@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  *
  * @author william.liangf
  */
-//TODO 抽空浏览下
+//todo @csy-h1 抽空浏览下
 public class Constants {
 
     public static final String PROVIDER = "provider";
@@ -179,7 +179,7 @@ public class Constants {
 
     public static final String DEPRECATED_KEY = "deprecated";
 
-    public static final String ANYHOST_KEY = "anyhost"; //todo @chenSy 什么事任意主机？
+    public static final String ANYHOST_KEY = "anyhost"; //todo @csy-v1 什么事任意主机？
 
     public static final String ANYHOST_VALUE = "0.0.0.0"; //在服务器端它表示本机上的所有IPV4地址
 
@@ -580,7 +580,7 @@ public class Constants {
 
     public static final String EXECUTOR_SERVICE_COMPONENT_KEY = ExecutorService.class.getName();
 
-    public static final String GENERIC_SERIALIZATION_NATIVE_JAVA = "nativejava"; // todo @chenSy 序列化学习实践
+    public static final String GENERIC_SERIALIZATION_NATIVE_JAVA = "nativejava"; // todo @csy-v1 序列化学习实践
 
     public static final String GENERIC_SERIALIZATION_DEFAULT = "true";
 

@@ -125,7 +125,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 
     protected void doSubscribe(final URL url, final NotifyListener listener) {
         try {
-            if (Constants.ANY_VALUE.equals(url.getServiceInterface())) { //泛型接口 TODO 待测试用例覆盖
+            if (Constants.ANY_VALUE.equals(url.getServiceInterface())) { //泛型接口 todo @csy-h1 待测试用例覆盖
                 String root = toRootPath();
                 ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
                 if (listeners == null) {
@@ -161,7 +161,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
             } else { //不是泛型接口
                 List<URL> urls = new ArrayList<URL>();
                 for (String path : toCategoriesPath(url)) { //创建分类节点，并建立当前节点与子节点的监听器
-                    ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url); //TODO 当前节点与子节点的监听器吗？
+                    ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url); //todo @csy-h1 当前节点与子节点的监听器吗？
                     if (listeners == null) { //监听map为空时，初始化map
                         zkListeners.putIfAbsent(url, new ConcurrentHashMap<NotifyListener, ChildListener>());
                         listeners = zkListeners.get(url);
@@ -169,7 +169,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
                     ChildListener zkListener = listeners.get(listener);
                     if (zkListener == null) {
                         listeners.putIfAbsent(listener, new ChildListener() {
-                            public void childChanged(String parentPath, List<String> currentChilds) { //TODO ZookeeperRegistry.this.notify() 这种调用方式待了解？
+                            public void childChanged(String parentPath, List<String> currentChilds) { //todo @csy-h1 ZookeeperRegistry.this.notify() 这种调用方式待了解？
                                 ZookeeperRegistry.this.notify(url, listener, toUrlsWithEmpty(url, parentPath, currentChilds));
                             }
                         });
@@ -283,7 +283,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
         List<URL> urls = toUrlsWithoutEmpty(consumer, providers);
         if (urls == null || urls.isEmpty()) {
             int i = path.lastIndexOf('/');
-            String category = i < 0 ? path : path.substring(i + 1); //TODO empty协议的用途？
+            String category = i < 0 ? path : path.substring(i + 1); //todo @csy-h1 empty协议的用途？
             URL empty = consumer.setProtocol(Constants.EMPTY_PROTOCOL).addParameter(Constants.CATEGORY_KEY, category);
             urls.add(empty);
         }

@@ -260,7 +260,7 @@ public class URLTest {
         assertEquals("noValue", url.getParameter("noValue"));
     }
 
-    // TODO 不希望空格？ 详见： DUBBO-502 URL类对特殊字符处理统一约定
+    // todo @system 不希望空格？ 详见： DUBBO-502 URL类对特殊字符处理统一约定
     @Test
     public void test_valueOf_spaceSafe() throws Exception {
         URL url = URL.valueOf("http://1.2.3.4:8080/path?key=value1 value2");

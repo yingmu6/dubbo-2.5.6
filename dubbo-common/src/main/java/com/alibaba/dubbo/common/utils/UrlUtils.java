@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class UrlUtils {
 
-    public static URL parseURL(String address, Map<String, String> defaults) { //TODO 待细节调试
+    public static URL parseURL(String address, Map<String, String> defaults) { //todo @csy-h1 待细节调试
         if (address == null || address.length() == 0) {
             return null;
         }
@@ -400,7 +400,7 @@ public class UrlUtils {
     }
 
     public static boolean isMatchGlobPattern(String pattern, String value) {
-        if ("*".equals(pattern))/**@c TODO 星号从哪里设置的，数据格式是怎样的 */
+        if ("*".equals(pattern))/**@c todo @csy-h1 星号从哪里设置的，数据格式是怎样的 */
             return true;
         if ((pattern == null || pattern.length() == 0)
                 && (value == null || value.length() == 0))
