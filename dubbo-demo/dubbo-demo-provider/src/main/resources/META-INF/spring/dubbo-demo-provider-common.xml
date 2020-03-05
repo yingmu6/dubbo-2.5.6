@@ -30,9 +30,12 @@
 
     <!-- 和本地bean一样实现服务 -->
     <bean id="commonService" class="com.alibaba.dubbo.demo.provider.impl.CommonServiceImpl"/>
+    <bean id="commonServiceV2" class="com.alibaba.dubbo.demo.provider.impl.CommonServiceImplV2"/>
+
 
     <!-- 声明需要暴露的服务接口 -->
     <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.CommonServiceV2" ref="commonServiceV2"/>
 
 
 </beans>

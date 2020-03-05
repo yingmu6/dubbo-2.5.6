@@ -134,7 +134,17 @@ public final class ReflectUtils {
         return isPrimitive(cls);
     }
 
+    /**
+     * Dubbo重写过判断是否是基本类型
+     * 1）包含java中的基本类型，比如boolean、byte、int等
+     * 2）包含String、Boolean、Character封装类
+     * 3）包含Number的子类、Date的子类
+     */
     public static boolean isPrimitive(Class<?> cls) {
+        /**
+         * isPrimitive() 是否是基本类型，如boolean.class，而Boolean.class是封装类型
+         * isAssignableFrom()  1）表示当前接口是否是参数中类的接口  2）当前类是否是参数中类的父类（类与接口之间的关联关系）
+         */
         return cls.isPrimitive() || cls == String.class || cls == Boolean.class || cls == Character.class
                 || Number.class.isAssignableFrom(cls) || Date.class.isAssignableFrom(cls);
     }
@@ -631,7 +641,7 @@ public final class ReflectUtils {
      * @param name name.
      * @return Class instance.
      */
-    /**@c 将类型名称转换为class */
+    /**todo @chenSy 将类型名称转换为class */
     private static Class<?> name2class(ClassLoader cl, String name) throws ClassNotFoundException {
         int c = 0, index = name.indexOf('[');
         if (index > 0) {

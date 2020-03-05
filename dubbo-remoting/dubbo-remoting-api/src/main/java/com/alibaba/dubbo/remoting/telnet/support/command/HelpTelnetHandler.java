@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * HelpTelnetHandler
+ * HelpTelnetHandler 显示帮助命令
  *
  * @author william.liangf
  */

@@ -30,7 +30,7 @@ public class ReplierDispatcher implements Replier<Object> {
 
     private final Replier<?> defaultReplier;
 
-    private final Map<Class<?>, Replier<?>> repliers = new ConcurrentHashMap<Class<?>, Replier<?>>();
+    private final Map<Class<?>, Replier<?>> repliers = new ConcurrentHashMap<Class<?>, Replier<?>>();  //将回复者按照类型缓存起来
 
     public ReplierDispatcher() {
         this(null, null);

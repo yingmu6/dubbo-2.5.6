@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * JSON to Object visitor.
+ * JSON to Object visitor.（todo @chenSy 此类的用途？）
  *
  * @author qian.lei.
  */

@@ -21,7 +21,7 @@ import com.alibaba.dubbo.remoting.RemotingException;
 
 /**
  * TelnetHandler
- *
+ * anonymous(匿名的)
  * @author william.liangf
  */
 @SPI
@@ -29,7 +29,7 @@ import com.alibaba.dubbo.remoting.RemotingException;
 public interface TelnetHandler {// read finish
 
     /**
-     * telnet.
+     * telnet（远程登录）.
      *
      * @param channel
      * @param message

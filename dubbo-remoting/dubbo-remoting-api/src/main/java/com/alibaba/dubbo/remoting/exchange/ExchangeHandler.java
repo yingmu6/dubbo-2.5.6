@@ -24,7 +24,7 @@ import com.alibaba.dubbo.remoting.telnet.TelnetHandler;
  *
  * @author william.liangf
  */
-public interface ExchangeHandler extends ChannelHandler, TelnetHandler {
+public interface ExchangeHandler extends ChannelHandler, TelnetHandler { //既有通道事件处理功能，又有telnet处理功能
 
     /**
      * reply.（回答、回复）

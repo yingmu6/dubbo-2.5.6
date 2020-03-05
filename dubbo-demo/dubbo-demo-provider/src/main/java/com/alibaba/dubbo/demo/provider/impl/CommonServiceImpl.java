@@ -17,4 +17,13 @@ public class CommonServiceImpl implements CommonService {
         // logger.info("你好 Common");
         System.out.println("hello 你好");
     }
+
+    @Override
+    public String sayMulHello(String lang, String desc) {
+        if ("zh".equals(lang)) {
+            return "中文：12你好！" + desc;
+        } else {
+            return "英文：12hello！" + desc;
+        }
+    }
 }

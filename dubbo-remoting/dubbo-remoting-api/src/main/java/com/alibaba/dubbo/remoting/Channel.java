@@ -30,7 +30,12 @@ import java.net.InetSocketAddress;
 // java NIO中的Channel是处理IO操作，是数据的来源和数据目的地
 // Dubbo中的Channel只是选取了Netty中部分内容
 // Netty中的Channel接口抽象了底层socket的一些状态属性以及调用方法
-public interface Channel extends Endpoint { // todo @chenSy channel学习实践
+public interface Channel extends Endpoint {
+    /**
+     * 通道Channel：用来处理Buffer，和Buffer进行数据交互
+     * 从通道中读取数据read写到缓冲区buffer，把缓冲区的数据写到write()通道
+     * http://ifeve.com/channels/
+     */
 
     /**
      * get remote address.

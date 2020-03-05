@@ -22,7 +22,7 @@ import com.alibaba.dubbo.remoting.telnet.support.Help;
 
 /**
  * ExitTelnetHandler
- *
+ * todo @chenSy 使用怎样的命令？
  * @author william.liangf
  */
 @Activate
@@ -30,7 +30,7 @@ import com.alibaba.dubbo.remoting.telnet.support.Help;
 public class ExitTelnetHandler implements TelnetHandler {
 
     public String telnet(Channel channel, String message) {
-        channel.close();
+        channel.close(); //退出telnet，关闭服务
         return null;
     }
 

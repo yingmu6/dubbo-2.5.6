@@ -24,6 +24,7 @@ import com.alibaba.dubbo.rpc.protocol.dubbo.DubboProtocol;
 
 /**
  * ChangeServiceTelnetHandler
+ * todo @chensy 默认服务是啥？怎么改变服务，待调试
  *
  * @author william.liangf
  */
