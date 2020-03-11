@@ -27,7 +27,7 @@ package com.alibaba.dubbo.rpc;
 public interface Exporter<T> {// read finish
 
     /**
-     * get invoker. todo @csy-v1 方法debug调试分析
+     * get invoker. 方法debug调试分析：已调
      * 获取服务的执行者
      * @return invoker
      */
@@ -41,5 +41,21 @@ public interface Exporter<T> {// read finish
      * </code>
      */
     void unexport();
+
+    /**
+     * https://segmentfault.com/a/1190000015274825  关于ProxyFactory、Invoker、Protocol、Exporter概念
+     *
+     * Invoker ：一个可执行对象，能够根据方法名称、参数得到相应的执行结果
+     * Exporter：负责维护invoker的生命周期，包含一个Invoker对象
+     *
+     * Invoker这个可执行对象的执行过程分成三种类型：
+     * 本地执行的Invoker
+     * 远程通信执行的Invoker
+     * 多个类型2的Invoker聚合成的集群版Invoker
+     *
+     * Invocation则包含了需要执行的方法、参数等信息
+     *
+     * ProxyFactory 对于Server端，主要负责将服务统一进行包装成一个Invoker，通过反射来执行具体对象的方法
+     */
 
 }

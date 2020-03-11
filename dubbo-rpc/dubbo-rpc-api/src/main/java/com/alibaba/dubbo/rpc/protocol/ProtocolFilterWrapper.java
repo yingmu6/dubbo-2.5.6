@@ -30,7 +30,6 @@ import java.util.List;
 
 /**
  * ListenerProtocol
- *
  * @author william.liangf
  */
 public class ProtocolFilterWrapper implements Protocol {// read finish
@@ -45,13 +44,27 @@ public class ProtocolFilterWrapper implements Protocol {// read finish
         this.protocol = protocol;
     }
 
-    //构建调用链
-    private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) { //todo @csy-h2 构造调用链
+    /**
+     * 构建调用链（Filter：过滤器，具有拦截过滤的作用）
+     * https://juejin.im/post/5ad40ee1f265da2375075a23  Filter链原理
+     *
+     */
+    private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
         Invoker<T> last = invoker;
+        /**
+         * todo @csy-v2 自动激活了解
+         */
         List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);
         if (filters.size() > 0) {
             for (int i = filters.size() - 1; i >= 0; i--) {
                 final Filter filter = filters.get(i);
+                /**
+                 * 对象的拷贝 https://blog.csdn.net/ztchun/article/details/79110096
+                 * 对象的赋值，是引用的赋值，两个对象会指向内存堆中同一个对象，其中一个值的改变，会引起另一个值的改变
+                 * 拷贝的目的：两个对象属性的值相同，但互不影响
+                 * 浅复制：实现Cloneable接口，重写Object的clone() 方法
+                 * 深复制：实现Cloneable接口，对象以及对象中的对象 都要重写Object的clone() 方法
+                 */
                 final Invoker<T> next = last;
                 last = new Invoker<T>() { //匿名类实现
 
@@ -67,6 +80,10 @@ public class ProtocolFilterWrapper implements Protocol {// read finish
                         return invoker.isAvailable();
                     }
 
+                    /**
+                     * Java 实现单向列表  https://www.cnblogs.com/alsf/p/5520266.html
+                     * https://www.jianshu.com/p/73d56c3d228c 链表的数据结构
+                     */
                     public Result invoke(Invocation invocation) throws RpcException {
                         return filter.invoke(next, invocation);
                     }

@@ -38,10 +38,14 @@ import java.util.regex.Matcher;
  *
  * Dubbo解析-动态代理(Proxy)与包装(Wrapper)
  * https://my.oschina.net/u/2377110/blog/1835417
- *
+ * 对应适配器模式 ，Wrapper实现AOP功能
+ * todo @csy-v2 装饰器模式了解
  * @author qian.lei
  */
 
+/**
+ * todo @csy-v2 IOC与AOP了解
+ */
 public abstract class Wrapper {/**@c 包装类 */
     protected static final Logger logger = LoggerFactory.getLogger(Wrapper.class);
 

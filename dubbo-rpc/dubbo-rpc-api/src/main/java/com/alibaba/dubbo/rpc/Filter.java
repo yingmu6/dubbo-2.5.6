@@ -19,6 +19,7 @@ import com.alibaba.dubbo.common.extension.SPI;
 
 /**
  * Filter. (SPI, Singleton, ThreadSafe)
+ * todo @csy-v2 spring过滤器以及dubbo过滤器，过滤器链了解
  *
  * @author william.liangf
  */
