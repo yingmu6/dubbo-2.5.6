@@ -33,6 +33,7 @@ public class Menu {/**@c */
     ServletContext servletcontext;
     @Autowired
     RegistryServerSync registryServerSync;
+
     @Autowired
     private HttpServletRequest request;
 

@@ -29,7 +29,7 @@
                                 #if($language == "en")
                                     English
                                 #elseif($language == "zh_TW")
-                                    繁體中文
+                                    繁體888中文
                                 #else
                                     简体中文
                                 #end
@@ -40,7 +40,7 @@
                                         onblur="byId('showLanguage').style.display = ''; byId('chooseLanguage').style.display = 'none';">
                                     <option value="en" #if($language == "en")selected="selected"#end>English</option>
                                     <option value="zh" #if($language == "zh")selected="selected"#end>简体中文</option>
-                                    <option value="zh_TW" #if($language == "zh_TW")selected="selected"#end>繁體中文</option>
+                                    <option value="zh_TW" #if($language == "zh_TW")selected="selected"#end>繁體999中文</option>
                                 </select>
                             </div>
                         </td>
