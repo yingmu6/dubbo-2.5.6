@@ -3,6 +3,7 @@ package com.alibaba.dubbo.demo.consumer;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.demo.CommonService;
+import com.alibaba.dubbo.demo.CommonServiceV2;
 import com.alibaba.dubbo.demo.DemoService;
 import com.alibaba.dubbo.rpc.RpcContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -17,8 +18,8 @@ public class ConsumerForCommon {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/dubbo-demo-consumer.xml"});
         context.start();
 
-        CommonService commonService = (CommonService) context.getBean("commonService");
-        commonService.sayHello();
+        CommonServiceV2 commonServiceV2 = (CommonServiceV2) context.getBean("commonServiceV2");
+        System.out.println(commonServiceV2.sayMulHello("zh", "你好"));
 //        ConsumerForCommon test = new ConsumerForCommon();
 //        test.dealRpcContext(context);1
         System.in.read();

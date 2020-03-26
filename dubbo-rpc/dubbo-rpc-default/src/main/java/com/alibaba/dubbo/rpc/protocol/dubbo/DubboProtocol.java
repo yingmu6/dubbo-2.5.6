@@ -266,7 +266,6 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         //client 也可以暴露一个只有server可以调用的服务。
         boolean isServer = url.getParameter(Constants.IS_SERVER_KEY, true);
         if (isServer) {
-            /**@c todo @csy-v1 服务端、客户端待了解 */
             ExchangeServer server = serverMap.get(key);
             if (server == null) {
                 serverMap.put(key, createServer(url)); //重点：创建服务

@@ -45,6 +45,8 @@ import java.util.regex.Matcher;
 
 /**
  * todo @csy-v2 IOC与AOP了解
+ *
+ * todo @csy-v2 代理设计模式了解
  */
 public abstract class Wrapper {/**@c 包装类 */
     protected static final Logger logger = LoggerFactory.getLogger(Wrapper.class);

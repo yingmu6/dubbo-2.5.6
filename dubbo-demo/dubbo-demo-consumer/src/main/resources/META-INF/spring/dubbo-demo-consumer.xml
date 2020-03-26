@@ -32,4 +32,7 @@
     local regular interface -->
     <dubbo:reference id="commonService" check="false" interface="com.alibaba.dubbo.demo.CommonService"/>
 
+    <dubbo:reference id="commonServiceV2" check="false" interface="com.alibaba.dubbo.demo.CommonServiceV2"/>
+
+
 </beans>

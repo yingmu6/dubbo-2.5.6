@@ -79,7 +79,7 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {// read fi
             public void unexport() {
                 super.unexport();
                 exporterMap.remove(uri);
-                if (runnable != null) {
+                if (runnable != null) { // 取消暴露时，若运行的线程没有结束，继续运行
                     try {
                         runnable.run();
                     } catch (Throwable t) {
