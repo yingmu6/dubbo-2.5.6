@@ -9,11 +9,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 /**
  * 常用功能点
  */
-public class ConsumerForCommon {
+public class ConsumerForCommonV2 {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static void main(String[] args) throws Exception {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/dubbo-demo-consumer.xml"});
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/dubbo-demo-consumer-v2.xml"});
         context.start();
 
         for (int i = 0; i < 10; i++) {
@@ -23,20 +23,5 @@ public class ConsumerForCommon {
 //        test.dealRpcContext(context);1
         }
         System.in.read();
-    }
-
-    /**
-     * 上下文 RpcContext
-     */
-    public void dealRpcContext(ClassPathXmlApplicationContext context) {
-        CommonService commonService = (CommonService) context.getBean("commonService"); // 获取远程服务代理
-        RpcContext rpcContext = RpcContext.getContext();
-
-        commonService.sayHello();
-
-        RpcContext rpcContext2 = RpcContext.getContext();
-        logger.info("是否提供方：" + rpcContext2.isProviderSide());
-        logger.info("是否消费方：" + rpcContext2.isConsumerSide());
-        System.out.println("路径URL:" + rpcContext2.getUrl());
     }
 }

@@ -1,9 +1,0 @@
-19/6/2
-1.AbstractConfig中appendProperties 为啥name属性有值的情况下getName中getter.invoke(config, new Object[0])返回Null？
-解：看错了，getter.invoke不为空的
-2.System.getProperty(..) 值从哪里设置的？
-
-3.appendProperties附加属性的用途？
-
-19/6/28
-1.服务暴露中：协议暴露前处理组装数据、创建服务端并打开端口，但没看注册到注册中心？

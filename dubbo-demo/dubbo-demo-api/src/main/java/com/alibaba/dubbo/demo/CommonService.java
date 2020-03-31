@@ -6,6 +6,5 @@ package com.alibaba.dubbo.demo;
  * @date 2019-11-07 17:51
  */
 public interface CommonService {
-    void sayHello();
-    String sayMulHello(String lang, String desc);
+    String sayHello();
 }

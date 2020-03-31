@@ -11,19 +11,20 @@ import com.alibaba.dubbo.demo.CommonService;
 public class CommonServiceImpl implements CommonService {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    // 上下文信息处理
-    @Override
-    public void sayHello() {
-        // logger.info("你好 Common");
-        System.out.println("hello 你好");
+    private String source;
+
+    public String getSource() {
+        return source;
     }
 
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    // 上下文信息处理
     @Override
-    public String sayMulHello(String lang, String desc) {
-        if ("zh".equals(lang)) {
-            return "中文：12你好！" + desc;
-        } else {
-            return "英文：12hello！" + desc;
-        }
+    public String sayHello() {
+        // logger.info("你好 Common");
+        return "来自：" + getSource() + " ,hello 你好";
     }
 }
