@@ -78,7 +78,7 @@ import java.util.concurrent.ConcurrentHashMap;
 // dubbo的URL采用总线型方法，即配置都放在url里面的参数
 
 /**
- * todo @csy-v1 URL学习实践
+ * todo @csy-v1 URL学习实践？dubbo URL的用户以及应用场景
  */
 public final class URL implements Serializable {//可进行序列化
 
@@ -90,6 +90,7 @@ public final class URL implements Serializable {//可进行序列化
 
     private final String protocol;
 
+    // todo @csy-v2 用户名：密码用户场景是怎样的？怎么使用
     private final String username;
 
     private final String password;
@@ -100,7 +101,10 @@ public final class URL implements Serializable {//可进行序列化
 
     private final String path; //就是接口的完整名称，如com.alibaba.dubbo.rpc.protocol.dubbo.support.DemoService
 
-    //参数集合(附加参数集合，如side、application、generic等)
+    /**
+     * 参数集合(附加参数集合，如side、application、generic等)
+     * todo @csy-v2 断点分析，看里面存入的值以及写入的地方
+     */
     private final Map<String, String> parameters;
 
     // ==== cache ====  todo @csy-h1 URL中怎样使用缓存的？
@@ -187,7 +191,8 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     /**
-     * todo @csy-v1 String与Url转换
+     * @csy-v1 String与Url转换(把字符串的url构造成URL对象)
+     * 从url字符串中解析出相关的参数，如：username、password、host等，然后构建URL对象
      * Parse url string
      *
      * @param url URL string
@@ -266,7 +271,10 @@ public final class URL implements Serializable {//可进行序列化
             return "";
         }
         try {
-            //对URL中网际协议以外的字符编码
+            /**
+             * 对URL中网际协议以外的字符编码
+             * todo @csy-v2 为什么需要url需要编解码？url编解码以及URLEncoder、URLDecoder使用
+             */
             return URLEncoder.encode(value, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -308,7 +316,7 @@ public final class URL implements Serializable {//可进行序列化
         return new URL(protocol, username, password, host, port, path, getParameters());
     }
 
-    public String getAuthority() {
+    public String getAuthority() { // anthority：权威、全力
         if ((username == null || username.length() == 0)
                 && (password == null || password.length() == 0)) {
             return null;
@@ -378,6 +386,7 @@ public final class URL implements Serializable {//可进行序列化
         return getBackupAddress(0);
     }
 
+    // todo @csy-v2 什么是回路地址？用途值的是啥
     public String getBackupAddress(int defaultPort) {
         StringBuilder address = new StringBuilder(appendDefaultPort(getAddress(), defaultPort));
         String[] backups = getParameter(Constants.BACKUP_KEY, new String[0]);
@@ -402,15 +411,18 @@ public final class URL implements Serializable {//可进行序列化
         return urls;
     }
 
+    // 在ip地址上附加默认端口
     private String appendDefaultPort(String address, int defaultPort) {
         if (address != null && address.length() > 0
                 && defaultPort > 0) {
             int i = address.indexOf(':');
+            // ip地址如：10.20.153.10
             if (i < 0) {
                 return address + ":" + defaultPort;
+            // ip地址如：10.20.153.10:0
             } else if (Integer.parseInt(address.substring(i + 1)) == 0) {
                 return address.substring(0, i + 1) + defaultPort;
-            }
+            } //若指定了ip地址的端口，则不适用默认端口
         }
         return address;
     }
@@ -454,6 +466,7 @@ public final class URL implements Serializable {//可进行序列化
         return value;
     }
 
+    // 获取url中指定的key对应的值，若不存在则返回默认值
     public String getParameter(String key, String defaultValue) {
         String value = getParameter(key);
         if (value == null || value.length() == 0) {
@@ -462,16 +475,18 @@ public final class URL implements Serializable {//可进行序列化
         return value;
     }
 
+    // 获取url中指定的key的值的数组，
     public String[] getParameter(String key, String[] defaultValue) {
         String value = getParameter(key);
         if (value == null || value.length() == 0) {
             return defaultValue;
         }
+        // todo @csy-v2 match与pattern以及正则表达基本使用
         return Constants.COMMA_SPLIT_PATTERN.split(value);//将值按逗号分隔
     }
 
     //此处的numbers的用途？解：用来管理各种类型的参数值
-    private Map<String, Number> getNumbers() {
+    private Map<String, Number> getNumbers() { // todo @csy-v2 数字操作类Number了解
         if (numbers == null) { // 允许并发重复创建
             numbers = new ConcurrentHashMap<String, Number>();
         }
@@ -499,6 +514,7 @@ public final class URL implements Serializable {//可进行序列化
         return u;
     }
 
+    // 获取参数对应的基本类型的值
     public double getParameter(String key, double defaultValue) {
         Number n = getNumbers().get(key);
         if (n != null) {
@@ -513,6 +529,10 @@ public final class URL implements Serializable {//可进行序列化
         return d;
     }
 
+    /**
+     * 判断本地缓存的map中是否存在值
+     * 若存在则直接返回值，若不存在尝试查找默认值
+     */
     public float getParameter(String key, float defaultValue) {
         Number n = getNumbers().get(key);
         if (n != null) {
@@ -619,6 +639,7 @@ public final class URL implements Serializable {//可进行序列化
         return value;
     }
 
+    // 获取绝对值，positive：绝对的
     public int getPositiveParameter(String key, int defaultValue) {
         if (defaultValue <= 0) {
             throw new IllegalArgumentException("defaultValue <= 0");
@@ -691,6 +712,7 @@ public final class URL implements Serializable {//可进行序列化
         return value;
     }
 
+    // todo @csy-v2 方法中的参数是指什么？ 具体使用场景
     public String getMethodParameter(String method, String key, String defaultValue) {
         String value = getMethodParameter(method, key);
         if (value == null || value.length() == 0) {
@@ -902,6 +924,7 @@ public final class URL implements Serializable {//可进行序列化
         return Constants.ANYHOST_VALUE.equals(host) || getParameter(Constants.ANYHOST_KEY, false);
     }
 
+    // 添加参数并且对值进行编码
     public URL addParameterAndEncoded(String key, String value) {
         if (value == null || value.length() == 0) {
             return this;
@@ -909,7 +932,7 @@ public final class URL implements Serializable {//可进行序列化
         return addParameter(key, encode(value));
     }
 
-    // 添加url中的参数
+    // 添加url中的参数，添加基本类型的参数
     public URL addParameter(String key, boolean value) {
         return addParameter(key, String.valueOf(value));
     }

@@ -346,7 +346,7 @@ public class Constants {
     public static final String COMMA_SEPARATOR = ",";
 
     public static final Pattern COMMA_SPLIT_PATTERN = Pattern
-            .compile("\\s*[,]+\\s*");
+            .compile("\\s*[,]+\\s*"); // todo @csy-v2 此处正则表达式的含义
 
     public final static String PATH_SEPARATOR = "/";
 

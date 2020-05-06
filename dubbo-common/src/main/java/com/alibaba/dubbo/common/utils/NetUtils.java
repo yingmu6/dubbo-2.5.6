@@ -257,6 +257,8 @@ public class NetUtils {
     }
 
     /**
+     * todo @csy-v2 ip、host相关概念了解
+     * 获取主机名对应的ip地址
      * @param hostName
      * @return ip address or hostName if UnknownHostException
      */
@@ -268,6 +270,9 @@ public class NetUtils {
         }
     }
 
+    /**
+     * todo @csy-v2  Socket了解以及应用场景（套接字的概念）
+     */
     public static String toAddressString(InetSocketAddress address) {
         return address.getAddress().getHostAddress() + ":" + address.getPort();
     }
