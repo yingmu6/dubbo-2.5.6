@@ -90,7 +90,15 @@ public final class URL implements Serializable {//可进行序列化
 
     private final String protocol;
 
-    // todo @csy-v2 用户名：密码用户场景是怎样的？怎么使用
+    /**
+     * @csy-v2 用户名：密码用户场景是怎样的？怎么使用
+     * https://www.cnblogs.com/insane-Mr-Li/p/10142461.html URL与资源
+     * 有些服务器都要求输入用户名和密码才允许用户访问数据，比如FTP，可选的
+     *
+     * URL是互联网资源的标准化名称、提供了一种定位互联网上任意资源的手段
+     * 大多数URL协的语法都建立在下面9个部分构成的通用格式上：
+     * <scheme>://<user>:<password>@<host>:<port>/<path>;<params>?<query>#<frag>
+     */
     private final String username;
 
     private final String password;
@@ -1039,6 +1047,7 @@ public final class URL implements Serializable {//可进行序列化
         // 如果没有修改，直接返回。
         if (hasAndEqual) return this;
 
+        // 参数存在修改，则更新参数的值
         Map<String, String> map = new HashMap<String, String>(getParameters());
         map.putAll(parameters);
         return new URL(protocol, username, password, host, port, path, map);
@@ -1064,7 +1073,7 @@ public final class URL implements Serializable {//可进行序列化
         Map<String, String> map = new HashMap<String, String>();
         int len = pairs.length / 2;
         for (int i = 0; i < len; i++) {
-            map.put(pairs[2 * i], pairs[2 * i + 1]);
+            map.put(pairs[2 * i], pairs[2 * i + 1]); // todo @csy-v2 为啥此处下标要乘以2
         }
         return addParameters(map);
     }
@@ -1260,6 +1269,7 @@ public final class URL implements Serializable {//可进行序列化
         return buf.toString();
     }
 
+    // todo @csy-v2 装换为java URL的用途？
     public java.net.URL toJavaURL() {
         try {
             return new java.net.URL(toString());
@@ -1404,7 +1414,7 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() { // todo @csy-v2 为啥重新hashcode、equalus方法？
         final int prime = 31;
         int result = 1;
         result = prime * result + ((host == null) ? 0 : host.hashCode());

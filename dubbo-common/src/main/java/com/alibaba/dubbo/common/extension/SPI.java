@@ -60,5 +60,16 @@ public @interface SPI {//表示可以通过SPI的方式，目的是获取直接�
      * 缺省扩展点名。（只能有一个扩展名，比如netty，不能有多个用逗号分隔）
      */
     String value() default "";
-
+    /**
+     * @csy-v2 注解了解学习
+     * https://juejin.im/post/5b45bd715188251b3a1db54f
+     * 注解的本质就是一个继承了Annotation接口的接口,可以去反编译任意一个注解类，就会得到结果的
+     * public interface Override extends Annotation{}
+     *
+     * 随着项目越来越庞大，XML的内容也越来越复杂，维护成本变高
+     * 注解可以提供更大的便捷性，易于维护修改，但耦合度高，而XML相对于注解则是相反的
+     *
+     * 『元注解』是用于修饰注解的注解，通常用在注解的定义上。一般用于指定某个注解生命周期以及作用目标等信息。比如@Target，@Retention
+     * 注解与反射：通过反射获取到注解的值
+     */
 }

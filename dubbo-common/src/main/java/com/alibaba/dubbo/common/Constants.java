@@ -345,8 +345,21 @@ public class Constants {
 
     public static final String COMMA_SEPARATOR = ",";
 
+    /**
+     * @csy-v2 此处正则表达式的含义
+     * 正则表达式，又称规则表达式。（英语：Regular Expression，在代码中常简写为regex、regexp或RE），
+     * 计算机科学的一个概念。正则表达式通常被用来检索、替换那些符合某个模式(规则)的文本。
+     * https://baike.baidu.com/item/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F
+     *
+     * 字符串是编程时涉及到的最多的一种数据结构，对字符串进行操作的需求几乎无处不在。比如判断一个字符串是否是合法的Email地址，虽然可以编程提取@前后的子串，再分别判断是否是单词和域名，但这样做不但麻烦，而且代码难以复用。
+     * 正则表达式是一种用来匹配字符串的强有力的武器。它的设计思想是用一种描述性的语言来给字符串定义一个规则，凡是符合规则的字符串，我们就认为它“匹配”了，否则，该字符串就是不合法的
+     * https://www.liaoxuefeng.com/wiki/1016959663602400/1017639890281664 正则表达式
+     * 从左到右解读正则表达式，如[0-9a-zA-Z\_]
+     *
+     * http://wangwl.net/static/projects/visualRegex/#flags=&source=%5Cs*%5B%2C%5D%2B%5Cs*&match=&method=exec  可视化工具，可验证正则表达式
+     */
     public static final Pattern COMMA_SPLIT_PATTERN = Pattern
-            .compile("\\s*[,]+\\s*"); // todo @csy-v2 此处正则表达式的含义
+            .compile("\\s*[,]+\\s*"); //
 
     public final static String PATH_SEPARATOR = "/";
 

@@ -257,10 +257,19 @@ public class NetUtils {
     }
 
     /**
-     * todo @csy-v2 ip、host相关概念了解
+     * @csy-v2 ip、host相关概念了解
      * 获取主机名对应的ip地址
      * @param hostName
      * @return ip address or hostName if UnknownHostException
+     *
+     * https://www.cnblogs.com/fangzuchang/p/6702023.html  网址（url），域名，ip地址，dns，hosts之间的关系
+     * ip：主机在网络中的地址
+     * host：主机域名，相比ip便于记忆，相当于ip的别名
+     * DNS: Domain Name System域名系统，用于IP与域名的转换
+     * HOSTS文件相当于一个本地的小型DNS服务器，电脑会优先在本地的HOSTS文件中查找网址对应的IP，如果没有找到，才向DNS请求。
+     * URL：网址，域名前加上传输协议信息及主机类型信息就构成了网址(URL）
+     *
+     * https://www.jianshu.com/p/6c6b9d629bae Hosts详解（含域名、DNS）
      */
     public static String getIpByHost(String hostName) {
         try {
@@ -271,12 +280,43 @@ public class NetUtils {
     }
 
     /**
-     * todo @csy-v2  Socket了解以及应用场景（套接字的概念）
+     * @csy-v2  Socket了解以及应用场景（套接字的概念）
+     * http://c.biancheng.net/view/2123.html socket概念
+     *
+     * 网络编程就是编写程序使联网的计算机相互交换数据。
+     * socket 的原意是“插座”，在计算机通信领域，socket 被翻译为“套接字”，它是计算机之间进行通信的一种约定或一种方式。
+     * 通过 socket 这种约定，一台计算机可以接收其他计算机的数据，也可以向其他计算机发送数据
+     * Socket跟TCP/IP并没有必然的联系。Socket的出现只是可以更方便的使用TCP/IP协议栈而已，其对TCP/IP进行了抽象，
+     * 形成了几个最基本的函数接口。比如create，listen，accept，connect，read和write等等。
+     *
+     * https://segmentfault.com/a/1190000014044351 一篇搞懂TCP、HTTP、Socket、Socket连接池
+     * 网络通信的分层模型：七层模型，亦称OSI(Open System Interconnection)模型 ，Interconnection：互联
+     * 自下往上分为：物理层、数据链路层、网络层、传输层、会话层、表示层和应用层。所有有关通信的都离不开它，
+     *
+     * 所谓长连接，指在一个TCP连接上可以连续发送多个数据包，在TCP连接保持期间，如果没有数据包发送，
+     * 需要双方发检测包以维持此连接(心跳包)，一般需要自己做在线维持。 短连接是指通信双方有数据交互时，就建立一个TCP连接，数据发送完成后，则断开此TCP连接。
+     *
+     * 通常的短连接操作步骤是：
+     * 连接→数据传输→关闭连接；
+     * 而长连接通常就是：
+     * 连接→数据传输→保持连接(心跳)→数据传输→保持连接(心跳)→……→关闭连接；
+     *
+     * 心跳包就是在客户端和服务端间 定时通知 对方自己状态的一个自己定义的命令字，按照一定的时间间隔发送，类似于心跳，所以叫做心跳包。
+     * 定时发送一个自定义的结构体（心跳包或心跳帧），让对方知道自己“在线”,以确保链接的有效性
      */
     public static String toAddressString(InetSocketAddress address) {
         return address.getAddress().getHostAddress() + ":" + address.getPort();
     }
 
+    /**
+     * 基于TCP协议上自定义自己的应用层的协议需要解决的几个问题：
+     * 1) 心跳包格式的定义及处理
+     * 2) 报文头的定义，就是你发送数据的时候需要先发送报文头，报文里面能解析出你将要发送的数据长度
+     * 3) 你发送数据包的格式，是json的还是其他序列化的方式
+     *
+     * 什么是Socket连接池,池的概念可以联想到是一种资源的集合，所以Socket连接池，就是维护着一定数量Socket长连接的集合。
+     * 它能自动检测Socket长连接的有效性，剔除无效的连接，补充连接池的长连接的数量。
+     */
     public static InetSocketAddress toAddress(String address) {
         int i = address.indexOf(':');
         String host;
