@@ -281,7 +281,18 @@ public final class URL implements Serializable {//可进行序列化
         try {
             /**
              * 对URL中网际协议以外的字符编码
-             * todo @csy-v2 为什么需要url需要编解码？url编解码以及URLEncoder、URLDecoder使用
+             * @csy-v2 为什么需要url需要编解码？
+             *
+             * https://www.ruanyifeng.com/blog/2010/02/url_encoding.html 关于URL编码
+             * URL就是网址，只要上网，就一定会用到。
+             * 一般来说，URL只能使用英文字母、阿拉伯数字和某些标点符号，不能使用其他文字和符号，这是因为网络标准RFC 1738做了硬性规定。如果包含了其它字符，比如汉字等，就需要编码后使用
+             * 有几方面的编码，如：1）网址路径的编码，用的是utf-8编码 2）查询字符串的编码，用的是操作系统的默认编码
+             * 3）GET和POST方法的编码，用的是网页的编码 4）Ajax调用的URL包含汉字不同浏览器有不同的编码
+             * 保证客户端只用一种编码方法向服务器发出请求方式：使用Javascript先对URL编码，然后再向服务器提交，不要给浏览器插手的机会。因为Javascript的输出总是一致的，所以就保证了服务器得到的数据是格式统一的
+             *
+             * 编码：是信息从一种形式或格式转换为另一种形式的过程。编码是将用预先规定的方法 将文字、数字或其它对象编成数码，或将信息、数据转换成规定的电脉冲信号。解码，是编码的逆过程。
+             * 编码是从一个字符，比如‘郭’，到一段二进制码流的过程。解码是从一段二进制码流到一个字符的过程。
+             * https://blog.csdn.net/Marksinoberg/article/details/52254401 编码，解码，乱码，问题详解
              */
             return URLEncoder.encode(value, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -394,7 +405,15 @@ public final class URL implements Serializable {//可进行序列化
         return getBackupAddress(0);
     }
 
-    // todo @csy-v2 什么是回路地址？用途值的是啥
+    /**
+     * @csy-v2 什么是回路地址？用途值的是啥
+     * 回路地址：一般都会用来检查本地网络协议、基本数据接口等是否正常的
+     * 本地回环地址指的是以127开头的地址（127.0.0.1 - 127.255.255.254），通常用127.0.0.1来表示
+     *
+     * https://blog.csdn.net/JohnLee_chun/article/details/54020119  127.0.0.1与localhost
+     * localhost 是不经网卡传输！它不受网络防火墙和网卡相关的的限制。
+     * 127.0.0.1 是通过网卡传输，依赖网卡，并受到网络防火墙和网卡相关的限制。
+     */
     public String getBackupAddress(int defaultPort) {
         StringBuilder address = new StringBuilder(appendDefaultPort(getAddress(), defaultPort));
         String[] backups = getParameter(Constants.BACKUP_KEY, new String[0]);
@@ -489,12 +508,37 @@ public final class URL implements Serializable {//可进行序列化
         if (value == null || value.length() == 0) {
             return defaultValue;
         }
-        // todo @csy-v2 match与pattern以及正则表达基本使用
+        // @csy 20/05 finish match与pattern以及正则表达基本使用
         return Constants.COMMA_SPLIT_PATTERN.split(value);//将值按逗号分隔
     }
 
-    //此处的numbers的用途？解：用来管理各种类型的参数值
-    private Map<String, Number> getNumbers() { // todo @csy-v2 数字操作类Number了解
+    /**
+     * @csy 20/05 finish
+     * 此处的numbers的用途？解：用来管理各种类型的参数值
+     * https://www.runoob.com/java/java-number.html  Java Number & Math 类
+     * 一般地，当需要使用数字的时候，我们通常使用内置数据类型，如：byte、int、long、double 等
+     * 然而，在实际开发过程中，我们经常会遇到需要使用对象，而不是内置数据类型的情形。为了解决这个问题，Java 语言为每一个内置数据类型提供了对应的包装类。
+     * 所有的包装类（Integer、Long、Byte、Double、Float、Short）都是抽象类 Number 的子类。
+     *
+     * 拆箱、装箱 https://juejin.im/post/5b5183e7e51d451912531cb5
+     * Java中基础数据类型与它们的包装类进行运算时，编译器会自动帮我们进行转换，转换过程对程序员是透明的，
+     * 这就是装箱和拆箱，装箱和拆箱可以让我们的代码更简洁易懂
+     *
+     * 拆箱：将包装类转换为基本类型数据，装箱：将基本类型数据封装为包装类
+     * 编译器会自动帮我们进行装箱或拆箱.
+     * 进行 = 赋值操作（装箱或拆箱）
+     * 进行+，-，*，/混合运算 （拆箱）
+     * 进行>,<,==比较运算（拆箱）
+     * 调用equals进行比较（装箱）
+     * ArrayList,HashMap等集合类 添加基础类型数据时（装箱）
+     *
+     * https://www.jianshu.com/p/0ce2279c5691  Java 自动装箱与拆箱的实现原理
+     *
+     * https://ghohankawk.github.io/2017/06/02/java-match/ java中的pattern和matcher的用法
+     * https://www.runoob.com/java/java-regular-expressions.html  Java 正则表达式
+     *
+     */
+    private Map<String, Number> getNumbers() {
         if (numbers == null) { // 允许并发重复创建
             numbers = new ConcurrentHashMap<String, Number>();
         }

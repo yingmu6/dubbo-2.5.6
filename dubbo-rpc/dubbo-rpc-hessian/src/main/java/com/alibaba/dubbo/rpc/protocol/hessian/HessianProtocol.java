@@ -48,7 +48,7 @@ public class HessianProtocol extends AbstractProxyProtocol { //todo @csy-v1 hess
 
     private final Map<String, HttpServer> serverMap = new ConcurrentHashMap<String, HttpServer>();
 
-    private final Map<String, HessianSkeleton> skeletonMap = new ConcurrentHashMap<String, HessianSkeleton>();
+    private final Map<String, HessianSkeleton> skeletonMap = new ConcurrentHashMap<String, HessianSkeleton>(); // skeleton:骨架
 
     private HttpBinder httpBinder;
 
@@ -68,15 +68,15 @@ public class HessianProtocol extends AbstractProxyProtocol { //todo @csy-v1 hess
         String addr = url.getIp() + ":" + url.getPort();
         HttpServer server = serverMap.get(addr);
         if (server == null) { // 若本地缓存没有，则绑定url生成server
-            server = httpBinder.bind(url, new HessianHandler()); // todo @csy-v2 此处bind会选择哪个jetty，还是http？
+            server = httpBinder.bind(url, new HessianHandler());
             serverMap.put(addr, server);
         }
         final String path = url.getAbsolutePath();
         HessianSkeleton skeleton = new HessianSkeleton(impl, type);
-        skeletonMap.put(path, skeleton);
+        skeletonMap.put(path, skeleton); // https://www.jianshu.com/p/99c87815fc31  Dubbo Rest服务发布流程
         return new Runnable() {
             public void run() {
-                skeletonMap.remove(path); // todo @csy-v1 此处为啥要移除key？
+                skeletonMap.remove(path); // @csy-v1 此处为啥要移除key？ 暂不了解
             }
         };
     }
