@@ -344,8 +344,14 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         }
         return server;
     }
-    //构建Invoker实例
-    /**@c 引用服务 */  //serviceType 接口完整名称
+
+    /**
+     * 引用服务（引用某种类型type，数据内容为url的服务，返回服务的执行者invoker）
+     * 1）构建DubboInvoker对象
+     * 2）将invoker实例，加到Set<Invoker<?>>集合中
+     * 3）返回实例Invoker
+     * 不管是服务端还是客户端，所有的调用都往invoker靠
+     */
     public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
         // create rpc invoker.
         DubboInvoker<T> invoker = new DubboInvoker<T>(serviceType, url, getClients(url), invokers);
@@ -353,7 +359,13 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         return invoker;
     }
 
-    /**@c 进行条件判断以及初始化 */
+    /**
+     * 通过url获取ExchangeClient 交换客户端
+     * 1）从url中获取connections的配置，若没有设置连接数，则为共享连接
+     * 2）遍历ExchangeClient数组
+     *   2.1）若是共享连接，通过getSharedClient(url)获取共享连接
+     *   2.2）若是每服务，每连接， 通过initClient(url)获取连接
+     */
     private ExchangeClient[] getClients(URL url) {
         //通过连接数判断是否共享连接
         boolean service_share_connect = false;
@@ -377,16 +389,26 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     }
 
     /**
-     * 获取共享连接
+     * 获取共享连接（若不存在client，则创建；若存在client并且没有关闭，引用计数加1后直接返回）
+     * 1）以通讯地址为key（host或host + ":" + port），从Map<String, ReferenceCountExchangeClient>
+     *     获取到ReferenceCountExchangeClient的实例
+     * 2）判断ReferenceCountExchangeClient是否为空，若为空则不处理
+     *     若client没有关闭，则将AtomicInteger refenceCount引用计数加1
+     *     若client关闭了，则将改key从referenceClientMap移除
+     * 3）同步块处理
+     *     3.1）initClient初始化client，获取到ExchangeClient
+     *     3.2）构建ReferenceCountExchangeClient实例，赋值client
+     *     3.3）referenceClientMap设置key对应的client值
+     *         移除延迟client  ghostClientMap.remove(key)
      */
-    private ExchangeClient getSharedClient(URL url) {/**@c */
+    private ExchangeClient getSharedClient(URL url) {
         String key = url.getAddress();
         ReferenceCountExchangeClient client = referenceClientMap.get(key);
         if (client != null) {//初始时client为NUll
             if (!client.isClosed()) {//如果没有关闭，则原子自增
                 client.incrementAndGetCount();
                 return client;
-            } else {
+            } else { // 已经关闭的，但是referenceClientMap没有被移除（todo @csy-v2 这种会在什么场景出现？ ）
                 referenceClientMap.remove(key);
             }
         }
@@ -400,9 +422,16 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     }
 
     /**
-     * 创建新连接.（每个服务、每个连接）
+     * 创建Client（没有判断客户端是否存在，每个请求服务就创建一个连接）
+     * 1）获取传输方式，client尝试从url获取"client"键对应的值，若没有则取"server"键对应的值，"server"默认的值为"netty"
+     *    配置先从客户端参数查找，若没有查到，则从服务端查找（此处体现出参数优先级，覆盖的原则 consumer > provider）
+     * 2）添加参数到url中，参数有codec：编解码方式 默认为DubboCodec，heartbeat 心跳检测时间，默认60秒
+     * 3）检测url中传输方式Transporter，是否支持
+     * 4）判断是否设置了延迟连接
+     *   4.1）若是延迟连接，则通过LazyConnectExchangeClient构建客户端Client
+     *   4.2）若不是延迟连接，则通过Exchangers.connect 创建客户端Client
      */
-    private ExchangeClient initClient(URL url) {/**@c */
+    private ExchangeClient initClient(URL url) {
 
         // client type setting.
         String str = url.getParameter(Constants.CLIENT_KEY, url.getParameter(Constants.SERVER_KEY, Constants.DEFAULT_REMOTING_CLIENT));

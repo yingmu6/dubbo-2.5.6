@@ -25,7 +25,7 @@ import io.netty.util.internal.logging.InternalLoggerFactory;
  * @author <a href="mailto:gang.lvg@taobao.com">kimi</a>
  * @author <a href="mailto:liujie.qlj@alibaba-inc.com">qinliujie</a>
  */
-public class NettyHelper {
+public class NettyHelper { // netty帮助类
 
     public static void setNettyLoggerFactory() {
         InternalLoggerFactory factory = InternalLoggerFactory.getDefaultFactory();

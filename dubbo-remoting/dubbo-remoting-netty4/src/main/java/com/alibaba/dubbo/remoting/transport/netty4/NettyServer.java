@@ -74,6 +74,35 @@ public class NettyServer extends AbstractServer implements Server {
         super(url, ChannelHandlers.wrap(handler, ExecutorUtil.setThreadName(url, SERVER_THREAD_POOL_NAME)));
     }
 
+    /**
+     * Netty打开服务端 -- 代码流程
+     * 1）设置日志工厂处理日志
+     * 2）构建ServerBootstrap 服务器引导类
+     * 3）构建两个EventLoopGroup（事件循环组），bossGroup、workerGroup
+     *    3.1）NioEventLoopGroup(int nThreads, ThreadFactory threadFactory) 入参为，线程数和线程工厂
+     *        bossGroup的默认线程工厂名为NettyServerBoss， workerGroup的默认线程工厂名为NettyServerWorker
+     *    3.2）主线程Boss就一个，而工作线程有多个，具体数目从url中的参数iothreads获取，默认的线程数
+     *         Math.min(Runtime.getRuntime().availableProcessors() + 1, 32) 将进程数+1与32比较，谁小取谁，也就是默认情况下，最多是32个线程数
+     * 4）创建NettyServerHandler，继承了ChannelDuplexHandler双工通道，重写通道中的方法，将实现转换为dubbo的channel处理
+     *    即对外接口相同，但内部实现不同（对外接口是ChannelDuplexHandler，但内部实现是ChannelHandler）
+     *    4.1）构建NettyServerHandler，初始化属性URL、ChannelHandler（传入getUrl()， this）
+     *         因为NettyServer是AbstractPeer子类，而AbstractPeer是ChannelHandler实现类，所以可以传入this
+     *    4.2）重写ChannelDuplexHandler中channelActive、channelInactive等方法，内部实现用ChannelHandler处理
+     * 5）获取通道映射map， Map<String, Channel> channels
+     * 6）bootstrap组装相关参数
+     *    6.1）设置EventLoopGroup事件循环组，bossGroup为父循环组，workerGroup为子循环组
+     *    6.2）指定通道类型为NioServerSocketChannel
+     *    6.3）设置childOption参数，TCP_NODELAY：tcp是否延迟，SO_REUSEADDR：是否重用地址，
+     *      ALLOCATOR：PooledByteBufAllocator
+     *    6.4）设置childHandler处理类，入参为Netty的 ChannelHandler（Dubbo的名称也是ChannelHandler）
+     *      6.4.1）重写ChannelInitializer的initChannel初始化方法
+     *        6.4.1.1）创建NettyCodecAdapter编解码适配器（入参为Codec2、URL、ChannelHandler）
+     *        6.4.1.2）NioSocketChannel获取DefaultChannelPipeline
+     *                 然后为DefaultChannelPipeline添加解码器adapter.getDecoder()，
+     *                 编码器adapter.getEncoder()，以及处理类NettyServerHandler
+     * 7）bootstrap绑定到指定的地址getBindAddress()；设置同步不间断syncUninterruptibly()；
+     *    channelFuture.channel()获取ChannelFuture并设置到netty中的Channel
+     */
     @Override
     protected void doOpen() throws Throwable { //打开Netty服务端
         NettyHelper.setNettyLoggerFactory();
@@ -87,7 +116,7 @@ public class NettyServer extends AbstractServer implements Server {
         final NettyServerHandler nettyServerHandler = new NettyServerHandler(getUrl(), this);
         channels = nettyServerHandler.getChannels();
 
-        bootstrap.group(bossGroup, workerGroup) //todo 参数配置待了解
+        bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
                 .childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)

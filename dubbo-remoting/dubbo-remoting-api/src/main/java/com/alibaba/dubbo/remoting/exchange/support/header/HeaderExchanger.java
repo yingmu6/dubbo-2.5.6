@@ -35,7 +35,15 @@ public class HeaderExchanger implements Exchanger {
     public static final String NAME = "header";
     //客户端去连接、服务端去绑定
 
-    /**@c */  //todo @csy-h1 ref没有看到编码、解码，是要等事件触发时，及读取数据时处理吗？
+    /**
+     * 连接服务
+     * 1）构建HeaderExchangeHandler（头交换处理类），设置属性它的ExchangeHandler属性
+     * 2）构建DecodeHandler，将HeaderExchangeHandler设置到父类AbstractChannelHandlerDelegate
+     *   （抽象通道处理委托类）的ChannelHandler属性中，请求header要特殊处理
+     *   （此处解码处理类对Dubbo协议头的16字段按Dubbo协议约定的格式解码，而请求body按常规序列化、反序列化就行）
+     * 3）调用Transporters.connect连接服务，并返回Client
+     * 4）构建心跳客户端HeaderExchangeClient，并返回
+     */
     public ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {
         return new HeaderExchangeClient(Transporters.connect(url, new DecodeHandler(new HeaderExchangeHandler(handler))), true);
     }

@@ -35,7 +35,7 @@ public class ChannelHandlers {
 
     /**
      * 封装处理类ChannelHandler
-     * 1）获取ChannelHandlers实例
+     * 1）获取ChannelHandlers实例ChannelHandlers.getInstance()
      * 2）封装wrapInternal，获取到ChannelHandler
      */
     public static ChannelHandler wrap(ChannelHandler handler, URL url) {
@@ -51,7 +51,7 @@ public class ChannelHandlers {
     }
 
     /**
-     * 封装处理wrapInternal、
+     * 封装处理wrapInternal（封装内部的）、
      * 1）获取Dispatcher的扩展实例，默认AllDispatcher
      * 2）调用AllDispatcher的拦截方法dispatch，返回ChannelHandler
      * 3）构建HeartbeatHandler心跳处理类

@@ -39,6 +39,11 @@ public class SimpleDataStore implements DataStore {
         return new HashMap<String, Object>(value);
     }
 
+    /**
+     * 此处存在两个get
+     *   第一个get得到ConcurrentMap<String, Object> map
+     *   第二个get得到map中对应的object
+     */
     public Object get(String componentName, String key) {
         if (!data.containsKey(componentName)) {
             return null;

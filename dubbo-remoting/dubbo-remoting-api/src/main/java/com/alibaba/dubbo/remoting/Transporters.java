@@ -71,7 +71,16 @@ public class Transporters {
         return connect(URL.valueOf(url), handler);
     }
 
-    /**@c 传输层connet */
+    /**
+     * 连接服务：
+     * 1）判断url是否为空
+     * 2）判断传入ChannelHandler处理类参数
+     *  2.1）若为空或者为0个，则创建ChannelHandlerAdapter适配类（该类只实现接口，实现内容是空的）
+     *  2.2）若处理类是1个，直接取第一个ChannelHandler
+     *  2.3）若处理类有多个，构建子类ChannelHandlerDispatcher的实例，并且设置该实例的channelHandlers集合属性
+     * 3）通过SPI获取到Transporter的实例，并且将构建的handler传入connect方法进行服务连接
+     *   Transporter的默认扩展名是"netty4"，即调用com.alibaba.dubbo.remoting.transport.netty4.NettyTransporter中的connect方法
+     */
     public static Client connect(URL url, ChannelHandler... handlers) throws RemotingException {
         if (url == null) {
             throw new IllegalArgumentException("url == null");

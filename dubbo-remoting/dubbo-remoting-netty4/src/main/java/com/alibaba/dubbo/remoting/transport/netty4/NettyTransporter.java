@@ -23,6 +23,7 @@ import com.alibaba.dubbo.remoting.Server;
 import com.alibaba.dubbo.remoting.Transporter;
 
 /**
+ * 服务端进行bind，客户端进行connect
  * @author ding.lid
  * @author qinliujie
  */

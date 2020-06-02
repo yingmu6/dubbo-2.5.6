@@ -58,10 +58,32 @@ public class NettyClient extends AbstractClient { // 使用的是netty 4.x版本
 
     private volatile Channel channel; // volatile, please copy reference to use
 
+    /**
+     * 构建netty的客户端
+     * 1）封装通道处理类 wrapChannelHandler
+     * 2）调用父类AbstractClient构造函数，设置send_reconnect、shutdown_timeout等相关属性
+     *    并且doOpen()开发客服端、connect()连接服务端
+     */
     public NettyClient(final URL url, final ChannelHandler handler) throws RemotingException {
         super(url, wrapChannelHandler(url, handler));
     }
 
+    /**
+     * 打开Netty服务
+     * 1）设置Netty日志工厂，NettyHelper.setNettyLoggerFactory();
+     * 2）通过URL，当前对象NettyClient，构建Netty处理类NettyClientHandler
+     * 3）构建客户端启动类Bootstrap
+     *  3.1）创建启动类Bootstrap对象
+     *  3.2）设置事件处理组NioEventLoopGroup
+     *  3.3）设置选项，SO_KEEPALIVE（保持连接）、TCP_NODELAY（tcp不延迟）、ALLOCATOR（直接内存）
+     * 4）超时时间处理
+     *   若小于3000毫秒，则将3000作为默认值
+     *   若大于等于3000毫秒，则将AbstractEndpoint的timeout属性值作为默认值
+     * 5）设置处理类
+     *   5.1）添加decoder解码处理类
+     *   5.2）添加encoder编码处理类
+     *   5.3）添加NettyClientHandler，netty客户端处理类
+     */
     @Override
     protected void doOpen() throws Throwable {
         NettyHelper.setNettyLoggerFactory();
@@ -92,6 +114,11 @@ public class NettyClient extends AbstractClient { // 使用的是netty 4.x版本
         });
     }
 
+    /**
+     * 连接服务器
+     *
+     *
+     */
     protected void doConnect() throws Throwable {
         long start = System.currentTimeMillis();
         /**

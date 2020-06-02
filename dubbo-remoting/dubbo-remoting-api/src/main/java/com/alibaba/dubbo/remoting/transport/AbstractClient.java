@@ -78,7 +78,19 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     //the last successed connected time
     private long lastConnectedTime = System.currentTimeMillis();
 
-    /**@c */
+    /**
+     * AbstractClient构建方法
+     * 1）设置相关参数
+     *    1.1）构造AbstractPeer，设置其属性URL、ChannelHandler
+     *    1.2）构建AbstractEndpoint，设置其属性codec、timeout、connectTimeout
+     *    1.3）构建AbstractClient，设置属性send_reconnect、shutdown_timeout、reconnect_warning_period
+     * 2）调用子类的方法，打开客户端，比如NettyClient中的doOpen方法，若异常则抛出相关日志，并做关闭close()
+     * 3）调用当前抽象类中的connect方法，连接服务器，若异常则抛出相关日志，并做关闭close()
+     * 4）构建ExecutorService线程池执行类
+     *    4.1）获取DataStore的默认扩展SimpleDataStore实例
+     *    4.2）调用SimpleDataStore的方式get，获取键consumer对应的实例
+     * 5）缓存DataStore中的key处理好后，就从本地缓存中移除掉
+     */
     public AbstractClient(URL url, ChannelHandler handler) throws RemotingException {
         super(url, handler);
 
@@ -136,6 +148,12 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
                 .getDefaultExtension().remove(Constants.CONSUMER_SIDE, Integer.toString(url.getPort()));
     }
 
+    /**
+     * 封装通道处理类
+     * 1）设置url的线程名，若url中的键threadname不存在值，则以DubboClientHandler为线程名
+     * 2）为url的键threadpool，设置值为cached
+     * 3）调用ChannelHandlers.wrap 对处理类进行封装处理
+     */
     protected static ChannelHandler wrapChannelHandler(URL url, ChannelHandler handler) {
         url = ExecutorUtil.setThreadName(url, CLIENT_THREAD_POOL_NAME); //设置线程名到URL参数中
         url = url.addParameterIfAbsent(Constants.THREADPOOL_KEY, Constants.DEFAULT_CLIENT_THREADPOOL);
@@ -319,7 +337,10 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         channel.send(message, sent);
     }
 
-    /**@c */
+    /**
+     *
+     *
+     */
     protected void connect() throws RemotingException {
         connectLock.lock();
         try {

@@ -104,7 +104,12 @@ public class Exchangers {
         return connect(URL.valueOf(url), handler);
     }
 
-    /**@c 默认HeaderExchanger*/
+    /**
+     * 服务端执行bind操作，客户端执行connect操作
+     * 1）参数URL、ExchangeHandler非空判断
+     * 2）通过SPI获取Exchanger接口的实例
+     * 3）客户端进行connect操作
+     */
     public static ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {
         if (url == null) {
             throw new IllegalArgumentException("url == null");

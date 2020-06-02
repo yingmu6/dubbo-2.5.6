@@ -54,6 +54,14 @@ final class LazyConnectExchangeClient implements ExchangeClient {      // read f
     private volatile ExchangeClient client;
     private AtomicLong warningcount = new AtomicLong(0);
 
+    /**
+     * 构建延迟Client
+     * 1）url中添加send.reconnect 是否重连的参数，默认为true
+     *    （此处体现：是将url做为总线，数据的承载体，往url获取数据或设置数据）
+     * 2）接收入参ExchangeHandler，赋值到当前对象的属性requestHandler
+     * 3）从url中获取lazy连接的初始状态，默认是连接状态，并设置当前属性initialState
+     * 4）从url中获取requestWithWarning，默认为false，并设置当前属性requestWithWarning
+     */
     public LazyConnectExchangeClient(URL url, ExchangeHandler requestHandler) {
         //lazy connect ,need set send.reconnect = true, to avoid channel bad status. 
         this.url = url.addParameter(Constants.SEND_RECONNECT_KEY, Boolean.TRUE.toString());
