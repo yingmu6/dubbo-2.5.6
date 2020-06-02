@@ -51,6 +51,7 @@ public class providerStart1 {
 
         service.setInterface(ApiDemo.class);
         service.setRef(apiDemo);
+        service.setFilter("selfFilter");
 
 
 //        service.setVersion("1.3.4");

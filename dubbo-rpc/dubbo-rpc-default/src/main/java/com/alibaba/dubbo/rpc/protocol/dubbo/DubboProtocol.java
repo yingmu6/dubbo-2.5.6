@@ -60,6 +60,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     public static final String NAME = "dubbo";
 
     public static final int DEFAULT_PORT = 20880;
+    // todo @csy-v2 此key值的用途是啥？
     private static final String IS_CALLBACK_SERVICE_INVOKE = "_isCallBackServiceInvoke";
     private static DubboProtocol INSTANCE;
     private final Map<String, ExchangeServer> serverMap = new ConcurrentHashMap<String, ExchangeServer>(); // <host:port,Exchanger>
@@ -68,7 +69,18 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     //consumer side export a stub service for dispatching event
     //servicekey-stubmethods
     private final ConcurrentMap<String, String> stubServiceMethodsMap = new ConcurrentHashMap<String, String>();
-    //创建ExchangeHandler（匿名类）
+    /**
+     * 创建客户端请求处理类 ExchangeHandler（回复客户端reply） -- 代码流程
+     * 1）判断回复的消息message是不是调用信息Invocation的实例，若不是则抛出异常
+     * 2）将message强制转换为Invocation类型的实例
+     * 3）通过ExchangeChannel以及Invocation为条件获取到Invoker
+     * 4）判断调用信息中 _isCallBackServiceInvoke的参数值，是否为true（是否有回调方法）
+     *   4.1）若有：
+     *      4.1.1）只有一个方法
+     *      4.1.2）有多个方法
+     *      判断回调方法是否存在于URL方法名列表中，若没有则抛异常
+     *   4.2）若无：执行调用 invoker.invoke(inv)
+     */
     private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() { /**@c todo @csy-h1 成员变量若有对象引用，在什么时候创建的 export中没有调用此方法*/
 
         //reply 回答、答复(服务端调用、回复客户端)
@@ -77,7 +89,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
                 Invocation inv = (Invocation) message; //message转化为的会话信息
                 Invoker<?> invoker = getInvoker(channel, inv);
                 //如果是callback 需要处理高版本调用低版本的问题
-                if (Boolean.TRUE.toString().equals(inv.getAttachments().get(IS_CALLBACK_SERVICE_INVOKE))) { //检查是否有回调方法，若没有则抛出异常
+                if (Boolean.TRUE.toString().equals(inv.getAttachments().get(IS_CALLBACK_SERVICE_INVOKE))) {
                     String methodsStr = invoker.getUrl().getParameters().get("methods");
                     boolean hasMethod = false;
                     if (methodsStr == null || methodsStr.indexOf(",") == -1) { //没有方法名或只有一个方法名
@@ -187,6 +199,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     }
 
     /**
+     * 获取Invoker（执行者）-- 代码流程：
      * 1)构建serviceKey ，path、port、version、group
      * 2）从缓存中获取export，exporterMap.get(serviceKey)
      * 3）调用export中方法获取invoker，exporter.getInvoker()
@@ -228,6 +241,17 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     }
 
     //重点：将invoker转换为exporter，Invoker由框架传入
+
+    /**
+     * 暴露服务，将invoker转换成exporter -- 代码流程：
+     * 1）产生服务key，通过invoker（执行者）、key，构建DubboExporter 并写入本地缓存map中exporterMap
+     * 2）从url获取到本地存根、参数回调的值
+     * 3）对本地存根进行判断，若是本地存根服务，那么就需要有存根方法
+     *   3.1) 若存根方法不存在，则抛出异常
+     *   3.2）否则记录到stubServiceMethodsMap（本地存根缓存map中），key为url
+     * 4）打开服务openServer(url)
+     * 5）返回构建的DubboExporter（服务暴露者）
+     */
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException { //service export 步骤08
         URL url = invoker.getUrl();
 
@@ -259,7 +283,13 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         return exporter;
     }
 
-    /**@c 服务端打开服务*/
+    /**
+     * 打开服务端 -- 代码流程：
+     * 1）从url获取key为isserver（是否是服务端）的值，判断是否是服务端，只有服务端才打开服务
+     * 2）若是服务端，从Map<String, ExchangeServer> serverMap（交换服务的本地缓存） 本地交换服务中获取key对应的服务
+     * 3）若本地缓存不存在，则重新创建服务，并设备到本地缓存serverMap中
+     *    若本地存在，则重置服务的参数，如心跳时间等
+     */
     private void openServer(URL url) { //service export 步骤09
         // find server.
         String key = url.getAddress(); //形式为 host:port或host
@@ -276,7 +306,15 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         }
     }
 
-    // 创建服务
+    /**
+     * 创建服务 -- 代码流程：
+     * 1）往url参数中添加channel.readonly.sent（通道是否只读）、heartbeat（心跳检测时间）参数（若存在则不处理key对应的value）
+     * 2）从url获取server对应的值，判断Transporter（传输协议）是否有改扩展，比如netty、mina等
+     * 3）往url添加codec（编码）参数，默认是DubboCodec编码
+     * 4）构建ExchangeHandler  处理客服端的请求类
+     *    将URL与requestHandler进行绑定 Exchangers.bind(url, requestHandler);
+     * 5）从url中获取client的，判断是否在Transporter支持的扩展集合中
+     */
     private ExchangeServer createServer(URL url) {  //service export 步骤10
         //默认开启server关闭时发送readonly事件（todo @csy-v1 server都关闭了，还能读吗？）
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());

@@ -1047,16 +1047,20 @@ public final class URL implements Serializable {//可进行序列化
         return new URL(protocol, username, password, host, port, path, map);
     }
 
-    //判断参数是否存在，如果不存在就添加参数 Absent（缺少的、不存在的），存在就返回当前url，this
+    /**
+     * 判断参数是否存在，如果不存在就添加参数 Absent（缺少的、不存在的），存在就返回当前url，this
+     * 和普通的map不一样，普通的map若存在key，会把key对应的value更新，
+     * 而addParameterIfAbsent不会更改已存在的key对应的value
+     */
     public URL addParameterIfAbsent(String key, String value) {
         if (key == null || key.length() == 0
                 || value == null || value.length() == 0) {
             return this;
         }
-        if (hasParameter(key)) {
+        if (hasParameter(key)) { //若key存在，则返回存在的对象
             return this;
         }
-        Map<String, String> map = new HashMap<String, String>(getParameters());
+        Map<String, String> map = new HashMap<String, String>(getParameters()); // 不存在则往参数map中设置参数
         map.put(key, value);
         return new URL(protocol, username, password, host, port, path, map);
     }
@@ -1457,8 +1461,17 @@ public final class URL implements Serializable {//可进行序列化
         return getMethodParameter(method, key, defaultValue);
     }
 
+    /**
+     * @csy 20/05/18 为啥重新hashcode、equals方法（覆盖equals比较的是内容相等，==比较的是对象的地址是否相等）
+     * https://juejin.im/post/5a4379d4f265da432003874c
+     *
+     * 覆盖equals时需要满足的准则： 1）自反性，x.equals(x) 是true  2）对称性，x.equals(y)是true，y.equals(x)也是true
+     * 3）传递性，x.equals(y)是true，y.equals(z) 是true，那么x.equals(z) 也是true。 4）一致性，多次调用x.quals(y) 始终返回true或false
+     * 覆盖equals时一定要覆盖hashCode equals函数里面一定要是Object类型作为参数
+     * 如果两个对象equals，那么它们的hashCode必然相等，但是hashCode相等，equals不一定相等。
+     */
     @Override
-    public int hashCode() { // todo @csy-v2 为啥重新hashcode、equalus方法？
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((host == null) ? 0 : host.hashCode());

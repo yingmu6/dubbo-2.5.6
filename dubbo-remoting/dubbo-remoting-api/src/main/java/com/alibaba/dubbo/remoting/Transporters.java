@@ -41,7 +41,16 @@ public class Transporters {
         return bind(URL.valueOf(url), handler);
     }
 
-    /**  */
+    /**
+     * 将URL与多个处理类ChannelHandler绑定
+     * 1）判断参数url、handlers是否正确
+     * 2）判断是否有多个ChannelHandler
+     *   2.1）只有一个：取第一个通道处理类ChannelHandler
+     *   2.2）有多个：
+     *       构造ChannelHandler的子类ChannelHandlerDispatcher，
+     *       并且将handlers设置到ChannelHandlerDispatcher 的属性中 Collection<ChannelHandler> channelHandlers
+     * 3）获取传输对象Transporter的实例(默认是NettyTransporter)，并调用bind方法
+     */
     public static Server bind(URL url, ChannelHandler... handlers) throws RemotingException { //service export 步骤13
         if (url == null) {
             throw new IllegalArgumentException("url == null");

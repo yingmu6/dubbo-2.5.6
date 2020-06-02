@@ -106,7 +106,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
     public ReferenceConfig() {
     }
 
-    public ReferenceConfig(Reference reference) {
+    public ReferenceConfig(Reference reference) { //todo @csy-v2 此处构造函数参数使用注解，怎么使用？
         appendAnnotation(Reference.class, reference);
     }
     //Implicit隐式

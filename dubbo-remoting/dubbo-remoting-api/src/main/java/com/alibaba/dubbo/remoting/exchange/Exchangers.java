@@ -60,7 +60,11 @@ public class Exchangers {
         return bind(URL.valueOf(url), handler);
     }
 
-    /**@c 静态方法 */
+    /**
+     * 将Url与ExchangeHandler进行绑定
+     * 1）url中添加codec参数
+     * 2）获取到Exchanger实例，默认为HeaderExchanger，调用bind方法
+     */
     public static ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException { //service export 步骤11
         if (url == null) {
             throw new IllegalArgumentException("url == null");
@@ -112,7 +116,9 @@ public class Exchangers {
         return getExchanger(url).connect(url, handler);
     }
 
-    /**@c */
+    /**
+     * 通过url获取到Exchanger，默认key为header
+     */
     public static Exchanger getExchanger(URL url) {
         String type = url.getParameter(Constants.EXCHANGER_KEY, Constants.DEFAULT_EXCHANGER); //exchanger交换协议，默认header
         return getExchanger(type);

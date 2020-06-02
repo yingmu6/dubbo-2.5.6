@@ -33,6 +33,11 @@ public class ChannelHandlers {
     protected ChannelHandlers() {
     }
 
+    /**
+     * 封装处理类ChannelHandler
+     * 1）获取ChannelHandlers实例
+     * 2）封装wrapInternal，获取到ChannelHandler
+     */
     public static ChannelHandler wrap(ChannelHandler handler, URL url) {
         return ChannelHandlers.getInstance().wrapInternal(handler, url);
     }
@@ -46,7 +51,11 @@ public class ChannelHandlers {
     }
 
     /**
-     * todo @csy-v1 此处是指封装心跳处理类？用途是啥
+     * 封装处理wrapInternal、
+     * 1）获取Dispatcher的扩展实例，默认AllDispatcher
+     * 2）调用AllDispatcher的拦截方法dispatch，返回ChannelHandler
+     * 3）构建HeartbeatHandler心跳处理类
+     * 4）构建MultiMessageHandler处理类，并返回
      */
     protected ChannelHandler wrapInternal(ChannelHandler handler, URL url) {
         return new MultiMessageHandler(new HeartbeatHandler(ExtensionLoader.getExtensionLoader(Dispatcher.class)

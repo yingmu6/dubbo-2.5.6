@@ -31,6 +31,9 @@ public abstract class AbstractProxyFactory implements ProxyFactory {// read fini
 
     public <T> T getProxy(Invoker<T> invoker) throws RpcException { //@chenSy 待调试了解
         Class<?>[] interfaces = null;
+        /**
+         * todo @csy-v2 此处需要调试，看下interfaces里面可能是啥内容？怎么会有多个interface
+         */
         String config = invoker.getUrl().getParameter("interfaces");
         if (config != null && config.length() > 0) {
             String[] types = Constants.COMMA_SPLIT_PATTERN.split(config);
@@ -43,6 +46,7 @@ public abstract class AbstractProxyFactory implements ProxyFactory {// read fini
                 }
             }
         }
+        // 若invoker中没有指定接口，则创建回声检测服务的代理类
         if (interfaces == null) {
             interfaces = new Class<?>[]{invoker.getInterface(), EchoService.class};
         }

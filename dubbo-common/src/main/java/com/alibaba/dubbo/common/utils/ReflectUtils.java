@@ -641,7 +641,9 @@ public final class ReflectUtils {
      * @param name name.
      * @return Class instance.
      */
-    /**todo @csy-v1 将类型名称转换为class */
+    /**
+     * todo @csy-v1 将类型名称转换为class？ 转换后的class具体怎么使用的？
+     */
     private static Class<?> name2class(ClassLoader cl, String name) throws ClassNotFoundException {
         int c = 0, index = name.indexOf('[');
         if (index > 0) {

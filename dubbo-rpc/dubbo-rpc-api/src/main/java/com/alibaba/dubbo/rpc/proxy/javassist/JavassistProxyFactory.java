@@ -32,6 +32,15 @@ public class JavassistProxyFactory extends AbstractProxyFactory {// read finish
 
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Invoker<T> invoker, Class<?>[] interfaces) {
+        /**
+         * 代码流程：
+         * 1) 静态方法Proxy.getProxy，获取到Proxy
+         * 2）构建InvokerInvocationHandler处理类，todo @csy-v2 InvocationHandler的用户是啥
+         *    2.1）构建RpcInvocation --- new RpcInvocation(method, args)
+         *    2.2）执行Invoker的invoke方法 --- invoker.invoke(new RpcInvocation(method, args))
+         *    2.3）执行Result的recreate
+         * 3）调用Proxy中newInstance产生Object，todo @csy-v2 但是这个方法没有看到对应实现？
+         */
         return (T) Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker));
     }
 

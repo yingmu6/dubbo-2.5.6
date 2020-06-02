@@ -41,7 +41,11 @@ public abstract class AbstractProtocol implements Protocol {// read finish
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    //将serviceKey与Exporter映射起来 todo @csy-h2 这是局部变量，属于各个对象，其它线程能用吗？怎样实现缓存效果？ @chenSy 在什么时候缓存的？
+    /**
+     * 将serviceKey与Exporter映射起来 todo @csy-h2 这是局部变量，属于各个对象，其它线程能用吗？怎样实现缓存效果？
+     * 在什么时候缓存的？ 在AbstractProxyProtocol中的export中，在从本地缓存中没找到时，就会创建暴露对象，并且缓存下来
+     */
+
     protected final Map<String, Exporter<?>> exporterMap = new ConcurrentHashMap<String, Exporter<?>>();//jdk中concurrent包下提供
 
     protected final Set<Invoker<?>> invokers = new ConcurrentHashSet<Invoker<?>>();//ConcurrentHashSet由dubbo实现的

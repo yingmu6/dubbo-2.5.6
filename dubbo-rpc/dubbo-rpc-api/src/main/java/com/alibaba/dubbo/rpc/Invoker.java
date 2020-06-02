@@ -25,7 +25,11 @@ import com.alibaba.dubbo.common.Node;
  * @see com.alibaba.dubbo.rpc.InvokerListener
  * @see com.alibaba.dubbo.rpc.protocol.AbstractInvoker
  */
-// Invoker是提供者还是消费者调用的？ 解：服务的执行体
+/**
+ * Invoker是提供者还是消费者调用的？ 解：服务的执行体
+ * @csy-v2 一次接口的调用就是一个invoker吗？
+ * invoker里面可以有多个interfaces，不仅是一个
+ */
 public interface Invoker<T> extends Node { // invoker（执行者，执行具体的调用）
     //Invoker，调用者对应一个服务接口，通过invoke方法执行调用，参数为Invocation，返回值为Result
     //继承Node节点，每个调用者就是一个节点
@@ -43,7 +47,11 @@ public interface Invoker<T> extends Node { // invoker（执行者，执行具体
      * @return result
      * @throws RpcException
      */
-    // 这个方法用途？ 解：执行方法调用 todo @csy-v1 方法debug调试分析
+
+    /**
+     * 这个方法用途？ 解：执行方法调用
+     * todo @csy-v1 方法debug调试分析 以及模拟调用
+     */
     Result invoke(Invocation invocation) throws RpcException;
 
 }

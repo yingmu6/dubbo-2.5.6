@@ -40,7 +40,12 @@ public class HeaderExchanger implements Exchanger {
         return new HeaderExchangeClient(Transporters.connect(url, new DecodeHandler(new HeaderExchangeHandler(handler))), true);
     }
 
-    /**@c */
+    /**
+     * 绑定服务 -- 代码流程
+     * 1）创建HeaderExchangeHandler处理类，new HeaderExchangeHandler(handler)
+     * 2）将HeaderExchangeHandler作为构造参数，创建DecodeHandler解码处理类，new DecodeHandler(new HeaderExchangeHandler(handler))
+     * 3）
+     */
     public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException { //service export 步骤12
         //HeaderExchangeServer 会进行心跳检测
         return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(new HeaderExchangeHandler(handler)))); //构建DecodeHandler、HeaderExchangeHandler处理器

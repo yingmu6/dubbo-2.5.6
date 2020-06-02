@@ -27,9 +27,14 @@ import java.util.Map;
  * @see com.alibaba.dubbo.rpc.RpcInvocation
  */
 
-// todo @csy-v1 Invocation调用信息，调试看数据
 //Invocation，一个调用方法的具体信息，包含方法名、参数类型、参数、调用者信息（会话信息）
-public interface Invocation { // invocation（调用信息）
+
+/**
+ * @csy 20/05/18 Invocation调用具体信息，类似gwweb
+ * 包含：获取接口 getInterface()、获取Url信息 getUrl()、获取方法名称、
+ * 获取方法参数类型以及参数值、获取隐式传递参数、获取调用者信息 invoker
+ */
+public interface Invocation { // invocation（调用方式）
     /**
      * get method name.
      *
@@ -60,7 +65,7 @@ public interface Invocation { // invocation（调用信息）
      * @return attachments.
      * @serial
      */
-    Map<String, String> getAttachments(); //附加参数
+    Map<String, String> getAttachments(); //隐式传递参数
 
     /**
      * get attachment（附着点） by key.

@@ -64,6 +64,12 @@ public class NettyServer extends AbstractServer implements Server {
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
+    /**
+     * 构建NettyServer
+     * 1）为Url中添加线程名
+     * 2）封装处理类，ChannelHandler wrap(ChannelHandler handler, URL url)
+     * 3）调用父类AbstractServer构造函数，进行相关属性设置
+     */
     public NettyServer(URL url, ChannelHandler handler) throws RemotingException {
         super(url, ChannelHandlers.wrap(handler, ExecutorUtil.setThreadName(url, SERVER_THREAD_POOL_NAME)));
     }

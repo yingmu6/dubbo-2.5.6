@@ -49,7 +49,19 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
     private int accepts;
     private int idleTimeout = 600; //600 seconds
 
-    /**@c */
+    /**
+     * 构建AbstractServer -- 代码流程
+     * 1）掉用父类的构造函数
+     *   1.1）构建AbstractPeer，设置ChannelHandler、URL属性值
+     *   1.2）构建AbstractEndpoint，并设置Codec2、timeout、connectTimeout的属性值
+     * 2）设置localAddress：调用AbstractPeer的getUrl()获取到URL 并调用toInetSocketAddress
+     * 3）获取host：
+     *   3.1）判断是否为任意主机（url中anyhost值）或是无效的主机（NetUtils.isInvalidLocalHost）
+     *   3.2）若是，则host值为"0.0.0.0"，否则取URL中的getHost()
+     * 4）设置accepts：从url中获取accepts并设置
+     * 5）设置accepts， 从url中获取idle.timeout并设置
+     * 6）打开服务：默认打开NettyServer中的doOpen()方法
+     */
     public AbstractServer(URL url, ChannelHandler handler) throws RemotingException { //service export 步骤15
         super(url, handler);
         localAddress = getUrl().toInetSocketAddress();
