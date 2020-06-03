@@ -69,7 +69,7 @@ public class NettyClient extends AbstractClient { // 使用的是netty 4.x版本
     }
 
     /**
-     * 打开Netty服务
+     * 打开Netty服务（对客户端的服务参数进行设值）
      * 1）设置Netty日志工厂，NettyHelper.setNettyLoggerFactory();
      * 2）通过URL，当前对象NettyClient，构建Netty处理类NettyClientHandler
      * 3）构建客户端启动类Bootstrap
@@ -115,14 +115,28 @@ public class NettyClient extends AbstractClient { // 使用的是netty 4.x版本
     }
 
     /**
-     * 连接服务器
-     *
-     *
+     * 连接服务器（将Netty客户端Bootstrap连接服务，并将新的通道Channel替换老的通道）
+     * 1）获取有效的连接地址（"0.0.0.0"和"127.0.0.1"回路地址不是有效地址，
+     *     但是遍历网卡尝试获取有效地址都拿不到有效地址时，兜底方案会以"127.0.0.1"代替，但是会抛出error日志）
+     * 2）bootstrap进行连接操作，将通道连接到远程服务，返回ChannelFuture
+     * 3）不间断等待3000毫秒，获取结果
+     *   3.1）若ret接口成功，并且异步I/O操作已经完成
+     *     3.1.1）返回与future关联的通道channel
+     *     3.1.2）获取当前客户端旧的通道channel，关闭老的通道oldChannel.close()
+     *       在finally中移除通道channel对应的值ConcurrentMap<Channel, NettyChannel> channelMap
+     *     3.1.3）在finally处理判断
+     *       3.1.3.1）若当前客户端是关闭的，NettyClient.this.isClosed()，
+     *                则把新的channel也关闭了，并且将当前NettyClient.this.channel置为null，并且从map中移除通道
+     *       3.1.3.2）若当前客户端是正常的，则将新的channel替换老的channel
+     *   3.2）若I/O操作失败，future.cause() != null，则抛出远程异常RemotingException，日志带有client标识
+     *   3.3）若异步future没有返回成功，并且没有异常future.cause()，那么就是超时异常了，平时看到的客户端连接超时都是这里显示的
+     *        把设置的超时时间有实际执行的时间进行比较
      */
     protected void doConnect() throws Throwable {
         long start = System.currentTimeMillis();
         /**
          * ChannelFuture：The result of an asynchronous Channel I/O operation (异步处理I/O的通道)
+         * All I/O operations in Netty are asynchronous. （Netty中的所有I/O都是异步的）
          */
         ChannelFuture future = bootstrap.connect(getConnectAddress());
         try {
@@ -143,7 +157,7 @@ public class NettyClient extends AbstractClient { // 使用的是netty 4.x版本
                             NettyChannel.removeChannelIfDisconnected(oldChannel);
                         }
                     }
-                } finally { //todo @csy-v1 为啥要关闭新老channel，若都关闭了，用哪个channel来连接？
+                } finally {
                     if (NettyClient.this.isClosed()) {
                         try {
                             if (logger.isInfoEnabled()) {

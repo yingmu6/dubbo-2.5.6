@@ -134,8 +134,14 @@ public class NetUtils {
                 new InetSocketAddress(port) : new InetSocketAddress(host, port);
     }
 
+    /**
+     * 是否是有效地址
+     * 1）若地址为空或是回路地址，则为无效地址（isLoopbackAddress内部直接返回false，所以只要判断address是否为空就好）
+     * 2）获取主机host
+     *    若host不为空；并且不为"0.0.0.0"；并且不为"127.0.0.1"；并且能匹配IP的正则表达式，则为有效的地址
+     */
     private static boolean isValidAddress(InetAddress address) {
-        if (address == null || address.isLoopbackAddress())
+        if (address == null || address.isLoopbackAddress()) // isLoopbackAddress Java源码中直接返回false，没有实现
             return false;
         String name = address.getHostAddress();
         return (name != null
@@ -144,13 +150,26 @@ public class NetUtils {
                 && IP_PATTERN.matcher(name).matches());
     }
 
+    /**
+     * 获取本地host
+     * 1）尝试获取本地host地址，getLocalAddress()
+     * 2）若获取地址为空，则默认"127.0.0.1"，否则获取InetAddress的host地址
+     */
     public static String getLocalHost() {
         InetAddress address = getLocalAddress();
         return address == null ? LOCALHOST : address.getHostAddress();
     }
 
     /**
-     * todo @csy-v1 待调试；过滤啥
+     * 过滤主机host（若是无效的host，则返回本地host，NetUtils.getLocalHost()）
+     * 1）若主机host为空，直接返回
+     * 2）判断host是否包含"://"，表明是带上协议的，如dubbo://
+     *    2.1）直接构建URL，如"dubbo://172.16.120.188:20881"
+     *    2.2）判断是否是无效的主机host，若是无效的host，返回本地host，NetUtils.getLocalHost()
+     * 3）若host，不包含"://"，但是包含":"，表明是 host:port形式
+     *    3.1）取出host值，并且判断是否有效，若无效，返回本地host
+     * 4）若host既不包含"://"，又不包含":"，表明host是 host形式
+     *    4.1）判断host是否有效，若无效，返回本地host
      */
     public static String filterLocalHost(String host) {
         if (host == null || host.length() == 0) {
@@ -175,9 +194,9 @@ public class NetUtils {
     }
 
     /**
-     * 遍历本地网卡，返回第一个合理的IP。
-     * todo @csy-v1 待调试观察
-     * @return 本地网卡IP
+     * 获取本地地址
+     * 判断当前对象的属性InetAddress LOCAL_ADDRESS 是否为空
+     *   若为空：则获取本地地址getLocalAddress0，并赋值给属性LOCAL_ADDRESS
      */
     public static InetAddress getLocalAddress() {
         if (LOCAL_ADDRESS != null)
@@ -192,6 +211,15 @@ public class NetUtils {
         return address == null ? LOCALHOST : address.getHostAddress();
     }
 
+    /**
+     * 获取本地地址 -- 代码流程
+     * 1）通过InetAddress获取本地地址，判断是否是有效地址，若有效直接返回localAddress
+     * 2）通过NetworkInterface获取机器上的网卡接口
+     * 3）网卡接口不为空，且存在接口时，遍历网卡
+     *   3.1）取出每个接口NetworkInterface，取出接口的多个地址
+     *   3.2）若其中一个地址是有效的，则将地址返回
+     * 4）若都找不到有效地址，则以127.0.0.1代替，并抛出error日志
+     */
     private static InetAddress getLocalAddress0() {
         InetAddress localAddress = null;
         try {
@@ -203,6 +231,7 @@ public class NetUtils {
             logger.warn("Failed to retriving ip address, " + e.getMessage(), e);
         }
         try {
+            //用 getNetworkInterfaces() + getInetAddresses() 可以获取到机器上的任意ip地址
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             if (interfaces != null) {
                 while (interfaces.hasMoreElements()) { //遍历网卡，找到有效的本地地址

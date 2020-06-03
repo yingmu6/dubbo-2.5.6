@@ -112,6 +112,7 @@ public final class URL implements Serializable {//可进行序列化
     /**
      * 参数集合(附加参数集合，如side、application、generic等)
      * todo @csy-v2 断点分析，看里面存入的值以及写入的地方
+     * 将参数值写到map集合中，然后根据key来取值
      */
     private final Map<String, String> parameters;
 
@@ -493,7 +494,9 @@ public final class URL implements Serializable {//可进行序列化
         return value;
     }
 
-    // 获取url中指定的key对应的值，若不存在则返回默认值
+    /**
+     * 从参数集合Map中获取key对应的值，若不存在则返回输入的默认值
+     */
     public String getParameter(String key, String defaultValue) {
         String value = getParameter(key);
         if (value == null || value.length() == 0) {

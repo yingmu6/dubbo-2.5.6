@@ -79,7 +79,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     private long lastConnectedTime = System.currentTimeMillis();
 
     /**
-     * AbstractClient构建方法
+     * AbstractClient构建方法（先打开服务，设值参数，后连接服务）
      * 1）设置相关参数
      *    1.1）构造AbstractPeer，设置其属性URL、ChannelHandler
      *    1.2）构建AbstractEndpoint，设置其属性codec、timeout、connectTimeout
@@ -161,8 +161,12 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     }
 
     /**
-     * @param url
-     * @return 0-false
+     * 获取重连的参数（reconnect键对应的值可以是"true","false"或者是具体重连的数值）
+     * 1）从url获取键reconnect对应的值
+     * 2）对reconnect对应的值进行判断
+     *   2.1）若reconnect对应的值为空或者值为"true"，重连的时间去默认值2000毫秒，即2000毫秒后重连
+     *   2.2）若reconnect对应的值为"false"，表明不需要重连，重连时间设置为0
+     *   2.3）若reconnect对应的值不为空，并且是具体的数值，则解析数字字符串并返回。
      */
     private static int getReconnectParam(URL url) { // 获取重连的时间间隔
         int reconnect;
@@ -185,7 +189,18 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     }
 
     /**
-     * init reconnect thread（创建重连线程）
+     * init reconnect thread（初始化重连线程）
+     * 1）获取重连的时间
+     * 2）若重连时间大于0并且重连的ScheduledFuture定时任务不存在或被取消，则创建定时任务
+     * 3）创建用于连接的线程（不断的尝试连接）
+     *   3.1）若通道没有连接，则进行连接connect()
+     *   3.2）若已经连接了，则保持当前的连接，只是更新最后连接的时间
+     *   3.3）连接异常，进行条件筛选，有选择的抛出异常或提醒（重连的error日志只会打印一次）
+     *        比如允许3秒内重连，超过3秒则打error日志，在3秒内看是否达到 warn提醒设置次数，若达到则打warn日志
+     *     3.3.1）若超过设定的可允许重连的时间，即shutdown_timeout，则打error日志
+     *            并且重新的错误日志没有被调用过，那么将调用过的标志置为true，并且打出错误日志
+     *     3.3.2）若没有超过可允许重连的时间，当重连的次数是设置提醒的次数的整数倍时，打印出warn日志
+     *   3.4）按reconnect时间以及重连线程connectStatusCheckCommand，创建延迟任务并赋值给当前的reconnectExecutorFuture
      */
     private synchronized void initConnectStatusCheckCommand() {
         //reconnect=false to close reconnect
@@ -268,6 +283,11 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         return Executors.newCachedThreadPool(new NamedThreadFactory(CLIENT_THREAD_POOL_NAME + CLIENT_THREAD_POOL_ID.incrementAndGet() + "-" + getUrl().getAddress(), true));
     }
 
+    /**
+     * 获取连接地址
+     * 1）过滤URL中的主机host
+     * 2）通过host、port构建InetSocketAddress实例
+     */
     public InetSocketAddress getConnectAddress() {
         return new InetSocketAddress(NetUtils.filterLocalHost(getUrl().getHost()), getUrl().getPort());
     }
@@ -290,6 +310,9 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         return channel.getLocalAddress();
     }
 
+    /**
+     * 通道channel是否已连接
+     */
     public boolean isConnected() {
         Channel channel = getChannel();
         if (channel == null)
@@ -338,8 +361,17 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     }
 
     /**
-     *
-     *
+     * 连接处理
+     * 1）使用可重入锁ReentrantLock加锁（存在一些公共资源，如reconnect_count、reconnect_error_log_flag，所以需要加锁，避免多线程下数据错误）
+     * 2）判断通道是否已连接，若已连接，则结束后续操作
+     * 3）初始化重连线程
+     * 4）客户端做连接处理
+     * 5）通道连接状态判断（直接isConnected()作为超时判断）
+     *  5.1）若超时，则抛出异常，异常信息里包含：服务端地址、当前所在类、当前客户端地址、dubbo版本号、超时时间等等
+     *  5.2）若没有超时，则打印连接成功的日志，信息内容和异常内容类似，没有超时时间，只是标识不一样，比如"failed、successed"、
+     * 6）能执行到此处，表明没有异常，则将重连次数置为0，并且把错误标志置为false
+     * 7）异常判断处理，若是RemotingException按超时处理，直接抛出；若是其它异常Throwable，则重新组装异常信息，把异常轨迹打印出来
+     * 8）可重入锁ReentrantLock在finally中解锁
      */
     protected void connect() throws RemotingException {
         connectLock.lock();
