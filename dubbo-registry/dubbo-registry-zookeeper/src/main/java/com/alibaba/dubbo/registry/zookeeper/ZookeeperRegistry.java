@@ -57,6 +57,13 @@ public class ZookeeperRegistry extends FailbackRegistry {
 
     private final ZookeeperClient zkClient;
 
+    /**
+     * 构造函数，构建ZookeeperRegistry实例
+     * 1）基于url对继承的父类属性进行设置
+     *   1.1）调用父类FailbackRegistry构造函数，对属性进行设置
+     *     1.1.1）获取retry.period对应的重试时间，默认是5秒，也就是注册失败后，每5秒重新进行注册
+     *     1.1.2）基于重试时间，构造重试的定时任务retryExecutor，触发重试retry()
+     */
     public ZookeeperRegistry(URL url, ZookeeperTransporter zookeeperTransporter) { //url如：zookeeper://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&interface=com.alibaba.dubbo.registry.RegistryService&pid=32489&timestamp=1564672337238
         super(url);
         if (url.isAnyHost()) {
@@ -106,6 +113,14 @@ public class ZookeeperRegistry extends FailbackRegistry {
         }
     }
 
+    /**
+     * zookeeper 创建节点
+     * 1）从url中获取dynamic（动态的）的值
+     *    dynamic与zookeeper中ephemeral（短暂的，临时的）的对应关系
+     *    dynamic=true（动态的）-》ephemeral=true（临时节点），dynamic=false（非动态的）-》ephemeral=true（永久节点）
+     * 2）构建节点的路径 toUrlPath(url)
+     * 3）创建指定路径的节点，并指定是否是临时节点
+     */
     protected void doRegister(URL url) { //注册节点数据
         try {
             //此处清空zk，看变化
@@ -115,6 +130,11 @@ public class ZookeeperRegistry extends FailbackRegistry {
         }
     }
 
+    /**
+     * zookeeper 删除节点
+     * 1）获取url对应的节点路径 toUrlPath(url)
+     * 2）删除指定路径的节点
+     */
     protected void doUnregister(URL url) {
         try {
             zkClient.delete(toUrlPath(url));
@@ -216,17 +236,32 @@ public class ZookeeperRegistry extends FailbackRegistry {
         }
     }
 
-    private String toRootDir() { //获取根目录  root的值如 /dubbo
+    /**
+     * 转换至根路径root
+     *  判断根路径是否等于"/"，如等于直接返回，不等于如"/dubbo"，则附加上分隔符，如"/dubbo/"
+     *  转换的结果如： "/" 或 "/dubbo/"
+     */
+    private String toRootDir() { //获取根目录  root的值如 /
         if (root.equals(Constants.PATH_SEPARATOR)) {
             return root;
         }
         return root + Constants.PATH_SEPARATOR; //根目录： /dubbo/
     }
 
+    /**
+     * 转换至根路径
+     */
     private String toRootPath() {
         return root;
     }
 
+    /**
+     * 将url转换至带有接口服务service中的path
+     * 1）获取服务接口名
+     * 2）若接口名是ANY_VALUE = "*"，返回根目录
+     *    若不是：则接口服务path为 根路径 + 接口名的编码
+     * 转化的接口如：/dubbo/com.alibaba.dubbo.demo.ApiDemo
+     */
     private String toServicePath(URL url) { //服务路径： 根目录 + 接口名编码
         String name = url.getServiceInterface();
         if (Constants.ANY_VALUE.equals(name)) {
@@ -255,10 +290,20 @@ public class ZookeeperRegistry extends FailbackRegistry {
         return paths;
     }
 
+    /**
+     * 将url转换至带有分类category中的path
+     * 1）转换至服务path，如/dubbo/com.alibaba.dubbo.demo.ApiDemo（根目录 + 接口名）
+     * 2）拼接路径分隔符 "/"
+     * 3）从url获取分类，并拼接，默认为providers，分类包含consumers, configurators, routers, providers
+     * 最后拼接的带有分类的路径如：/dubbo/com.alibaba.dubbo.demo.ApiDemo/providers
+     */
     private String toCategoryPath(URL url) {
         return toServicePath(url) + Constants.PATH_SEPARATOR + url.getParameter(Constants.CATEGORY_KEY, Constants.DEFAULT_CATEGORY); //默认分类providers
     }
 
+    /**
+     * 将url转换至url中的path
+     */
     private String toUrlPath(URL url) {
         return toCategoryPath(url) + Constants.PATH_SEPARATOR + URL.encode(url.toFullString()); //返回值，如：/dubbo/com.alibaba.dubbo.demo.ApiDemo/providers/dubbo%3A%2F%2F10.118.32.189%3A20881%2Fcom.alibaba.dubbo.demo.ApiDemo...
     }

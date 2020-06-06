@@ -20,6 +20,7 @@ import com.alibaba.dubbo.common.URL;
 import java.util.List;
 
 /**
+ * 通知监听器
  * NotifyListener. (API, Prototype, ThreadSafe)
  *
  * @author william.liangf

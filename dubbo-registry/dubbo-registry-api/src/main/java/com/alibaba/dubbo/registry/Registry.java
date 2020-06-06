@@ -20,6 +20,7 @@ import com.alibaba.dubbo.common.URL;
 
 /**
  * Registry（注册）. (SPI, Prototype, ThreadSafe)
+ * 继承Node（节点功能）、RegistryService（注册相关服务），既是一个节点，又能提供注册相关服务
  *
  * @author william.liangf
  * @see com.alibaba.dubbo.registry.RegistryFactory#getRegistry(URL)

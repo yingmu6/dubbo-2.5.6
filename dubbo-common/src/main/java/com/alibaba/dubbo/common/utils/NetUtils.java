@@ -300,6 +300,12 @@ public class NetUtils {
      *
      * https://www.jianshu.com/p/6c6b9d629bae Hosts详解（含域名、DNS）
      */
+
+    /**
+     * 根据主机名获取IP地址
+     * 1）根据主机名获取 IP地址InetAddress
+     * 2）以文本形式返回IP地址字符串
+     */
     public static String getIpByHost(String hostName) {
         try {
             return InetAddress.getByName(hostName).getHostAddress();

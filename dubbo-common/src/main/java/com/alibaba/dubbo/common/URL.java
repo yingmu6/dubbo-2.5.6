@@ -200,7 +200,7 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     /**
-     * @csy-v1 String与Url转换(把字符串的url构造成URL对象)
+     * String与Url转换(把字符串的url构造成URL对象)
      * 从url字符串中解析出相关的参数，如：username、password、host等，然后构建URL对象
      * Parse url string
      *
@@ -496,6 +496,7 @@ public final class URL implements Serializable {//可进行序列化
 
     /**
      * 从参数集合Map中获取key对应的值，若不存在则返回输入的默认值
+     * 若key对应的键不存在，并且默认值为空，那么返回的值就为null
      */
     public String getParameter(String key, String defaultValue) {
         String value = getParameter(key);
@@ -1151,6 +1152,15 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     /**@c 移除参数后，重新构建URL */
+
+    /**
+     * 从URL参数集合中移除指定的参数，并构造URL返回
+     * 1）若移除的参数列表为空，不做处理，返回当前的URL
+     * 2）通过当前URL中getParameters()的参数集合构建新的map
+     * 3）循环遍历需要移除的参数列表，依次从参数集合map中移除相关的key
+     * 4）若新建的map和原有的map键的数目一致，表明没有移除到老的map的key，返回当前url
+     * 5）若对老的map有移除，则将核心参数protocol、username等，以及参数map构建URL，并返回
+     */
     public URL removeParameters(String... keys) {
         if (keys == null || keys.length == 0) {
             return this;
@@ -1249,6 +1259,16 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     //构建url中的参数
+
+    /**
+     * 过滤url中的参数集合，选择附加append指定的参数parameters
+     * 如url的参数有 [{"name","zhang"},{"age":12}]，过滤的参数列表为name，则会将参数name以及对应的值附加到url中
+     * 1）判断url的参数集合parameters是否为空，在不为空的时候才进入操作
+     * 2）通过传入的参数，构建参数列表includes
+     * 3）通过url的参数集合parameters，构建新的TreeMap集合
+     * 4）匹配url中的每个参数（对第一个参数特殊处理）
+     *    若在指定的参数集合中，表明是需要附加的参数
+     */
     private void buildParameters(StringBuilder buf, boolean concat, String[] parameters) {
         if (getParameters() != null && getParameters().size() > 0) {
             List<String> includes = (parameters == null || parameters.length == 0 ? null : Arrays.asList(parameters));
@@ -1277,6 +1297,24 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     /**@c 将url参数构建成字符串 */
+
+    /**
+     * 构建url字符串
+     * 1）若协议不为空，则字符创为"protocol://"
+     * 2）若需要拼接用户并且用户名不为空，则添加用户；
+     *    若密码不为空，则添加密码，如 username:password，附加"@"
+     * 3）是否使用ip
+     *    若使用ip，则根据host查找ip，InetAddress.getByName(hostName).getHostAddress()，如"111.231.91.23"
+     *    若使用host，直接返回host，如"www.xxx.com"
+     * 4）host不为空，则附加到url字符串中
+     *    若端口port不为空，则附加在url，如 host:port
+     * 5）判断是否用 服务接口对应的key
+     *    若使用：则path形式如 group/interface:version
+     *    若不使用：则直接使用url中的path值即可
+     * 6）若path值不为空，则添加到字符串中，如".../path"
+     * 7）判断是否要添加参数，若需要添加参数，将参数附加到字符串中
+     * 8）返回构建的字符串
+     */
     private String buildString(boolean appendUser, boolean appendParameter, boolean useIP, boolean useService, String... parameters) {
         StringBuilder buf = new StringBuilder();
         if (protocol != null && protocol.length() > 0) {
@@ -1335,6 +1373,13 @@ public final class URL implements Serializable {//可进行序列化
 
     /**
      * 获取服务key，格式如："group/interface:version"
+     * 1）获取服务接口名，若接口名为null，直接返回null
+     * 2）从url的参数map中，获取分组group对应的值
+     *    若存在分组，则将分组值添加到 构建的key中，如"group/"
+     * 3）添加接口到构建的key中，如"group/interface"
+     * 4）从url的参数map中，获取到版本号version
+     *    若存在版本号，则添加到构建的key中，如"group/interface:version"
+     * 5）返回构建的服务key对应的字符串
      */
     public String getServiceKey() {
         String inf = getServiceInterface(); //从URL中获取接口的完整名称
@@ -1357,6 +1402,13 @@ public final class URL implements Serializable {//可进行序列化
         return buildString(true, false, false, true);
     }
 
+    /**
+     * 转换服务字符串
+     *   1）需要附加用户信息（用户名、密码） "username:password@"
+     *   2）不需要附加参数
+     *   3）使用ip的表现形式，"ip:port"
+     *   4）使用服务接口形式，"group/interface:version"
+     */
     public String toServiceString() {
         return buildString(true, false, true, true);
     }
@@ -1366,6 +1418,10 @@ public final class URL implements Serializable {//可进行序列化
         return getServiceInterface();
     }
 
+    /**
+     * 获取 服务接口名
+     * 从url中获取interface键对应的值，若没有该键，则以url中的path为默认值
+     */
     public String getServiceInterface() {
         return getParameter(Constants.INTERFACE_KEY, path);
     }

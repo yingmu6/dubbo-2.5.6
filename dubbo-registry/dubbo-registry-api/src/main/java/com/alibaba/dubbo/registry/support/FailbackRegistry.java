@@ -323,10 +323,24 @@ public abstract class FailbackRegistry extends AbstractRegistry {
      * 重试失败的动作 (每隔指定时间，比如5秒，执行失败检查)，若重试成功，从错误列表中移除
      * 总之，哪个失败集合中存在失败的url，就对应重试相应的功能，若成功，则把失败记录移除
      */
+
+    /**
+     * 注册中心重试 -- 代码流程 --
+     * 1）若创建节点失败集合failedRegistered不为空
+     *    遍历集合中的URL，尝试通过doRegister(URL url)创建节点，若创建节点没异常，则将url从失败集合中移除，若异常则抛出提醒warn日志
+     * 2）若删除节点失败集合failedUnregistered不为空
+     *    遍历集合中的URL，尝试通过doUnregister(URL url)删除节点，若删除节点没异常，则将url从失败集合中移除，若异常则抛出提醒warn日志
+     * 3）若订阅节点失败集合failedSubscribed不为空
+     *   3.1）构建新的集合，对集合进行筛选，对值为空的选项进行移除
+     *   3.2）在新的错误集合存在选项时 failed.size() > 0 进行处理
+     *     3.2.1）双重循环处理
+     *       3.2.1.1）遍历错误Map<URL, Set<NotifyListener>>集合，获取每个url对应的值，Set<NotifyListener>
+     *          3.2.1.1.1）遍历Set<NotifyListener> 通知监听器
+     */
     protected void retry() {/**@c 重试失败的集合 注册、取消注册、订阅、取消订阅*/
         if (!failedRegistered.isEmpty()) { //注册失败，就尝试重新注册，若成功，将url从失败列表中移除
             Set<URL> failed = new HashSet<URL>(failedRegistered);
-            if (failed.size() > 0) {
+            if (failed.size() > 0) { // todo @csy 此处是否多余判断了，failedRegistered.isEmpty()是否会判断size？
                 if (logger.isInfoEnabled()) {
                     logger.info("Retry register " + failed);
                 }

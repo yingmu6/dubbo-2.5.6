@@ -21,6 +21,7 @@ import java.util.List;
 
 /**
  * RegistryService. (SPI, Prototype, ThreadSafe)
+ * 注册提供的服务：注册，取消注册，订阅，取消订阅，查询已注册数据
  *
  * @author william.liangf
  * @see com.alibaba.dubbo.registry.Registry

@@ -80,6 +80,19 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
         }
     }
 
+    /**
+     * 获取URL对应的注册实例
+     * 1）url参数处理
+     *   1.1）设置url的path值 com.alibaba.dubbo.registry.RegistryService，原始url 如zookeeper://host:port/com.alibaba.dubbo.registry.RegistryService....
+     *   1.2）设置interface值 com.alibaba.dubbo.registry.RegistryService
+     *   1.3）移除export的值, 此处处理后的url，zookeeper://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&
+     *       dubbo=2.0.0&interface=com.alibaba.dubbo.registry.RegistryService&pid=57000&timestamp=1591274736172
+     * 2）以服务字符串以构建map中的键key
+     * 3）从注册中心获取注册实例时加锁
+     *   3.1）从注册中心实例缓存map中key对应的值，若存在直接返回（确保单一实例）
+     *   3.2）若没有key对应的实例，则根据url创建注册实例，并且存入本地缓存
+     * 4）释放锁
+     */
     public Registry getRegistry(URL url) {
         url = url.setPath(RegistryService.class.getName())
                 .addParameter(Constants.INTERFACE_KEY, RegistryService.class.getName())
@@ -104,6 +117,11 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
         }
     }
 
+    /**
+     * 创建注册实例是抽象方法，交由子类去实现逻辑
+     * 此处的子类有DubboRegistryFactory、ZookeeperRegistryFactory等，通过工厂模式创建对象
+     * 一般情况下，用zookeeper作为注册中心
+     */
     protected abstract Registry createRegistry(URL url);
 
 }

@@ -33,6 +33,10 @@ public class ZookeeperRegistryFactory extends AbstractRegistryFactory {
         this.zookeeperTransporter = zookeeperTransporter;
     }
 
+    /**
+     * 创建ZookeeperRegistry实例
+     * todo @csy 此处ZookeeperRegistryFactory、zookeeperTransporter是在哪里创建的？
+     */
     public Registry createRegistry(URL url) {
         return new ZookeeperRegistry(url, zookeeperTransporter);
     }
