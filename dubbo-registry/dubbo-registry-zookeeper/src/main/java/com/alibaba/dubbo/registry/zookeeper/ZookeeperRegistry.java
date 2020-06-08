@@ -143,9 +143,26 @@ public class ZookeeperRegistry extends FailbackRegistry {
         }
     }
 
+    /**
+     * zookeeper 订阅节点
+     * 判断是否是泛型接口，即url中interface值是否是"*"
+     * 1）是泛型接口
+     *   1.1）获取根目录
+     *   1.2）从本地缓存Map中ConcurrentMap<URL, ConcurrentMap<NotifyListener, ChildListener>>
+     *       获取到监听者与子监听者的映射关系ConcurrentMap<NotifyListener, ChildListener>
+     *   1.3）若监听者的映射关系为空，初始化对应的映射关系
+     *   1.4）从映射集合中获取到子监听者ChildListener，若子监听者为空，则进行构建
+     *     1.4.1）构建子监听者：使用匿名实现创建ChildListener的实现类，重写childChanged方法，遍历当前的子节点列表
+     *            处理子监听者的变化事件：
+     *            1.4.1.1）对子节点解码，判断是否在Set<String> anyServices集合中，若不在则添加到anyServices
+     *            1.4.1.2）设置url的路径为child，为url添加interface、check参数，并做订阅subscribe(URL url, NotifyListener listener)
+     * todo pause 2
+     * 2）不是泛型接口
+     *
+     */
     protected void doSubscribe(final URL url, final NotifyListener listener) {
         try {
-            if (Constants.ANY_VALUE.equals(url.getServiceInterface())) { //泛型接口 todo @csy-h1 待测试用例覆盖
+            if (Constants.ANY_VALUE.equals(url.getServiceInterface())) { //泛型接口
                 String root = toRootPath();
                 ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
                 if (listeners == null) {

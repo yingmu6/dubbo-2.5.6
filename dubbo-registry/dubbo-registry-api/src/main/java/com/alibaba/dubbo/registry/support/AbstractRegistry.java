@@ -71,7 +71,6 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
     private final boolean syncSaveFile;
     private final AtomicLong lastCacheChanged = new AtomicLong();
     private final Set<URL> registered = new ConcurrentHashSet<URL>(); /**@c 需要注册的数据 */
-    // todo @csy-v1 订阅和通知的数据结构待了解
     private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>(); /**@c 订阅、取消订阅，一个主题URL被多个监听者NotifyListener监听 */
     private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>(); /**@c 通知的集合 */
     private URL registryUrl;
@@ -321,6 +320,13 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
      * @param url      订阅条件，不允许为空，如：consumer://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
      * @param listener 变更事件监听器，不允许为空
      */
+
+    /**
+     * 将监听者添加到url对应的监听者集合中
+     * 1）对URL、NotifyListener进行非空判断
+     * 2）从订阅缓存ConcurrentMap<URL, Set<NotifyListener>>中获取到url对应的监听者列表
+     *  2.1）若监听列表为空，则初始化监听者列表，并设置对url对应的缓存中
+     */
     public void subscribe(URL url, NotifyListener listener) {/**@c 一个URL对应多个NotifyListener */
         if (url == null) {
             throw new IllegalArgumentException("subscribe url == null");
@@ -331,15 +337,31 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         if (logger.isInfoEnabled()) {
             logger.info("Subscribe: " + url);
         }
-        /**
-         * 若url对应的集合不存在，先创建集合后添加监听器
-         */
         Set<NotifyListener> listeners = subscribed.get(url);
         if (listeners == null) {
             subscribed.putIfAbsent(url, new ConcurrentHashSet<NotifyListener>());
             listeners = subscribed.get(url);
         }
-        listeners.add(listener); //todo @csy-h1 此处并没有往subscribed 添加内容，是怎样添加监听者的？
+
+        // 将监听者添加到url对应的监听者集合中
+        listeners.add(listener); //此处添加后，会影响ConcurrentMap<URL, Set<NotifyListener>>中url对应的集合
+    }
+
+    public static void main(String[] args) {
+        // 模拟listeners.add(listener) 是否有效果
+        ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<>();
+        URL url = URL.valueOf("http://www.xxx.com");
+        Set<NotifyListener> listeners = subscribed.get(url);
+        if (listeners == null) {
+            subscribed.putIfAbsent(url, new ConcurrentHashSet<NotifyListener>());
+            listeners = subscribed.get(url);
+        }
+        NotifyListener listener = new NotifyListener() {
+            @Override
+            public void notify(List<URL> urls) {
+            }
+        };
+        listeners.add(listener);
     }
 
     /**

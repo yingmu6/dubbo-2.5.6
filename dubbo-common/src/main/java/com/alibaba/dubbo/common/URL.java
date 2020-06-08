@@ -1115,6 +1115,14 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     //可以添加若干个参数（按key、value方式传递参数）
+
+    /**
+     * 往url中添加多个参数
+     * 1）若参数为空则返回不处理
+     * 2）若参数个数不是偶数个，则抛出异常
+     * 3）对参数个数除以2，key的下标依次为2*i，即0、2、4.... ，value的下标为2*i+1，即1，3，5...
+     * 如：Constants.INTERFACE_KEY, child,Constants.CHECK_KEY, String.valueOf(false) ,四个参数
+     */
     public URL addParameters(String... pairs) {
         if (pairs == null || pairs.length == 0) {
             return this;
@@ -1125,7 +1133,7 @@ public final class URL implements Serializable {//可进行序列化
         Map<String, String> map = new HashMap<String, String>();
         int len = pairs.length / 2;
         for (int i = 0; i < len; i++) {
-            map.put(pairs[2 * i], pairs[2 * i + 1]); // todo @csy-v2 为啥此处下标要乘以2
+            map.put(pairs[2 * i], pairs[2 * i + 1]);
         }
         return addParameters(map);
     }

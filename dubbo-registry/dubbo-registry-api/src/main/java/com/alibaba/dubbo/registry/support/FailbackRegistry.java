@@ -189,6 +189,11 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         }
     }
 
+    /**
+     * 订阅符合条件的已注册数据（当有注册数据变更时自动推送）
+     * 1）若目录以销毁，则不处理
+     * 2）调用父类AbstractRegistry的subscribe订阅方法
+     */
     @Override
     public void subscribe(URL url, NotifyListener listener) {
         if (destroyed.get()){
@@ -335,7 +340,9 @@ public abstract class FailbackRegistry extends AbstractRegistry {
      *   3.2）在新的错误集合存在选项时 failed.size() > 0 进行处理
      *     3.2.1）双重循环处理
      *       3.2.1.1）遍历错误Map<URL, Set<NotifyListener>>集合，获取每个url对应的值，Set<NotifyListener>
-     *          3.2.1.1.1）遍历Set<NotifyListener> 通知监听器
+     *          3.2.1.1.1）遍历Set<NotifyListener> 通知监听者，尝试通过doSubscribe(url, listener)做订阅
+     *                     若订阅成功没异常，则将监听者从失败集合中移除,否则抛出异常日志
+     * todo pause  1
      */
     protected void retry() {/**@c 重试失败的集合 注册、取消注册、订阅、取消订阅*/
         if (!failedRegistered.isEmpty()) { //注册失败，就尝试重新注册，若成功，将url从失败列表中移除
