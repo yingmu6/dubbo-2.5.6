@@ -18,6 +18,7 @@ package com.alibaba.dubbo.rpc.cluster.configurator;
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.utils.NetUtils;
+import com.alibaba.dubbo.common.utils.UrlUtils;
 import com.alibaba.dubbo.rpc.cluster.Configurator;
 
 import java.util.HashSet;
@@ -38,10 +39,6 @@ public abstract class AbstractConfigurator implements Configurator {
             throw new IllegalArgumentException("configurator url == null");
         }
         this.configuratorUrl = url;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(URL.encode("timeout=100"));
     }
 
     public URL getUrl() {
@@ -103,8 +100,23 @@ public abstract class AbstractConfigurator implements Configurator {
      * priority值越大，优先级越高；
      * priority相同，特定host优先级高于anyhost 0.0.0.0
      *
-     * @param o
-     * @return
+     * URL url1 = URL.valueOf("172.14.12.16");
+     * URL url2 = URL.valueOf("anyhost");
+     * URL url3 = URL.valueOf("0.0.0.0");
+     * URL url4 = URL.valueOf("127.0.0.1");
+     * System.out.println("一：" + url1.getHost().compareTo(url2.getHost()));
+     * System.out.println("二：" + url1.getHost().compareTo(url3.getHost()));
+     * System.out.println("三：" + url1.getHost().compareTo(url4.getHost()));
+     * 输出   一：-48 ，  二：1  ，三：5
+     */
+
+    /**
+     * 排序处理
+     * 1）若比较的对象为空，则返回-1，表明当前配置Configurator的优先级小于参数指定的优先级
+     * 2）先比较配置url与传入url的host值
+     *   2.1）若相等，获取配置url以及传入url设置的权重值
+             将权重值进行比较，权重值大的优先级高
+     *   2.2）若不想等，直接返回比较的结果来决定优先级
      */
     public int compareTo(Configurator o) {
         if (o == null) {

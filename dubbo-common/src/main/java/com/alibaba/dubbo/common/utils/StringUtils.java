@@ -78,9 +78,10 @@ public final class StringUtils {
     }
 
     /**
-     * @param s1
-     * @param s2
-     * @return equals
+     * 判断两个字符串是否相等（对java底层的String的equals进行封装，对空参数进行判断处理）
+     * 1）若两个参数s1，s2都为空，返回true
+     * 2）若只有一个参数为空，返回false
+     * 3）返回String的equals比较结果
      */
     public static boolean isEquals(String s1, String s2) { //判断两个字符串是否相等
         if (s1 == null && s2 == null)
@@ -124,6 +125,12 @@ public final class StringUtils {
         return true;
     }
 
+    /**
+     * 判断value是否包含在字符串中
+     * 1）若待比较的字符串为空，则返回false
+     * 2）将待比较的values进行分隔，获取到字符串数组
+     *    判断value是否在values对应的数组中
+     */
     public static boolean isContains(String values, String value) {
         if (values == null || values.length() == 0) {
             return false;
@@ -132,9 +139,9 @@ public final class StringUtils {
     }
 
     /**
-     * @param values
-     * @param value
-     * @return contains
+     * 判断值value是否包含在values对应的数组中
+     * 1）判断值value和字符数组values是否为空，
+     *    若不为空，依次遍历数组，与指定的值value进行比较是否相等，只要其中一个相等，就结束并返回true
      */
     public static boolean isContains(String[] values, String value) {
         if (value != null && value.length() > 0 && values != null && values.length > 0) {

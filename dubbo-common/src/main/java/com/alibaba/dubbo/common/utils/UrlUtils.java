@@ -341,11 +341,15 @@ public class UrlUtils {
     }
 
     /**
-     * 分类是否匹配
-     * 1）第二个参数categories若为空时，判断第一个参数是否是空
-     * 2）判断第二个参数是否是任意类型 *
-     * 3）判断是否包含移除前缀
-     * 4）判断第二个参数是否包含constains第一个参数
+     * 分类是否匹配（第一个参数传provider分类，第二次参数传consumer分类）
+     * 1）若consumer分类category若为空时，
+     *    判断provider分类是否为默认分类DEFAULT_CATEGORY
+     *    若provider分类是默认分类，（消费者没设置category参数时，以provider来判断）返回true（分配匹配上），否则返回false
+     * 2）判断consumer分类是否是任意类型"*"，
+     *    若是返回true
+     * 3）判断consumer分类是否包含"-"
+     *    若包含判断consumer分类是否不包含 "-" + provider分类，若不包含则返回true，否则返回false
+     * 4）判断consumer分类是否包含provider分类
      */
     public static boolean isMatchCategory(String category, String categories) {
         if (categories == null || categories.length() == 0) {
@@ -359,7 +363,19 @@ public class UrlUtils {
         }
     }
 
-    /**@c 比较两个URL是否相等，interfaceName、group、version、classifier 都要相等 */
+    /**@c 比较两个URL是否匹配，category、group、version、classifier 都要相等 */
+    /**
+     * 判断消费端URL与提供端URL是否相等
+     * 1）从url中获取到消费端和提供端的键"interface" 对应的值
+     *    若consumerInterface的值不为"*"，或consumerInterface、providerInterface相等，则认为不匹配
+     * 2）匹配providerUrl、consumerUrl中的category，若不匹配则返回false
+     * 3）判断providerUrl、consumerUrl是否能使用，若"enabled"的值都为false，表明不可使用，返回false
+     * 4）获取consumerUrl、providerUrl中"group"、"version"、"classifier"（默认为"*"）
+     * 5）group、version、classifier判断处理
+     *    5.1）若consumerGroup的值为"*"，或consumerGroup, providerGroup字符串相等，或providerGroup是否包含在consumerGroup对应的数组中
+     *    5.2）且consumerVersion为"*"，或consumerVersion, providerVersion是否相等isEquals
+     *    5.3）且consumerClassifier为null，或consumerClassifier的值为*，或consumerClassifier，providerClassifier是否相等isEquals
+     */
     public static boolean isMatch(URL consumerUrl, URL providerUrl) {
         String consumerInterface = consumerUrl.getServiceInterface();
         String providerInterface = providerUrl.getServiceInterface();
@@ -368,7 +384,7 @@ public class UrlUtils {
          * 2.若consumerInterface不是泛化接口，并且不等于providerInterface，则认为不相等，返回false
          * 非运算，取反运算， !true == false, !false == true
          */
-        if (!(Constants.ANY_VALUE.equals(consumerInterface) || StringUtils.isEquals(consumerInterface, providerInterface)))
+        if (!(Constants.ANY_VALUE.equals(consumerInterface) || StringUtils.isEquals(consumerInterface, providerInterface))) // todo @csy 此处正常逻辑不好理解，是指consumerInterface不为"*" 就返回false吗？
             return false;
 
         if (!isMatchCategory(providerUrl.getParameter(Constants.CATEGORY_KEY, Constants.DEFAULT_CATEGORY),
@@ -392,6 +408,10 @@ public class UrlUtils {
                 && (consumerClassifier == null || Constants.ANY_VALUE.equals(consumerClassifier) || StringUtils.isEquals(consumerClassifier, providerClassifier));
     }
 
+    /**
+     *
+     *
+     */
     public static boolean isMatchGlobPattern(String pattern, String value, URL param) {
         if (param != null && pattern.startsWith("$")) {
             pattern = param.getRawParameter(pattern.substring(1));/**@c 去除第一个字符的子串 */
@@ -399,6 +419,14 @@ public class UrlUtils {
         return isMatchGlobPattern(pattern, value);
     }
 
+    /**
+     * todo pause 10
+     * 1）参数pattern、value校验
+     *   1.1）若模式pattern值为"*"，返回true，表明能匹配
+     *   1.2）若模式pattern值为空，并且value的值为空，返回true
+     * 2）查找"*"在pattern的位置
+     *   2.1）
+     */
     public static boolean isMatchGlobPattern(String pattern, String value) {
         if ("*".equals(pattern))/**@c todo @csy-h1 星号从哪里设置的，数据格式是怎样的 */
             return true;

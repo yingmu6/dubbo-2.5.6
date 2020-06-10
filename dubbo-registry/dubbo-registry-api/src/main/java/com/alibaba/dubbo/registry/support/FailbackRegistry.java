@@ -108,6 +108,15 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         listeners.add(listener);
     }
 
+    /**
+     * 从url对应的失败监听者集合中将指定的lister移除
+     * 1）从失败的failedSubscribed查询到url对应的失败集合listeners
+     *    若集合不为空，则从集合中移除listener
+     * 2）从失败的failedUnsubscribed查询到url对应的失败集合listeners
+     *    若集合不为空，则从集合中移除listener
+     * 3）从失败的failedNotified查询到url对应的失败集合notified
+     *    若集合不为空，则从集合中移除listener
+     */
     private void removeFailedSubscribed(URL url, NotifyListener listener) {/**@c  */
         Set<NotifyListener> listeners = failedSubscribed.get(url);
         if (listeners != null) {
@@ -192,7 +201,14 @@ public abstract class FailbackRegistry extends AbstractRegistry {
     /**
      * 订阅符合条件的已注册数据（当有注册数据变更时自动推送）
      * 1）若目录以销毁，则不处理
-     * 2）调用父类AbstractRegistry的subscribe订阅方法
+     * 2）调用父类AbstractRegistry的subscribe订阅方法，将listener监听者添加到
+     *    url对应的监听者map缓存中，ConcurrentMap<URL, Set<NotifyListener>> （抽象类：将公共的方法以及属性抽离出来）
+     * 3）从失败订阅Map failedSubscribed、失败取消订阅Map failedUnsubscribed、失败通知Map failedNotified中移除NotifyListener
+     * 4）向服务器端发送订阅请求
+     *   4.1）若订阅失败，做相关处理
+     *    4.1.1）从缓存Properties获取到url中serviceKey对应的服务列表
+     *    4.1.2）若缓存的服务url列表不为空，则尝试通知本地缓存中对应的服务，并打印错误日志
+     *    todo pause 3
      */
     @Override
     public void subscribe(URL url, NotifyListener listener) {
@@ -209,7 +225,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
             Throwable t = e;
 
             List<URL> urls = getCacheUrls(url);
-            if (urls != null && urls.size() > 0) {/**@c 若从本地缓存中有url，则表明远程订阅失败 */
+            if (urls != null && urls.size() > 0) {
                 notify(url, listener, urls);
                 logger.error("Failed to subscribe " + url + ", Using cached list: " + urls + " from cache file: " + getUrl().getParameter(Constants.FILE_KEY, System.getProperty("user.home") + "/dubbo-registry-" + url.getHost() + ".cache") + ", cause: " + t.getMessage(), t);
             } else {
@@ -270,6 +286,9 @@ public abstract class FailbackRegistry extends AbstractRegistry {
 
     /**
      * 通知
+     * 1）判断url、listener是否为空，若为空则抛出非法参数异常
+     * 2）处理通知
+     *  2.1）todo pause 4
      */
     @Override
     protected void notify(URL url, NotifyListener listener, List<URL> urls) {
@@ -293,6 +312,9 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         }
     }
 
+    /**
+     * 处理通知
+     */
     protected void doNotify(URL url, NotifyListener listener, List<URL> urls) {
         super.notify(url, listener, urls);
     }

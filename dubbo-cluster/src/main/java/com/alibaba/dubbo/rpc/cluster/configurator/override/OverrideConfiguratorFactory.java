@@ -21,6 +21,7 @@ import com.alibaba.dubbo.rpc.cluster.ConfiguratorFactory;
 
 /**
  * AbsentConfiguratorFactory
+ * Configurator接口的构造工厂，创建OverrideConfigurator实例
  *
  * @author william.liangf
  */

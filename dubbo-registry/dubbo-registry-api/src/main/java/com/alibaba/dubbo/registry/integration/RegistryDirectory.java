@@ -134,6 +134,23 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      *             </br>4.不带参数的override://0.0.0.0/ 表示清除override
      * @return
      */
+
+    /**
+     * 将url列表转换为Configurator列表
+     * 1）若url列表为空，则返回空列表
+     * 2）构建Configurator列表，初始大小为传入的urls列表大小值
+     * 3）遍历输入的url列表
+     *   3.1）若url中协议为空即为"empty"，则移除列表，进行下一个判断
+     *      (此处列表中只要有一个是空协议，就移除列表，并break终止循环
+     *      1：全部的url的协议都不为"empty"，2：前面的url协议可以为"empty"，最后一个不为"empty"即可)
+     *   3.2）通过url的参数列表，构建override的参数Map集合
+     *   3.3）override的Map集合中移除"anyhost"对应的值
+     *        若没有参数，则将configurators.clear() 列表清空，进入下一次循环
+     *   3.4）若url通过上述检测，则通过ConfiguratorFactory配置工厂，
+     *        获取url对应的配置Configurator的实例，并加到configurators列表中
+     * 4）对List<Configurator>列表排序，因为Configurator继承了Comparable接口中compareTo方法
+     *    所以会根据Configurator的实现类的compareTo方法进行排序
+     */
     public static List<Configurator> toConfigurators(List<URL> urls) {
         if (urls == null || urls.size() == 0) {
             return Collections.emptyList();
@@ -191,6 +208,19 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
+    /**
+     * 通知处理
+     * 1）初始化分类对应的url列表，invokerUrls:提供者分类列表，routerUrls：路由分类列表，configuratorUrls：配置分类列表
+     * 2）遍历需要通知的url，获取到协议protocol、分类category
+     *   2.1）若分类为routers，或协议为route，则将url加到routerUrls列表
+     *   2.2）若分类为configurators，或协议为override，则将url加到configuratorUrls列表
+     *   2.3）若提供者分类为providers，则将url加到invokerUrls列表（提供者暴露的协议可以是多种，所以此处没有指定）
+     *   2.4）若超出上述分类，则打印不支持的分类warn日志
+     * 3）处理配置列表，若configuratorUrls不为空，将configuratorUrls转换为List<Configurator>列表
+     *     依次通过ConfiguratorFactory工厂方法构建Configurator，然后设置到当前对象的属性中configurators
+     * 4）处理路由列表，若routerUrls不为空，将routerUrls转换为List<Router>列表
+     *   todo pause 6
+     */
     public synchronized void notify(List<URL> urls) { //服务提供者出现变化时注册中心会将消息通知到消息者，消费者收到通知消息会调用notify函数，完成消费者本地服务目录相关信息的刷新
         List<URL> invokerUrls = new ArrayList<URL>();
         List<URL> routerUrls = new ArrayList<URL>();
@@ -313,6 +343,17 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * @param urls
      * @return null : no routers ,do nothing
      * else :routers list
+     */
+
+    /**
+     * 将URL列表转换为Router列表
+     * 1）若传入的url列表为空，则返回不处理
+     * 2）当url列表不为空时，遍历url列表
+     *  2.1）若包含空协议"empty"，则跳过执行下一个url
+     *  2.2）从url中获取路由的类型"router"，若路由类型不为空，则设置到当前url的protocol中
+     *  2.3）使用路由工厂routerFactory获取router实例，todo pause 7
+     *       若没在routers列表，则添加到routers列表
+     * 3）返回路由列表routers
      */
     private List<Router> toRouters(List<URL> urls) {
         List<Router> routers = new ArrayList<Router>();

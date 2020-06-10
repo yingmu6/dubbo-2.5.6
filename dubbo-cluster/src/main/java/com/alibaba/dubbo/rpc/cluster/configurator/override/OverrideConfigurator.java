@@ -25,6 +25,11 @@ import com.alibaba.dubbo.rpc.cluster.configurator.AbstractConfigurator;
  */
 public class OverrideConfigurator extends AbstractConfigurator {/**@c 覆盖配置 */
 
+    /**
+     * 构建OverrideConfigurator实例
+     * 1）调用父类AbstractConfigurator构造函数，初始化父类的URL configuratorUrl
+     * 2）构建OverrideConfigurator实例
+     */
     public OverrideConfigurator(URL url) {
         super(url);
     }

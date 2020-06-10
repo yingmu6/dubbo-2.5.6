@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 /**
  * ConditionRouter
  *
+ * 条件路由：
  * @author william.liangf
  */
 public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有路由功能和比较器功能 */
@@ -52,7 +53,20 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
     private final Map<String, MatchPair> whenCondition;/**@c todo 是否是可以理解为 当什么条件满足，就执行什么条件 */
     private final Map<String, MatchPair> thenCondition;
 
-    public ConditionRouter(URL url) {/**@c todo @csy-h1 url的格式*/
+    /**
+     * 构建条件路由
+     * 1）设置基本属性，url、priority（优先权）、force（是否强制）
+     * 2）获取url中"rule"参数对应的值并解码
+     * 3）若rule值为空，抛出非法参数异常
+     * 4）将rule中的"consumer." 以及"provider."都字符串都替换为空串
+     * 5）获取规则rule字符串中"=>"的下标，构建因果条件
+     *   5.1）构建条件规则，如果没包含"=>" 则条件为null，否则取"=>"前面的字符串为条件
+     *   5.2）构建结果规则，如果没包含"=>" 则将整个rule字符串作为结果，否则将"=>"后面的字符串为结果
+     *   5.3）若whenRule为空或"true"，则返回空的Map，否则解析规则获取到条件Map
+     *   5.4）若thenRule为空或"true"，则返回null，否则解析规则获取到条件Map todo pause 7 parseRule()
+     *   5.5）设置当前条件路由的属性值whenCondition、thenCondition
+     */
+    public ConditionRouter(URL url) {
         this.url = url;
         this.priority = url.getParameter(Constants.PRIORITY_KEY, 0);
         this.force = url.getParameter(Constants.FORCE_KEY, false);
@@ -76,6 +90,10 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
         }
     }
 
+    /**
+     * 将规则字符串
+     * todo pause 8
+     */
     private static Map<String, MatchPair> parseRule(String rule)
             throws ParseException {
         Map<String, MatchPair> condition = new HashMap<String, MatchPair>();
@@ -224,10 +242,17 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
         return result;
     }
 
+    /**
+     * 配对比较
+     */
     private static final class MatchPair {/**@c 内部类  */
         final Set<String> matches = new HashSet<String>();
         final Set<String> mismatches = new HashSet<String>();
 
+        /**
+         *
+         * 1）todo pause 9
+         */
         private boolean isMatch(String value, URL param) {
             if (matches.size() > 0 && mismatches.size() == 0) {
                 for (String match : matches) {

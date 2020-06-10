@@ -21,7 +21,7 @@ import com.alibaba.dubbo.rpc.cluster.ConfiguratorFactory;
 
 /**
  * AbsentConfiguratorFactory
- *
+ * Absent(缺席，不在)
  * @author william.liangf
  */
 public class AbsentConfiguratorFactory implements ConfiguratorFactory {

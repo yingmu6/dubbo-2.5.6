@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author chao.liuc
  * @author william.liangf
  */
-public abstract class AbstractRegistry implements Registry { //将公共信息放到抽象类，供子类调用
+public abstract class AbstractRegistry implements Registry { //将公共信息放到抽象类，供子类调用 todo 此类中相关的参数需要调试看下，便于理解
 
     // URL地址分隔符，用于文件缓存中，服务提供者URL分隔
     private static final char URL_SEPARATOR = ' ';
@@ -74,7 +74,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
     private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>(); /**@c 订阅、取消订阅，一个主题URL被多个监听者NotifyListener监听 */
     private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>(); /**@c 通知的集合 */
     private URL registryUrl;
-    // 本地磁盘缓存文件
+    // 本地磁盘缓存文件 todo @csy 此处的值需要调试下
     private File file;
 
     private AtomicBoolean destroyed = new AtomicBoolean(false);
@@ -151,6 +151,23 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         return lastCacheChanged;
     }
 
+    /**
+     * 将属性列表保存到文件中 (读取.cache中的属性，并附加上本地缓存的Properties，写到到.lock文件中)
+     * 1）若当前版本最近变更的版本，则不处理（乐观锁处理）
+     * 2）若本地缓存文件为空，则不处理
+     * 3）构建文件输入流，从输入流中读取属性列表，写入到Properties中
+     *   3.1）若失败则抛异常，"从本地存储文件中加载属性失败"
+     *   3.2）在try/catch执行完后finally，文件输入流
+     * 4）将本地缓存的Properties也putAll全部写到新建的Properties中
+     * 5）在本地缓存文件的路径下创建".lock"文件（若文件不存在则创建）
+     * 6）创建随机访问文件RandomAccessFile，从文件中获取文件通道FileChannel，
+     *    并进行加锁处理channel.tryLock()，若不能获取到锁，则抛异常
+     * 7）构建文件输出流，将新键的Properties存储到文件中
+     *    7.1）关闭文件输出流FileOutputStream、释放锁lock、关闭通道channel、关闭随机访问文件等
+     *    7.2）若失败异常
+     *     7.2.1）版本号落后与最近版本号，则不处理
+     *     7.2.2）若版本号高于最近版本号，则创建保存属性的线程SaveProperties，异步执行
+     */
     public void doSaveProperties(long version) {
         if (version < lastCacheChanged.get()) { /**@c 版本号比较，乐观锁处理 */
             return;
@@ -178,7 +195,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
             }
         }
         // 保存
-        try {//todo @csy-h1 .lock 本地文件的用途？
+        try {
             newProperties.putAll(properties);
             File lockfile = new File(file.getAbsolutePath() + ".lock");
             if (!lockfile.exists()) {
@@ -245,6 +262,14 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         }
     }
 
+    /**
+     * 从本地缓存Properties中获取到url中serviceKey对应的服务url列表List<URL>
+     * 1）遍历缓存Properties的所有键key
+     * 2）获取到key、value
+     * 3）若key不为空，并且key的值与服务serviceKey相等，并且首字母是字符或是下划线，并且值不等于空
+     *   3.1）将符合条件的value按给定的分隔符分隔
+     *   3.2）遍历分隔后得到的数组，加到url列表中，并返回url列表
+     */
     public List<URL> getCacheUrls(URL url) {/**@c 缓存在内容的值*/
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             String key = (String) entry.getKey();
@@ -347,23 +372,6 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         listeners.add(listener); //此处添加后，会影响ConcurrentMap<URL, Set<NotifyListener>>中url对应的集合
     }
 
-    public static void main(String[] args) {
-        // 模拟listeners.add(listener) 是否有效果
-        ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<>();
-        URL url = URL.valueOf("http://www.xxx.com");
-        Set<NotifyListener> listeners = subscribed.get(url);
-        if (listeners == null) {
-            subscribed.putIfAbsent(url, new ConcurrentHashSet<NotifyListener>());
-            listeners = subscribed.get(url);
-        }
-        NotifyListener listener = new NotifyListener() {
-            @Override
-            public void notify(List<URL> urls) {
-            }
-        };
-        listeners.add(listener);
-    }
-
     /**
      * 取消订阅，将监听器从集合中移除
      */
@@ -436,8 +444,23 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
     }
 
     /**
-     * 通知机制：
-     * todo @csy-v1 参数url与urls的差异？
+     * NotifyListener通知已注册URL列表，并且对url中的服务做本地缓存以及缓存文件的写入
+     * 1）判断URL、NotifyListener参数是否为空，若为空则抛出非法参数异常
+     *    判断通知的url列表是否为空，若为空则终止后续的操作，因为没有通知的url列表
+     * 2）若普通日志开启，则打印出日志
+     * 3）遍历需要通知的provider的url列表
+     *   3.1）判断消者的consumer Url, 与提供者的provider Url是否匹配
+     *       3.1.1）若匹配UrlUtils.isMatch为true，获取提供者provider url中"category"的值
+     *         3.1.1.1）从Map<String, List<URL>> 获取category对应的url列表
+     *         3.1.1.2）从分类列表categoryList为空，创建分类列表，并设置到Map<String, List<URL>>中
+     * 4）若处理的Map<String, List<URL>>为空，则直接返回
+     * 5）ConcurrentMap<URL, Map<String, List<URL>>> 获取url对应的分类通知Map中Map<String, List<URL>> categoryNotified
+     *    若分类通知categoryNotified 中Map为空，则初始化Map
+     * 6）遍历分类对应的Map  result.entrySet()
+     *    6.1）获取分类category、以及分类对应的url列表categoryList，放入到ConcurrentMap<URL, Map<String, List<URL>>> 已通知过的列表notified
+     *    6.2）将url中的通知列表写到本地缓存Property、并写到本地缓存文件.caces， .lock中
+     *    6.3）listener通知分类的url列表
+     * todo pause  5
      */
     protected void notify(URL url, NotifyListener listener, List<URL> urls) {
         if (url == null) {
@@ -483,6 +506,18 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         }
     }
 
+    /**
+     * 将url对应的通知列表写入本地缓存Properties中，并且也写到本地缓存文件中
+     * 1）若本地磁盘缓存文件为空，则不处理
+     * 2）从ConcurrentMap<URL, Map<String, List<URL>>> 获取url对应的分类通知列表
+     *    若通知的分类map不为空，遍历通知的url列表
+     *    将多个url按分隔符进行分隔
+     * 3）将服务serviceKey与对应的拼接字符串buf，存入Properties
+     * 4）将版本号lastCacheChanged递增
+     * 5）是否同步保存文件
+     *  5.1）同步保存文件 doSaveProperties(version)
+     *  5.2）异步保存文件 ExecutorService registryCacheExecutor
+     */
     private void saveProperties(URL url) {
         if (file == null) {
             return;
@@ -507,7 +542,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
             // 每次变更都要将版本号加一，不管内容是否有变更
             long version = lastCacheChanged.incrementAndGet();
             // 同步保存或异步保存（异步使用线程池）
-            if (syncSaveFile) { // todo @书签 待阅读
+            if (syncSaveFile) {
                 doSaveProperties(version);
             } else {
                 registryCacheExecutor.execute(new SaveProperties(version));
@@ -562,6 +597,9 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         return getUrl().toString();
     }
 
+    /**
+     * 将属性保存到文件的线程
+     */
     private class SaveProperties implements Runnable { //保存文件线程
         private long version;
 

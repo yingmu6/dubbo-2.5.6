@@ -19,21 +19,21 @@ import com.alibaba.dubbo.common.URL;
 
 /**
  * Configurator. (SPI, Prototype, ThreadSafe)
- *
+ * 配置器
  * @author william.liangf
  */
 public interface Configurator extends Comparable<Configurator> {/**@c 动态配置 */
 
     /**
      * get the configurator url.
-     *
+     * 获取配置的url
      * @return configurator url.
      */
     URL getUrl();
 
     /**
      * Configure the provider url.
-     * O
+     * 配置提供者url
      *
      * @param url - old rovider url.
      * @return new provider url.
