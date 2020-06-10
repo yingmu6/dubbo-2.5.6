@@ -104,6 +104,15 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         return routers;
     }
 
+    /**
+     * 将路由列表设置到AbstractDirectory中的List<Router>
+     * 1）若传入的routers为空，则初始化新的列表，若不为空，则用传入的routers构建新的列表
+     * 2）获取url中router对应的路由routerkey
+     *   2.1）若routerkey不为空，通过SPI获取到RouterFactory的实例
+     *   2.2）获取url对应的路由实例Router，并且加到List<Router>
+     * 3）构建mock invoker选择器MockInvokersSelector，并加到List<Router>
+     * 4）对路由列表进行排序
+     */
     protected void setRouters(List<Router> routers) {
         // copy list
         routers = routers == null ? new ArrayList<Router>() : new ArrayList<Router>(routers);

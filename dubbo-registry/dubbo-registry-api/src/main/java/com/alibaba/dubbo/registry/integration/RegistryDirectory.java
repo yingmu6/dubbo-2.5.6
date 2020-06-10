@@ -351,7 +351,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * 2）当url列表不为空时，遍历url列表
      *  2.1）若包含空协议"empty"，则跳过执行下一个url
      *  2.2）从url中获取路由的类型"router"，若路由类型不为空，则设置到当前url的protocol中
-     *  2.3）使用路由工厂routerFactory获取router实例，todo pause 7
+     *  2.3）使用路由工厂routerFactory获取router实例，
      *       若没在routers列表，则添加到routers列表
      * 3）返回路由列表routers
      */
@@ -385,8 +385,6 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * 将urls转成invokers,如果url已经被refer过，不再重新引用。
      *
      * @param urls
-     * @param overrides
-     * @param query
      * @return invokers
      */
     private Map<String, Invoker<T>> toInvokers(List<URL> urls) {
@@ -457,9 +455,6 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     /**
      * 合并url参数 顺序为override > -D >Consumer > Provider
      *
-     * @param providerUrl
-     * @param overrides
-     * @return
      */
     private URL mergeUrl(URL providerUrl) {/**@c */
         providerUrl = ClusterUtils.mergeUrl(providerUrl, queryMap); // 合并消费端参数
@@ -582,7 +577,6 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * 检查缓存中的invoker是否需要被destroy
      * 如果url中指定refer.autodestroy=false，则只增加不减少，可能会有refer泄漏，
      *
-     * @param invokers
      */
     private void destroyUnusedInvokers(Map<String, Invoker<T>> oldUrlInvokerMap, Map<String, Invoker<T>> newUrlInvokerMap) {
         if (newUrlInvokerMap == null || newUrlInvokerMap.size() == 0) {

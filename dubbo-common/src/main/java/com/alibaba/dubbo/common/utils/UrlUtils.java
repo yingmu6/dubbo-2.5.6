@@ -409,8 +409,10 @@ public class UrlUtils {
     }
 
     /**
-     *
-     *
+     * 将字符串与指定的模式pattern字符串进行匹配
+     * 1）若url不会空，且pattern以"$"开头（表明是去url中pattern对应值来进行比较）
+     *    将pattern去除"$"获取子串，从url中获取到子串对应的值
+     * 2）将模式pattern字符串与待比较的字符串value进行比较
      */
     public static boolean isMatchGlobPattern(String pattern, String value, URL param) {
         if (param != null && pattern.startsWith("$")) {
@@ -420,15 +422,23 @@ public class UrlUtils {
     }
 
     /**
-     * todo pause 10
+     * 判断字符串与包含"*"的字符串的模式是否匹配
+     * GlobPattern(球形图案)
      * 1）参数pattern、value校验
-     *   1.1）若模式pattern值为"*"，返回true，表明能匹配
+     *   1.1）若模式pattern值为"*"，表明任意字符串都能匹配，返回true
      *   1.2）若模式pattern值为空，并且value的值为空，返回true
+     *   1.3）若模式pattern、比较值value，其中一个为空，返回false，不匹配
      * 2）查找"*"在pattern的位置
-     *   2.1）
+     *   2.1）若不存在"*"，则直接比较value与pattern两个字符串是否相等
+     *   2.2）若星号在末尾，pattern截取除末尾字符的子字符串，
+     *        表明子串后可以是任意字符，判断value字符串是否以子串开头，如"ab*" 与 "abc"匹配
+     *   2.3）若星号在开头，pattern截取除开头字符的子字符串，
+     *        表明子串前可以是任意字符，判断value字符串是否以子串结尾，如"*ab" 与 "cab"匹配
+     *   2.4）若星号在中间，根据*将pattern进行分隔，分为前缀、后缀
+     *        若value以前缀prefix开头，并且以后缀suffix结尾，则是匹配，如"ad*cd"与 "adecd" 匹配
      */
     public static boolean isMatchGlobPattern(String pattern, String value) {
-        if ("*".equals(pattern))/**@c todo @csy-h1 星号从哪里设置的，数据格式是怎样的 */
+        if ("*".equals(pattern))
             return true;
         if ((pattern == null || pattern.length() == 0)
                 && (value == null || value.length() == 0))

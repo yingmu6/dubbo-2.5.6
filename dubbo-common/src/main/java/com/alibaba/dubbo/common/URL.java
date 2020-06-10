@@ -1187,7 +1187,13 @@ public final class URL implements Serializable {//可进行序列化
         return new URL(protocol, username, password, host, port, path, new HashMap<String, String>());
     }
 
-    public String getRawParameter(String key) {/**@c 从URL中获取key的值 */
+    /**
+     * 从url中获取指定参数的值
+     * 1）若key为url中的protocol、username、password、host、port、path，直接取url对应的属性
+     * 2）若key是参数列表中的键，则从Map<String, String> parameters参数Map中获取
+     *   （若key直接取不到，会以"default."+key，作为新key取值）
+     */
+    public String getRawParameter(String key) {
         if ("protocol".equals(key))
             return protocol;
         if ("username".equals(key))
@@ -1242,6 +1248,9 @@ public final class URL implements Serializable {//可进行序列化
         return buildString(true, false, parameters); // only return identity message, see the method "equals" and "hashCode"
     }
 
+    /**
+     * 构建完整的url字符串（拼接用户、参数集合）
+     */
     public String toFullString() {
         if (full != null) {
             return full;

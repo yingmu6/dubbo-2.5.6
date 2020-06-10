@@ -63,7 +63,7 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
      *   5.1）构建条件规则，如果没包含"=>" 则条件为null，否则取"=>"前面的字符串为条件
      *   5.2）构建结果规则，如果没包含"=>" 则将整个rule字符串作为结果，否则将"=>"后面的字符串为结果
      *   5.3）若whenRule为空或"true"，则返回空的Map，否则解析规则获取到条件Map
-     *   5.4）若thenRule为空或"true"，则返回null，否则解析规则获取到条件Map todo pause 7 parseRule()
+     *   5.4）若thenRule为空或"true"，则返回null，否则解析规则获取到条件Map
      *   5.5）设置当前条件路由的属性值whenCondition、thenCondition
      */
     public ConditionRouter(URL url) {
@@ -91,8 +91,24 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
     }
 
     /**
-     * 将规则字符串
-     * todo pause 8
+     * 解析路由规则，生成条件condition与匹配对MatchPair的映射集合Map todo @csy 此处匹配细节待测试用例调试
+     * 1）若规则为空，则返回空的集合Map
+     * 2）将规则字符串按规则的正式表达式构建Matcher
+     * 3）若存在符合正则表达式的字符串，获取到分隔符separator、匹配的内容content
+     *  3.1）若分隔符separator为空，初始化匹配对MatchPair，并设置到条件Map中condition
+     *  3.2）若separator为"&"，表明KV开始，后面的串是键值对的串
+     *     3.2.1）若conditionMap中内容content条件为空，初始化匹配对MatchPair，并设置到条件Map中condition
+     *     3.2.2）若conditionMap中内容content条件不为空，则获取condition对应的匹配对MatchPair，并赋值给pair
+     *  3.3）若separator为"="，表明KV的Value部分开始
+     *     3.3.1）若pair为空，则抛出非法路由规则异常
+     *     3.3.2）将匹配matches的集合以及匹配的内容content，加入到value集合Set<String>中
+     *  3.4）若separator为"!="，表明KV的Value部分开始
+     *     3.4.1）若pair为空，则抛出非法路由规则异常
+     *     3.4.2）将不匹配mismatches的集合以及匹配的内容content，加入到value集合Set<String>中
+     *  3.5）若separator为"!="，表明KV的Value部分的多个条目
+     *     3.5.1）若values为空，则抛出非法路由规则异常
+     *     3.5.2）将匹配的内容content，添加到values集合中
+     *  3.6）若separator都不在上述的指定范围，则抛出解析异常
      */
     private static Map<String, MatchPair> parseRule(String rule)
             throws ParseException {
@@ -104,9 +120,9 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
         MatchPair pair = null;
         // 多个Value值
         Set<String> values = null;
-        final Matcher matcher = ROUTE_PATTERN.matcher(rule);/**@c 正则表达式匹配 */
+        final Matcher matcher = ROUTE_PATTERN.matcher(rule);
         while (matcher.find()) { // 逐个匹配
-            String separator = matcher.group(1);/**@c todo @csy-h1 匹配逻辑 */
+            String separator = matcher.group(1);
             String content = matcher.group(2);
             // 表达式开始
             if (separator == null || separator.length() == 0) {
@@ -196,6 +212,14 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
         return url;
     }
 
+    /**
+     * 条件路由router比较（以权重值priority进行比较）
+     * 1）若待比较的router为空或者不是ConditionRouter的Class，返回1
+     * 2）若Router的类型是ConditionRouter
+     *  2.1）比较当前Router的与待比较的Router的priority相等
+     *   2.1.1）若priority相等，项判断当前Router的url与待比较Router的url的完整url字符串是否相同
+     *   2.1.2）若priority不相等，判断当前Router的priority与待比较路由router的priority大小比较
+     */
     public int compareTo(Router o) {
         if (o == null || o.getClass() != ConditionRouter.class) {
             return 1;
@@ -250,8 +274,17 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
         final Set<String> mismatches = new HashSet<String>();
 
         /**
-         *
-         * 1）todo pause 9
+         * 将字符串与url进行模式匹配
+         * （若待比较的字符串与matches集合中的任意一个元素匹配上，即为true；若与mismatches，集合中的任意一个元素匹配上，即为false）
+         * 1）若集合matches不为空，集合mismatches为空
+         *   1.1）只要字符串与matches其中一个元素匹配上，即返回true。若都匹配不上，则返回false
+         * 2）若集合mismatches不为空，集合mismatches为空
+         *   2.1）只要字符串与mismatches其中一个元素匹配上，即返回false。若都匹配不上，则返回true
+         * 3）若集合matches不为空，且集合mismatches不为空
+         *   3.1）优先比较集合mismatches，只要字符串与mismatches其中一个元素匹配上，即返回false，
+         *   3.2）集合matches若都匹配不上，则匹配集合matches，若字符串与matches其中一个元素匹配上，即返回true
+         *   3.3）若集合mismatches、matches都没比较上，则返回false
+         * 4）若matches、mismatches集合都为空，返回false
          */
         private boolean isMatch(String value, URL param) {
             if (matches.size() > 0 && mismatches.size() == 0) {
@@ -272,6 +305,9 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
                 return true;
             }
 
+            /**
+             * 此处存在优先级 mismatches > matches
+             */
             if (matches.size() > 0 && mismatches.size() > 0) {
                 //when both mismatches and matches contain the same value, then using mismatches first
                 for (String mismatch : mismatches) {
