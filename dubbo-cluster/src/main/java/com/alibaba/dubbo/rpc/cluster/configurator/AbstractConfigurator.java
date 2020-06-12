@@ -45,7 +45,13 @@ public abstract class AbstractConfigurator implements Configurator {
         return configuratorUrl;
     }
 
-    public URL configure(URL url) {/**@c todo @csy-h1 */
+    /**
+     * 配置url
+     * 1）若配置configuratorUrl以及传入的url为空或host，则不处理直接返回url
+     * 2）若配置configuratorUrl存在有效端口时，若传入url的端口与配置url的端口相同
+     *    则
+     */
+    public URL configure(URL url) {
         if (configuratorUrl == null || configuratorUrl.getHost() == null
                 || url == null || url.getHost() == null) {
             return url;
@@ -66,7 +72,21 @@ public abstract class AbstractConfigurator implements Configurator {
         return url;
     }
     //override://172.16.90.78:20883/com.alibaba.dubbo.demo.DemoService?category=configurators&disabled=true&dynamic=false&enabled=true
-    private URL configureIfMatch(String host, URL url) {/**@c todo @csy-h1 代码覆盖 */
+
+    /**
+     * todo @csy 此方法的用途目前有点模糊，待调试了解
+     * 1）若配置url的host为"0.0.0.0"，或输入的host与配置的host相等，则进入处理
+     * 2）获取配置configuratorUrl中键"application"对应的值，默认是username值
+     * 3）获取输入url中键"application"对应的值，默认是username值
+     * 4）若configApplication为空，或为"*"，获取输入url中对应的"application"对应的值相等
+     *    4.1）构建匹配条件key的集合基础的键，有"category"、"check"、"dynamic"、"enabled"
+     *    4.2）遍历configuratorUrl的参数列表，若key以"~"开始 或与"application"相等，或与"side"相等 则将key加入到条件集合中。
+     *        4.2.1）若值value不为空 并且不等于"*"，且value不等于 url中key截取到"~"对应的值，若都满足，返回url
+     *    4.3）做配置处理doConfigure(URL currentUrl, URL configUrl)
+     *        4.3.1）从configuratorUrl移除条件集合Set<String> condtionKeys
+     *        4.3.2）做配置处理doConfigure处理
+     */
+    private URL configureIfMatch(String host, URL url) {
         if (Constants.ANYHOST_VALUE.equals(configuratorUrl.getHost()) || host.equals(configuratorUrl.getHost())) { //0.0.0.0 对任意机器有效
             String configApplication = configuratorUrl.getParameter(Constants.APPLICATION_KEY,
                     configuratorUrl.getUsername());
@@ -81,7 +101,7 @@ public abstract class AbstractConfigurator implements Configurator {
                 for (Map.Entry<String, String> entry : configuratorUrl.getParameters().entrySet()) {
                     String key = entry.getKey();
                     String value = entry.getValue();
-                    if (key.startsWith("~") || Constants.APPLICATION_KEY.equals(key) || Constants.SIDE_KEY.equals(key)) { //todo @csy-h1 波浪线表示啥
+                    if (key.startsWith("~") || Constants.APPLICATION_KEY.equals(key) || Constants.SIDE_KEY.equals(key)) {
                         condtionKeys.add(key);
                         if (value != null && !Constants.ANY_VALUE.equals(value)
                                 && !value.equals(url.getParameter(key.startsWith("~") ? key.substring(1) : key))) {

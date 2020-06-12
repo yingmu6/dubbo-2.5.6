@@ -460,7 +460,6 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
      *    6.1）获取分类category、以及分类对应的url列表categoryList，放入到ConcurrentMap<URL, Map<String, List<URL>>> 已通知过的列表notified
      *    6.2）将url中的通知列表写到本地缓存Property、并写到本地缓存文件.caces， .lock中
      *    6.3）listener通知分类的url列表
-     * todo pause  5
      */
     protected void notify(URL url, NotifyListener listener, List<URL> urls) {
         if (url == null) {

@@ -99,6 +99,12 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         return failedNotified;
     }
 
+    /**
+     * 将失败时的url以及监听者放到失败订阅的Map中
+     * 这种设置方法与平时不太一样
+     * 1）当前是：若对应的集合为空，先初始化一个集合设置到Map，然后再加对应加到初始化的集合中
+     * 2）平时是：创建集合、为集合添加元素，最后再设置到Map中
+     */
     private void addFailedSubscribed(URL url, NotifyListener listener) {
         Set<NotifyListener> listeners = failedSubscribed.get(url);
         if (listeners == null) {
@@ -208,7 +214,12 @@ public abstract class FailbackRegistry extends AbstractRegistry {
      *   4.1）若订阅失败，做相关处理
      *    4.1.1）从缓存Properties获取到url中serviceKey对应的服务列表
      *    4.1.2）若缓存的服务url列表不为空，则尝试通知本地缓存中对应的服务，并打印错误日志
-     *    todo pause 3
+     *    4.1.3）若缓存中的服务url列表为空，获取当前url以及传入url中的"check"值
+     *           以及判断是否是SkipFailbackWrapperException的实例
+     *           4.1.3.1）若开启了检测或异常是SkipFailbackWrapperException的实例，
+     *             则抛出IllegalStateException异常，停止程序执行
+     *           4.1.3.2）没有开启检测check，且异常不是SkipFailbackWrapperException的实例，则只打印出异常日志
+     *    4.1.4）
      */
     @Override
     public void subscribe(URL url, NotifyListener listener) {
@@ -288,7 +299,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
      * 通知
      * 1）判断url、listener是否为空，若为空则抛出非法参数异常
      * 2）处理通知
-     *  2.1）todo pause 4
+     *  2.1）若异常，将url加到失败集合中，定时重试
      */
     @Override
     protected void notify(URL url, NotifyListener listener, List<URL> urls) {

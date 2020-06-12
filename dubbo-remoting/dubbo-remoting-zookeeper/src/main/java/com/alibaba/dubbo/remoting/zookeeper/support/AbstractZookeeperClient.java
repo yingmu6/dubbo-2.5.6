@@ -35,7 +35,7 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
 
     /**
      * zookeeper创建节点逻辑
-     * 1）将暴露的路径从后到前递归拆分路径，知道不能拆分位置
+     * 1）将暴露的路径从后到前递归拆分路径，直到不能拆分为止
      * 2）从前到后，即从根节点开始创建节点，前面的节点都是持久节点，最后一个节点是临时节点
      * 3）但提供接口不再暴露时，临时节点会被删除，但是持久会被保存，除非主动删除
      *
@@ -66,6 +66,10 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
         return stateListeners;
     }
 
+    /**
+     * 添加子监听者
+     * 1）
+     */
     public List<String> addChildListener(String path, final ChildListener listener) {
         ConcurrentMap<ChildListener, TargetChildListener> listeners = childListeners.get(path);
         if (listeners == null) {

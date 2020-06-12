@@ -1071,10 +1071,15 @@ public final class URL implements Serializable {//可进行序列化
 
     /**
      * Add parameters to a new url.
-     * 通过参数构造url
-     *
-     * @param parameters
-     * @return A new URL
+     * 将参数集合添加到新的url的参数集合中
+     * 1）若参数集合为空，则返回当前的url，不处理
+     * 2）遍历输入的参数集合
+     *   2.1）获取每个参数key在当前url对应的值value
+     *     2.1.1）若value为空，entry.getValue()不为空，表明值不相等，跳出循环
+     *     2.1.2）若value不为空，若value与entry.getValue()不相等，，表明值不相等，跳出循环
+     * 3）若相等标志hasAndEqual为true，没有修改直接返回
+     * 4）将传入的参数集合与当前url的集合进行组装（相同的键，值会变更），并构建新的url
+     *    相同key的时候，后面的值会把前面的更新，也就是输入的参数集合parameters会对当前url的集合getParameters()更新
      */
     public URL addParameters(Map<String, String> parameters) {
         if (parameters == null || parameters.size() == 0) {

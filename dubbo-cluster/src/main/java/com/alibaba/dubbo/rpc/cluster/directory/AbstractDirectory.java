@@ -111,7 +111,8 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
      *   2.1）若routerkey不为空，通过SPI获取到RouterFactory的实例
      *   2.2）获取url对应的路由实例Router，并且加到List<Router>
      * 3）构建mock invoker选择器MockInvokersSelector，并加到List<Router>
-     * 4）对路由列表进行排序
+     * 4）对路由列表进行排序，将路由列表设置到AbstractDirectory中的List<Router>
+     * 5）遍历当前的List<Configurator>，Configurator.configure配置每个元素
      */
     protected void setRouters(List<Router> routers) {
         // copy list

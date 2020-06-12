@@ -50,6 +50,9 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
         }
     }
 
+    /**
+     * 使用zkClient创建临时节点
+     */
     public void createEphemeral(String path) { //调用zkClient api创建临时节点
         try {
             client.createEphemeral(path);

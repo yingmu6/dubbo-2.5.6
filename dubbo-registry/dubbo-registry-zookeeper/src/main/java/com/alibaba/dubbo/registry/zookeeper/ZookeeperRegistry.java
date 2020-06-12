@@ -52,7 +52,6 @@ public class ZookeeperRegistry extends FailbackRegistry {
 
     private final Set<String> anyServices = new ConcurrentHashSet<String>();
 
-    /**@c 线程安全的map 以对象最为键 比较少见*/
     private final ConcurrentMap<URL, ConcurrentMap<NotifyListener, ChildListener>> zkListeners = new ConcurrentHashMap<URL, ConcurrentMap<NotifyListener, ChildListener>>();
 
     private final ZookeeperClient zkClient;
@@ -156,8 +155,15 @@ public class ZookeeperRegistry extends FailbackRegistry {
      *            处理子监听者的变化事件：
      *            1.4.1.1）对子节点解码，判断是否在Set<String> anyServices集合中，若不在则添加到anyServices
      *            1.4.1.2）设置url的路径为child，为url添加interface、check参数，并做订阅subscribe(URL url, NotifyListener listener)
-     * todo pause 2
-     * 2）不是泛型接口
+     * 2）不是泛型接口，遍历分类路径列表
+     *    2.1）从获取监听集合中，获取通知者NotifyListener与子节点ChildListener的集合
+     *    2.2）若集合listeners为空，则做初始化处理
+     *    2.3）获取子节点监听者zkListener，若为空，则构建ChildListener
+     *         获取带上空协议的、筛选后的列表
+     *    2.4）创建分类的持久节点，如如：/dubbo/com.alibaba.dubbo.demo.ApiDemo/configurators
+     *    2.5）为分类路径添加监听器，当有事件触发时，回调对应的事件方法zkClient.addChildListener
+     *    2.6）若List<String> children不为空，进行筛选，并添加到urls列表中
+     *    todo pause 2
      *
      */
     protected void doSubscribe(final URL url, final NotifyListener listener) {
@@ -197,8 +203,8 @@ public class ZookeeperRegistry extends FailbackRegistry {
                 }
             } else { //不是泛型接口
                 List<URL> urls = new ArrayList<URL>();
-                for (String path : toCategoriesPath(url)) { //创建分类节点，并建立当前节点与子节点的监听器
-                    ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url); //todo @csy-h1 当前节点与子节点的监听器吗？
+                for (String path : toCategoriesPath(url)) {
+                    ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
                     if (listeners == null) { //监听map为空时，初始化map
                         zkListeners.putIfAbsent(url, new ConcurrentHashMap<NotifyListener, ChildListener>());
                         listeners = zkListeners.get(url);
@@ -206,7 +212,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
                     ChildListener zkListener = listeners.get(listener);
                     if (zkListener == null) {
                         listeners.putIfAbsent(listener, new ChildListener() {
-                            public void childChanged(String parentPath, List<String> currentChilds) { //todo @csy-h1 ZookeeperRegistry.this.notify() 这种调用方式待了解？
+                            public void childChanged(String parentPath, List<String> currentChilds) {
                                 ZookeeperRegistry.this.notify(url, listener, toUrlsWithEmpty(url, parentPath, currentChilds));
                             }
                         });
@@ -287,9 +293,17 @@ public class ZookeeperRegistry extends FailbackRegistry {
         return toRootDir() + URL.encode(name); //如 /dubbo/com.alibaba.dubbo.demo.ApiDemo
     }
 
+    /**
+     * 获取url对应的分类路径
+     * 1）若url中"category"设置的值为"*"，则包含所有分类
+     *    如providers、consumers、routers、configurators
+     * 2）否则取"category"对应的分类值，默认为"providers"
+     * 3）批量每个分类，构建分类路径
+     *    规则为：服务路径 + 分隔符 + 分类值
+     */
     private String[] toCategoriesPath(URL url) { //获取分类对应的路径
         String[] categroies;
-        if (Constants.ANY_VALUE.equals(url.getParameter(Constants.CATEGORY_KEY))) { //若分类设置为任意分类，则包含providers、consumers、routers、configurators
+        if (Constants.ANY_VALUE.equals(url.getParameter(Constants.CATEGORY_KEY))) {
             categroies = new String[]{Constants.PROVIDERS_CATEGORY, Constants.CONSUMERS_CATEGORY,
                     Constants.ROUTERS_CATEGORY, Constants.CONFIGURATORS_CATEGORY};
         } else { //获取url设置的一个分类参数，默认providers
@@ -325,6 +339,13 @@ public class ZookeeperRegistry extends FailbackRegistry {
         return toCategoryPath(url) + Constants.PATH_SEPARATOR + URL.encode(url.toFullString()); //返回值，如：/dubbo/com.alibaba.dubbo.demo.ApiDemo/providers/dubbo%3A%2F%2F10.118.32.189%3A20881%2Fcom.alibaba.dubbo.demo.ApiDemo...
     }
 
+    /**
+     * 对提供者url列表providers进行过滤处理，查找与consumer中url匹配的url列表
+     * 1）遍历提供者url列表providers
+     * 2）对url进行解码，并进行判断
+     *    若provider的url包含"://"，构建提供者URL
+     *    判断consumer与provider的url是否匹配，若匹配则加到返回的列表中
+     */
     private List<URL> toUrlsWithoutEmpty(URL consumer, List<String> providers) {
         List<URL> urls = new ArrayList<URL>();
         if (providers != null && providers.size() > 0) { //遍历providers列表，判断consumer是否与provider相等，若相等则添加到url列表
@@ -341,15 +362,24 @@ public class ZookeeperRegistry extends FailbackRegistry {
         return urls;
     }
 
+    /**
+     * 转换到空协议
+     * 1）过滤provider url列表，获取到与consumer匹配的url列表
+     * 2）若urls列表不为空 todo @csy 此处需要调试分析下值
+     *    2.1）获取path最后出现'/'字符的位置， 如dubbo://xx， 位置为7
+     *    2.2）若没有出现'/'，则取path值，否则取'/'后面的字符串，作为分类的值
+     *    2.3）将consumer协议置为"empty"空协议，并且增加category参数
+     *    2.4）将空协议添加到过滤的provider url列表
+     * 3）返回处理的url列表
+     */
     private List<URL> toUrlsWithEmpty(URL consumer, String path, List<String> providers) { //将url置为空协议empty
         List<URL> urls = toUrlsWithoutEmpty(consumer, providers);
         if (urls == null || urls.isEmpty()) {
             int i = path.lastIndexOf('/');
-            String category = i < 0 ? path : path.substring(i + 1); //todo @csy-h1 empty协议的用途？
+            String category = i < 0 ? path : path.substring(i + 1);
             URL empty = consumer.setProtocol(Constants.EMPTY_PROTOCOL).addParameter(Constants.CATEGORY_KEY, category);
             urls.add(empty);
         }
         return urls;
     }
-
 }

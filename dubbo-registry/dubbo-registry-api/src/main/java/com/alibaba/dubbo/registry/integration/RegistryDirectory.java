@@ -219,7 +219,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * 3）处理配置列表，若configuratorUrls不为空，将configuratorUrls转换为List<Configurator>列表
      *     依次通过ConfiguratorFactory工厂方法构建Configurator，然后设置到当前对象的属性中configurators
      * 4）处理路由列表，若routerUrls不为空，将routerUrls转换为List<Router>列表
-     *   todo pause 6
+     *     若路由列表不为空，
      */
     public synchronized void notify(List<URL> urls) { //服务提供者出现变化时注册中心会将消息通知到消息者，消费者收到通知消息会调用notify函数，完成消费者本地服务目录相关信息的刷新
         List<URL> invokerUrls = new ArrayList<URL>();
