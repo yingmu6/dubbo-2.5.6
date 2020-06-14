@@ -68,7 +68,9 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
 
     /**
      * 添加子监听者
-     * 1）
+     * 1）获取path对应的子监听者和目标监听这的映射Map
+     * 2）若映射Map为空，则做初始化处理
+     * 3）
      */
     public List<String> addChildListener(String path, final ChildListener listener) {
         ConcurrentMap<ChildListener, TargetChildListener> listeners = childListeners.get(path);
@@ -84,6 +86,12 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
         return addTargetChildListener(path, targetListener);
     }
 
+    /**
+     * 移除path对应的节点
+     *  1）获取path对应的ChildListener与TargetChildListener的映射Map
+     *  2）若映射不为空，则移除listener对应的值，返回移除之前关联的值TargetChildListener
+     *  3）若TargetChildListener不为空，则移除目标监听者removeTargetChildListener
+     */
     public void removeChildListener(String path, ChildListener listener) {
         ConcurrentMap<ChildListener, TargetChildListener> listeners = childListeners.get(path);
         if (listeners != null) {

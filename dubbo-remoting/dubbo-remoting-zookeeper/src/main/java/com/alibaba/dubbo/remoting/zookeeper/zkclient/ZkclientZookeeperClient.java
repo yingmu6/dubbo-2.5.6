@@ -83,6 +83,10 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
         client.close();
     }
 
+    /**
+     * 创建目标监听器
+     *   返回zkClient中的IZkChildListener
+     */
     public IZkChildListener createTargetChildListener(String path, final ChildListener listener) {
         return new IZkChildListener() {
             public void handleChildChange(String parentPath, List<String> currentChilds)
@@ -96,6 +100,9 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
         return client.subscribeChildChanges(path, listener);
     }
 
+    /**
+     * 取消订阅，子节点的变更
+     */
     public void removeTargetChildListener(String path, IZkChildListener listener) {
         client.unsubscribeChildChanges(path, listener);
     }

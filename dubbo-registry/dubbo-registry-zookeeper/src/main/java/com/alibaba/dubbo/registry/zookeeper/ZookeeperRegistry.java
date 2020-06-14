@@ -163,7 +163,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
      *    2.4）创建分类的持久节点，如如：/dubbo/com.alibaba.dubbo.demo.ApiDemo/configurators
      *    2.5）为分类路径添加监听器，当有事件触发时，回调对应的事件方法zkClient.addChildListener
      *    2.6）若List<String> children不为空，进行筛选，并添加到urls列表中
-     *    todo pause 2
+     *    2.7）通知notify(url, listener, urls)，NotifyListener通知指定的url列表
      *
      */
     protected void doSubscribe(final URL url, final NotifyListener listener) {
@@ -231,6 +231,14 @@ public class ZookeeperRegistry extends FailbackRegistry {
         }
     }
 
+    /**
+     * 取消订阅
+     * 1）从ConcurrentMap<URL, ConcurrentMap<NotifyListener, ChildListener>>
+     *      获取url对应监听者Map， ConcurrentMap<NotifyListener, ChildListener>
+     * 2）若监听map， listeners不为空，则获取传入的 NotifyListener的子监听者ChildListener
+     * 3）若子监听者不为空，则移除该节点
+     *   3.1）获取url对应的完整路径
+     */
     protected void doUnsubscribe(URL url, NotifyListener listener) {
         ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
         if (listeners != null) {
@@ -334,6 +342,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 
     /**
      * 将url转换至url中的path
+     *    url对应zk中的完整路径
      */
     private String toUrlPath(URL url) {
         return toCategoryPath(url) + Constants.PATH_SEPARATOR + URL.encode(url.toFullString()); //返回值，如：/dubbo/com.alibaba.dubbo.demo.ApiDemo/providers/dubbo%3A%2F%2F10.118.32.189%3A20881%2Fcom.alibaba.dubbo.demo.ApiDemo...
