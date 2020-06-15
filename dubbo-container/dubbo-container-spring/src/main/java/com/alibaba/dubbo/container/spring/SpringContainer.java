@@ -38,7 +38,14 @@ public class SpringContainer implements Container {
         return context;
     }
 
-    //test
+    /**
+     * 启动spring容器 todo @csy_new 什么时候被调用
+     * 1）获取"dubbo.spring.config"对应的文件路径（从系统System中 或从属性文件中获取）
+     * 2）若没有查找的文件路径，则取默认的路径"classpath*:META-INF/spring/*.xml"
+     *    如：dubbo-demo-provider-common.xml文件所在的位置
+     * 3）构建spring容器ClassPathXmlApplicationContext
+     * 4）启动spring容器
+     */
     public void start() {/**@c 通过应用上下文，启动spring容器*/
         String configPath = ConfigUtils.getProperty(SPRING_CONFIG);
         if (configPath == null || configPath.length() == 0) {
@@ -48,6 +55,12 @@ public class SpringContainer implements Container {
         context.start();
     }
 
+    /**
+     * 停止spring容器
+     * 1）若spring容器ClassPathXmlApplicationContext不为空
+     *    则停止容器stop、关闭容器close、并将容器引用置为空
+     * 2）若异常，则打印异常日志和轨迹
+     */
     public void stop() {
         try {
             if (context != null) {

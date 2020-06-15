@@ -288,7 +288,22 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         return null;
     }
 
-    public List<URL> lookup(URL url) {/**@c 查询符合条件的已注册数据 */
+    /**
+     * 查询符合条件的已注册数据
+     * 1）从ConcurrentMap<URL, Map<String, List<URL>>>集合中根据url获取对应的Map
+     * 2）如果映射的notifiedUrls不为空，做循环处理
+     *   2.1）遍历通知的url列表notifiedUrls.values()
+     *     2.1.1）遍历urls列表
+     *       2.1.1.1）若url的协议不为空，则加入到结果url列表
+     * 3）若映射的notifiedUrls为空
+     *   3.1）映射的notifiedUrls为空
+     *     3.1.1）创建原则引用类AtomicReference，
+     *            创建通知监听器NotifyListener
+     *     3.1.2）做订阅操作subscribe(url, listener)
+     *        3.1.2.1）从引用中获取url列表reference.get()
+     *         3.1.2.1.1）循环遍历url列表，将空协议的url去掉
+     */
+    public List<URL> lookup(URL url) {
         List<URL> result = new ArrayList<URL>();
         Map<String, List<URL>> notifiedUrls = getNotified().get(url);
         if (notifiedUrls != null && notifiedUrls.size() > 0) {
@@ -301,7 +316,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
             }
         } else {
             final AtomicReference<List<URL>> reference = new AtomicReference<List<URL>>();
-            NotifyListener listener = new NotifyListener() {/**@c 匿名内部类 */
+            NotifyListener listener = new NotifyListener() {
                 public void notify(List<URL> urls) {
                     reference.set(urls);
                 }

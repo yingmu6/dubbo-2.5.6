@@ -80,14 +80,13 @@ public class ClassHelper { //todo @csy-h1 待了解
     }
 
     /**
-     * get class loader(获取类加载器 todo @csy-v1 类加载器待了解)
-     *
-     * @param cls
-     * @return class loader
+     * get class loader(获取类加载器)
+     * 1）获取当前线程的上下文类加载器
+     * 2）若没有获取到上下文类加载器，就去获取类加载器
      */
     public static ClassLoader getClassLoader(Class<?> cls) {
         ClassLoader cl = null;
-        try {/**@c 获取类加载器 */
+        try {
             cl = Thread.currentThread().getContextClassLoader();
         } catch (Throwable ex) {
             // Cannot access thread context ClassLoader - falling back to system class loader...
@@ -112,6 +111,11 @@ public class ClassHelper { //todo @csy-h1 待了解
      *
      * @return the default ClassLoader (never <code>null</code>)
      * @see java.lang.Thread#getContextClassLoader()
+     */
+
+    /**
+     * 获取类加载器
+     * 1）通过getClassLoader获取ClassHelper的类加载器
      */
     public static ClassLoader getClassLoader() {
         return getClassLoader(ClassHelper.class);

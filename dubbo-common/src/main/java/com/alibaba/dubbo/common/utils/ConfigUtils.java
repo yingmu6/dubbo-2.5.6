@@ -143,6 +143,15 @@ public class ConfigUtils {
         return sb.toString();
     }
 
+    /**
+     * 读取属性文件中的值，并写入到Properties中
+     * 1）双重判定，若Properties为空
+     *   1.1）通过System.getProperty获取文件名，dubbo.properties.file
+     *     1.1.1）若文件名为空，通过System.getenv获取文件名"dubbo.properties.file"
+     *       1.1.1.1）若文件名为空，返回默认文件名"dubbo.properties"
+     *   1.2）通过ConfigUtils.loadProperties从指定的文件中获取到Properties属性值
+     * 2）返回Properties属性值
+     */
     public static Properties getProperties() { //读取dubbo的属性文件，并把键值对写到Properties类的属性中
         if (PROPERTIES == null) {
             synchronized (ConfigUtils.class) {
@@ -173,11 +182,24 @@ public class ConfigUtils {
         }
     }
 
+    /**
+     * 获取属性key对应的值
+     *   默认值为null
+     */
     public static String getProperty(String key) {
         return getProperty(key, null);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"}) /**@c 从System获取指定的值，如果不存在使用默认值 */
+    /**
+     * 获取属性key对应的值，若没有值，默认值为defaultValue
+     * 1）从System系统中获取key对应的值
+     *   1.1）若值不为空，则直接返回
+     * 2）若从System系统中获取的属性值为空，则从属性文件中获取
+     *   2.1）从dubbo.properties.file或dubbo.propertie获取
+     *   2.2）先尝试本地文件中查找，若本地文件没有查到，则通过网络流从远程文件中获取
+     *     （若允许出现多个文件，则将所有文件对应的属性值都进行加载）
+     */
     public static String getProperty(String key, String defaultValue) {
         String value = System.getProperty(key); //此处为啥再从系统属性中查一次，都是系统属性中没值才去加载配置文件的？ 1）因为开发时查没有，但到此处时，可能其它的线程把值设置进入了。起再次确认的作用 2）还有单独调用的地方
         if (value != null && value.length() > 0) {
@@ -209,7 +231,26 @@ public class ConfigUtils {
      * @throws IllegalStateException not allow multi-file, but multi-file exsit on class path.
      */
 
-    //加载指定文件名的dubbo属性文件，并且写到Properties对象中
+    /**
+     * 加载指定文件名的属性文件，并且写到Properties对象中  todo @csy_new 待调试
+     * 1）若文件名以"/"开头，则按本地文件处理
+     *   1.1）通过文件名，获取到文件输入流
+     *   1.2）从输入流中读取到属性列表
+     *   1.3）关闭流，并且返回属性Properties
+     * 2）若文件名不是以"/"开头，分两种情况
+     * （a：尝试使用类加载器加载文件，b：若不是本地文件，则使用网络流读取文件）
+     *   2.1）获取类加载器，并且获取文件名对应资源
+     *   2.2）判断url枚举，是否存在元素，若存在则加到url列表中
+     * 3）若url列表为空并且是非可选optional的，则打印提醒warn日志
+     * 4）若不允许多文件，文件超过1个时，则抛出提醒warn日志
+     *   4.1）获取类加载器，并且从输入流中读取属性加载的到属性Properties中
+     * 5）若允许多文件
+     *   5.1）遍历url列表
+     *     5.1.1）打开连接，并返回输入流
+     *     5.1.2）从输入流中读取属性加载到Properties，并设置到返回的属性properties中
+     *     5.1.3）关闭输入流
+     * 6）返回属性properties的值
+     */
     public static Properties loadProperties(String fileName, boolean allowMultiFile, boolean optional) {
         Properties properties = new Properties();
         if (fileName.startsWith("/")) {/**@c 读取本地文件，写到Properties，绝对路径 */

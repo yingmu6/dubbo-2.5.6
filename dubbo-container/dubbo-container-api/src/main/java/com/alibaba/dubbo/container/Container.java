@@ -19,19 +19,19 @@ import com.alibaba.dubbo.common.extension.SPI;
 
 /**
  * Container. (SPI, Singleton, ThreadSafe)
- *
+ * 容器
  * @author william.liangf
  */
 @SPI("spring")
 public interface Container {/**@c */
 
     /**
-     * start.
+     * start.（启动）
      */
     void start();
 
     /**
-     * stop.
+     * stop.（停止）
      */
     void stop();
 
