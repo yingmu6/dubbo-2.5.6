@@ -48,8 +48,8 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
 
     /**
      * 获取所有注册中心
-     *
-     * @return 所有注册中心
+     *   返回注册实例只读不能修改的实例
+     *   Collections.unmodifiableCollection（只读不能修改）
      */
     public static Collection<Registry> getRegistries() {
         return Collections.unmodifiableCollection(REGISTRIES.values());
@@ -57,8 +57,14 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
 
     /**
      * 关闭所有已创建注册中心
+     * 1）打印出缓存中的注册实例
+     * 2）使用可重入锁加锁
+     * 3）遍历注册实例
+     *   3.1）依次进行销毁，若出现异常，则打印日志
+     *   3.2）移除缓存Map中的所有映射
+     * 4）释放可重入锁
      */
-    // todo @system: 2017/8/30 to move somewhere else better
+    // todo 2017/8/30 to move somewhere else better
     public static void destroyAll() {
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("Close all registries " + getRegistries());

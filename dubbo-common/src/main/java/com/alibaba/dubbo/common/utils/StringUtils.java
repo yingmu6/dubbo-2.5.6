@@ -399,7 +399,26 @@ public final class StringUtils {
      * 1.循环取出字符，判断是否有大写字母
      * 2.若存在，第一次取出大写字母之前的子串，添加上分隔符，然后加上大写字母的小写形式
      * 3.之后的字符，若是小写字母直接添加，若是大写字符，转换为小写字母添加
+     */
+
+    /**
+     * 将将驼峰式字符串转换为使用分隔符分隔
+     * 1）若字符串为空，不做处理直接返回
+     * 2）遍历字符串中的字符
+     *  2.1）取出字符判断是否是大写字符
+     *    2.1.1）若是大写字符
+     *      2.1.1.1）若目标字符串buf为空，初始化对象（延迟初始化）
+     *        2.1.1.1.1）若下标大于0，表明之前还有字符串没拼接，就取当期字符的子串做拼接
+     *      2.1.1.2）将分隔符添加到目标字符串（若首字符是大写字符，不拼接分隔符）
+     *      2.1.1.3）将大写字符转换为小写字符添加到目标字符串中
+     *    2.1.2）若不是大写字符，且目标字符串不为空
+     *      2.1.2.1）直接添加append到目标字符串中
+     * 3）若目标处理字符串为空，即没有包含大写字母，则原串返回
      *
+     * 示例：
+     * a）camelToSplitName("wwThH", "_")  的结果为 "ww_th_h"
+     * b）不含有大写字母的字符串直接返回，camelToSplitName("aa", "_") 的结果为"aa"首字符
+     * c）首字目为大写字符，首字符不处理，camelToSplitName("ABC", "—") 的结果为"a—b—c"首字符
      */
     public static String camelToSplitName(String camelName, String split) { //将有大写字母的地方用指定的分隔符分隔
         if (camelName == null || camelName.length() == 0) {
@@ -415,7 +434,7 @@ public final class StringUtils {
                         buf.append(camelName.substring(0, i));
                     }
                 }
-                if (i > 0) {/**@c 将方法名中有大写的字符用"-"分隔 */
+                if (i > 0) {
                     buf.append(split);
                 }
                 buf.append(Character.toLowerCase(ch));/**@c 将大写字符转换为小写字符 */
@@ -424,6 +443,10 @@ public final class StringUtils {
             }
         }
         return buf == null ? camelName : buf.toString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(camelToSplitName("ABC", "—"));
     }
 
     public static String toArgumentString(Object[] args) {/**@c 将参数列表转换为字符串 */

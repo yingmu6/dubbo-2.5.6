@@ -71,6 +71,11 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
     private static final Map<String, String> legacyProperties = new HashMap<String, String>();
     private static final String[] SUFFIXS = new String[]{"Config", "Bean"};
 
+    /**
+     * 预置的属性映射集合legacyProperties
+     * 包含name、host、port、threads、timeout、
+     * retries、check、url等参数
+     */
     static {//legacy:遗赠，遗产， 这些参数的用途？解：替换特定的属性值
         legacyProperties.put("dubbo.protocol.name", "dubbo.service.protocol");
         legacyProperties.put("dubbo.protocol.host", "dubbo.service.server.host");
@@ -85,6 +90,12 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
     }
 
     //此处的用途？优雅停机
+
+    /**
+     * 在虚拟机停止前，调用钩子函数
+     * 1）停止前，答应方法被执行的日志
+     * 2）销毁协议配置
+     */
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
@@ -98,7 +109,14 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
 
     protected String id;
 
-    /**@c 对特殊属性处理 */
+    /**
+     *  对特殊属性处理
+     *  1）当值不为空时
+     *    1.1）若key的值为dubbo.service.max.retry.providers，即提供者最大重试次数
+     *         将给定的值减1，如value为3，处理后的值为2
+     *    1.2）若key的值为dubbo.service.allow.no.provider，即为是否允许没有提供者
+     *         对传入的值去反
+     */
     private static String convertLegacyValue(String key, String value) {
         if (value != null && value.length() > 0) {
             if ("dubbo.service.max.retry.providers".equals(key)) {

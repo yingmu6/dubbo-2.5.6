@@ -73,10 +73,63 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         this.required = required;
     }
 
+    public static void main(String[] args) {
+        System.out.println(ArgumentConfig.class.getName());
+    }
+
     /**
      * 1.通过spring 解析到 xml对应的元素、属性值
      * 2.写到dubbo的config对象中，如ServiceConfig、ReferenceConfig等
      * Element 解析的XML元素、ParserContext解析的上下文、beanClass XML元素对应的bean类型，required是否必须
+     */
+
+    /**
+     * 解析流程处理：
+     * 输入参数：Element（HTML DOM的元素）、ParserContext（解析器上下文）、beanClass（bean的Class类）、required（是否必须）
+     * 1）创建根元素的bean定义RootBeanDefinition
+     * 2）设置属性值beanClass、lazyInit（是否延迟初始化）
+     * 3）获取元素Element的id属性值，若id为空时，且是必须时，根据规则产生id
+     *   3.1）获取元素Element的name对应的属性值
+     *    3.1.1）若bean的名称为空
+     *     3.1.1.1）若传入的bean是ProtocolConfig，则元素名为"dubbo"
+     *     3.1.1.2）若传入的bean是ProtocolConfig，则取元素的属性"interface"对应的值 todo @csy 此处的interface值会是啥？
+     *   3.2）若产生的bean为空，则获取传入bean的名字
+     *       （如AbstractConfig的getName()为"com.alibaba.dubbo.config.ArgumentConfig"）
+     *   3.3）将产生的bean名字赋值给id
+     *   3.4）获取bean注册的实例BeanDefinitionRegistry，从id与bean映射Map中Map<String, BeanDefinition>
+     *        判断是否存在id，若存在则将bean的名字加上序号，如dubbo、dubbo1等
+     * 4）若id不为空
+     *   4.1）判断注册实例是否包含id，若有包含，则抛出id重复的异常
+     *   4.2）获取注册实例，将id与bean设置到Map<String, BeanDefinition>本地缓存中
+     *   4.3）添加属性id对应的值
+     * 5）判断beanClass的类型
+     *   5.1）若是ProtocolConfig类型，遍历已注册的bean数组
+     *     5.1.1）获取bean的名称name对应的实例BeanDefinition
+     *     5.1.2）获取bean实例中"protocol"对应的属性实例PropertyValue
+     *     5.1.3）若属性实例不为空，则获取属性值
+     *       5.1.3.1）若属性值value是ProtocolConfig的实例且id值
+     *        与value的名称getName()相同，则将"protocol"对应的属性对象
+     *        置为new RuntimeBeanReference(id)
+     *   5.2）若是ServiceBean类型
+     *     5.2.1）获取"class"对应的class名称
+     *     5.2.2）若className不为空
+     *       5.2.2.1）创建RootBeanDefinition根bean实例，并设置属性值beanClass、lazyInit
+     *       5.2.2.2）解析子节点的属性 todo @csy 待调试看数据
+     *       5.2.2.3）设置元素ref属性的值（BeanDefinitionHolder对象值）
+     *   5.3）若是ProviderConfig类型
+     *     5.3.1）解析嵌套的元素，tag为"service"，property为"provider"
+     *   5.4）若是ConsumerConfig
+     *     5.4.1）解析嵌套的元素，tag为"reference"，property为"consumer"
+     * 6）获取beanClass的方法列表，并遍历
+     *    6.1）获取方法的名称，并判断方法是否是public、是否是"set"开头，是否参数只有一个
+     *     6.1.1）若满足条件，则获取第一个参数类型(参数只有一个)
+     *     6.1.2）从方法名中取出属性名，并且使用分隔符分隔，如setNameOrAge，得到的结构为"name-or-age"
+     *     6.1.3）将属性property添加到属性集合中
+     *     6.1.4）通过get方法名构建get的Method对象
+     *            若没有get方法，则尝试is方法构造
+     *     6.1.5）
+     *
+     *
      */
     @SuppressWarnings("unchecked")
     private static BeanDefinition parse(Element element, ParserContext parserContext, Class<?> beanClass, boolean required) {
@@ -102,7 +155,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                 id = generatedBeanName + (counter++);
             }
         }
-        if (id != null && id.length() > 0) {
+        if (id != null && id.length() > 0) { //todo @csy 感觉此处是多余的？id怎么会是空？
             if (parserContext.getRegistry().containsBeanDefinition(id)) { //bean的id不能重复
                 throw new IllegalStateException("Duplicate spring bean id " + id);
             }
@@ -304,6 +357,18 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         beanDefinition.getPropertyValues().addPropertyValue(property, list);
     }
 
+    /**
+     * 解析嵌套元素 todo @csy 待调试
+     * 1）获取元素对应的所有子节点
+     * 2）若节点列表不为空，遍历节点列表
+     *  2.1）获取每个节点，若节点是Element实例时
+     *   2.1.1）若节点名称NodeName与便签tag名称相等 或getLocalName与tag名称相等 todo @csy getLocalName待了解
+     *    2.1.1.1）判断是否是第一个节点 first是否为true，若是第一个节点
+     *         获取元素的default的值，若默认值为空，则将"default"属性置为false
+     *    2.1.1.2）递归解析节点获取到BeanDefinition实例
+     *    2.1.1.3）若解析的实例BeanDefinition不为空，则添加属性值
+     *          键位输入的property，值为RuntimeBeanReference
+     */
     private static void parseNested(Element element, ParserContext parserContext, Class<?> beanClass, boolean required, String tag, String property, String ref, BeanDefinition beanDefinition) {
         NodeList nodeList = element.getChildNodes();/**@c 解析嵌套元素 */
         if (nodeList != null && nodeList.getLength() > 0) {
@@ -330,6 +395,17 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         }
     }
 
+    /**
+     * 解析属性，设置name属性的值
+     * 1）若节点列表不为空，遍历节点列表
+     * 2）获取节点Node，判断是否是Element实例
+     *  2.1）若是，判断字符串"property"是否与node.getNodeName()或node.getLocalName()相同
+     *   2.1.1）若相同，将Node强制转换到Element，并获取属性"name"的值
+     *    2.1.1.1）若属性name字符串的值不为空，则获取节点Node中"value"、"ref"的属性值
+     *     2.1.1.1.1）若value值不为空，则将属性name的值设置为value
+     *     2.1.1.1.2）若ref值不为空，则将属性name的值设置为new RuntimeBeanReference(ref)
+     *     2.1.1.1.3）若value、ref值都为空，则抛出未支持的异常
+     */
     private static void parseProperties(NodeList nodeList, RootBeanDefinition beanDefinition) { //解析属性
         if (nodeList != null && nodeList.getLength() > 0) {
             for (int i = 0; i < nodeList.getLength(); i++) {

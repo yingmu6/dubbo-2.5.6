@@ -139,7 +139,15 @@ public class ProtocolConfig extends AbstractConfig {
         setPort(port);
     }
 
-    // todo @csy-h3: 2017/8/30 to move this method somewhere else
+    /**
+     * 销毁注册中心内容、释放协议
+     * 1）判断destroyed是否与预期的值相同，若不相同，则返回不处理
+     * 2）销毁缓存中所有的注册节点 Map<String, Registry> REGISTRIES
+     * 3）获取协议Protocol的扩展加载类
+     *    3.1）遍历扩展类列表
+     *    3.2）加载扩展名对应的协议，并返回对应的实例
+     *    3.3）若协议不为空，则销毁协议
+     */
     public static void destroyAll() { //销毁注册中心内容、释放协议
         if (!destroyed.compareAndSet(false, true)) {
             return;
