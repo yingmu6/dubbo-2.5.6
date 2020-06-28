@@ -124,6 +124,9 @@ public final class Version {
         checkDuplicate(cls, false);
     }
 
+    /**
+     * 检查路径下
+     */
     public static void checkDuplicate(String path, boolean failOnError) {
         try {
             // 在ClassPath搜文件

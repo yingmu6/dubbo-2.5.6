@@ -27,6 +27,7 @@ import com.alibaba.dubbo.config.spring.AnnotationBean;
 import com.alibaba.dubbo.config.spring.ReferenceBean;
 import com.alibaba.dubbo.config.spring.ServiceBean;
 
+import org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -35,12 +36,24 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  * @author william.liangf
  * @export
  */
-public class DubboNamespaceHandler extends NamespaceHandlerSupport {
+public class DubboNamespaceHandler extends NamespaceHandlerSupport { //todo @csy DubboNamespaceHandler什么时候被调用？
 
+    /**
+     * 静态块，再类加载时就被执行的
+     */
     static {
         Version.checkDuplicate(DubboNamespaceHandler.class);
     }
 
+    /**
+     * 子类调用父类的registerBeanDefinitionParser()方法，对DubboBeanDefinitionParser进行注册
+     *   将元素名与对应的DubboBeanDefinitionParser映射起来，存入Map<String, BeanDefinitionParser>
+     *
+     * 重写父类的init()方法
+     * Invoked by the {@link DefaultBeanDefinitionDocumentReader} after
+     * construction but before any custom（自定义） elements are parsed
+     * （在构造DefaultBeanDefinitionDocumentReader以后，自定义元素被解析前，调用初始化方法init()）
+     */
     public void init() {
         registerBeanDefinitionParser("application", new DubboBeanDefinitionParser(ApplicationConfig.class, true));
         registerBeanDefinitionParser("module", new DubboBeanDefinitionParser(ModuleConfig.class, true));
@@ -53,5 +66,19 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser("reference", new DubboBeanDefinitionParser(ReferenceBean.class, false)); //非必须
         registerBeanDefinitionParser("annotation", new DubboBeanDefinitionParser(AnnotationBean.class, true));
     }
+
+    /**
+     * BeanDefinitionDocumentReader（Bean）
+     *
+     * SPI for parsing an XML document that contains Spring bean definitions.
+     *  （用于解析含有spring bean的XML文挡）
+     * Used by {@link XmlBeanDefinitionReader} for actually parsing a DOM document
+     *  （用于解析DOM 文挡）
+     *
+     * XmlBeanDefinitionReader：（为XML的Bean定义阅读器）
+     * Bean definition reader for XML bean definitions.
+     * Delegates the actual XML document reading to an implementation
+     * of the {@link BeanDefinitionDocumentReader} interface.
+     */
 
 }

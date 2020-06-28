@@ -61,15 +61,15 @@ import java.util.regex.Pattern;
  * @export
  */
 /**@c dubbo对xml的解析 自定义解析 */
-public class DubboBeanDefinitionParser implements BeanDefinitionParser {
+public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubbo bean定义解析器
 
     private static final Logger logger = LoggerFactory.getLogger(DubboBeanDefinitionParser.class);
     private static final Pattern GROUP_AND_VERION = Pattern.compile("^[\\-.0-9_a-zA-Z]+(\\:[\\-.0-9_a-zA-Z]+)?$");
     private final Class<?> beanClass;
     private final boolean required;
 
-    public DubboBeanDefinitionParser(Class<?> beanClass, boolean required) { //bean是否必须
-        this.beanClass = beanClass;
+    public DubboBeanDefinitionParser(Class<?> beanClass, boolean required) { //todo @csy 此处的required，是指bean是否必须还是指id是否必须？因为xml中并没有看到ModuleConfig
+        this.beanClass = beanClass; // bean的类型，如ApplicationConfig.class、ProtocolConfig.class等
         this.required = required;
     }
 
@@ -127,9 +127,23 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
      *     6.1.3）将属性property添加到属性集合中
      *     6.1.4）通过get方法名构建get的Method对象
      *            若没有get方法，则尝试is方法构造
-     *     6.1.5）
-     *
-     *
+     *     6.1.5）若get方法对象为空或者不是public方法或type类型与get方法对象的返回值不同，则进入下次循环
+     *     6.1.6）判断属性值property
+     *      6.1.6.1）若值为"parameters"，则parseParameters()解析参数，返回ManagedMap
+     *      6.1.6.2）若值为"methods"，则parseMethods()解析子节点<dubbo:method>，并设置到根元素中RootBeanDefinition
+     *      6.1.6.3）若值为"arguments"，则parseArguments()解析子节点<dubbo:arguments>，并设置到根元素中RootBeanDefinition
+     *      6.1.6.4）若值都不是上面的，元素中获取property对应的值，并且值不为空
+     *        6.1.6.4.1）若property值为"registry"，且属性对应的值为"N/A"（忽悠大小写）
+     *          6.1.6.4.1.1）构建RegistryConfig实例，设置地址为"N/A"
+     *          6.1.6.4.1.2）并且为元素设置属性property的值为registryConfig
+     *        6.1.6.4.2）若property值为"registry"，且包含","，表明有多个注册地址
+     *          6.1.6.4.2.1）解析多个引用parseMultiRef
+     *        6.1.6.4.3）若property值为"providers"，且包含","，表明有多个提供者
+     *          6.1.6.4.3.1）解析多个引用parseMultiRef
+     *        6.1.6.4.4）若property值为"protocols"，且包含","，表明有多个协议
+     *          6.1.6.4.4.1）解析多个引用parseMultiRef
+     *        6.1.6.4.5）若值都不是上面的
+     *          6.1.6.4.5.1）todo pause
      */
     @SuppressWarnings("unchecked")
     private static BeanDefinition parse(Element element, ParserContext parserContext, Class<?> beanClass, boolean required) {
@@ -152,10 +166,10 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
             id = generatedBeanName;
             int counter = 2;
             while (parserContext.getRegistry().containsBeanDefinition(id)) {/**@c 统计数字用途：如有id相同的元素，符号加上序号区分 */
-                id = generatedBeanName + (counter++);
+                id = generatedBeanName + (counter++); // 循环遍历，添加序号，知道找到没有相同名称的id，如已存在demo2,demo3，就会产生demo4的元素
             }
         }
-        if (id != null && id.length() > 0) { //todo @csy 感觉此处是多余的？id怎么会是空？
+        if (id != null && id.length() > 0) { //感觉此处是多余的？id怎么会是空？ 解：当id为空且required=false时，不会产生id的值
             if (parserContext.getRegistry().containsBeanDefinition(id)) { //bean的id不能重复
                 throw new IllegalStateException("Duplicate spring bean id " + id);
             }
@@ -340,6 +354,13 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                 || cls == String.class || cls == Date.class || cls == Class.class;
     }
 
+    /**
+     * 解析多引用
+     * 1）将value按逗号进行分隔
+     * 2）遍历解析的数组
+     *   2.1）若值不为空，构建RuntimeBeanReference实例，并加到ManagedList列表
+     * 3）将构建的列表，添加到属性中  todo @csy 待调试
+     */
     @SuppressWarnings("unchecked")
     private static void parseMultiRef(String property, String value, RootBeanDefinition beanDefinition,
                                       ParserContext parserContext) {/**@c todo @csy-h2 解析多引用 ？*/
@@ -431,6 +452,19 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         }
     }
 
+    /**
+     * 解析节点列表的参数，并存入ManagedMap中
+     * 1）若节点列表不为空
+     *   1.1）遍历每个节点nodeList.item(i)
+     *   1.2）若节点是Element的实例
+     *     1.2.1）若节点的名字为"parameter"或节点的本地名字为"parameter"
+     *      1.2.1.1）若ManagedMap为空，则初始化对象 todo @csy 了解ManagedMap
+     *      1.2.1.2）获取节点的属性"key"、"value"对应的值
+     *      1.2.1.3）获取节点的属性"hide"，并判断是否与"true"相等
+     *              若相等，则为key加上前缀"."
+     *      1.2.1.4）通过值value，构建TypedStringValue对象，并设置到ManagedMap中
+     * 2）若节点列表为空，返回null
+     */
     @SuppressWarnings("unchecked")
     private static ManagedMap parseParameters(NodeList nodeList, RootBeanDefinition beanDefinition) {
         if (nodeList != null && nodeList.getLength() > 0) {/**@c 解析<dubbo:parameter> */
@@ -458,6 +492,22 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         return null;
     }
 
+    /**
+     * 解析方法元素 <dubbo:method>
+     * 若节点列表不为空，遍历节点
+     * 1）遍历每个节点
+     *    1.1）若节点node是Element的实例
+     *      1.1.1）将node强制转换为Element
+     *      1.1.2）若节点的NodeName或LocalName为"method"
+     *        1.1.2.1）取出元素Element属性name的值，作为方法名
+     *        1.1.2.2）若方法名称为空，则抛出非法状态异常
+     *        1.1.2.3）若方法列表为空，初始化方法列表
+     *        1.1.2.4）解析节点元素，生成方法元素对应的bean，设置内容到ArgumentConfig
+     *        1.1.2.5）方法名设置为 id + "." + methodName，
+     *                 并构建BeanDefinitionHolder实例，并加到ManagedList方法列表中
+     * 2）若处理的ManagedList方法列表不会空
+     *    将"methods"属性值添加到根元素属性列表中
+     */
     @SuppressWarnings("unchecked")
     private static void parseMethods(String id, NodeList nodeList, RootBeanDefinition beanDefinition,
                                      ParserContext parserContext) {/**@c 解析<dubbo:method> */
@@ -490,6 +540,21 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         }
     }
 
+    /**
+     * 解析方法元素 <dubbo:argument>  todo @csy 与parameters有啥不同
+     * 若节点列表不为空，遍历节点
+     * 1）遍历每个节点
+     *    1.1）若节点node是Element的实例
+     *      1.1.1）将node强制转换为Element
+     *      1.1.2）若节点的NodeName或LocalName为"argument"
+     *        1.1.2.1）取出元素Element属性"index"的值，作为参数下标argumentIndex
+     *        1.1.2.2）若参数列表为空，初始化参数列表
+     *        1.1.2.3）解析节点元素，设置内容到ArgumentConfig
+     *        1.1.2.5）参数名设置为 id + "." + argumentIndex，
+     *                 并构建BeanDefinitionHolder实例，并加到ManagedList方法列表中
+     * 2）若处理的ManagedList方法列表不会空
+     *    将"arguments"属性值添加到根元素属性列表中
+     */
     @SuppressWarnings("unchecked")
     private static void parseArguments(String id, NodeList nodeList, RootBeanDefinition beanDefinition,
                                        ParserContext parserContext) {/**@c 解析<dubbo:argument> */
@@ -519,8 +584,23 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         }
     }
 
+    /**
+     * 重写spring BeanDefinitionParser bean解析器的解析方法parse
+     * 1）spring中解析器的方法parse()的用途：解析元素
+     *   @param element the element that is to be parsed into one or more {@link BeanDefinition BeanDefinitions}
+     *   元素element（w3c的文档树）将被解析到一个或多个的spring 的bean中
+     * 	 @param parserContext the object encapsulating（封装了） the current state（状态） of the parsing process（解析过程）;
+     * 	 parserContext：解析的上下文，包含了解析过程的状态
+     */
     public BeanDefinition parse(Element element, ParserContext parserContext) {
         return parse(element, parserContext, beanClass, required);
     }
+
+    /**
+     *   BeanDefinition：描述的是一个bean的实例，有属性值、构造参数列表，以及为具体的实现方式提供更多的信息
+     *   A BeanDefinition describes a bean instance, which has property values,
+     *   constructor argument values, and further information supplied by
+     *   concrete implementations.
+     */
 
 }
