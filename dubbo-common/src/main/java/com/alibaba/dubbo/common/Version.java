@@ -120,12 +120,20 @@ public final class Version {
         checkDuplicate(cls.getName().replace('.', '/') + ".class", failOnError);
     }
 
+    /**
+     * 检查路径下是否有重复的类（不抛出异常）
+     */
     public static void checkDuplicate(Class<?> cls) {
         checkDuplicate(cls, false);
     }
 
     /**
-     * 检查路径下
+     * 检查路径下是否有重复的类
+     * 1）获取Version的类加载器以及该类路径下的URL列表
+     * 2）枚举URL列表，获取url对应的文件路径file，若file不为空，则添加到集合中
+     * 3）若file集合列表不为空
+     *   3.1）若需要打印异常，则抛出IllegalStateException非法状态异常
+     *   3.2）若不需要打印异常，则打印error日志
      */
     public static void checkDuplicate(String path, boolean failOnError) {
         try {
@@ -153,6 +161,12 @@ public final class Version {
         } catch (Throwable e) { // 防御性容错
             logger.error(e.getMessage(), e);
         }
+
+        /**
+         * 问题集：todo @csy-new
+         * 1）类加载器了解以及getResources的使用
+         * 2）url.getFile()获取到的是文件路径吗？
+         */
     }
 
     //Test

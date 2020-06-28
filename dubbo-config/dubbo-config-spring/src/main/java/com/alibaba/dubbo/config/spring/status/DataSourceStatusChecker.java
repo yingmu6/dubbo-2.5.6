@@ -31,7 +31,7 @@ import java.sql.ResultSet;
 import java.util.Map;
 
 /**
- * DataSourceStatusChecker
+ * DataSourceStatusChecker（数据源状态检查）
  *
  * @author william.liangf
  */
@@ -40,6 +40,13 @@ public class DataSourceStatusChecker implements StatusChecker {
 
     private static final Logger logger = LoggerFactory.getLogger(DataSourceStatusChecker.class);
 
+
+    /**
+     * 数据源检查
+     * 1）获取spring的上下文实例，若为空，则返回UNKNOWN的Status实例
+     * 2）获取DataSource类型的所有实例，并存入Map中。若Map为空，则返回UNKNOWN的Status实例
+     * 3）
+     */
     @SuppressWarnings("unchecked")
     public Status check() {
         ApplicationContext context = ServiceBean.getSpringContext();
@@ -86,5 +93,17 @@ public class DataSourceStatusChecker implements StatusChecker {
         }
         return new Status(level, buf.toString());
     }
+
+    /**
+     * 问题集 todo @csy-new
+     * 1）ApplicationContext方法getBeansOfType的了解
+     *   解：<T> Map<String, T> getBeansOfType(Class<T> type, boolean includeNonSingletons, boolean allowEagerInit)
+     *   includeNonSingletons（是否包含非单例）、allowEagerInit（是否允许急于初始化）
+     *  获取指定类Class（包括子类subclasses）对应的所有的bean
+     *
+     * 2）此处的功能是连接数据源？dubbo也能连接数据库操作？
+     * https://my.oschina.net/hokkaido/blog/85366 数据库与数据源的区别
+     * 数据源定义的是连接到实际数据库的一条路径而已，数据源中并无真正的数据，它仅仅记录的是你连接到哪个数据库，以及如何连接的，如odbc数据源
+     */
 
 }

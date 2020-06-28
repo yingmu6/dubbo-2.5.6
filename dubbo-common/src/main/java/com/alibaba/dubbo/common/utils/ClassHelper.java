@@ -75,6 +75,9 @@ public class ClassHelper { //todo @csy-h1 待了解
         return forName(name, caller.getClassLoader());
     }
 
+    /**
+     * 获取调用Class的类加载器
+     */
     public static ClassLoader getCallerClassLoader(Class<?> caller) {
         return caller.getClassLoader();
     }

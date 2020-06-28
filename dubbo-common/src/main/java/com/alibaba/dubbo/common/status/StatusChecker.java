@@ -18,7 +18,7 @@ package com.alibaba.dubbo.common.status;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
- * StatusChecker
+ * StatusChecker 检查服务依赖各种资源的状态
  *
  * @author william.liangf
  */

@@ -92,7 +92,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
      *   3.1）获取元素Element的name对应的属性值
      *    3.1.1）若bean的名称为空
      *     3.1.1.1）若传入的bean是ProtocolConfig，则元素名为"dubbo"
-     *     3.1.1.2）若传入的bean是ProtocolConfig，则取元素的属性"interface"对应的值 todo @csy 此处的interface值会是啥？
+     *     3.1.1.2）若传入的bean是ProtocolConfig，则取元素的属性"interface"对应的值
      *   3.2）若产生的bean为空，则获取传入bean的名字
      *       （如AbstractConfig的getName()为"com.alibaba.dubbo.config.ArgumentConfig"）
      *   3.3）将产生的bean名字赋值给id
@@ -114,7 +114,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
      *     5.2.1）获取"class"对应的class名称
      *     5.2.2）若className不为空
      *       5.2.2.1）创建RootBeanDefinition根bean实例，并设置属性值beanClass、lazyInit
-     *       5.2.2.2）解析子节点的属性 todo @csy 待调试看数据
+     *       5.2.2.2）解析子节点的属性
      *       5.2.2.3）设置元素ref属性的值（BeanDefinitionHolder对象值）
      *   5.3）若是ProviderConfig类型
      *     5.3.1）解析嵌套的元素，tag为"service"，property为"provider"
@@ -143,7 +143,37 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
      *        6.1.6.4.4）若property值为"protocols"，且包含","，表明有多个协议
      *          6.1.6.4.4.1）解析多个引用parseMultiRef
      *        6.1.6.4.5）若值都不是上面的
-     *          6.1.6.4.5.1）todo pause
+     *          6.1.6.4.5.1）判断Class对象是否是基本类型isPrimitive(type)
+     *            6.1.6.4.5.1.1）兼容旧版本xsd中的default值
+     *                若property为"async"且值value为"false"（不是异步）或property为"timeout"且值value为"0"（没有设置超时）
+     *                或property为"delay"且值value为"0"（没有延时）或property为"version"且值value为"0.0.0"（没有版本号）
+     *                或property为"stat"且值value为"-1" 或property为"reliable"且值value为"false"
+     *                将属性值置为null，即value = null，并赋值给引用对象reference = value
+     *         6.1.6.4.5.2）若property的值为"protocol"并且Protocol存在value对应值的扩展
+     *                       并且value不包含在parserContext上下文的实例中，或ProtocolConfig的名称与从上下文实例的BeanClassName不相等
+     *           6.1.6.4.5.2.1）若元素标签名为"dubbo:provider"，给出推荐更换的建议
+     *           6.1.6.4.5.2.2）兼容旧版本配置，构建ProtocolConfig，并赋值给reference
+     *         6.1.6.4.5.3）若property的值为"monitor"且value不包含在parserContext上下文的实例中
+     *                      或MonitorConfig的名称与从上下文实例的BeanClassName不相等
+     *                      将属性值value，构建MonitorConfig配置对象
+     *         6.1.6.4.5.4）若property的值为"onreturn"
+     *           6.1.6.4.5.4.1） 查找"."最后出现的位置，符号之前为引用对象returnRef，符号之后为引用方法returnMethod
+     *           6.1.6.4.5.4.2） 创建RuntimeBeanReference对象，并赋值给reference，然后添加属性"onreturnMethod"值
+     *         6.1.6.4.5.5）若property的值为"onthrow"
+     *           6.1.6.4.5.5.1） 查找"."最后出现的位置，符号之前为引用对象throwRef，符号之后为引用方法throwMethod
+     *           6.1.6.4.5.5.2） 创建RuntimeBeanReference对象，并赋值给reference，然后添加属性"onthrowMethod"值
+     *         6.1.6.4.5.6）若都不满足上面的条件
+     *           6.1.6.4.5.6.1） 若property置为"ref"，并且value的值在parserContext上下文的bean中
+     *             6.1.6.4.5.6.1.1）从parserContext上下文中获取value对应的BeanDefinition，
+     *                              若bean实例对象不是单例的，抛出非法状态异常
+     *             6.1.6.4.5.6.1.2）创建RuntimeBeanReference对象，并赋值给reference
+     *         6.1.6.4.5.7）设置属性对addPropertyValue(property, reference)
+     * 7）获取element.getAttributes元素的属性集合NamedNodeMap
+     *   7.1）遍历属性节点Node，获取节点的本地名LocalName
+     *   7.2）若Set<String> props集合中不包含LocalName，若ManagedMap为空，则对应创建。
+     *   7.3）创建TypedStringValue，并设置到ManagedMap中
+     *   7.4）若parameters不为空，则添加到属性"parameters"中
+     *   7.5）返回构建的BeanDefinition实例
      */
     @SuppressWarnings("unchecked")
     private static BeanDefinition parse(Element element, ParserContext parserContext, Class<?> beanClass, boolean required) {
@@ -204,7 +234,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
         }
         Set<String> props = new HashSet<String>();
         ManagedMap parameters = null;
-        for (Method setter : beanClass.getMethods()) { //todo @csy-h2 待调试 beanClass是否是  **Config 对象吗
+        for (Method setter : beanClass.getMethods()) {
             String name = setter.getName(); //方法解析
             if (name.length() > 3 && name.startsWith("set")
                     && Modifier.isPublic(setter.getModifiers())
@@ -277,7 +307,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
                                         || !MonitorConfig.class.getName().equals(parserContext.getRegistry().getBeanDefinition(value).getBeanClassName()))) {
                                     // 兼容旧版本配置
                                     reference = convertMonitor(value);
-                                } else if ("onreturn".equals(property)) { //todo @csy-h2 onreturn、onthrow 了解
+                                } else if ("onreturn".equals(property)) {
                                     int index = value.lastIndexOf(".");
                                     String returnRef = value.substring(0, index);
                                     String returnMethod = value.substring(index + 1);
@@ -322,9 +352,32 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
             beanDefinition.getPropertyValues().addPropertyValue("parameters", parameters);
         }
         return beanDefinition;
+
+        /**
+         * parse()
+         * 问题集：todo @csy-new
+         * 1）待调试看数据
+         * 2）6.1.6.4.5.1.1中此处的配置含义不清楚
+         * 3）3.1.1.2中 此处的interface值会是啥？
+         * 4）&&与||的优先级
+         * 5）6中待调试 beanClass是否是  **Config 对象吗
+         * 6）6.1.6.4.5.2中!parserContext.getRegistry().containsBeanDefinition(value)了解，能否测试覆盖
+         * 7）onreturn、onthrow了解？属于什么功能，应用场景是啥？
+         * 8）RuntimeBeanReference这个对象了解以及使用
+         * 9）NamedNodeMap了解、Node了解以及LocalName
+         */
     }
 
-    protected static MonitorConfig convertMonitor(String monitor) { //创建监控配置
+    /**
+     * 转换到监控配置MonitorConfig
+     * 1）若监控配置的字符串monitor为空，则返回null
+     * 2）若字符串monitor有GROUP_AND_VERION正则表达式匹配
+     *  2.1）将字符串monitor按分隔符":"分隔
+     *  2.2）若存在分隔符，则取出group、version
+     *  2.3）若不存在分隔符，则将字符串作为group、并且version置为null
+     * 3）创建监控配置MonitorConfig，并设置group、version值
+     */
+    protected static MonitorConfig convertMonitor(String monitor) {
         if (monitor == null || monitor.length() == 0) {
             return null;
         }
@@ -345,8 +398,19 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
             return monitorConfig;
         }
         return null;
+        /**
+         * 问题集：todo @csy-new
+         * 1）能看懂正则表达式的串，并能使用Pattern、Matcher
+         */
     }
 
+    /**
+     * 确定Class是否是基本类型primitive（基本的）
+     * Class中的isPrimitive()方法：
+     * Determines if the specified Class object represents a primitive type
+     * （确定指定的Class对象是否表示基本的类型）
+     * todo @csy-new 此处cls.isPrimitive()是否有cls == Boolean.class的功能，属不属于重复判断？
+     */
     private static boolean isPrimitive(Class<?> cls) {
         return cls.isPrimitive() || cls == Boolean.class || cls == Byte.class
                 || cls == Character.class || cls == Short.class || cls == Integer.class

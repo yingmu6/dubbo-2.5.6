@@ -31,14 +31,25 @@ public class SpringExtensionFactory implements ExtensionFactory { //从 Spring �
 
     private static final Set<ApplicationContext> contexts = new ConcurrentHashSet<ApplicationContext>();
 
+    /**
+     * 添加应用上下文
+     */
     public static void addApplicationContext(ApplicationContext context) {
         contexts.add(context);
     }
 
+    /**
+     * 移除应用上下文
+     */
     public static void removeApplicationContext(ApplicationContext context) {
         contexts.remove(context);
     }
 
+    /**
+     * 获取指定类型type、指定name的bean实例
+     * 1）遍历应用上下文集合，若包含指定的name，获取name对应的实例
+     * 2）若实例的类型是指定的type，则进行强转并返回
+     */
     @SuppressWarnings("unchecked")
     public <T> T getExtension(Class<T> type, String name) {
         for (ApplicationContext context : contexts) {/**@c 从spring bean中获取实例 */
