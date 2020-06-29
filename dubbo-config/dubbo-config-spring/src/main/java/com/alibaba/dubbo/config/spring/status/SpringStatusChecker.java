@@ -37,6 +37,22 @@ public class SpringStatusChecker implements StatusChecker {
 
     private static final Logger logger = LoggerFactory.getLogger(SpringStatusChecker.class);
 
+    /**
+     * Spring状态检查
+     * 1）获取spring的上下文实例，若为空，则返回UNKNOWN的Status实例
+     * 2）判断上下文是不是Lifecycle实例
+     *   2.1）若是：判断是否正在运行，若正在运行中，则状态是OK的，若不在
+     *        运行中，则状态为ERROR
+     *   2.2）若不是：则状态为UNKONWN
+     * 3）获取到ApplicationContext的class，循环获取getConfigLocations()方法
+     *    若没有此方法，则getSuperclass()获取类Class，再对应获取getConfigLocations()
+     * 4）若方法method不为空
+     *   4.1）若方法是不可见的，则将accessible设为true，为可见的
+     *   4.2）调用ApplicationContext中的invoke方法。获取到配置列表
+     *   4.3）若配置不为空，则加到拼接的内容里面
+     * 5）返回构建的状态Status
+     *
+     */
     public Status check() {
         ApplicationContext context = ServiceBean.getSpringContext();
         if (context == null) {
@@ -82,5 +98,13 @@ public class SpringStatusChecker implements StatusChecker {
         }
         return new Status(level, buf.toString());
     }
+
+    /**
+     * 问题点：todo @csy-new
+     * 1）Lifecycle了解？定义了生命周期中的start/stop方案
+     * 2）Class、Method、getDeclaredMethod()、getSuperclass()了解下
+     * 3） while (cls != null && method == null)此处是否会出现死循环
+     * 4）invoke的使用
+     */
 
 }

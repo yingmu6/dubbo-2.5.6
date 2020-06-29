@@ -45,7 +45,13 @@ public class DataSourceStatusChecker implements StatusChecker {
      * 数据源检查
      * 1）获取spring的上下文实例，若为空，则返回UNKNOWN的Status实例
      * 2）获取DataSource类型的所有实例，并存入Map中。若Map为空，则返回UNKNOWN的Status实例
-     * 3）
+     * 3）遍历数据源Map集合
+     *   3.1）获取数据源DataSource
+     *   3.2）若存在拼接的内容，则加上", "分隔
+     *   3.3）尝试与数据源表示的对象建立连接，获取元数据对象，并返回结果集ResultSet
+     *        若结果集不存在，level则置为ERROR
+     *   3.4）拼接内容，包含元数据的url、ProductName、ProductVersion等
+     * 4）返回拼接的内容
      */
     @SuppressWarnings("unchecked")
     public Status check() {
@@ -66,7 +72,7 @@ public class DataSourceStatusChecker implements StatusChecker {
             }
             buf.append(entry.getKey());
             try {
-                Connection connection = dataSource.getConnection(); //todo @csy-h2 支持数据源到数据库查询？
+                Connection connection = dataSource.getConnection(); // @csy-finish 支持数据源到数据库查询？是的
                 try {
                     DatabaseMetaData metaData = connection.getMetaData();
                     ResultSet resultSet = metaData.getTypeInfo();
@@ -104,6 +110,9 @@ public class DataSourceStatusChecker implements StatusChecker {
      * 2）此处的功能是连接数据源？dubbo也能连接数据库操作？
      * https://my.oschina.net/hokkaido/blog/85366 数据库与数据源的区别
      * 数据源定义的是连接到实际数据库的一条路径而已，数据源中并无真正的数据，它仅仅记录的是你连接到哪个数据库，以及如何连接的，如odbc数据源
+     *
+     * 3）了解DatabaseMetaData、ResultSet
+     * 4）测试用例覆盖，待调试，什么场景下会用到DataSource
      */
 
 }
