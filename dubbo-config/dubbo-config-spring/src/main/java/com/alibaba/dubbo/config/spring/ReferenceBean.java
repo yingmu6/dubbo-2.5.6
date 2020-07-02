@@ -61,10 +61,16 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
         SpringExtensionFactory.addApplicationContext(applicationContext);
     }
 
+    /**
+     * 引用对象
+     */
     public Object getObject() throws Exception {
         return get();
     }
 
+    /**
+     * 获取对象类型
+     */
     public Class<?> getObjectType() {
         return getInterfaceClass();
     }
@@ -74,6 +80,41 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
         return true;
     }
 
+    /**
+     * ReferenceBean 属性设置后处理（若立即初始化，会调用ReferenceConfig的get()获取引用对象）
+     * 1）若ConsumerConfig为空
+     *  1.1）判断applicationContext是否为空，若不为空获取ConsumerConfig对应的Map
+     *  1.2）遍历consumerConfigMap的值
+     *    1.2.1）若ConsumerConfig中isDefault为空或为true
+     *           若consumerConfig不为空，则抛出"重复的consumer配置"，否则赋值给consumerConfig
+     *    1.2.2）若consumerConfig不为空，则设置ReferenceConfig到ConsumerConfig属性
+     * 2）若ApplicationConfig为空，且从ConsumerConfig获取的ApplicationConfig也为空
+     *  2.1）判断applicationContext是否为空，若不为空获取ApplicationConfig对应的Map
+     *  2.2）遍历applicationConfigMap
+     *    2.2.1）若ApplicationConfig中isDefault为空或为true
+     *           若ApplicationConfig不为空，则抛出"重复的application配置"，否则赋值给applicationConfig
+     *    2.2.2）若applicationConfig不为空，则设置到AbstractInterfaceConfig的application
+     * 3）若ModuleConfig为空，且从ConsumerConfig获取的ModuleConfig也为空
+     *   3.1）判断applicationContext是否为空，若不为空获取ModuleConfig对应的Map
+     *   3.2）遍历moduleConfigMap
+     *     3.2.1）若ModuleConfig中isDefault为空或为true
+     *            若ModuleConfig不为空，则抛出"重复的module配置"，否则赋值给moduleConfig
+     *     3.2.2）若moduleConfig不为空，则设置到AbstractInterfaceConfig的module
+     * 4）若List<RegistryConfig>为空，且从ConsumerConfig和ApplicationConfig中都没查到注册列表
+     *   4.1）判断applicationContext是否为空，若不为空获取RegistryConfig对应的Map
+     *   4.2）遍历registryConfigMap
+     *     4.2.1）若RegistryConfig中isDefault为空或为true，则将RegistryConfig添加到注册列表中
+     *     4.2.2）若注册列表不为空，则设置到AbstractInterfaceConfig中的注册列表
+     * 5）若MonitorConfig为空，且从从ConsumerConfig和ApplicationConfig中都没查到MonitorConfig
+     *   5.1）判断applicationContext是否为空，若不为空获取MonitorConfig对应的Map
+     *   5.2）遍历monitorConfigMap
+     *     5.2.1）若MonitorConfig中isDefault为空或为true
+     *           若MonitorConfig不为空，则抛出"重复的monitor配置"，否则赋值给monitorConfig
+     *     5.2.2）若moduleConfig不为空，则设置到AbstractInterfaceConfig的monitor
+     * 6）获取加载初始化的值
+     *   6.1）若置为空，ConsumerConfig不为空时，从ConsumerConfig拿到值
+     *   6.2）若是加载时即刻初始化，则直接调用getObject()方法，引用对象
+     */
     @SuppressWarnings({"unchecked"})
     public void afterPropertiesSet() throws Exception {
         if (getConsumer() == null) {/**@c 判断消费者是否为空，若为空则构建消费者 */

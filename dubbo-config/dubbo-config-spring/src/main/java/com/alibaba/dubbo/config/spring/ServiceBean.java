@@ -44,6 +44,9 @@ import java.util.Map;
 /**
  * ServiceFactoryBean
  *
+ * todo @csy-new InitializingBean, DisposableBean,
+ * ApplicationContextAware, ApplicationListener, BeanNameAware 待了解
+ *
  * @author william.liangf
  * @export
  */
@@ -71,6 +74,22 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
         return SPRING_CONTEXT;
     }
 
+    /**
+     * 设置ApplicationContext
+     * 1）将传入的值applicationContext赋值给当前成员变量
+     * 2）将应用上下文添加到集合中
+     * 3）若applicationContext不为空
+     *  3.1）赋值给上下文SPRING_CONTEXT
+     *  3.2）兼容Spring2.0.1（添加监听器）
+     *   3.2.1）获取"addApplicationListener"对应的方法Method
+     *   3.2.2）调用applicationContext的"addApplicationListener"方法将当前对象加入
+     *   3.2.3）supportedApplicationListener置为true
+     *   3.2.4）若出现异常，且applicationContext是AbstractApplicationContext的实例
+     *     3.2.4.1）获取"addListener"对应的Method，若不能访问，则变更访问权限
+     *     3.2.4.2）调用applicationContext的"addListener"方法将当前对象加入
+     *     3.2.4.3）supportedApplicationListener置为true
+     *
+     */
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
         SpringExtensionFactory.addApplicationContext(applicationContext);
@@ -94,6 +113,10 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
                 }
             }
         }
+        /**
+         * 问题点：todo @csy-new
+         * 1）spring 2.0.1中的addApplicationListener、addListener了解
+         */
     }
 
     public void setBeanName(String name) {
@@ -102,7 +125,11 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
 
     /**
      * 启动spring时，注册URL  核心流程
-     * todo @csy-v1 此处Spring实践回调待调试理解
+     * @csy-finish 此处Spring实践回调待调试理解
+     *
+     * 若ContextRefreshedEvent、ApplicationEvent的类名相同
+     * 则判断事件的类名是否相同
+     * 若未延迟、未暴露、未取消暴露 则暴露服务
      */
     public void onApplicationEvent(ApplicationEvent event) {
         if (ContextRefreshedEvent.class.getName().equals(event.getClass().getName())) {
@@ -113,8 +140,19 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
                 export();
             }
         }
+        /**
+         * 问题点：todo @csy-new
+         * 1）ContextRefreshedEvent与ApplicationEvent有何不同？
+         * 2）此处待调试
+         */
     }
 
+    /**
+     * 判断是否延迟
+     * 1）从父类中获取延迟时间以及提供者配置
+     * 2）若延迟时间为空，提供者配置不为空，则从ProviderConfig获取delay时间
+     * 3）根据是否支持以及delay的值判断是否延迟
+     */
     private boolean isDelay() {
         Integer delay = getDelay();
         ProviderConfig provider = getProvider();
@@ -124,6 +162,50 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
         return supportedApplicationListener && (delay == null || delay == -1);
     }
 
+    /**
+     * ServiceBean 属性设置后处理（若不需要延迟，会调用ServiceConfig的export()暴露服务）
+     * 1）若ProviderConfig配置为空（设置成员属性List<ProtocolConfig>或ProviderConfig的值）
+     *  1.1）判断applicationContext是否为空，若不为空获取ProviderConfig对应的Map
+     *  1.2）判断protocolConfigMap的值
+     *    1.2.1）若protocolConfigMap为空且providerConfigMap元素数目大于1
+     *      1.2.1.1）遍历providerConfigMap的值列表
+     *      1.2.1.2）若ProviderConfig中isDefault不为空且为true，则加到ProviderConfig列表中
+     *      1.2.1.3）若ProviderConfig列表不为空，将provider列表转换为Protocol列表，并设置到当前成员变量中
+     *    1.2.2）若protocolConfigMap不为空或providerConfigMap元素数目小于等于1
+     *      1.2.2.1）遍历providerConfigMap的值列表
+     *      1.2.2.2）若ProviderConfig中isDefault为空或值为true
+     *               若providerConfig不为空，则抛出异常"重复的provider配置"
+     *      1.2.2.3）单个设置ProviderConfig
+     * 2）若ApplicationConfig配置为空 且（ProviderConfig为空或从ProviderConfig获取的应用配置为空）
+     *   2.1）判断applicationContext是否为空，若不为空获取ModuleConfig对应的Map
+     *   2.2）遍历moduleConfigMap的值
+     *     2.2.1）若ModuleConfig中的isDefault为空或值为true
+     *            若moduleConfig不为空，则抛出异常"重复的module配置"，将遍历的config进行赋值
+     *     2.2.2）若ModuleConfig不为空，则设置模块信息ModuleConfig
+     * 3）若注册中心List<RegistryConfig>为空 且ProviderConfig中的注册列表 且ApplicationConfig的注册列表都为空
+     *   3.1）判断applicationContext是否为空，若不为空获取RegistryConfig对应的Map
+     *   3.2）遍历registryConfigMap的值
+     *     3.2.1）若RegistryConfig中的isDefault为空或值为true
+     *            将RegistryConfig添加到注册列表中（允许多注册中心）
+     *     3.2.2）若注册列表不为空，则赋值给父类AbstractInterfaceConfig的registries
+     * 4）若MonitorConfig配置为空 且ProviderConfig、ApplicationConfig中的MonitorConfig都为空
+     *   4.1）判断applicationContext是否为空，若不为空获取MonitorConfig对应的Map
+     *   4.2）遍历monitorConfigMap的值
+     *     4.2.1）若MonitorConfig中的isDefault为空或值为true
+     *            若monitorConfig不为空，则抛出异常"重复的monitor配置"
+     *     4.2.2）若MonitorConfig不为空，赋值给父类AbstractInterfaceConfig的MonitorConfig
+     * 5）若协议列表List<ProtocolConfig>为空
+     *   5.1）判断applicationContext是否为空，若不为空获取ProtocolConfig对应的Map
+     *   5.2）遍历protocolConfigMap的值
+     *     5.2.1）若ProtocolConfig中的isDefault为空或值为true
+     *            将ProtocolConfig添加到协议列表protocolConfigs
+     *     5.2.2）若protocolConfigs不为空，赋值给父类AbstractInterfaceConfig的protocolConfigs
+     * 6）若path服务名称为空
+     *   6.1）若beanName不为空且interfaceName（接口名称）不为空，并且bean的名称以接口名称开发
+     *        则将beanName作为服务名称
+     * 7）若服务不需要延迟，则直接暴露服务
+     *
+     */
     @SuppressWarnings({"unchecked", "deprecation"})
     public void afterPropertiesSet() throws Exception {
         if (getProvider() == null) {
@@ -253,6 +335,13 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
         if (!isDelay()) {
             export();
         }
+
+        /**
+         * 问题集 todo @csy-new
+         * 1）ProtocolConfig、ProviderConfig的区别？
+         * 2）config.isDefault() == null || config.isDefault().booleanValue()此处判断逻辑比较绕，待调试理解
+         *
+         */
     }
 
     public void destroy() throws Exception {

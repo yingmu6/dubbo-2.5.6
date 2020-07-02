@@ -32,7 +32,7 @@ public class SpringExtensionFactory implements ExtensionFactory { //从 Spring �
     private static final Set<ApplicationContext> contexts = new ConcurrentHashSet<ApplicationContext>();
 
     /**
-     * 添加应用上下文
+     * 添加应用上下文到集合中
      */
     public static void addApplicationContext(ApplicationContext context) {
         contexts.add(context);

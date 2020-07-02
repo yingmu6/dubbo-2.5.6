@@ -424,6 +424,12 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
         appendProperties(consumer);
     }
 
+    /**
+     * 获取接口类型Class
+     * 1）若接口类型不为空，则直接返回
+     * 2）若接口是泛化类型，则返回GenericService类型
+     * 3）
+     */
     public Class<?> getInterfaceClass() {
         if (interfaceClass != null) {
             return interfaceClass;

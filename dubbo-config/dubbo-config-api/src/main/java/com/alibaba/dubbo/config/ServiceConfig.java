@@ -102,6 +102,12 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         appendAnnotation(Service.class, service);
     }
 
+    /**
+     * 将Provider列表转换到Protocol列表（ProviderConfig、ProtocolConfig相互转换）
+     * 1）若Provider列表为空，则返回null
+     * 2）遍历Provider列表，依次进行转化
+     * 3）返回转化后的Protocol列表
+     */
     @Deprecated
     private static final List<ProtocolConfig> convertProviderToProtocol(List<ProviderConfig> providers) {
         if (providers == null || providers.size() == 0) {
@@ -114,6 +120,12 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         return protocols;
     }
 
+    /**
+     * 将ProtocolConfig列表转换到ProviderConfig列表
+     * 1）若ProtocolConfig列表为空，则返回null
+     * 2）遍历ProtocolConfig列表，依次进行转化
+     * 3）返回转化后的ProviderConfig列表
+     */
     @Deprecated
     private static final List<ProviderConfig> convertProtocolToProvider(List<ProtocolConfig> protocols) {
         if (protocols == null || protocols.size() == 0) {
@@ -143,6 +155,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         return protocol;
     }
 
+    /**
+     * 将ProtocolConfig转换为ProviderConfig
+     */
     @Deprecated
     private static final ProviderConfig convertProtocolToProvider(ProtocolConfig protocol) {
         ProviderConfig provider = new ProviderConfig();
