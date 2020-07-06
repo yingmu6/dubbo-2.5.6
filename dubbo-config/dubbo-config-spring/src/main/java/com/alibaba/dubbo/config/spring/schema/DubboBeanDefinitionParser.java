@@ -86,31 +86,30 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
     /**
      * 解析流程处理：
      * 输入参数：Element（HTML DOM的元素）、ParserContext（解析器上下文）、beanClass（bean的Class类）、required（是否必须）
-     * 1）创建根元素的bean定义RootBeanDefinition
-     * 2）设置属性值beanClass、lazyInit（是否延迟初始化）
-     * 3）获取元素Element的id属性值，若id为空时，且是必须时，根据规则产生id
-     *   3.1）获取元素Element的name对应的属性值
-     *    3.1.1）若bean的名称为空
-     *     3.1.1.1）若传入的bean是ProtocolConfig，则元素名为"dubbo"
-     *     3.1.1.2）若传入的bean是ProtocolConfig，则取元素的属性"interface"对应的值
-     *   3.2）若产生的bean为空，则获取传入bean的名字
-     *       （如AbstractConfig的getName()为"com.alibaba.dubbo.config.ArgumentConfig"）
-     *   3.3）将产生的bean名字赋值给id
-     *   3.4）获取bean注册的实例BeanDefinitionRegistry，从id与bean映射Map中Map<String, BeanDefinition>
-     *        判断是否存在id，若存在则将bean的名字加上序号，如dubbo、dubbo1等
+     * 1）创建根元素的bean定义RootBeanDefinition(Spring中的定义)，RootBeanDefinition的数据格式
+     *    （Root bean: class [com.alibaba.dubbo.config.ProtocolConfig]; scope=; abstract=false;
+     *    lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null;
+     *    factoryMethodName=null; initMethodName=null; destroyMethodName=null）
+     * 2）设置属性值beanClass（如ApplicationConfig的class）、lazyInit（是否延迟初始化）
+     * 3）获取dubbo配置config的id值（设置dubbo自定义的config中的id，如ApplicationConfig中的id）
+     *   3.1）先尝试获取元素属性id值，若不能取到，则继续查找
+     *   3.2）尝试获取元素属性name值，若不能取到，判断beanClass是否是ProtocolConfig，若是则取"dubbo"值（针对元素<dubbo:protocol>），
+     *        否则尝试获取属性"interface"的值（针对元素<dubbo:service>和<dubbo:reference>），若获取的beanName为空，则继续查找
+     *   3.3）获取beanClass的类名，如"com.alibaba.dubbo.config.ApplicationConfig"（兜底方案，肯定到这步能取到）
+     *   3.4）判断是否存在id对应的bean是否存在，若存在则将bean的名字加上序号区分，如dubbo、dubbo1等
      * 4）若id不为空
      *   4.1）判断注册实例是否包含id，若有包含，则抛出id重复的异常
-     *   4.2）获取注册实例，将id与bean设置到Map<String, BeanDefinition>本地缓存中
-     *   4.3）添加属性id对应的值
-     * 5）判断beanClass的类型
-     *   5.1）若是ProtocolConfig类型，遍历已注册的bean数组
+     *   4.2）获取注册实例，将id与bean设置到spring中Map<String, BeanDefinition>本地缓存中
+     *   4.3）添加beanDefinition属性id对应的值
+     * 5）判断beanClass的类型（对ProtocolConfig、ServiceBean、ProviderConfig、ConsumerConfig解析处理）
+     *   5.1）若是ProtocolConfig类型，对<dubbo:protocol>处理，遍历已注册的bean的名字列表
+     *        （如：xml里元素包含的名字列表中"dubbo-provider"、"com.alibaba.dubbo.config.RegistryConfig"、"dubbo"等）
      *     5.1.1）获取bean的名称name对应的实例BeanDefinition
      *     5.1.2）获取bean实例中"protocol"对应的属性实例PropertyValue
      *     5.1.3）若属性实例不为空，则获取属性值
      *       5.1.3.1）若属性值value是ProtocolConfig的实例且id值
-     *        与value的名称getName()相同，则将"protocol"对应的属性对象
-     *        置为new RuntimeBeanReference(id)
-     *   5.2）若是ServiceBean类型
+     *        与value的名称getName()相同，则将"protocol"对应的属性对象置为new RuntimeBeanReference(id)
+     *   5.2）若是ServiceBean类型（对<dubbo:service>元素处理）
      *     5.2.1）获取"class"对应的class名称
      *     5.2.2）若className不为空
      *       5.2.2.1）创建RootBeanDefinition根bean实例，并设置属性值beanClass、lazyInit
@@ -211,14 +210,14 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
             for (String name : parserContext.getRegistry().getBeanDefinitionNames()) {
                 BeanDefinition definition = parserContext.getRegistry().getBeanDefinition(name);
                 PropertyValue property = definition.getPropertyValues().getPropertyValue("protocol");
-                if (property != null) {
+                if (property != null) {// todo @csy-new 此处如何覆盖进入？目前<dubbo:protocol> 没有protocol属性
                     Object value = property.getValue();
                     if (value instanceof ProtocolConfig && id.equals(((ProtocolConfig) value).getName())) {
                         definition.getPropertyValues().addPropertyValue("protocol", new RuntimeBeanReference(id));
                     }
                 }
             }
-        } else if (ServiceBean.class.equals(beanClass)) {
+        } else if (ServiceBean.class.equals(beanClass)) { //todo @csy-new <dubbo:service class=""> 此处的class的用途是？
             String className = element.getAttribute("class");
             if (className != null && className.length() > 0) {
                 RootBeanDefinition classDefinition = new RootBeanDefinition();
@@ -356,7 +355,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
         /**
          * parse()
          * 问题集：todo @csy-new
-         * 1）待调试看数据
+         * 1）待调试看数据 todo 进行到ProviderConfig.class.equals(beanClass)
          * 2）6.1.6.4.5.1.1中此处的配置含义不清楚
          * 3）3.1.1.2中 此处的interface值会是啥？
          * 4）&&与||的优先级
@@ -365,6 +364,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
          * 7）onreturn、onthrow了解？属于什么功能，应用场景是啥？
          * 8）RuntimeBeanReference这个对象了解以及使用
          * 9）NamedNodeMap了解、Node了解以及LocalName
+         * 10）spring中的RootBeanDefinition了解
          */
     }
 
@@ -443,11 +443,11 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
     }
 
     /**
-     * 解析嵌套元素 todo @csy 待调试
+     * 解析嵌套元素（包含子节点）
      * 1）获取元素对应的所有子节点
      * 2）若节点列表不为空，遍历节点列表
      *  2.1）获取每个节点，若节点是Element实例时
-     *   2.1.1）若节点名称NodeName与便签tag名称相等 或getLocalName与tag名称相等 todo @csy getLocalName待了解
+     *   2.1.1）若节点名称NodeName与便签tag名称相等 或getLocalName与tag名称相等 todo @csy-new getLocalName待了解
      *    2.1.1.1）判断是否是第一个节点 first是否为true，若是第一个节点
      *         获取元素的default的值，若默认值为空，则将"default"属性置为false
      *    2.1.1.2）递归解析节点获取到BeanDefinition实例
@@ -492,10 +492,10 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
      *     2.1.1.1.3）若value、ref值都为空，则抛出未支持的异常
      */
     private static void parseProperties(NodeList nodeList, RootBeanDefinition beanDefinition) { //解析属性
-        if (nodeList != null && nodeList.getLength() > 0) {
+        if (nodeList != null && nodeList.getLength() > 0) {//todo @csy-new 哪种情况进入该判断？
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
-                if (node instanceof Element) {
+                if (node instanceof Element) { //todo @csy-new Node、Element待了解实践？
                     if ("property".equals(node.getNodeName())
                             || "property".equals(node.getLocalName())) {
                         String name = ((Element) node).getAttribute("name");

@@ -57,8 +57,8 @@ import java.util.concurrent.ConcurrentMap;
  * @author william.liangf
  * @export
  */
-//todo @csy-h2 该类用途？
-public class AnnotationBean extends AbstractConfig implements DisposableBean, BeanFactoryPostProcessor, BeanPostProcessor, ApplicationContextAware {
+//todo @csy-new dubbo注解使用
+public class AnnotationBean extends AbstractConfig implements DisposableBean, BeanFactoryPostProcessor, BeanPostProcessor, ApplicationContextAware {// todo @csy-new spring bean 处理器使用
 
     private static final long serialVersionUID = -7582802454287589552L;
 
@@ -73,6 +73,9 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
         return annotationPackage;
     }
 
+    /**
+     * todo @csy-new 待调试annotationPackage的值
+     */
     public void setPackage(String annotationPackage) {
         this.annotationPackage = annotationPackage;
         this.annotationPackages = (annotationPackage == null || annotationPackage.length() == 0) ? null
@@ -83,6 +86,15 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
         this.applicationContext = applicationContext;
     }
 
+    /**
+     * todo @csy-new 此事件什么时候触发？ConfigurableListableBeanFactory、BeanDefinitionRegistry了解
+     * 1）若注解包所在位置为空，则返回不处理
+     * 2）若beanFactory是BeanDefinitionRegistry的实例
+     *  2.1）将名字ClassPathBeanDefinitionScanner转换为Class
+     *  2.2）获取构造函数，并创建对象BeanDefinitionRegistry
+     *  2.3）获取构造函数，并创建对象Service
+     *  todo @csy-new 待调试，不明确用途
+     */
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
             throws BeansException {
         if (annotationPackage == null || annotationPackage.length() == 0) {
@@ -106,6 +118,11 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
                 // spring 2.0
             }
         }
+        /**
+         * 问题集 todo @csy-new
+         * 1）通过Class获取getConstructor，创建对象newInstance();
+         * 2）
+         */
     }
 
     public void destroy() throws Exception {
@@ -125,6 +142,28 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
         }
     }
 
+    /**
+     * 在初始化后处理过程（读取注解的值，设置ServiceBean的内容）
+     * 1）若bean不匹配package，则返回
+     * 2）获取注解Service，若注解不为空
+     *  2.1）创建ServiceBean
+     *  2.2）若注解service的接口class为void且接口名为"" todo @csy-new 此处void.class待了解
+     *    2.2.1）若bean对象的interfaces长度大于0，设置接口；否则抛出非法状态异常
+     *  2.3）若spring的应用上下文applicationContext不为空
+     *    2.3.1）设置应用上下文到ServiceBean
+     *    2.3.2）若注解的注册名的列表不为空，则依次遍历，通过spring应用上下文获取到RegistryConfig注册的配置实例
+     *           将实例添加到列表中，并设置到ServiceBean（处理多注册中心）
+     *    2.3.3）若注解中的provider不为空，从应用上下文中获取ProviderConfig实例并设置到ServiceBean
+     *    2.3.4）若注解中的monitor不为空，从应用上下文中获取MonitorConfig实例并设置到ServiceBean
+     *    2.3.5）若注解中的application不为空，从应用上下文中获取ApplicationConfig实例并设置到ServiceBean
+     *    2.3.6）若注解中的module不为空，从应用上下文中获取ModuleConfig实例并设置到ServiceBean
+     *    2.3.7）若注解中的module不为空，从应用上下文中获取ModuleConfig实例并设置到ServiceBean
+     *    2.3.8）若注解中的protocol不为空，则依次遍历，通过spring应用上下文获取ProtocolConfig实例，
+     *           并将实例加到列表中，并设置到ServiceBean（处理多协议）
+     *    2.3.9）在Servicea属性设置后处理fterPropertiesSet
+     *  2.4）将构建的ServiceBean添加到集合中，并做服务暴露
+     *
+     */
     public Object postProcessAfterInitialization(Object bean, String beanName)
             throws BeansException {
         if (!isMatchPackage(bean)) {
@@ -165,7 +204,7 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
                 if (service.module() != null && service.module().length() > 0) {
                     serviceConfig.setModule((ModuleConfig) applicationContext.getBean(service.module(), ModuleConfig.class));
                 }
-                if (service.provider() != null && service.provider().length() > 0) {
+                if (service.provider() != null && service.provider().length() > 0) { //todo @csy-new 此处是否重复代码了
                     serviceConfig.setProvider((ProviderConfig) applicationContext.getBean(service.provider(), ProviderConfig.class));
                 } else {
 
@@ -191,6 +230,11 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
             serviceConfig.export();
         }
         return bean;
+        /**
+         * todo @csy-new
+         * 1）注解了解以及使用
+         *
+         */
     }
 
     public Object postProcessBeforeInitialization(Object bean, String beanName)
@@ -298,6 +342,13 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
         return referenceConfig.get();
     }
 
+    /**
+     * 是否匹配包
+     * 1）若当前对象属性annotationPackages为空时，不进行比较
+     * 2）获取bean的名字，todo @csy-new class.getName()的值
+     * 3）若bean的名字以当前对象属性为前缀时，返回true
+     *    若都没有符合的条件，则返回false
+     */
     private boolean isMatchPackage(Object bean) {
         if (annotationPackages == null || annotationPackages.length == 0) {
             return true;
