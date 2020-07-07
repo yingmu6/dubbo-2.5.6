@@ -118,6 +118,17 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {// read finish
         return false;
     }
 
+    /**
+     * dubbo invoker销毁 todo @csy-new 待调试
+     * 1）若已经销毁，则不处理
+     * 2）若没有销毁
+     *  2.1）用销毁的可重入锁destroyLock加锁
+     *  2.2）再次判断是否被销毁，若已销毁则结束不处理
+     *  2.3）调用父类AbstractInvoker的销毁，将available置为false，不可用
+     *  2.4）若调用集合invokers不为空，将当前DubboInvoker移除
+     *  2.5）遍历客户端clients列表，将客户端在指定停机时间做关闭
+     *  2.6）将destroyLock解锁
+     */
     public void destroy() {
         //防止client被关闭多次.在connect per jvm的情况下，client.close方法会调用计数器-1，当计数器小于等于0的情况下，才真正关闭
         if (super.isDestroyed()) {
@@ -147,6 +158,14 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {// read finish
         }
     }
 
+    /**
+     * 获取停机时间
+     * 1）优雅停机时间默认是10s
+     * 2）从系统属性或属性文件中获取SHUTDOWN_WAIT_KEY对应配置的优雅停机时间（此key设置的是秒）
+     *  2.1）若设置了优雅停机时间，则取设置的值
+     *  2.2）从系统属性或属性文件中获取SHUTDOWN_WAIT_SECONDS_KEY对应配置的优雅停机时间（此key设置的是毫秒）
+     *       若存在设置的值，则取设置的值
+     */
     protected static int getShutdownTimeout() {
         //获取优雅停机的时间
         int timeout = Constants.DEFAULT_SERVER_SHUTDOWN_TIMEOUT;

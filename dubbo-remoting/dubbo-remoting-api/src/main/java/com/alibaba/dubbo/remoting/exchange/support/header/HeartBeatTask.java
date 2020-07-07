@@ -43,7 +43,17 @@ final class HeartBeatTask implements Runnable { //心跳检查定时任务
         this.heartbeatTimeout = heartbeatTimeout;
     }
 
-    public void run() { //todo @csy-h2 心跳检测是哪方到哪方的检测，哪方发起的？
+    /**
+     * 心跳检测运行逻辑
+     * 1）遍历通道列表，若通道已关闭，则不处理
+     * 2）获取通道最后读lastRead、最后写的时间lastWrite
+     * 3）若当前时间距离最后读或最后写的时间超过指定的心跳时间
+     *    则构建请求对象Request，设置version（版本号）、twoWay（是否双向通信）、event（事件）
+     *    并通过通道channel进行发送send()
+     * 4）若最后读的时间不为空并且当前时间距离最后读的时间大于心跳时间
+     *    若通道是Client的实例，则进行重连
+     */
+    public void run() {
         try {
             long now = System.currentTimeMillis();
             for (Channel channel : channelProvider.getChannels()) {
@@ -89,6 +99,10 @@ final class HeartBeatTask implements Runnable { //心跳检查定时任务
         }
     }
 
+    /**
+     * 内部接口（通道提供者）
+     * 获取通道集合列表
+     */
     interface ChannelProvider {
         Collection<Channel> getChannels();
     }

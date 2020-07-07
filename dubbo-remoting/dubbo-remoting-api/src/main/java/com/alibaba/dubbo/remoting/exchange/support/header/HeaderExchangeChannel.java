@@ -121,6 +121,9 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         return closed;
     }
 
+    /**
+     * 通道关闭（todo @csy-new 哪种操作能进入）
+     */
     public void close() {
         try {
             channel.close();
@@ -130,6 +133,15 @@ final class HeaderExchangeChannel implements ExchangeChannel {
     }
 
     // graceful close
+
+    /**
+     * 关闭头交换通道（优雅关闭）
+     * 1）若关闭标志为closed为true，表明已经关闭，则不处理
+     * 2）若设置了关闭时间
+     *   2.1）循环判断本地缓存中是否存在通道channel
+     *        且当前时间与开始时间的间隔小于指定时间timeout时，睡眠10毫秒，继续循环
+     * 3）没有设置关闭时间或超过指定的timeout，进行通道关闭
+     */
     public void close(int timeout) {
         if (closed) {
             return;

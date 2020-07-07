@@ -161,6 +161,12 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引
         return ref;
     }
 
+    /**
+     * 销毁引用配置config
+     * 1）若引用实例ref为空或销毁标志destroyed位true，则不处理
+     * 2）调用invoker的destroy()进行销毁
+     * 3）将invoker、ref等实例置为null
+     */
     public synchronized void destroy() {
         if (ref == null) {
             return;

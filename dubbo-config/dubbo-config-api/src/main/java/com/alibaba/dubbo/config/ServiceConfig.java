@@ -356,7 +356,16 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }
     }
 
-    public synchronized void unexport() { //解决暴露
+    /**
+     * 取消服务暴露 todo @csy-new 哪种操作能进入取消暴露
+     * 1）若标志exported为false，即为未暴露的，则不处理
+     * 2）若标志unexported为true，即不需要暴露，已经取消暴露，不处理
+     * 3）若暴露的服务列表不为空
+     *   3.1）遍历服务列表，依次将服务取消暴露exporter.unexport()
+     *   3.2）当处理完后，清空暴露列表
+     * 4）将标志unexported置为true
+     */
+    public synchronized void unexport() {
         if (!exported) {
             return;
         }

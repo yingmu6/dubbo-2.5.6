@@ -121,6 +121,12 @@ public class HeaderExchangeClient implements ExchangeClient {
         channel.close();
     }
 
+    /**
+     * 在指定的时间后关闭
+     * 1）将关闭中状态closing置为true，表明处在关闭中
+     * 2）停止心跳定时器
+     * 3）关闭通道ExchangeChannel
+     */
     public void close(int timeout) {
         // 标记client进入关闭流程
         startClose();
@@ -163,6 +169,11 @@ public class HeaderExchangeClient implements ExchangeClient {
     }
 
     /**@c 启动心跳任务器 */
+    /**
+     * 1）尝试停止心跳定时器
+     * 2）若心跳时间大于0
+     *    创建延迟任务，并设置心跳时间 todo @csy-new ScheduledThreadPoolExecutor使用
+     */
     private void startHeatbeatTimer() {
         stopHeartbeatTimer();
         if (heartbeat > 0) {
@@ -176,6 +187,13 @@ public class HeaderExchangeClient implements ExchangeClient {
         }
     }
 
+    /**
+     * 停止心跳定时器
+     * 1）若心跳定时器不为空且定时器未取消，
+     *    1.1）将心跳的定时任务heatbeatTimer取消
+     *    1.2）清除定时任务的线程池
+     * 2）将定时任务的引用置为null
+     */
     private void stopHeartbeatTimer() {
         if (heatbeatTimer != null && !heatbeatTimer.isCancelled()) {
             try {

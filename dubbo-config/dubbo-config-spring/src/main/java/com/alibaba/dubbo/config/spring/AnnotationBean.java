@@ -125,6 +125,11 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
          */
     }
 
+    /**
+     * 销毁服务
+     * 1）若服务配置列表存在，则遍历服务配置，并取消暴露unexport()
+     * 2）若引用配置列表存在，则遍历引用配置，并销毁配置destroy()
+     */
     public void destroy() throws Exception {
         for (ServiceConfig<?> serviceConfig : serviceConfigs) {
             try {

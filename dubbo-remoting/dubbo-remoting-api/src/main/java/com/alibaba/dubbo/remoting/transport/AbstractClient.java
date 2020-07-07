@@ -348,6 +348,10 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         return channel.hasAttribute(key);
     }
 
+    /**
+     * 发送消息
+     * 1）若发送时重连且没有被连接过，做连接connect() todo pause 2
+     */
     public void send(Object message, boolean sent) throws RemotingException {
         if (send_reconnect && !isConnected()) {
             connect();

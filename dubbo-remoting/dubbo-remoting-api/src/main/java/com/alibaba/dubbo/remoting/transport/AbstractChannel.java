@@ -31,6 +31,9 @@ public abstract class AbstractChannel extends AbstractPeer implements Channel {
         super(url, handler);
     }
 
+    /**
+     * 发送消息：若通道是关闭的，则抛出异常
+     */
     public void send(Object message, boolean sent) throws RemotingException {
         if (isClosed()) { //通道关闭，不能发送信息
             throw new RemotingException(this, "Failed to send message "
