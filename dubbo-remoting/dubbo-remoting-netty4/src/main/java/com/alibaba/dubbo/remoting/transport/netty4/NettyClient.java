@@ -203,6 +203,11 @@ public class NettyClient extends AbstractClient { // 使用的是netty 4.x版本
         //nioEventLoopGroup.shutdownGracefully();
     }
 
+    /**
+     * 获取通道
+     * 1）若当前对象的属性channel为空或没有激活的话，则返回null
+     * 2）获取NettyChannel todo @csy-new 此处NettyChannel与Netty中的channel的关系
+     */
     @Override
     protected com.alibaba.dubbo.remoting.Channel getChannel() {
         Channel c = channel;

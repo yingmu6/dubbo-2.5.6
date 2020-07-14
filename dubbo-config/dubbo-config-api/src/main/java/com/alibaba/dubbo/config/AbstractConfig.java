@@ -137,7 +137,20 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
      * 此方法用于是将dubbo的属性配置过滤处理
      */
     /**@c 为此方法是设值 但API已经可以设置，为啥还用这个 解：过滤处理属性值，引用传递,过 */
-    protected static void appendPropertiesOrigin(AbstractConfig config) {/**@c 向上转型，依次设置属性的值*/
+
+    /**
+     * Note: 将属性配置添加到url参数中， todo @csy-new 用途以及使用的地方
+     * 1）若配置为空，则不处理
+     * 2）构建url中的前缀名，如dubbo.provider
+     * 3）获取类中的方法Method列表，并遍历Method列表，查找公有方法Method，set* ()
+     *    3.1）将属性名由驼峰式改为按指定分隔符分隔，如userName改为user-name
+     *    3.2）尝试获取系统属性的值，（"dubbo." + TagName + config.getId() + "." + property）
+     *    3.3）若没有获取到指定的属性值，则继续尝试查找，（"dubbo." + TagName + "." + property）
+     *    3.4）构建getter方法，则调用get方法获取。若没有get方法，调用会报异常，则在异常中调用is方法
+     *         若getter方法不为空，尝试获取prefix + config.getId() + "." + property的值，若值为空
+     *         继续尝试
+     */
+    protected static void appendProperties(AbstractConfig config) {/**@c 向上转型，依次设置属性的值*/
         if (config == null) {
             return;
         }
@@ -208,8 +221,19 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                 logger.error(e.getMessage(), e);
             }
         }
+        /**
+         * 问题集：todo @csy-new
+         * 1）此方法待调试，公共暂不明确
+         */
     }
 
+    /**
+     * 获取标签名，如ProviderConfig处理后为Provider
+     * 1）获取config类的类名，如ProviderConfig
+     * 2）判断类名是否是否以Config、Bean为后缀
+     *    若做字符串截取，去掉Config、Bean
+     * 3）将字符串变为小写字符串
+     */
     private static String getTagName(Class<?> cls) {
         String tag = cls.getSimpleName();/**@c 如com.alibaba.dubbo.config.ProviderConfig的simpleName为ProviderConfig */
         for (String suffix : SUFFIXS) {/**@c suffix后缀，将后缀名Config、Bean去掉，就是标签的名称 */
@@ -307,7 +331,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
      * 7）从特定的map中legacyProperties获取值，若没有取到值，本地设置值终止
      */
 
-    protected static void appendProperties(AbstractConfig abstractConfig) { //设置config类的属性值，使用setter方式  IOC方式
+    protected static void appendPropertiesOverride(AbstractConfig abstractConfig) { //设置config类的属性值，使用setter方式  IOC方式
         if (abstractConfig == null) {
             return;
         }

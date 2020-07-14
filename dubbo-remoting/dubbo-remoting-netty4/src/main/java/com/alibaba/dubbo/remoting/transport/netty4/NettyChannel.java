@@ -41,6 +41,9 @@ final class NettyChannel extends AbstractChannel {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyChannel.class);
 
+    /**
+     * Netty的通道与Dubbo封装的Nettty通道的映射
+     */
     private static final ConcurrentMap<Channel, NettyChannel> channelMap = new ConcurrentHashMap<Channel, NettyChannel>();
 
     private final Channel channel;
@@ -55,6 +58,14 @@ final class NettyChannel extends AbstractChannel {
         this.channel = channel;
     }
 
+    /**
+     * 获取或添加Dubbo封装的Netty通道（若本地缓存中存在，直接返回，否则构建NettyChannel返回，并设置到缓存中）
+     * 1）若Netty的channel为空，则不处理
+     * 2）从映射Map中根据Netty的channel获取到NettyChannel
+     * 3）若NettyChannel为空
+     *    构建NettyChannel，并设置本地缓存的Map中
+     * 4）返回NettyChannel
+     */
     static NettyChannel getOrAddChannel(Channel ch, URL url, ChannelHandler handler) { //获取或添加通道
         if (ch == null) {
             return null;

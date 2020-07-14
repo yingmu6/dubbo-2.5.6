@@ -99,6 +99,13 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     // 服务暴露或引用的scope,如果为local，则表示只在当前JVM内查找.
     private String scope;
 
+    /**
+     * 检测注册中心
+     * 1）若注册地址列表为空，则尝试从系统属性或属性文件中查找
+     *    获取到地址，用竖线分隔地址，构建RegistryConfig，设置地址，并加到注册实例列表
+     * 2）若注册实例还是为空，则抛出异常
+     * 3）todo @pause 1
+     */
     protected void checkRegistry() { //检测注册中心的配置，并设置属性值
         // 兼容旧版本
         if (registries == null || registries.size() == 0) { //注册配置列表为空时，从系统属性中查找

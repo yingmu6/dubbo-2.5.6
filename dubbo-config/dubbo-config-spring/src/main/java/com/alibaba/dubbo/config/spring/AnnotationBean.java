@@ -242,12 +242,25 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
          */
     }
 
+    /**
+     * 在实例初始化前处理
+     * 1）若不匹配包则返回
+     * 2）获取bean的方法列表并进行遍历
+     * 3）匹配set方法（若方法名是set开头且能够访问）
+     *   3.1）获取方法上的引用注解Reference
+     *   3.2）若Reference不为空，获取引用的服务对象，调用服务对象的方法
+     * 4）获取声明的字段列表，并进行遍历
+     *   4.1）若字段不能访问，则变更访问属性为true
+     *   4.2）获取字段上的引用注解Reference
+     *       调用引用服务refer，并设置到Field资源中
+     * 5）返回处理后的bean
+     */
     public Object postProcessBeforeInitialization(Object bean, String beanName)
             throws BeansException {
         if (!isMatchPackage(bean)) {
             return bean;
         }
-        Method[] methods = bean.getClass().getMethods();
+        Method[] methods = bean.getClass().getMethods(); //todo @csy-new 是怎样的bean？
         for (Method method : methods) {
             String name = method.getName();
             if (name.length() > 3 && name.startsWith("set")
@@ -285,8 +298,33 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
             }
         }
         return bean;
+        /**
+         * 问题点 todo @csy-new
+         * Class、Method、Filed对应使用
+         */
     }
 
+    /**
+     * 引用流程（解析注解上的值，构建引用config，调用get()方法获取服务）
+     * 1）查找引用的接口名
+     *   1.1）若引用的接口名不为空，直接作为接口名
+     *   1.2）若引用的class不为void，则获取class的名字
+     *   1.3）若接口class是接口，直接获取class的名字
+     *   1.4）若上面都不满足，则抛出异常
+     * 2）生成缓存的key，并从本地缓存中获取key对应的ReferenceBean
+     *   2.1）若ReferenceBean为空
+     *     2.1.1）构建ReferenceBean实例，若class为void且接口名为""
+     *            且class是接口时，设置引用的接口
+     *     2.1.2）若spring的应用上下文不为空，设置到ReferenceBean
+     *     2.1.3）若注册地址列表不为空，根据registryId从spring中获取注册实例，
+     *            添加到注册实例列表中，并设置到引用对象中
+     *     2.1.4）若配置了consumer，则从spring获取对应的ConsumerConfig并设置到ReferenceBean
+     *     2.1.5）若配置了monitor，则从spring获取对应的ApplicationConfig并设置到ReferenceBean
+     *     2.1.6）若配置了module，则从spring获取对应的ModuleConfig并设置到ReferenceBean
+     *     2.1.7）在afterPropertiesSet属性设置以后处理
+     *     2.1.8）将ReferenceBean设置到本地缓存中referenceConfigs
+     *   2.2）若ReferenceBean不为空，则调用get()方法，获取服务
+     */
     private Object refer(Reference reference, Class<?> referenceClass) { //method.getParameterTypes()[0]
         String interfaceName;
         if (!"".equals(reference.interfaceName())) {

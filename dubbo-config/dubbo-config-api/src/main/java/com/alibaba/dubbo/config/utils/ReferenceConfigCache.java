@@ -41,6 +41,14 @@ public class ReferenceConfigCache {
      * <p>
      * key example: <code>group1/com.alibaba.foo.FooService:1.0.0</code>.
      */
+
+    /**
+     * 构建服务key 形式：group + "/" + interfaceName + ":" + version
+     * 1）获取引用的接口名
+     *    若接口名为空，尝试获取引用接口的class的名称
+     * 2）若分组不为空，则拼接分组名
+     * 3）若版本号不为空，则拼接版本号
+     */
     public static final KeyGenerator DEFAULT_KEY_GENERATOR = new KeyGenerator() { //匿名类
         public String generateKey(ReferenceConfig<?> referenceConfig) { //组装缓存的key
             String iName = referenceConfig.getInterface();
@@ -63,6 +71,9 @@ public class ReferenceConfigCache {
             return ret.toString();
         }
     };
+    /**
+     * 使用Map做本地缓存
+     */
     static final ConcurrentMap<String, ReferenceConfigCache> cacheHolder = new ConcurrentHashMap<String, ReferenceConfigCache>();
     private final String name;
     private final KeyGenerator generator;
