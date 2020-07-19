@@ -7,4 +7,5 @@ package com.alibaba.dubbo.demo;
  */
 public interface CommonService {
     String sayHello();
+    String sayHello(String str);
 }

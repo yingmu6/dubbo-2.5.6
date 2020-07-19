@@ -27,4 +27,9 @@ public class CommonServiceImpl implements CommonService {
         // logger.info("你好 Common");
         return "来自：" + getSource() + " ,hello 你好";
     }
+
+    @Override
+    public String sayHello(String str) {
+        return "hello";
+    }
 }

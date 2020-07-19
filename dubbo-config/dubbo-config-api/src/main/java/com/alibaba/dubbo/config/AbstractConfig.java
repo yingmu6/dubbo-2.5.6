@@ -147,8 +147,10 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
      *    3.2）尝试获取系统属性的值，（"dubbo." + TagName + config.getId() + "." + property）
      *    3.3）若没有获取到指定的属性值，则继续尝试查找，（"dubbo." + TagName + "." + property）
      *    3.4）构建getter方法，则调用get方法获取。若没有get方法，调用会报异常，则在异常中调用is方法
-     *         若getter方法不为空，尝试获取prefix + config.getId() + "." + property的值，若值为空
-     *         继续尝试
+     *        3.4.1）若getter方法不为空，尝试获取prefix + config.getId() + "." + property的值，
+     *        3.4.2）若值为空继续尝试prefix + property对应的值
+     *        3.4.3）若查到的值还为空，则预置的Map获取到特殊的key
+     *    3.5）执行方法调用method.invoke
      */
     protected static void appendProperties(AbstractConfig config) {/**@c 向上转型，依次设置属性的值*/
         if (config == null) {
@@ -167,7 +169,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                      * 去掉set，获取到属性名，如setDefault变为default
                      */
                     String property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), "-");
-                    /**@c 先从系统中获取属性值，若没有，则调用get或is方法获取值 */
+                    /**@c 先从系统中获取属性值，若没有，则调用get或is方法获取值 */ //todo pause
                     String value = null;
                     if (config.getId() != null && config.getId().length() > 0) {
                         String pn = prefix + config.getId() + "." + property;
@@ -223,7 +225,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         }
         /**
          * 问题集：todo @csy-new
-         * 1）此方法待调试，公共暂不明确
+         * 1）xml中并没有配置<dubbo:provider />，是从哪里设置的
          */
     }
 
