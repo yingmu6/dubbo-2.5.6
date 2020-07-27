@@ -282,6 +282,22 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         }
     }
 
+    /**
+     * 检查stub和mock
+     * 1）若本地实现类名local不为空
+     *  1.1）若local是默认值（"true"或"default"），则加载类名为interfaceClass.getName() + "Local"
+     *       否则为ReflectUtils.forName(local)
+     *  1.2）判断类interfaceClass是否是localClass的超类
+     *  1.3）查找本地实现类的构造方法
+     * 2）若本地存根stub不为空
+     *  2.1）若local是默认值（"true"或"default"），则加载类名为interfaceClass.getName() + "Stub"
+     *       否则为ReflectUtils.forName(local)
+     *  1.2）判断类interfaceClass是否是localClass的超类
+     *  1.3）查找stub的构造方法
+     * 3）若测试mock不为空
+     *  3.1）若mock值以return为前缀，截取"return "后的值
+     *  3.2）解析Mock的值 todo @pause 1
+     */
     protected void checkStubAndMock(Class<?> interfaceClass) {
         if (ConfigUtils.isNotEmpty(local)) {
             Class<?> localClass = ConfigUtils.isDefault(local) ? ReflectUtils.forName(interfaceClass.getName() + "Local") : ReflectUtils.forName(local);
@@ -305,12 +321,11 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                 throw new IllegalStateException("No such constructor \"public " + localClass.getSimpleName() + "(" + interfaceClass.getName() + ")\" in local implementation class " + localClass.getName());
             }
         }
-        //todo @csy-h3 mock使用
         if (ConfigUtils.isNotEmpty(mock)) { //开发自测，联调过程中，经常碰到一些下游服务调用不通的场景，这个时候我们如何不依赖于下游系统，就业务系统独立完成自测。服务调不通时，调用mock类
             if (mock.startsWith(Constants.RETURN_PREFIX)) {
                 String value = mock.substring(Constants.RETURN_PREFIX.length());
                 try {
-                    MockInvoker.parseMockValue(value);/**@c todo @csy-h3 mock值都有哪些形式*/
+                    MockInvoker.parseMockValue(value);
                 } catch (Exception e) {
                     throw new IllegalStateException("Illegal mock json value in <dubbo:service ... mock=\"" + mock + "\" />");
                 }
@@ -326,6 +341,12 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                 }
             }
         }
+        /**
+         * 问题集：todo @csy-new
+         * 1）实践：本地服务功能使用
+         * 2) 实践：本地stub功能使用
+         * 3）实践：Mock功能使用
+         */
     }
 
     /**

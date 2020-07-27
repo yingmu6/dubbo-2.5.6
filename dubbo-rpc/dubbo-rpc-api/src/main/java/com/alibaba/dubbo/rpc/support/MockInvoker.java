@@ -57,6 +57,15 @@ final public class MockInvoker<T> implements Invoker<T> {// read finish
         return parseMockValue(mock, null);
     }
 
+    /**
+     * 解析mock的值
+     * 1）若mock值为"empty"，获取返回类型构造的空值对象（若有多个取第一个）
+     * 2）若mock值为"null"，则返回null
+     * 3）若mock值为"true"，则返回true；若mock值为"false"，则返回false
+     * 4）若mock值包含双信号或单引号，去除第一个和最后一个字符，作为解析的值
+     * 5）若返回类型数组returnTypes不为空，且第一个元素为String类型，则将mock值作为解析后的值
+     * 6）若 todo @pause 2
+     */
     public static Object parseMockValue(String mock, Type[] returnTypes) throws Exception {
         //mock值形式？returnTypes形式
         Object value = null;
@@ -86,6 +95,10 @@ final public class MockInvoker<T> implements Invoker<T> {// read finish
             value = PojoUtils.realize(value, (Class<?>) returnTypes[0], returnTypes.length > 1 ? returnTypes[1] : null);
         }
         return value;
+        /**
+         * 问题集：todo @csy-new
+         * 1）mock值都有哪些形式？
+         */
     }
 
     public Result invoke(Invocation invocation) throws RpcException {

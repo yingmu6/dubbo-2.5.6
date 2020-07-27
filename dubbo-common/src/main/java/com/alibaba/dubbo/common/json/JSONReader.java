@@ -22,12 +22,13 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
 /**
- * JSON reader.
+ * JSON reader.(JSON 字符输入流)
  *
  * @author qian.lei
  */
 
 public class JSONReader {
+
     private static ThreadLocal<Yylex> LOCAL_LEXER = new ThreadLocal<Yylex>() {
     };
 
@@ -41,6 +42,10 @@ public class JSONReader {
         mLex = getLexer(reader);
     }
 
+    /**
+     * 从输入流中获取词法解析器Yylex
+     * 1）从本地线程中ThreadLocal获取值 todo @pause 5
+     */
     private static Yylex getLexer(Reader reader) {
         Yylex ret = LOCAL_LEXER.get();
         if (ret == null) {
@@ -64,4 +69,10 @@ public class JSONReader {
             throw new ParseException("Unexcepted token.");
         return ret;
     }
+
+    /**
+     * 问题集 todo @csy-new
+     * 1）实践：ThreadLocal了解以及使用
+     * 2）InputStreamReader了解、InputStream、Reader了解以及使用
+     */
 }

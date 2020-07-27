@@ -154,6 +154,11 @@ public final class StringUtils {
         return false;
     }
 
+    /**
+     * 判断字符串是否是数字
+     * 依次遍历字符串的所有字符，若有一个字符不是数字，则字符串不是数字
+     * 若全部字符都是数字，则字符串为数字组成的字符串
+     */
     public static boolean isNumeric(String str) {
         if (str == null) {
             return false;

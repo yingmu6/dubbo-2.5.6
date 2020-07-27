@@ -147,7 +147,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
     }
 
     /**
-     * parse json.
+     * parse json.（解析JSON字符串）
      *
      * @param json json source.
      * @return JSONObject or JSONArray or Boolean or Long or Double or String or null
@@ -165,7 +165,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
     }
 
     /**
-     * parse json.
+     * parse json.(从字符输入流解析值)
      *
      * @param reader reader.
      * @return JSONObject or JSONArray or Boolean or Long or Double or String or null
@@ -173,11 +173,11 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
      * @throws ParseException
      */
     public static Object parse(Reader reader) throws IOException, ParseException {
-        return parse(reader, JSONToken.ANY);
+        return parse(reader, JSONToken.ANY); //todo @pause 3
     }
 
     /**
-     * parse json. todo @csy-v1 JSON解析待调试
+     * parse json.
      *
      * @param json json string.
      * @param type target type.
@@ -273,6 +273,10 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
         return parse(reader, handler, JSONToken.ANY);
     }
 
+    /**
+     * 从字符串输入流中解析值
+     * 1）构建JSONReader、JSONToken对象 todo @pause 4
+     */
     private static Object parse(Reader reader, int expect) throws IOException, ParseException {
         JSONReader jr = new JSONReader(reader);
         JSONToken token = jr.nextToken(expect);

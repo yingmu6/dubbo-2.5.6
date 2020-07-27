@@ -836,6 +836,15 @@ public final class ReflectUtils {
         return findMethodByMethodSignature(clazz, methodName, null);
     }
 
+    /**
+     * 查找带有指定参数类型的构造方法
+     * 1）直接查找含有参数的构造函数clazz.getConstructor(new Class<?>[]{paramType})
+     * 2）若没有查到
+     *   2.1）获取所有构造函数
+     *   2.2）遍历循环，查找public、只有一个参数、参数与输入类型关联的构造函数
+     *   2.3）若还没找到构造函数，则抛出异常
+     * 3）返回查找的构造函数
+     */
     public static Constructor<?> findConstructor(Class<?> clazz, Class<?> paramType) throws NoSuchMethodException {
         Constructor<?> targetConstructor;
         try {
@@ -881,13 +890,50 @@ public final class ReflectUtils {
         return false;
     }
 
+    /**
+     * 获取带有默认值的空对象
+     */
     public static Object getEmptyObject(Class<?> returnType) {
         return getEmptyObject(returnType, new HashMap<Class<?>, Object>(), 0);
     }
 
+    /**
+     * 获取空对象（设置默认值：对象的属性包含：基本类型、集合类型、自定义类型）
+     * 1）若level大于2，则返回null（对属性个数限制，最多2个？）
+     * 2）对returnType返回类型进行判断
+     *  2.1）若为空，则返回null
+     *  2.2）若为布尔类型，返回false
+     *  2.3）若为字符类型，返回'\0'
+     *  2.4）若为字节类型，返回0的字节
+     *  2.5）若为短整型，返回0的短整型
+     *  2.6）若为整形，返回0
+     *  2.7）若为长整形，返回0L
+     *  2.8）若为浮点型float，返回0F
+     *  2.9）若为浮点型double，返回0D
+     *  2.10）若为数组类型，创建数组实例
+     *  2.11）依次对ArrayList、HashSet、HashMap判断，返回相应实例
+     *  2.12）若为字符串类型，返回""
+     *  2.13）若返回类型不是接口类型，且不是上面的基础类型以及集合类型
+     *  2.14）从map中获取returnType对应的对象（emptyInstances：缓存的map，避免多次创建相同类型的实例）
+     *        若value为空，则创建实例newInstance()后，设置到map
+     *  2.15）依次循环，直到value的class为空或等于Object.class（依次设置成员变量的值）
+     *    2.15.1）获取类声明的字段，依次遍历
+     *    2.15.2）获取属性值property，若字段不可访问，先将访问权限变为可访问，设置属性的值
+     *    2.15.3）将cls父类更新cls， cls = cls.getSuperclass()
+     *  2.16）返回构造的值value
+     */
     private static Object getEmptyObject(Class<?> returnType, Map<Class<?>, Object> emptyInstances, int level) {
+        /**
+         * 什么时候level会大于2？（嵌套的层级，还不是属性的个数）
+         * 此处只自定义对象中属性对象的嵌套层级，若超过2层，则不处理返回null，如
+         * ReflectUtilsTest中的EmptyClass -》EmptyProperty -》TestedClass -》 AppleClass
+         * 最终AppleClass的值因为超过两层，置为null
+         */
         if (level > 2)
             return null;
+        /**
+         * return语句都是递归的结束条件
+         */
         if (returnType == null) {
             return null;
         } else if (returnType == boolean.class || returnType == Boolean.class) {
@@ -918,15 +964,29 @@ public final class ReflectUtils {
             return "";
         } else if (!returnType.isInterface()) {
             try {
+                /**
+                 * 创建对象、依次设置对象中的属性值（自定义类）
+                 * emptyInstances 当类中有多个相同的类属性，（把实例缓存到传入的参数），进行传递，避免重复创建实例
+                 * 缓存有放到类变量、也有放到参数中
+                 */
                 Object value = emptyInstances.get(returnType);
                 if (value == null) {
-                    value = returnType.newInstance();
+                    value = returnType.newInstance(); //实例值：
                     emptyInstances.put(returnType, value);
                 }
                 Class<?> cls = value.getClass();
+                /**
+                 * 循环设置自定义对象的属性
+                 * 1）设置当前类中的所有属性值，引用属性最多两层，level <= 2
+                 * 2）获取父类，依次设置父类的属性值
+                 * 3）直到父类为Object终止循环
+                 */
                 while (cls != null && cls != Object.class) {
                     Field[] fields = cls.getDeclaredFields();
                     for (Field field : fields) {
+                        /**
+                         * 递归获取字段的默认值，若字段的类型为自定义类，用level层级来控制
+                         */
                         Object property = getEmptyObject(field.getType(), emptyInstances, level + 1);
                         if (property != null) {
                             try {
@@ -938,6 +998,9 @@ public final class ReflectUtils {
                             }
                         }
                     }
+                    /**
+                     * 设置父类的属性
+                     */
                     cls = cls.getSuperclass();
                 }
                 return value;
@@ -947,6 +1010,24 @@ public final class ReflectUtils {
         } else {
             return null;
         }
+        /**
+         * 问题集：
+         * 1）用途是什么？待调试
+         *    解：构造带有默认值对象
+         * 2）level含义是什么？字符'\0'有啥含义？
+         *    解：C/C++的结束符，但是Java是没有此结束符的，因为String在java中是对象，对象中有指定长度，就不要指定结束标志来查找字符长度了
+         * 3）Class中getComponentType()、isAssignableFrom()含义以及使用？
+         *    解：getComponentType()，返回类Class对应的数组类型，若不是数组类型，则返回null
+         *    A.isAssignableFrom(B), isAssignableFrom 判断一个class（类）是否与另一个class相同，或者是否是另一个class的超类或接口
+         * 4）Array.newInstance的使用
+         * 5）此处!returnType.isInterface() 不是接口类型，会是什么类型？
+         *    解：除基本类型、基本集合类的其它类型
+         * 6）此处递归，getEmptyObject(field.getType(), emptyInstances, level + 1)找出结束条件
+         *    解：cls.getSuperclass()，Object是所有类的父类。return语句都是递归结束条件
+         * 7）Field的isAccessible、field.set(value, property)使用
+         * 8）递归算法使用？
+         *    https://cloud.tencent.com/developer/article/1356049
+         */
     }
 
     public static boolean isBeanPropertyReadMethod(Method method) {

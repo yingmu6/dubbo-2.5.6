@@ -150,10 +150,21 @@ public class ReflectUtilsTest extends TestCase {
 
     @Test
     public void test_getEmptyObject() throws Exception {
+        /**
+         * returnType.isAssignableFrom(ArrayList.class)
+         * Collection 是ArrayList类的实现的接口，getEmptyObject() 返回Array.newInstance()
+         */
         assertTrue(ReflectUtils.getEmptyObject(Collection.class) instanceof Collection);
+        /**
+         * List 是ArrayList类实现的接口，所以返回new ArrayList()
+         */
         assertTrue(ReflectUtils.getEmptyObject(List.class) instanceof List);
         assertTrue(ReflectUtils.getEmptyObject(Set.class) instanceof Set);
         assertTrue(ReflectUtils.getEmptyObject(Map.class) instanceof Map);
+        /**
+         * Object[].class 是数组类型
+         * returnType.isArray()
+         */
         assertTrue(ReflectUtils.getEmptyObject(Object[].class) instanceof Object[]);
         assertEquals(ReflectUtils.getEmptyObject(String.class), "");
         assertEquals(ReflectUtils.getEmptyObject(short.class), Short.valueOf((short) 0));
@@ -164,14 +175,71 @@ public class ReflectUtilsTest extends TestCase {
         assertEquals(ReflectUtils.getEmptyObject(double.class), Double.valueOf(0));
         assertEquals(ReflectUtils.getEmptyObject(char.class), Character.valueOf('\0'));
         assertEquals(ReflectUtils.getEmptyObject(boolean.class), Boolean.FALSE);
+        /**
+         * class com.alibaba.dubbo.common.utils.ReflectUtilsTest$EmptyClass 静态内部类，用$表示
+         */
         EmptyClass object = (EmptyClass) ReflectUtils.getEmptyObject(EmptyClass.class);
         assertNotNull(object);
         assertNotNull(object.getProperty());
+//        assertNotNull(object.getPropertyV2());
+//        assertNotNull(object.getPropertyV3());
     }
 
-    public static class EmptyClass {
+    static class EmptyClassA {
+        private int ageA;
+
+        public int getAgeA() {
+            return ageA;
+        }
+
+        public void setAgeA(int ageA) {
+            this.ageA = ageA;
+        }
+    }
+
+    public static class EmptyClass extends EmptyClassA{
+        private int age;
 
         private EmptyProperty property;
+
+//        private EmptyProperty propertyV2;
+//
+//        private EmptyProperty propertyV3;
+//
+//        private EmptyProperty propertyV4;
+
+        public int getAge() {
+            return age;
+        }
+
+        public void setAge(int age) {
+            this.age = age;
+        }
+
+//        public EmptyProperty getPropertyV4() {
+//            return propertyV4;
+//        }
+//
+//        public void setPropertyV4(EmptyProperty propertyV4) {
+//            this.propertyV4 = propertyV4;
+//        }
+//
+//        public EmptyProperty getPropertyV3() {
+//            return propertyV3;
+//        }
+//
+//        public void setPropertyV3(EmptyProperty propertyV3) {
+//            this.propertyV3 = propertyV3;
+//        }
+//
+//
+//        public EmptyProperty getPropertyV2() {
+//            return propertyV2;
+//        }
+//
+//        public void setPropertyV2(EmptyProperty propertyV2) {
+//            this.propertyV2 = propertyV2;
+//        }
 
         public EmptyProperty getProperty() {
             return property;
@@ -184,9 +252,58 @@ public class ReflectUtilsTest extends TestCase {
     }
 
     public static class EmptyProperty {
+        private int age;
+        private TestedClass testedClass;
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getAge() {
+            return age;
+        }
+
+        public void setAge(int age) {
+            this.age = age;
+        }
+
+        public TestedClass getTestedClass() {
+            return testedClass;
+        }
+
+        public void setTestedClass(TestedClass testedClass) {
+            this.testedClass = testedClass;
+        }
     }
 
     static class TestedClass {
+        private int age;
+        /**
+         * getEmptyObject() 设置属性时，只支持2层嵌套，超过2层，直接返回null
+         */
+        private AppleClass appleClass;
+
+        public AppleClass getAppleClass() {
+            return appleClass;
+        }
+
+        public void setAppleClass(AppleClass appleClass) {
+            this.appleClass = appleClass;
+        }
+
+        public int getAge() {
+            return age;
+        }
+
+        public void setAge(int age) {
+            this.age = age;
+        }
+
         public void method1(int x) {
         }
 
@@ -200,6 +317,18 @@ public class ReflectUtilsTest extends TestCase {
         }
 
         public void overrideMethod(String s1, String s2) {
+        }
+    }
+
+    static class AppleClass {
+        private int weight;
+
+        public int getWeight() {
+            return weight;
+        }
+
+        public void setWeight(int weight) {
+            this.weight = weight;
         }
     }
 
