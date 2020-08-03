@@ -50,6 +50,7 @@ public class Yylex {
 
     /**
      * Translates characters to character classes
+     * 将字符转换为字符类
      */
     private static final String ZZ_CMAP_PACKED =
             "\11\0\1\13\1\13\2\0\1\13\22\0\1\13\1\0\1\10\1\0" +
@@ -90,6 +91,7 @@ public class Yylex {
     private static final int[] ZZ_ROWMAP = zzUnpackRowMap();
     /**
      * The transition table of the DFA
+     * DFA的过渡表
      */
     private static final int ZZ_TRANS[] = {
             3, 4, 5, 5, 6, 3, 5, 3, 7, 8,
@@ -281,11 +283,11 @@ public class Yylex {
      */
     private int zzMarkedPos;
     /**
-     * the current text position in the buffer
+     * the current text position in the buffer（当前的buffer中的位置）
      */
     private int zzCurrentPos;
     /**
-     * startRead marks the beginning of the yytext() string in the buffer
+     * startRead marks the beginning of the yytext() string in the buffer （在buffer中开始读的位置）
      */
     private int zzStartRead;
     /**
@@ -294,7 +296,7 @@ public class Yylex {
      */
     private int zzEndRead;
     /**
-     * zzAtEOF == true <=> the scanner is at the EOF
+     * zzAtEOF == true <=> the scanner is at the EOF（表示扫描位置是否在末尾）
      */
     private boolean zzAtEOF;
     /**
@@ -316,7 +318,7 @@ public class Yylex {
     }
 
     /**
-     * Creates a new scanner.
+     * Creates a new scanner.(开箱动作：UnpackAction)
      * There is also java.io.Reader version of this constructor.
      *
      * @param in the java.io.Inputstream to read input from.
@@ -325,6 +327,9 @@ public class Yylex {
         this(new java.io.InputStreamReader(in));
     }
 
+    /**
+     * 开箱动作处理
+     */
     private static int[] zzUnpackAction() {
         int[] result = new int[63];
         int offset = 0;
@@ -332,6 +337,10 @@ public class Yylex {
         return result;
     }
 
+    /**
+     * 开箱处理
+     * 1）
+     */
     private static int zzUnpackAction(String packed, int offset, int[] result) {
         int i = 0;       /* index in packed string  */
         int j = offset;  /* index in unpacked array */
@@ -342,6 +351,11 @@ public class Yylex {
             do result[j++] = value; while (--count > 0);
         }
         return j;
+        /**
+         * 问题集：todo 0728
+         * 1）用途以及调试？
+         *
+         */
     }
 
     /** number of newlines encountered up to the start of the matched text */
@@ -417,10 +431,21 @@ public class Yylex {
 
 
     /**
-     * Refills the input buffer.
+     * Refills the input buffer.（重新填充输入缓冲区）
      *
      * @return <code>false</code>, iff there was new input.
      * @throws java.io.IOException if any I/O-Error occurs
+     */
+
+    /**
+     * 重新填充输入缓冲区 Refill（充填）
+     * 1）腾出空间：数组拷贝，游标重置
+     * 2）空间扩容：若当前游标超过buffer长度，则按2倍长度扩容
+     * 3）读取内容：从输入流中读取内容
+     *   3.1）若读取到内容，即numRead > 0，变更结束游标zzEndRead
+     *   3.2）若没有读取到内容，即numRead == 0
+     *     3.2.1）若读取到最后，即c == -1
+     *     3.2.2）若没有读取到最后，设置值 zzBuffer[zzEndRead++] = (char) c;
      */
     private boolean zzRefill() throws java.io.IOException {
 
@@ -466,6 +491,12 @@ public class Yylex {
 
         // numRead < 0
         return true;
+
+        /**
+         * 问题集：todo 0728
+         * 1）System.arraycopy 数组拷贝使用
+         * 2）此方法待调试
+         */
     }
 
 
@@ -491,11 +522,23 @@ public class Yylex {
      *
      * @param reader the new input stream
      */
+
+    /**
+     * 重置词法分析器
+     * 1）用新的输入流替换老的输入流
+     * 2）扫描结束标志zzAtEOF置为false
+     * 3）缓存去中的开始zzStartRead、结束位置zzEndRead
+     *   zzCurrentPos当前位置、标记位置zzMarkedPos，都置为0
+     * 4）将词法分析器的状态置为初始状态
+     */
     public final void yyreset(java.io.Reader reader) {
         zzReader = reader;
         //zzAtBOL  = true;
         zzAtEOF = false;
         //zzEOFDone = false;
+        /**
+         * 位置游标类似ChannelBuffer
+         */
         zzEndRead = zzStartRead = 0;
         zzCurrentPos = zzMarkedPos = 0;
         //yyline = yychar = yycolumn = 0;
@@ -566,6 +609,12 @@ public class Yylex {
      *
      * @param errorCode the code of the errormessage to display
      */
+
+    /**
+     * 获取指定下标的错误信息
+     * 1）根据code从错误数组里面获取信息
+     * 2）构建Error对象
+     */
     private void zzScanError(int errorCode) {
         String message;
         try {
@@ -600,6 +649,27 @@ public class Yylex {
      *
      * @return the next token
      * @throws java.io.IOException if any I/O-Error occurs
+     */
+
+    /**
+     * 获取分词JSONToken
+     * 1）做初始化处理，初始化zzInput、zzAction、zzAttrL等
+     * 2）循环处理
+     *  2.1）初始化zzMarkedPosL、zzAction、zzCurrentPosL、zzState等
+     *  2.2）处理zzForAction代码块：循环处理
+     *   2.2.1）若当前位置zzCurrentPosL小于zzEndReadL结束位置，取出当前位置上的值赋值给zzInput
+     *   2.2.2）若扫描结束zzAtEOF=true，则将zzInput置为-1，表示结束，并且break zzForAction
+     *   2.2.3）若zzCurrentPosL >= zzEndReadL且没有结束zzAtEOF
+     *     2.2.3.1）更新游标信息zzCurrentPos、zzMarkedPos
+     *     2.2.3.2）充填缓冲区，获取到结束标志
+     *     2.2.3.3）变更游标zzCurrentPosL、zzMarkedPosL、zzBufferL、zzEndReadL等
+     *     2.2.3.4）判断是否结束，若结束设置标志 并且break zzForAction，若没结束，
+     *              则获取当前的位置的值，赋值给zzInput
+     *     2.2.3.5）判断是否有下一个元素zzNext，若没有则break zzForAction
+     *     2.2.3.6）获取属性值zzAttributes，并进行逻辑与判断
+     *  2.3）对动作进行处理，取动作的值zzAction
+     *   2.3.1）依次对动作进行处理，构建分词JSONToken
+     *   2.3.2）若没匹配到动作，则设置结束标志zzAtEOF或返回异常
      */
     public JSONToken yylex() throws java.io.IOException, ParseException {
         int zzInput;
@@ -669,6 +739,9 @@ public class Yylex {
             // store back cached position
             zzMarkedPos = zzMarkedPosL;
 
+            /**
+             * 对每个动作处理
+             */
             switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
                 case 25: {
                     return new JSONToken(JSONToken.NULL, null);
@@ -827,6 +900,13 @@ public class Yylex {
                     }
             }
         }
+        /**
+         * 问题集：todo 0728
+         * 1）此方法的用途？以及调试
+         * 2）zzForAction:{} 在Java里这是什么写法，break zzForAction是啥含义？
+         * 3）zzTransL[zzRowMapL[zzState] + zzCMapL[zzInput]] 此处的了解
+         * 4）此处zzAttributes & 1 逻辑与的用途？zzAttributes & 8
+         */
     }
 
     /**

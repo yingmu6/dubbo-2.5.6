@@ -20,7 +20,7 @@ import java.util.EmptyStackException;
 import java.util.List;
 
 /**
- * Stack.
+ * Stack.（模拟栈的实现：后进先出）
  *
  * @author qian.lei
  */
@@ -135,4 +135,10 @@ public class Stack<E> {
         mSize = 0;
         mElements.clear();
     }
+
+    /**
+     * 问题集 todo @csy-new
+     * 1）java 栈Stack使用，Dubbo Stack使用
+     * 2）比较Dubbo Stack异同
+     */
 }

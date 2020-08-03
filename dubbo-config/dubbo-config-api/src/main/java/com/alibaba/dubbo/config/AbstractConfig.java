@@ -169,7 +169,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                      * 去掉set，获取到属性名，如setDefault变为default
                      */
                     String property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), "-");
-                    /**@c 先从系统中获取属性值，若没有，则调用get或is方法获取值 */ //todo pause
+                    /**@c 先从系统中获取属性值，若没有，则调用get或is方法获取值 */ //todo pause 1
                     String value = null;
                     if (config.getId() != null && config.getId().length() > 0) {
                         String pn = prefix + config.getId() + "." + property;

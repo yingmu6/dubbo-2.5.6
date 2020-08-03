@@ -64,7 +64,11 @@ final public class MockInvoker<T> implements Invoker<T> {// read finish
      * 3）若mock值为"true"，则返回true；若mock值为"false"，则返回false
      * 4）若mock值包含双信号或单引号，去除第一个和最后一个字符，作为解析的值
      * 5）若返回类型数组returnTypes不为空，且第一个元素为String类型，则将mock值作为解析后的值
-     * 6）若 todo @pause 2
+     * 6）若mock字符串以"{" 开始，则解析为Map对象
+     * 7）若mock字符串以"[" 开始，则解析为List对象
+     * 8）除了上传字符串，直接返回mock的值，todo 0803 这些值都有哪些？
+     * 9）若返回类型有多个，todo pause 2
+     * 10）返回解析后的值
      */
     public static Object parseMockValue(String mock, Type[] returnTypes) throws Exception {
         //mock值形式？returnTypes形式

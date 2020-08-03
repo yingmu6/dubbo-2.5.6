@@ -195,6 +195,9 @@ public class PojoUtils {
         return realize0(pojo, type, null, new IdentityHashMap<Object, Object>());
     }
 
+    /**
+     * 此方法用途 todo 0803
+     */
     public static Object realize(Object pojo, Class<?> type, Type genericType) {
         return realize0(pojo, type, genericType, new IdentityHashMap<Object, Object>());
     }
@@ -289,7 +292,7 @@ public class PojoUtils {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     /**
-     * todo @csy-v1 此方法的用途？待调试
+     * todo 0803 此方法的用途？待调试
      */
     private static Object realize0(Object pojo, Class<?> type, Type genericType, final Map<Object, Object> history) {
         if (pojo == null) {

@@ -16,15 +16,18 @@
 package com.alibaba.dubbo.common.json;
 
 /**
- * JSONToken.
+ * JSONToken.（分词）
  *
  * @author qian.lei
  */
 
 public class JSONToken {
-    // token type
+    // token type（分词类型）
     public static final int ANY = 0, IDENT = 0x01, LBRACE = 0x02, LSQUARE = 0x03, RBRACE = 0x04, RSQUARE = 0x05, COMMA = 0x06, COLON = 0x07;
 
+    /**
+     * 16进制数字，如0x13的值为19（16^0*3 + 16^1*1 = 19）
+     */
     public static final int NULL = 0x10, BOOL = 0x11, INT = 0x12, FLOAT = 0x13, STRING = 0x14, ARRAY = 0x15, OBJECT = 0x16;
 
     public final int type;
@@ -40,10 +43,13 @@ public class JSONToken {
         value = v;
     }
 
+    /**
+     * 根据分词类型，返回相应的字符串
+     */
     static String token2string(int t) {
         switch (t) {
             case LBRACE:
-                return "{";
+                return "{";  //todo 0803 待调试，这些值从哪里来
             case RBRACE:
                 return "}";
             case LSQUARE:
@@ -70,4 +76,10 @@ public class JSONToken {
                 return "ANY";
         }
     }
+
+    /**
+     * 问题集：todo 0728
+     * 1）词法分析器中的token的含义？
+     * 2）token2string(int t)方法待覆盖调试？
+     */
 }

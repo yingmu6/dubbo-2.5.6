@@ -173,7 +173,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
      * @throws ParseException
      */
     public static Object parse(Reader reader) throws IOException, ParseException {
-        return parse(reader, JSONToken.ANY); //todo @pause 3
+        return parse(reader, JSONToken.ANY);
     }
 
     /**
@@ -275,7 +275,22 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
 
     /**
      * 从字符串输入流中解析值
-     * 1）构建JSONReader、JSONToken对象 todo @pause 4
+     * 1）构建JSONReader、JSONToken对象，并初始化状态state、栈Stack
+     * 2）do while循环，先循环后判断。循环对解析状态判断
+     *  2.1）若状态state为END，抛出格式异常
+     *  2.2）若状态state为START
+     *   2.2.1）判断分词的类型
+     *    2.2.1.1）若为NULL、BOOL、INT、FLOAT不处理
+     *    2.2.1.2）若为STRING、LSQUARE、LBRACE，设置状态state、值value
+     *    2.2.1.3）若不是上述的类型，则抛出异常
+     *  2.3）若状态state为ARRAY_ITEM（数组类型）
+     *    2.3）判断分词的类型
+     *     2.3.1）若为COMMA、NULL、BOOL、INT、FLOAT、STRING不处理
+     *     2.3.2）若为JSON串，则先转换为JSONArray并添加token值到数组中
+     *     2.3.3）若类型RSQUARE
+     *      2.3.3.1）若栈为空，则将状态置为state = END
+     *      2.3.3.2）若栈不为空，则弹出栈元素，设置state、value
+     *     2.3.4）若类型LSQUARE.... 类似上述分析
      */
     private static Object parse(Reader reader, int expect) throws IOException, ParseException {
         JSONReader jr = new JSONReader(reader);
@@ -283,7 +298,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
 
         byte state = START;
         Object value = null, tmp;
-        Stack<Entry> stack = new Stack<Entry>();
+        Stack<Entry> stack = new Stack<Entry>(); //todo 0803 栈使用
 
         do {
             switch (state) {
@@ -291,7 +306,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
                     throw new ParseException("JSON source format error.");
                 case START: {
                     switch (token.type) {
-                        case JSONToken.NULL:
+                        case JSONToken.NULL:   //todo 0803 此处写法没结束吗？
                         case JSONToken.BOOL:
                         case JSONToken.INT:
                         case JSONToken.FLOAT:
@@ -317,7 +332,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
                 }
                 case ARRAY_ITEM: {
                     switch (token.type) {
-                        case JSONToken.COMMA:
+                        case JSONToken.COMMA: // todo 0803 这是什么类型
                             break;
                         case JSONToken.NULL:
                         case JSONToken.BOOL:
@@ -327,7 +342,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
                             ((JSONArray) value).add(token.value);
                             break;
                         }
-                        case JSONToken.RSQUARE: // end of array.
+                        case JSONToken.RSQUARE: // end of array.（数组结束）
                         {
                             if (stack.isEmpty()) {
                                 state = END;
@@ -338,7 +353,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
                             }
                             break;
                         }
-                        case JSONToken.LSQUARE: // array begin.
+                        case JSONToken.LSQUARE: // array begin.（数组开始）
                         {
                             tmp = new JSONArray();
                             ((JSONArray) value).add(tmp);
@@ -348,7 +363,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
                             value = tmp;
                             break;
                         }
-                        case JSONToken.LBRACE: // object begin.
+                        case JSONToken.LBRACE: // object begin.（对象开始）
                         {
                             tmp = new JSONObject();
                             ((JSONArray) value).add(tmp);
@@ -386,7 +401,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
                             state = OBJECT_VALUE;
                             break;
                         }
-                        case JSONToken.RBRACE: // end of object.
+                        case JSONToken.RBRACE: // end of object.（对象结束）
                         {
                             if (stack.isEmpty()) {
                                 state = END;
@@ -447,6 +462,11 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
         while ((token = jr.nextToken()) != null);
         stack.clear();
         return value;
+
+        /**
+         * 问题集：todo 0728
+         * 1）调试本段代码
+         */
     }
 
     private static Object parse(Reader reader, JSONVisitor handler, int expect) throws IOException, ParseException {
