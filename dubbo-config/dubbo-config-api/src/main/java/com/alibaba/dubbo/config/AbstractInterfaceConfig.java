@@ -134,6 +134,12 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         }
     }
 
+    /**
+     * 检查应用信息
+     * 1）检查应用名，应用名不为空
+     * 2）对应ApplicationConfig配置对象设置属性
+     * 3）从系统中或配置文件中获取优雅停机时间，并设置到系统属性中
+     */
     @SuppressWarnings("deprecation")
     protected void checkApplication() {
         // 兼容旧版本
@@ -162,7 +168,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     }
 
     /**@c 加载注册配置map，并把参数附加到URL中*/
-    protected List<URL> loadRegistriesOrgin(boolean provider) { //service export 步骤04  provider是否是提供者
+    protected List<URL> loadRegistries(boolean provider) { //service export 步骤04  provider是否是提供者
         checkRegistry();
         List<URL> registryList = new ArrayList<URL>();
         if (registries != null && registries.size() > 0) {
@@ -560,7 +566,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     //加载配置此处生成的url： zookeeper://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&pid=36916&timestamp=1562032607782
     //返回的Registry的url： registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&pid=36972&registry=zookeeper&timestamp=1562032865696
 
-    protected List<URL> loadRegistries(boolean provider) {
+    protected List<URL> loadRegistriesOverride(boolean provider) {
         checkRegistry();
         List<URL> registryUrls = new ArrayList<>();
         if (registries != null && registries.size() > 0) {

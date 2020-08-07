@@ -298,7 +298,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
 
         byte state = START;
         Object value = null, tmp;
-        Stack<Entry> stack = new Stack<Entry>(); //todo 0803 栈使用
+        Stack<Entry> stack = new Stack<Entry>(); //栈使用：后进先出，底层是数组
 
         do {
             switch (state) {
@@ -306,7 +306,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
                     throw new ParseException("JSON source format error.");
                 case START: {
                     switch (token.type) {
-                        case JSONToken.NULL:   //todo 0803 此处写法没结束吗？
+                        case JSONToken.NULL:   //此处写法没结束吗？ 解：若没有break，则会继续执行知道遇到break，花括号
                         case JSONToken.BOOL:
                         case JSONToken.INT:
                         case JSONToken.FLOAT:
@@ -332,7 +332,7 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
                 }
                 case ARRAY_ITEM: {
                     switch (token.type) {
-                        case JSONToken.COMMA: // todo 0803 这是什么类型
+                        case JSONToken.COMMA: // 这是什么类型？ comma：段
                             break;
                         case JSONToken.NULL:
                         case JSONToken.BOOL:

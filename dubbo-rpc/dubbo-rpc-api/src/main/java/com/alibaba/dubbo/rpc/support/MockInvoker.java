@@ -67,7 +67,7 @@ final public class MockInvoker<T> implements Invoker<T> {// read finish
      * 6）若mock字符串以"{" 开始，则解析为Map对象
      * 7）若mock字符串以"[" 开始，则解析为List对象
      * 8）除了上传字符串，直接返回mock的值，todo 0803 这些值都有哪些？
-     * 9）若返回类型有多个，todo pause 2
+     * 9）若返回类型有多个，todo pause
      * 10）返回解析后的值
      */
     public static Object parseMockValue(String mock, Type[] returnTypes) throws Exception {

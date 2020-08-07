@@ -76,7 +76,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
      * 包含name、host、port、threads、timeout、
      * retries、check、url等参数
      */
-    static {//legacy:遗赠，遗产， 这些参数的用途？解：替换特定的属性值
+    static {//legacy:遗赠，遗产， 这些参数的用途？解：替换特定的属性值（协议protocol、消费端配置consumer从服务端去获取）
         legacyProperties.put("dubbo.protocol.name", "dubbo.service.protocol");
         legacyProperties.put("dubbo.protocol.host", "dubbo.service.server.host");
         legacyProperties.put("dubbo.protocol.port", "dubbo.service.server.port");
@@ -139,7 +139,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
     /**@c 为此方法是设值 但API已经可以设置，为啥还用这个 解：过滤处理属性值，引用传递,过 */
 
     /**
-     * Note: 将属性配置添加到url参数中， todo @csy-new 用途以及使用的地方
+     * Note: 将系统属性或属性文件的内容加载到配置对象中AbstractConfig
      * 1）若配置为空，则不处理
      * 2）构建url中的前缀名，如dubbo.provider
      * 3）获取类中的方法Method列表，并遍历Method列表，查找公有方法Method，set* ()
@@ -151,6 +151,18 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
      *        3.4.2）若值为空继续尝试prefix + property对应的值
      *        3.4.3）若查到的值还为空，则预置的Map获取到特殊的key
      *    3.5）执行方法调用method.invoke
+     */
+
+    /**
+     * 将系统属性或属性文件的内容加载到配置对象中AbstractConfig（按优先级更新config属性值：系统属性配置 > XML配置 > 属性文件配置）
+     * 思路整理：
+     * 1）遍历config对象的符合要求的set方法（能访问、参数是基本类型），从方法名中解析出属性名称
+     * 2）构建属性前缀key，先尝试拼接configId，从系统属性中查找，若没有按不拼接的从系统属性中查找，
+     *    若查找到值，则更新config对象中对应属性的值
+     * 3）若系统属性中没有查到，则通过get方法获取属性的值，若能取到则不处理
+     * 4）若系统属性、xml配置中都没有值，则尝试加载配置文件读取值
+     *    若存在值，则将属性文件中的值更新到config文件中
+     *    若不存在值：则从预定义的legacyProperties集合中变更key，再尝试获取值
      */
     protected static void appendProperties(AbstractConfig config) {/**@c 向上转型，依次设置属性的值*/
         if (config == null) {
@@ -169,7 +181,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                      * 去掉set，获取到属性名，如setDefault变为default
                      */
                     String property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), "-");
-                    /**@c 先从系统中获取属性值，若没有，则调用get或is方法获取值 */ //todo pause 1
+                    /**@c 先从系统中获取属性值，若没有，则调用get或is方法获取值 */
                     String value = null;
                     if (config.getId() != null && config.getId().length() > 0) {
                         String pn = prefix + config.getId() + "." + property;
@@ -178,6 +190,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                             logger.info("Use System Property " + pn + " to config dubbo");
                         }
                     }
+                    // System.setProperty("dubbo.application.name", "reress"); 用系统中的值
                     if (value == null || value.length() == 0) {
                         String pn = prefix + property;/**@c 如：dubbo.provider.default */
                         value = System.getProperty(pn);
@@ -198,7 +211,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                             }
                         }
                         if (getter != null) {/**@c 执行method中方法invoke */
-                            if (getter.invoke(config, new Object[0]) == null) {/**@c invoke(方法所属对象，参数列表) */
+                            if (getter.invoke(config, new Object[0]) == null) {/**@c invoke(方法所属对象，参数列表) */ //此处为啥没有else，若没有else，怎么设置值的？ 若get方法有值，表明通过xml有设置，则不处理
                                 if (config.getId() != null && config.getId().length() > 0) { //例如：dubbo.application.config_app.name
                                     value = ConfigUtils.getProperty(prefix + config.getId() + "." + property);
                                 }
@@ -223,10 +236,6 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                 logger.error(e.getMessage(), e);
             }
         }
-        /**
-         * 问题集：todo @csy-new
-         * 1）xml中并没有配置<dubbo:provider />，是从哪里设置的
-         */
     }
 
     /**
