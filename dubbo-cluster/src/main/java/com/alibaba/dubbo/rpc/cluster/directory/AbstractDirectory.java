@@ -68,6 +68,9 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         this(url, url, routers);
     }
 
+    /**
+     * 构建AbstractDirectory，指定路由列表
+     */
     public AbstractDirectory(URL url, URL consumerUrl, List<Router> routers) {
         if (url == null)
             throw new IllegalArgumentException("url == null");
@@ -76,17 +79,22 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         setRouters(routers);
     }
 
+    /**
+     * 获取指定Invocation调用信息对应的调用列表List<Invoker>
+     * 1）按调用信息过滤doList(invocation)
+     * 2）按路由器Router路由过滤
+     */
     public List<Invoker<T>> list(Invocation invocation) throws RpcException {
         if (destroyed) {
             throw new RpcException("Directory already destroyed .url: " + getUrl());
         }
         List<Invoker<T>> invokers = doList(invocation); //获取会话中方法对应的invoker列表，
         List<Router> localRouters = this.routers; // local reference     MockInvokersSelector
-        if (localRouters != null && localRouters.size() > 0) {
+        if (localRouters != null && localRouters.size() > 0) { //todo 0810 此处有多个路由器，invokers去最优一个列表？还是有前后关联的？
             for (Router router : localRouters) {
                 try {
                     if (router.getUrl() == null || router.getUrl().getParameter(Constants.RUNTIME_KEY, true)) {
-                        invokers = router.route(invokers, getConsumerUrl(), invocation);
+                        invokers = router.route(invokers, getConsumerUrl(), invocation); //todo @pause 1
                     }
                 } catch (Throwable t) {
                     logger.error("Failed to execute router: " + getUrl() + ", cause: " + t.getMessage(), t);
@@ -113,6 +121,14 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
      * 3）构建mock invoker选择器MockInvokersSelector，并加到List<Router>
      * 4）对路由列表进行排序，将路由列表设置到AbstractDirectory中的List<Router>
      * 5）遍历当前的List<Configurator>，Configurator.configure配置每个元素
+     */
+
+    /**
+     * 思路整理：
+     * 为抽象目录设置路由列表routers，并且附加指定路由router
+     * 1）从url查找路由key，如设置了则加到router列表
+     * 2）默认都加上MockInvokersSelector
+     * 3）对路由进行排序，并设置到当前AbstractDirectory的路由列表中
      */
     protected void setRouters(List<Router> routers) {
         // copy list

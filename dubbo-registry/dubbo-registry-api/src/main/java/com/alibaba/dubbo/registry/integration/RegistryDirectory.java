@@ -616,6 +616,12 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
+    /**
+     * 查询调用列表List<Invoker>
+     * 1）从调用信息Invocation中，获取方法名methodName、参数列表args
+     * 2）从本地缓存中localMethodInvokerMap，获取方法名对应的调用列表List<Invoker>
+     * 3）若方法名没有查到，尝试查找"*"对应列表，若没查到，则返回其中一个缓存调用列表
+     */
     public List<Invoker<T>> doList(Invocation invocation) {
         if (forbidden) {/**@c 禁用 */
             // 1. 没有服务提供者 2. 服务提供者被禁用

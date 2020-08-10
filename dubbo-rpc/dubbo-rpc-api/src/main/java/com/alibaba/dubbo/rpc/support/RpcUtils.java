@@ -114,8 +114,8 @@ public class RpcUtils {// read finish
     }
 
     public static String getMethodName(Invocation invocation) {
-        //为啥方法名加上$
-        if (Constants.$INVOKE.equals(invocation.getMethodName())// todo @csy-h2 泛化调用的情况吗？
+        //为啥方法名加上$ todo 0809 此处"$invoke" 什么场景会出现
+        if (Constants.$INVOKE.equals(invocation.getMethodName())
                 && invocation.getArguments() != null
                 && invocation.getArguments().length > 0
                 && invocation.getArguments()[0] instanceof String) {
@@ -129,7 +129,7 @@ public class RpcUtils {// read finish
                 && invocation.getArguments() != null
                 && invocation.getArguments().length > 2
                 && invocation.getArguments()[2] instanceof Object[]) {
-            //取第三个参数？Invocation具体的值？
+            //取第三个参数？Invocation具体的值？  todo 0809 此处出现的场景
             return (Object[]) invocation.getArguments()[2];
         }
         return invocation.getArguments();

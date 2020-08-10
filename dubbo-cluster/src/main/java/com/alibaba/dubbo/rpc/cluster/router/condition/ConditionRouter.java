@@ -177,13 +177,17 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
         return condition;
     }
 
+    /**
+     * 对指定的调用列表invokers进行条件路由：
+     * 1）
+     */
     public <T> List<Invoker<T>> route(List<Invoker<T>> invokers, URL url, Invocation invocation)
             throws RpcException {
         if (invokers == null || invokers.size() == 0) {
             return invokers;
         }
         try {
-            if (!matchWhen(url, invocation)) {/**@c todo */
+            if (!matchWhen(url, invocation)) { //todo @pause 2
                 return invokers;
             }
             List<Invoker<T>> result = new ArrayList<Invoker<T>>();
@@ -236,17 +240,21 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
         return !(thenCondition == null || thenCondition.isEmpty()) && matchCondition(thenCondition, url, param, null);
     }
 
+    /**
+     * 匹配条件：
+     *
+     */
     private boolean matchCondition(Map<String, MatchPair> condition, URL url, URL param, Invocation invocation) {
-        Map<String, String> sample = url.toMap();/**@c todo */
+        Map<String, String> sample = url.toMap(); /**@c 将url拆分存储到map中 */
         boolean result = false;
-        for (Map.Entry<String, MatchPair> matchPair : condition.entrySet()) {
+        for (Map.Entry<String, MatchPair> matchPair : condition.entrySet()) { /**@c 遍历条件集合Map todo 0810 condition里面都存储什么内容？设置值的地方在哪里 */
             String key = matchPair.getKey();
             String sampleValue;
             //get real invoked method name from invocation
-            if (invocation != null && (Constants.METHOD_KEY.equals(key) || Constants.METHODS_KEY.equals(key))) {
+            if (invocation != null && (Constants.METHOD_KEY.equals(key) || Constants.METHODS_KEY.equals(key))) { /**@c 若key为"method"或"methods"，从invocation中获取方法名 */
                 sampleValue = invocation.getMethodName();
             } else {
-                sampleValue = sample.get(key);
+                sampleValue = sample.get(key); /**@c 若key不是方法名，则从url对应的map中获取回应的值 */
             }
             if (sampleValue != null) {
                 if (!matchPair.getValue().isMatch(sampleValue, param)) {
@@ -267,7 +275,7 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
     }
 
     /**
-     * 配对比较
+     * 匹配对
      */
     private static final class MatchPair {/**@c 内部类  */
         final Set<String> matches = new HashSet<String>();

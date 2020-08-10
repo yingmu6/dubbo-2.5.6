@@ -50,7 +50,6 @@ public interface Invoker<T> extends Node { // invoker（执行者，执行具体
 
     /**
      * 这个方法用途？ 解：执行方法调用
-     * todo @csy-v1 方法debug调试分析 以及模拟调用
      */
     Result invoke(Invocation invocation) throws RpcException;
 

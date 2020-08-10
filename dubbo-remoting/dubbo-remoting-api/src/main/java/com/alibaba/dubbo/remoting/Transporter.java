@@ -32,7 +32,7 @@ import javax.sound.midi.Receiver;
  * @author william.liangf
  * @see com.alibaba.dubbo.remoting.Transporters
  */
-@SPI("netty4")
+@SPI("netty")
 public interface Transporter {
 
     /**
@@ -42,7 +42,6 @@ public interface Transporter {
      * @param handler
      * @return server
      * @throws RemotingException
-     * @see com.alibaba.dubbo.remoting.Transporters#bind(URL, Receiver, ChannelHandler)
      */
     @Adaptive({Constants.SERVER_KEY, Constants.TRANSPORTER_KEY})
     Server bind(URL url, ChannelHandler handler) throws RemotingException;
@@ -54,7 +53,6 @@ public interface Transporter {
      * @param handler
      * @return client
      * @throws RemotingException
-     * @see com.alibaba.dubbo.remoting.Transporters#connect(URL, Receiver, ChannelListener)
      */
     @Adaptive({Constants.CLIENT_KEY, Constants.TRANSPORTER_KEY})
     Client connect(URL url, ChannelHandler handler) throws RemotingException;

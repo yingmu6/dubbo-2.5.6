@@ -41,7 +41,7 @@ public interface Router extends Comparable<Router> {/**@c 根据路由策略对i
     URL getUrl();
 
     /**
-     * route.
+     * route.（对调用者列表进行路由过滤）
      *
      * @param invokers
      * @param url        refer url

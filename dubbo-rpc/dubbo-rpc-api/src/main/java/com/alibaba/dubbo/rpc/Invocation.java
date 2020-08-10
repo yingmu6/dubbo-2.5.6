@@ -68,7 +68,7 @@ public interface Invocation { // invocation（调用方式）
     Map<String, String> getAttachments(); //隐式传递参数
 
     /**
-     * get attachment（附着点） by key.
+     * get attachment by key. 获取隐式参数中对应key的值
      *
      * @return attachment value.
      * @serial
@@ -76,7 +76,7 @@ public interface Invocation { // invocation（调用方式）
     String getAttachment(String key);
 
     /**
-     * get attachment by key with default value.
+     * get attachment by key with default value. 获取指定key对应的值，若没有获取到值，则返回默认值
      *
      * @return attachment value.
      * @serial

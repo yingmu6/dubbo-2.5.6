@@ -104,7 +104,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
      * 1）若注册地址列表为空，则尝试从系统属性或属性文件中查找
      *    获取到地址，用竖线分隔地址，构建RegistryConfig，设置地址，并加到注册实例列表
      * 2）若注册实例还是为空，则抛出异常
-     * 3）todo @pause 1
+     * 3）
      */
     protected void checkRegistry() { //检测注册中心的配置，并设置属性值
         // 兼容旧版本
@@ -302,7 +302,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
      *  1.3）查找stub的构造方法
      * 3）若测试mock不为空
      *  3.1）若mock值以return为前缀，截取"return "后的值
-     *  3.2）解析Mock的值 todo @pause 1
+     *  3.2）解析Mock的值
      */
     protected void checkStubAndMock(Class<?> interfaceClass) {
         if (ConfigUtils.isNotEmpty(local)) {

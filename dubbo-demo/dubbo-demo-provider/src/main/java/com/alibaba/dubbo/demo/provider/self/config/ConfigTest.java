@@ -68,7 +68,7 @@ public class ConfigTest {
 //        configTest.testAppendParamterSelf(mapSelf, applicationConfig, prefixSelf);
 //        configTest.testAppendParamterSelf(mapSelf, registryConfig, prefixSelf);
 //        configTest.testAppendParamterSelf(mapSelf, serviceConfigSelf, prefixSelf);
-        System.out.println(mapSelf);
+//        System.out.println(mapSelf);
 
         //System.out.println(false || false && true); //运算符 || && 从左到右
 
@@ -81,7 +81,7 @@ public class ConfigTest {
 
         //configTest.testMethodInvoke(applicationConfig);
 
-        //onfigTest.testGetProperty();
+        configTest.testGetProperty();
     }
 
     public void testAppendParamter(Map<String, String> map, Object config, String prefix) {

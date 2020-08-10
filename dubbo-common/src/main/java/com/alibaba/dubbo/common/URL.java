@@ -1214,6 +1214,9 @@ public final class URL implements Serializable {//可进行序列化
         return getParameter(key);
     }
 
+    /**
+     * 将url转换到Map存储
+     */
     public Map<String, String> toMap() {
         Map<String, String> map = new HashMap<String, String>(parameters);
         if (protocol != null)

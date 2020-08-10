@@ -33,14 +33,14 @@ import java.util.List;
 public interface Directory<T> extends Node {/**@c 目录服务 */
 
     /**
-     * get service type.
+     * get service type.（获取服务的类型class）
      *
      * @return service type.
      */
     Class<T> getInterface();
 
     /**
-     * list invokers.
+     * list invokers. （获取调用信息对应的invoker列表）
      *
      * @return invokers
      */

@@ -423,7 +423,6 @@ public class UrlUtils {
 
     /**
      * 判断字符串与包含"*"的字符串的模式是否匹配
-     * GlobPattern(球形图案)
      * 1）参数pattern、value校验
      *   1.1）若模式pattern值为"*"，表明任意字符串都能匹配，返回true
      *   1.2）若模式pattern值为空，并且value的值为空，返回true
@@ -437,32 +436,41 @@ public class UrlUtils {
      *   2.4）若星号在中间，根据*将pattern进行分隔，分为前缀、后缀
      *        若value以前缀prefix开头，并且以后缀suffix结尾，则是匹配，如"ad*cd"与 "adecd" 匹配
      */
+
+    /**
+     * 思路分析：将字符串value与带有"*"星号的字符串进行模式匹配
+     * 将值value与模式pattern进行比较，看是否相等
+     * 1）判断pattern是否为"*"，若是则表示任意value都可以匹配
+     * 2）判断是否包含"*"
+     *   2.1）若不包含，直接比较pattern、value两个字符串是否相等
+     *   2.2）若包含，将pattern按"*"拆分，与value值进行比较
+     */
     public static boolean isMatchGlobPattern(String pattern, String value) {
-        if ("*".equals(pattern))
+        if ("*".equals(pattern)) /**@c 若pattern为"*"，表示任意模式，不管值是啥都能匹配 */
             return true;
-        if ((pattern == null || pattern.length() == 0)
+        if ((pattern == null || pattern.length() == 0)  /**@c pattern、value的值都为空，可以匹配成功 */
                 && (value == null || value.length() == 0))
             return true;
-        if ((pattern == null || pattern.length() == 0)
+        if ((pattern == null || pattern.length() == 0) /**@c pattern或value其中一个为空，不能匹配（两个都为空的情况在上面）*/
                 || (value == null || value.length() == 0))
             return false;
 
-        int i = pattern.lastIndexOf('*');
+        int i = pattern.lastIndexOf('*'); /**@c 若pattern包含"*"，取出"*"最后出现的位置 */
         // 没有找到星号
         if (i == -1) {
-            return value.equals(pattern);
+            return value.equals(pattern); /**@c 没有找到"*"，直接比较pattern、value是否相等 */
         }
         // 星号在末尾
         else if (i == pattern.length() - 1) {
-            return value.startsWith(pattern.substring(0, i));
+            return value.startsWith(pattern.substring(0, i)); /**@c 将pattern去掉末尾"*"，进行比较 */
         }
         // 星号的开头
         else if (i == 0) {
-            return value.endsWith(pattern.substring(i + 1));
+            return value.endsWith(pattern.substring(i + 1)); /**@c 将pattern去掉开头"*"，进行比较 */
         }
         // 星号的字符串的中间
         else {
-            String prefix = pattern.substring(0, i);
+            String prefix = pattern.substring(0, i);  /**@c 将pattern"*"分为两段，将value与前段和后段进行比较 */
             String suffix = pattern.substring(i + 1);
             return value.startsWith(prefix) && value.endsWith(suffix);
         }
