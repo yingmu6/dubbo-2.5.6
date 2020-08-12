@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author qian.lei
  * @author william.liangf
  */
-public class RoundRobinLoadBalance extends AbstractLoadBalance {
+public class RoundRobinLoadBalance extends AbstractLoadBalance {/**@c 循环负载均衡 */
 
     public static final String NAME = "roundrobin";
 
@@ -43,11 +43,11 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
         int length = invokers.size(); // 总个数
         int maxWeight = 0; // 最大权重
         int minWeight = Integer.MAX_VALUE; // 最小权重
-        final LinkedHashMap<Invoker<T>, IntegerWrapper> invokerToWeightMap = new LinkedHashMap<Invoker<T>, IntegerWrapper>();
+        final LinkedHashMap<Invoker<T>, IntegerWrapper> invokerToWeightMap = new LinkedHashMap<Invoker<T>, IntegerWrapper>(); /**@c 调用列表与权重的映射 */
         int weightSum = 0;
         for (int i = 0; i < length; i++) {
             int weight = getWeight(invokers.get(i), invocation);
-            maxWeight = Math.max(maxWeight, weight); // 累计最大权重
+            maxWeight = Math.max(maxWeight, weight); // 累计最大权重 todo 0812 方法待使用
             minWeight = Math.min(minWeight, weight); // 累计最小权重
             if (weight > 0) {
                 invokerToWeightMap.put(invokers.get(i), new IntegerWrapper(weight));
@@ -80,7 +80,7 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
         return invokers.get(currentSequence % length);
     }
 
-    private static final class IntegerWrapper {
+    private static final class IntegerWrapper { /**@c 对int值进行封装 */
         private int value;
 
         public IntegerWrapper(int value) {

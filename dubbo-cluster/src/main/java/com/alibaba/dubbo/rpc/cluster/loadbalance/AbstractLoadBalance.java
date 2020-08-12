@@ -29,7 +29,7 @@ import java.util.List;
  * @author william.liangf
  */
 public abstract class AbstractLoadBalance implements LoadBalance {
-    /**@c  用于计算预热权重 */
+    /**@c  用于计算预热权重 静态方法，类加载的时候执行 */
     static int calculateWarmupWeight(int uptime, int warmup, int weight) {
         int ww = (int) ((float) uptime / ((float) warmup / (float) weight)); // 计算方式：距离启动的时间 / (预热时间 / 参数中设置的权重值)
         return ww < 1 ? 1 : (ww > weight ? weight : ww); //若权重小于1，则取1，否则判断是否大于weight，若超过weight值则取weight，否则去算出的值
@@ -46,9 +46,15 @@ public abstract class AbstractLoadBalance implements LoadBalance {
     /**@c 由不同的负载均衡策略，做选择 */
     protected abstract <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation);
 
+    /**
+     * 获取权重值（负载均衡是应用于消费端的）
+     * 从url中方法参数获取权重值
+     * 若权重值大于0，则重新计算权重，只有达到预热时间，才能进行预测计算
+     */
     protected int getWeight(Invoker<?> invoker, Invocation invocation) { //若设置的权重值不为0，就会在预热期间重新计算权重
         int weight = invoker.getUrl().getMethodParameter(invocation.getMethodName(), Constants.WEIGHT_KEY, Constants.DEFAULT_WEIGHT); //若不设置权重，默认为100
         if (weight > 0) {
+            /**@c 获取远程的时间戳，即提供者的时间戳 */
             long timestamp = invoker.getUrl().getParameter(Constants.REMOTE_TIMESTAMP_KEY, 0L); //Invoker提供者启动时间
             if (timestamp > 0L) {/**@c 预热时间，默认10分钟，只有达到预热时间，才能调用方法 */
                 int uptime = (int) (System.currentTimeMillis() - timestamp);

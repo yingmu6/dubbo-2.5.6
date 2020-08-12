@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * mock invoker选择器
+ * mock invoker选择器（对使用mock的调用invoker进行处理）
  *
  * @author chao.liuc
  */
@@ -56,7 +56,7 @@ public class MockInvokersSelector implements Router {
     }
 
     /**
-     * 获取mock的invoker列表
+     * 获取包含mock协议的invoker列表
      */
     private <T> List<Invoker<T>> getMockedInvokers(final List<Invoker<T>> invokers) {
         if (!hasMockProviders(invokers)) {

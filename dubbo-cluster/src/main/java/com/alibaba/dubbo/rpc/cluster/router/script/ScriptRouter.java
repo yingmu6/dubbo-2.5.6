@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ScriptRouter
+ * ScriptRouter（脚本路由）
  *
  * @author william.liangf
  */
@@ -83,11 +83,14 @@ public class ScriptRouter implements Router {/**@c */
         return url;
     }
 
+    /**
+     * 脚本路由
+     */
     @SuppressWarnings("unchecked")
     public <T> List<Invoker<T>> route(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
         try {
             List<Invoker<T>> invokersCopy = new ArrayList<Invoker<T>>(invokers);
-            Compilable compilable = (Compilable) engine;/**@c todo */
+            Compilable compilable = (Compilable) engine;/**@c todo 0812 脚本路由是指啥？用到哪些知识点 */
             Bindings bindings = engine.createBindings();
             bindings.put("invokers", invokersCopy);
             bindings.put("invocation", invocation);

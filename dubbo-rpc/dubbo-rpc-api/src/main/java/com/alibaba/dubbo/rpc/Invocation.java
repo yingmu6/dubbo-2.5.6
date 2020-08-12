@@ -34,7 +34,7 @@ import java.util.Map;
  * 包含：获取接口 getInterface()、获取Url信息 getUrl()、获取方法名称、
  * 获取方法参数类型以及参数值、获取隐式传递参数、获取调用者信息 invoker
  */
-public interface Invocation { // invocation（调用方式）
+public interface Invocation { // invocation（调用方式） 一个方法就是一次调用信息
     /**
      * get method name.
      *

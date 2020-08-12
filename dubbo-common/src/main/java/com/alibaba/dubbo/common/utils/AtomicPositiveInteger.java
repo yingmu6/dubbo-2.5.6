@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author william.liangf
  * @author ding.lid
  */
-public class AtomicPositiveInteger extends Number {
+public class AtomicPositiveInteger extends Number {/**@c 原子正整数 */
 
     private static final long serialVersionUID = -3038533876489105940L;
 

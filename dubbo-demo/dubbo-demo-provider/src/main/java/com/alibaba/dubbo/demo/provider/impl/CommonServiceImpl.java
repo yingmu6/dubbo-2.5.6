@@ -34,6 +34,11 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    public String sayHello(String str, Integer a) {
+        return null;
+    }
+
+    @Override
     public String test(Integer a, Double b, String[] c) {
         return a + "," + b + "," + c;
     }

@@ -33,7 +33,7 @@ import com.alibaba.dubbo.rpc.cluster.support.FailoverCluster;
 public interface Cluster {/**@c 从入口出发，默认失败转移其它服务器 */
 
     /**
-     * Merge the directory invokers to a virtual invoker.
+     * Merge the directory invokers to a virtual invoker.(把目录下的多个调用者invokers合并为一个invoker)
      *
      * @param <T>
      * @param directory

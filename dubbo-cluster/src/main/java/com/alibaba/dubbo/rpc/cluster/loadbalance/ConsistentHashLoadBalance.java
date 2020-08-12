@@ -51,9 +51,9 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
         return selector.select(invocation);
     }
 
-    private static final class ConsistentHashSelector<T> {
+    private static final class ConsistentHashSelector<T> { /**@c 一致性哈希选择器 */
 
-        private final TreeMap<Long, Invoker<T>> virtualInvokers;
+        private final TreeMap<Long, Invoker<T>> virtualInvokers; /**@c todo 0812 树结构待了解 */
 
         private final int replicaNumber;
 
@@ -73,7 +73,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
             }
             for (Invoker<T> invoker : invokers) {
                 String address = invoker.getUrl().getAddress();
-                for (int i = 0; i < replicaNumber / 4; i++) {
+                for (int i = 0; i < replicaNumber / 4; i++) { /**@c todo 0812 为啥除以4？ */
                     byte[] digest = md5(address + i);
                     for (int h = 0; h < 4; h++) {
                         long m = hash(digest, h);
@@ -99,7 +99,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
             return buf.toString();
         }
 
-        private Invoker<T> selectForKey(long hash) {
+        private Invoker<T> selectForKey(long hash) { /**@c 获取指定hash值对应的invoker */
             Invoker<T> invoker;
             Long key = hash;
             if (!virtualInvokers.containsKey(key)) {
@@ -114,7 +114,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
             return invoker;
         }
 
-        private long hash(byte[] digest, int number) {
+        private long hash(byte[] digest, int number) { /**@c todo hash运算了解 */
             return (((long) (digest[3 + number * 4] & 0xFF) << 24)
                     | ((long) (digest[2 + number * 4] & 0xFF) << 16)
                     | ((long) (digest[1 + number * 4] & 0xFF) << 8)
@@ -122,7 +122,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
                     & 0xFFFFFFFFL;
         }
 
-        private byte[] md5(String value) {
+        private byte[] md5(String value) { /**@c todo 0812 md5使用 */
             MessageDigest md5;
             try {
                 md5 = MessageDigest.getInstance("MD5");

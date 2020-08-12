@@ -38,7 +38,7 @@ import java.util.List;
 public interface LoadBalance {/**@c 负载均衡 在执行列表中选择一个执行者 默认随机算法*/
 
     /**
-     * select one invoker in list.
+     * select one invoker in list. （从调用列表invokers中选出一个invoker执行者）
      *
      * @param invokers   invokers.
      * @param url        refer url

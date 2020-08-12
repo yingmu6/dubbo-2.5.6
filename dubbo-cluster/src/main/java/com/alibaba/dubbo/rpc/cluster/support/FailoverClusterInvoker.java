@@ -46,36 +46,49 @@ public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {/**@c 
     private static final Logger logger = LoggerFactory.getLogger(FailoverClusterInvoker.class);
 
     public FailoverClusterInvoker(Directory<T> directory) {
-        super(directory);
+        super(directory);/**@c 设置父类AbstractClusterInvoker的属性值 */
     }
 
+    /**
+     * 调用处理  todo 0812 什么时候触发的？
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Result doInvoke(Invocation invocation, final List<Invoker<T>> invokers, LoadBalance loadbalance) throws RpcException {
         List<Invoker<T>> copyinvokers = invokers;
         checkInvokers(copyinvokers, invocation); //校验Invoker列表是否为空
+        /**
+         *  getUrl() -》directory.getUrl() -》node.getUrl() 获取节点的url
+         * todo 0812 此处getMethodParameter是指啥？待调试
+         */
         int len = getUrl().getMethodParameter(invocation.getMethodName(), Constants.RETRIES_KEY, Constants.DEFAULT_RETRIES) + 1;
-        if (len <= 0) { //获取重试次数
+        if (len <= 0) { //获取调用次数=重试次数 + 1
             len = 1;
         }
         // retry loop.
         RpcException le = null; // last exception.
         List<Invoker<T>> invoked = new ArrayList<Invoker<T>>(copyinvokers.size()); // invoked invokers.
         Set<String> providers = new HashSet<String>(len);
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; i++) {/**@c 调用次数，如len=3，执行0，1，2共3次 */
             //重试时，进行重新选择，避免重试时invoker列表已发生变化.
             //注意：如果列表发生了变化，那么invoked判断会失效，因为invoker示例已经改变
             if (i > 0) { //失败过一次，i=0时
                 checkWhetherDestroyed();
-                copyinvokers = list(invocation); //根据方法名从本地缓存中找到Invoker列表
+                copyinvokers = list(invocation); /**@c 重新根据方法名从本地缓存中找到Invoker列表，确保调用列表是最新的 */
                 //重新检查一下
                 checkInvokers(copyinvokers, invocation);
             }
+            /**
+             * 负载均衡获取到执行的invoker
+             */
             Invoker<T> invoker = select(loadbalance, invocation, copyinvokers, invoked);
             invoked.add(invoker);
+            /**
+             * todo 0812 上下文RpcContext中的invokers调用信息为啥是个列表？不应该是单个invoker
+             */
             RpcContext.getContext().setInvokers((List) invoked);
             try {
                 Result result = invoker.invoke(invocation);
-                if (le != null && logger.isWarnEnabled()) {
+                if (le != null && logger.isWarnEnabled()) {/**@c 若异常信息不为空且警告信息开启的，则打印logger.warn信息 */
                     logger.warn("Although retry the method " + invocation.getMethodName()
                             + " in the service " + getInterface().getName()
                             + " was successful by the provider " + invoker.getUrl().getAddress()

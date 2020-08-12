@@ -8,5 +8,6 @@ package com.alibaba.dubbo.demo;
 public interface CommonService {
     String sayHello();
     String sayHello(String str);
+    String sayHello(String str, Integer a);
     String test(Integer a, Double b, String[] c);
 }

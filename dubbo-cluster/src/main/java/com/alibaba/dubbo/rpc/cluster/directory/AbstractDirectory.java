@@ -88,13 +88,13 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         if (destroyed) {
             throw new RpcException("Directory already destroyed .url: " + getUrl());
         }
-        List<Invoker<T>> invokers = doList(invocation); //获取会话中方法对应的invoker列表，
-        List<Router> localRouters = this.routers; // local reference     MockInvokersSelector
-        if (localRouters != null && localRouters.size() > 0) { //todo 0810 此处有多个路由器，invokers去最优一个列表？还是有前后关联的？
+        List<Invoker<T>> invokers = doList(invocation); //从内存中获取调用方法对应的invoker列表，
+        List<Router> localRouters = this.routers; // 若有路由器，则按路由器依次路由过滤（至少有一个MockInvokersSelector）
+        if (localRouters != null && localRouters.size() > 0) { //此处有多个路由器，invokers去最优一个列表？还是有前后关联的？解：依次拿上一次的调用列表去路由invokers = router.route(invokers...)
             for (Router router : localRouters) {
                 try {
                     if (router.getUrl() == null || router.getUrl().getParameter(Constants.RUNTIME_KEY, true)) {
-                        invokers = router.route(invokers, getConsumerUrl(), invocation); //todo @pause 1
+                        invokers = router.route(invokers, getConsumerUrl(), invocation);
                     }
                 } catch (Throwable t) {
                     logger.error("Failed to execute router: " + getUrl() + ", cause: " + t.getMessage(), t);
@@ -140,9 +140,9 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
             routers.add(routerFactory.getRouter(url)); //往路由规则列表里加路由
         }
         // append mock invoker selector
-        routers.add(new MockInvokersSelector());
+        routers.add(new MockInvokersSelector()); /**@c 至少有一个路由器MockInvokersSelector */
         Collections.sort(routers);
-        this.routers = routers;
+        this.routers = routers; /**@c 路由器列表来自：（传入路由列表 + url指定的路由器 + MockInvokersSelector ）*/
     }
 
     public URL getConsumerUrl() {

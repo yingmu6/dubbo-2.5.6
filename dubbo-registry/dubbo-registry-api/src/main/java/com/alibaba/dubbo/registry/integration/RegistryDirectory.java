@@ -101,6 +101,10 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     private volatile Map<String, Invoker<T>> urlInvokerMap; // 初始为null以及中途可能被赋为null，请使用局部变量引用
 
     // Map<methodName, Invoker> cache service method to invokers mapping.
+    /**
+     * 一个方法就对应一个invoker，类似CommonService中的sayHello方法，"sayHello" -> 3个List<Invoker>（但是3个invoker对应是相同的）
+     * Invoker类型为RegistryDirectory$InvokerDelegete 内部类
+     */
     private volatile Map<String, List<Invoker<T>>> methodInvokerMap; // 初始为null以及中途可能被赋为null，请使用局部变量引用
 
     // Set<invokerUrls> cache invokeUrls to invokers mapping.

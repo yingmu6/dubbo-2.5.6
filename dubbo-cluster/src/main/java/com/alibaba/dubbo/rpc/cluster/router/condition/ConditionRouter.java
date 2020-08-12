@@ -179,7 +179,10 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
 
     /**
      * 对指定的调用列表invokers进行条件路由：
-     * 1）
+     * 1）先判断调用url中的方法名是否存在MatchPair的集合中，matchWhen(url, invocation)，
+     *    若不在匹配的集合中，不处理直接返回
+     * 2）判断是否在黑名单中，thenCondition == null，若为黑名单，返回空的结果resul，不处理
+     * 3）依次将满足条件的invoker加入结果列表中
      */
     public <T> List<Invoker<T>> route(List<Invoker<T>> invokers, URL url, Invocation invocation)
             throws RpcException {
@@ -187,22 +190,22 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
             return invokers;
         }
         try {
-            if (!matchWhen(url, invocation)) { //todo @pause 2
+            if (!matchWhen(url, invocation)) { /**@c 将URL中的内容与调用信息invocation中的内容进行比较 */
                 return invokers;
             }
             List<Invoker<T>> result = new ArrayList<Invoker<T>>();
-            if (thenCondition == null) {/**@c 白名单 */
+            if (thenCondition == null) {/**@c 黑名单，不返回调用列表，不可调用 */
                 logger.warn("The current consumer in the service blacklist. consumer: " + NetUtils.getLocalHost() + ", service: " + url.getServiceKey());
                 return result;
             }
             for (Invoker<T> invoker : invokers) {
-                if (matchThen(invoker.getUrl(), url)) {/**@c url匹配 */
+                if (matchThen(invoker.getUrl(), url)) {/**@c 若能匹配， 则加入到结果列表 */
                     result.add(invoker);
                 }
             }
             if (result.size() > 0) {
                 return result;
-            } else if (force) {
+            } else if (force) { /**@c todo 0811 强制执行是指？ */
                 logger.warn("The route result is empty and force execute. consumer: " + NetUtils.getLocalHost() + ", service: " + url.getServiceKey() + ", router: " + url.getParameterAndDecoded(Constants.RULE_KEY));
                 return result;
             }
@@ -241,8 +244,7 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
     }
 
     /**
-     * 匹配条件：
-     *
+     * 匹配条件：将调用信息invocation与设置的条件进行匹配
      */
     private boolean matchCondition(Map<String, MatchPair> condition, URL url, URL param, Invocation invocation) {
         Map<String, String> sample = url.toMap(); /**@c 将url拆分存储到map中 */
@@ -275,7 +277,7 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
     }
 
     /**
-     * 匹配对
+     * 匹配对（包含匹配的集合及不匹配的集合）
      */
     private static final class MatchPair {/**@c 内部类  */
         final Set<String> matches = new HashSet<String>();

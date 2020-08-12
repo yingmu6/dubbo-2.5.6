@@ -48,7 +48,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
 
     protected final boolean availablecheck; //是否需要检测服务可用
 
-    private AtomicBoolean destroyed = new AtomicBoolean(false);
+    private AtomicBoolean destroyed = new AtomicBoolean(false); //掉用着invoker是否被销毁
 
     private volatile Invoker<T> stickyInvoker = null;/**@c sticky 粘连的*/
 
@@ -92,17 +92,20 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
      * a)先lb选择，如果在selected列表中 或者 不可用且做检验时，进入下一步(重选),否则直接返回</br>
      * b)重选验证规则：selected > available .保证重选出的结果尽量不在select中，并且是可用的
      *
-     * @param availablecheck 如果设置true，在选择的时候先选invoker.available == true
-     * @param selected       已选过的invoker.注意：输入保证不重复
+     * availablecheck 如果设置true，在选择的时候先选invoker.available == true
+     * @param selected  已选过的invoker.注意：输入保证不重复
      */
     protected Invoker<T> select(LoadBalance loadbalance, Invocation invocation, List<Invoker<T>> invokers, List<Invoker<T>> selected) throws RpcException {
         if (invokers == null || invokers.size() == 0)
             return null;
         String methodName = invocation == null ? "" : invocation.getMethodName();
 
+        /**
+         * invokers.get(0)获取第一个invoker，获取getUrl()中的方法参数"sticky"
+         */
         boolean sticky = invokers.get(0).getUrl().getMethodParameter(methodName, Constants.CLUSTER_STICKY_KEY, Constants.DEFAULT_CLUSTER_STICKY);
-        {/**@c todo 此代码块用途 */
-            //ignore overloaded method
+        {
+            //ignore overloaded method  todo 0812 stickyInvoker的使用场景？粘粘invoker？
             if (stickyInvoker != null && !invokers.contains(stickyInvoker)) {
                 stickyInvoker = null;
             }
@@ -121,21 +124,34 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
         return invoker;
     }
 
+    /**
+     * 做负载均衡选择invoker
+     * todo 0812 invokers、selected的区别？selected表示已选择过的invoker列表吗
+     */
     private Invoker<T> doselect(LoadBalance loadbalance, Invocation invocation, List<Invoker<T>> invokers, List<Invoker<T>> selected) throws RpcException {
         if (invokers == null || invokers.size() == 0)
             return null;
-        if (invokers.size() == 1)
+        if (invokers.size() == 1) /**@c 若invoker列表为空或只有一个，直接返回，不做负载均衡 */
             return invokers.get(0);
         // 如果只有两个invoker，退化成轮循
         if (invokers.size() == 2 && selected != null && selected.size() > 0) {
             return selected.get(0) == invokers.get(0) ? invokers.get(1) : invokers.get(0); //判断调用者是否已经选择，若已经选择过，选另一个
         }
+        /**@c 进行负载均衡处理，选择出一个执行的invoker */
         Invoker<T> invoker = loadbalance.select(invokers, getUrl(), invocation);
 
+        /**
+         * 重选invoker
+         * 已经选择过或选择的invoker不可用，则需要重新选择invoker
+         */
         //如果 selected中包含（优先判断） 或者 不可用&&availablecheck=true 则重试.
         if ((selected != null && selected.contains(invoker))
-                || (!invoker.isAvailable() && getUrl() != null && availablecheck)) { //todo @csy-h1 重选逻辑
+                || (!invoker.isAvailable() && getUrl() != null && availablecheck)) {
             try {
+                /**
+                 * 重新选择reselect，若重选的rinvoker不为空，则最为负载均衡选择的结果
+                 * 若rinvoker为空，从已选择过的列表invokers中进行查找
+                 */
                 Invoker<T> rinvoker = reselect(loadbalance, invocation, invokers, selected, availablecheck);
                 if (rinvoker != null) {
                     invoker = rinvoker;
@@ -212,6 +228,9 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
         return null;
     }
 
+    /**
+     * 执行调用
+     */
     public Result invoke(final Invocation invocation) throws RpcException {
 
         checkWhetherDestroyed(); //检查是否销毁
@@ -229,6 +248,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
         return doInvoke(invocation, invokers, loadbalance);
     }
 
+    /**@c 若调用信息invoker已被销毁，则抛出异常 */
     protected void checkWhetherDestroyed() {
 
         if (destroyed.get()) {
@@ -243,7 +263,8 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
         return getInterface() + " -> " + getUrl().toString();
     }
 
-    protected void checkInvokers(List<Invoker<T>> invokers, Invocation invocation) { //检测执行者是否可用
+    /**@c 调用方法对应的调用列表为空，则抛出rpc异常 （服务没有暴露或被禁用了）*/
+    protected void checkInvokers(List<Invoker<T>> invokers, Invocation invocation) {
         if (invokers == null || invokers.size() == 0) {/**@c 经常报出的日志，没有服务提供者 */
             throw new RpcException("Failed to invoke the method "
                     + invocation.getMethodName() + " in the service " + getInterface().getName()
@@ -255,9 +276,14 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
         }
     }
 
+    /**
+     * 对调用列表invokers进行负载均衡，然后执行调用
+     * 实现交由子类处理
+     */
     protected abstract Result doInvoke(Invocation invocation, List<Invoker<T>> invokers,
                                        LoadBalance loadbalance) throws RpcException;
 
+    /**@c 获取目录中方法名对应的调用列表 */
     protected List<Invoker<T>> list(Invocation invocation) throws RpcException {
         List<Invoker<T>> invokers = directory.list(invocation); //
         return invokers;
