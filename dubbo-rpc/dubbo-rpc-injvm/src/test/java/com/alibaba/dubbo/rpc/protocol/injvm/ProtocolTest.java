@@ -60,7 +60,7 @@ public class ProtocolTest {
         try {
             autowireProtocol.destroy();
         } catch (UnsupportedOperationException expected) {
-            //todo @system 报错暂时注释掉 assertThat(expected.getMessage(), containsString("of interface com.alibaba.dubbo.rpc.Protocol is not adaptive method!"));
+            //@system 报错暂时注释掉 assertThat(expected.getMessage(), containsString("of interface com.alibaba.dubbo.rpc.Protocol is not adaptive method!"));
         }
 
         assertEquals("ok2", echoProxy.echo("ok2"));

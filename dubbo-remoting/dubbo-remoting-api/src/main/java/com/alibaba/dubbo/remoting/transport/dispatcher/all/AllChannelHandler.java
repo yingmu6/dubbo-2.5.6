@@ -64,7 +64,7 @@ public class AllChannelHandler extends WrappedChannelHandler {
         try {
             cexecutor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));
         } catch (Throwable t) {
-            //todo @system 临时解决线程池满后异常信息无法发送到对端的问题。待重构
+            //@system 临时解决线程池满后异常信息无法发送到对端的问题。待重构
             //fix 线程池满了拒绝调用不返回，导致消费者一直等待超时
         	if(message instanceof Request && t instanceof RejectedExecutionException){
         		Request request = (Request)message;

@@ -33,7 +33,7 @@ public interface ConfiguratorFactory {/**@c 配置工厂 */
      * @param url - configurator url.
      * @return configurator instance.
      */
-    @Adaptive("protocol")
+    @Adaptive("protocol") /**@c 会取url.getProtocol()的值 */
     Configurator getConfigurator(URL url);
 
 }

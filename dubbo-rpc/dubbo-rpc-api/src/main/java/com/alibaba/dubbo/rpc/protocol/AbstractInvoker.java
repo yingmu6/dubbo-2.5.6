@@ -64,6 +64,9 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {// read finish
         this(type, url, convertAttachment(url, keys));
     }
 
+    /**
+     * 设置调用的类型type，调用的内容url，以及附加的参数
+     */
     public AbstractInvoker(Class<T> type, URL url, Map<String, String> attachment) {
         if (type == null)
             throw new IllegalArgumentException("service type == null");

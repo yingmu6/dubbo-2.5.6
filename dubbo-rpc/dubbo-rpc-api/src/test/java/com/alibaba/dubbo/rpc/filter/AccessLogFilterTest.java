@@ -47,7 +47,7 @@ public class AccessLogFilterTest {
         LogUtil.stop();
     }
 
-    // todo @system how to assert thread action
+    // @system how to assert thread action
     @Test
     public void testDefault() {
         URL url = URL.valueOf("test://test:11/test?accesslog=true&group=dubbo&version=1.1");

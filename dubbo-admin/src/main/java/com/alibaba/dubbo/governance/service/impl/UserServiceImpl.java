@@ -66,62 +66,62 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
 
     public List<User> findAllUsers() {
-        // todo @system method stub
+        // @system method stub
         return null;
     }
 
     public Map<String, User> findAllUsersMap() {
-        // todo @system method stub
+        // @system method stub
         return null;
     }
 
     public User findById(Long id) {
-        // todo @system method stub
+        // @system method stub
         return null;
     }
 
     public void createUser(User user) {
-        // todo @system method stub
+        // @system method stub
 
     }
 
     public void updateUser(User user) {
-        // todo @system method stub
+        // @system method stub
 
     }
 
     public void modifyUser(User user) {
-        // todo @system method stub
+        // @system method stub
 
     }
 
     public boolean updatePassword(User user, String oldPassword) {
-        // todo @system method stub
+        // @system method stub
         return false;
     }
 
     public void resetPassword(User user) {
-        // todo @system method stub
+        // @system method stub
 
     }
 
     public void enableUser(User user) {
-        // todo @system method stub
+        // @system method stub
 
     }
 
     public void disableUser(User user) {
-        // todo @system method stub
+        // @system method stub
 
     }
 
     public void deleteUser(User user) {
-        // todo @system method stub
+        // @system method stub
 
     }
 
     public List<User> findUsersByServiceName(String serviceName) {
-        // todo @system method stub
+        // @system method stub
         return null;
     }
 

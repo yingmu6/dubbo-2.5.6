@@ -30,8 +30,9 @@
     <!-- 生成远程服务代理，可以和本地bean一样使用demoService -->
     <!--<dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService" injvm="true"/>-->
 
-    <!-- todo @csy-h3 此处加上injvm=true, 报错 com.alibaba.dubbo.rpc.RpcException: Service [com.alibaba.dubbo.demo.DemoService] not found.-->
-    <!-- <dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService" injvm="true"/> -->
+    <!-- @csy-h3 此处加上injvm=true, 报错 com.alibaba.dubbo.rpc.RpcException: Service [com.alibaba.dubbo.demo.DemoService] not found.  暂时还不知道172.16.121.38从哪里来的
+    -->
+<!--     <dubbo:reference id="demoService" check="false" interface="com.alibaba.dubbo.demo.DemoService" injvm="true"/>-->
 
     <dubbo:reference id="demoService" check="false" group="A" interface="com.alibaba.dubbo.demo.DemoService"/>
 

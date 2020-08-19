@@ -25,17 +25,17 @@ public class OwnerServiceImpl extends AbstractService implements OwnerService {
     OverrideService overrideService;
 
     public List<String> findAllServiceNames() {
-        // todo @system method stub
+        // @system method stub
         return null;
     }
 
     public List<String> findServiceNamesByUsername(String username) {
-        // todo @system method stub
+        // @system method stub
         return null;
     }
 
     public List<String> findUsernamesByServiceName(String serviceName) {
-        // todo @system method stub
+        // @system method stub
         return null;
     }
 

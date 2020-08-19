@@ -51,7 +51,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- FIXME 临时解决spring 4和webx3.x不兼容的问题 -->
+        <!--  临时解决spring 4和webx3.x不兼容的问题 -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
