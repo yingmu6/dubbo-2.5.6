@@ -53,7 +53,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * RegistryDirectory
+ * RegistryDirectory（动态服务目录：包含的invoker列表会改变）
  *
  * @author william.liangf
  * @author chao.liuc
@@ -104,6 +104,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     /**
      * 一个方法就对应一个invoker，类似CommonService中的sayHello方法，"sayHello" -> 3个List<Invoker>（但是3个invoker对应是相同的）
      * Invoker类型为RegistryDirectory$InvokerDelegete 内部类
+     * 注册目录中：缓存了 方法名 -> 调用列表 的映射关系 ，todo 何时从注册中心拉取调用列表的？
      */
     private volatile Map<String, List<Invoker<T>>> methodInvokerMap; // 初始为null以及中途可能被赋为null，请使用局部变量引用
 

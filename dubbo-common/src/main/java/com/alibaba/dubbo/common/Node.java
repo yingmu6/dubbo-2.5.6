@@ -16,7 +16,7 @@
 package com.alibaba.dubbo.common;
 
 /**
- * Node. (API/SPI, Prototype, ThreadSafe)
+ * Node. (API/SPI, Prototype（原型）, ThreadSafe)
  *
  * @author william.liangf
  */

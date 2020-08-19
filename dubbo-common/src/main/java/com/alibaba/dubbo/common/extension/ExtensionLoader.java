@@ -1238,7 +1238,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
             code.append("}");
         }
         code.append("}");
-        //logger.info("自适应扩展，动态生成类class:" + type.getName() + " \n"+ code.toString());
+        logger.info("自适应扩展，动态生成类class:" + type.getName() + " \n"+ code.toString());
         return code.toString();
     }
 

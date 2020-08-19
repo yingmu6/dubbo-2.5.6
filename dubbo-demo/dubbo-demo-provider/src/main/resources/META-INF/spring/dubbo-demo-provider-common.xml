@@ -23,7 +23,9 @@
     <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="demo-provider"/>
 
-    <dubbo:registry address="zookeeper://127.0.0.1:2181" check="true"/>  <!-- 注册地址里需要指定协议如 zookeeper，否则默认dubbo，就会出现无法注册的问题-->
+    <!--静态服务 人工管理服务提供者的上线和下线，此时需将注册中心标识为非动态管理模式 --> <!--todo dynamic="false" 为啥没用显示静态服务？官网上有说显示 是不是被覆盖了-->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181" check="true"/>
+<!--    <dubbo:registry address="zookeeper://127.0.0.1:2181" check="true" />  &lt;!&ndash; 注册地址里需要指定协议如 zookeeper，否则默认dubbo，就会出现无法注册的问题&ndash;&gt;-->
 
     <!-- 此处使用protocol有用吗 -->
 <!--    <dubbo:registry address="127.0.0.1:2181" check="true" protocol="zookeeper"/>-->
@@ -37,6 +39,11 @@
     </bean>
 
     <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService" dynamic="false"/>
+    <!--
+       todo 服务提供者初次注册时为禁用状态，需人工启用。断线时，将不会被自动删除，需人工禁用。
+       断线时：指啥？目前将zk服务停掉，服务也没有删除。初次时，也没有看到禁用状态
+    -->
+<!--    <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService"/>-->
 
 </beans>

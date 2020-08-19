@@ -34,14 +34,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 失败转移，当出现失败，重试其它服务器，通常用于读操作，但重试会带来更长延迟。
+ * 失败转移，当出现失败，重试其它服务器，通常用于读操作，但重试会带来更长延迟。（写操作要考虑幂等性）
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Failover">Failover</a>
  *
  * @author william.liangf
  * @author chao.liuc
  */
-public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {/**@c */
+public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(FailoverClusterInvoker.class);
 

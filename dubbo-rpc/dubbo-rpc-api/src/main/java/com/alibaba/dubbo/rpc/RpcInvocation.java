@@ -30,11 +30,11 @@ import java.util.Map;
  * @author qian.lei
  * @serial Don't change the class name and properties.
  */
-public class RpcInvocation implements Invocation, Serializable { // RpcContext是上下文，状态记录器；而RpcInvocation是具体的调用信息
+public class RpcInvocation implements Invocation, Serializable { // RpcContext是上下文，状态记录器；而RpcInvocation是具体的调用信息，设置调用信息相关的参数
 
     private static final long serialVersionUID = -4355285085441097045L;
 
-    private String methodName;
+    private String methodName; /**@c Invocation接口提供属性的操作方法，RpcInvocation设定对应的属性 */
 
     private Class<?>[] parameterTypes;
 

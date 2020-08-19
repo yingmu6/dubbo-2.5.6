@@ -61,7 +61,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
             throw new IllegalArgumentException("service directory == null");
 
         this.directory = directory;
-        //集群时是否排除非available的invoker
+        //是否对集群中的invoker进行可用性检查
         this.availablecheck = url.getParameter(Constants.CLUSTER_AVAILABLE_CHECK_KEY, Constants.DEFAULT_CLUSTER_AVAILABLE_CHECK);
     }
 

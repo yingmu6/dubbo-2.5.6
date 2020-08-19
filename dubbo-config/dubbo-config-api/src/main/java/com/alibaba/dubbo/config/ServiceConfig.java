@@ -590,8 +590,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 if (registryURLs != null && registryURLs.size() > 0
                         && url.getParameter("register", true)) {
                     for (URL registryURL : registryURLs) {
-                        url = url.addParameterIfAbsent("dynamic", registryURL.getParameter("dynamic")); //todo @csy-h3 动态注册服务？
-                        URL monitorUrl = loadMonitor(registryURL);/**@c 加载监控 todo @csy-h3 */
+                        /**@c 静态服务 人工管理服务提供者的上线和下线，此时需将注册中心标识为非动态管理模式 */
+                        url = url.addParameterIfAbsent("dynamic", registryURL.getParameter("dynamic"));
+                        URL monitorUrl = loadMonitor(registryURL);/**@c 加载监控 */
                         if (monitorUrl != null) {
                             url = url.addParameterAndEncoded(Constants.MONITOR_KEY, monitorUrl.toFullString());
                         }

@@ -46,10 +46,7 @@ public abstract class AbstractConfigurator implements Configurator {
     }
 
     /**
-     * 配置url
-     * 1）若配置configuratorUrl以及传入的url为空或host，则不处理直接返回url
-     * 2）若配置configuratorUrl存在有效端口时，若传入url的端口与配置url的端口相同
-     *    则
+     * 配置url todo 用途？以及debug
      */
     public URL configure(URL url) {
         if (configuratorUrl == null || configuratorUrl.getHost() == null
@@ -87,9 +84,9 @@ public abstract class AbstractConfigurator implements Configurator {
      *        4.3.2）做配置处理doConfigure处理
      */
     private URL configureIfMatch(String host, URL url) {
-        if (Constants.ANYHOST_VALUE.equals(configuratorUrl.getHost()) || host.equals(configuratorUrl.getHost())) { //0.0.0.0 对任意机器有效
+        if (Constants.ANYHOST_VALUE.equals(configuratorUrl.getHost()) || host.equals(configuratorUrl.getHost())) { //配置url的host是任意主机或输入host与配置的host相等时
             String configApplication = configuratorUrl.getParameter(Constants.APPLICATION_KEY,
-                    configuratorUrl.getUsername());
+                    configuratorUrl.getUsername()); /**@c 获取配置的应用名，默认为username */ //todo pause 1
             String currentApplication = url.getParameter(Constants.APPLICATION_KEY, url.getUsername());
             if (configApplication == null || Constants.ANY_VALUE.equals(configApplication)
                     || configApplication.equals(currentApplication)) {

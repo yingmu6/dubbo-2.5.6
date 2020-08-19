@@ -24,13 +24,13 @@ import com.alibaba.dubbo.rpc.cluster.Router;
 import java.util.List;
 
 /**
- * StaticDirectory
+ * StaticDirectory（静态目录，包含的invoker列表不会改变）
  *
  * @author william.liangf
  */
 public class StaticDirectory<T> extends AbstractDirectory<T> {
 
-    private final List<Invoker<T>> invokers;
+    private final List<Invoker<T>> invokers; /**@c 用final修饰，表明静态服务目录的invoker是不会改变的 */
 
     public StaticDirectory(List<Invoker<T>> invokers) {
         this(null, invokers, null);
@@ -52,7 +52,7 @@ public class StaticDirectory<T> extends AbstractDirectory<T> {
     }
 
     public Class<T> getInterface() {
-        return invokers.get(0).getInterface();
+        return invokers.get(0).getInterface(); //为啥直接取第一个？ 列表中的invoker类型是一样的，所以取其中一个即可
     }
 
     public boolean isAvailable() {

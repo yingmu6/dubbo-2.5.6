@@ -41,6 +41,6 @@ public interface Cluster {/**@c 从入口出发，默认失败转移其它服务
      * @throws RpcException
      */
     @Adaptive
-    <T> Invoker<T> join(Directory<T> directory) throws RpcException;
+    <T> Invoker<T> join(Directory<T> directory) throws RpcException; /**@c 构建相关集群容错对象，如FailoverClusterInvoker对象，todo 0817 但此处没有看到invoker的合并 */
 
 }
