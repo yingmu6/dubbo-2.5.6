@@ -2,7 +2,7 @@ package com.alibaba.dubbo.rpc.benchmark;
 
 
 /**
- * todo @csy-h3 Comment of HelloService
+ * Comment of HelloService
  *
  * @author tony.chenl
  */

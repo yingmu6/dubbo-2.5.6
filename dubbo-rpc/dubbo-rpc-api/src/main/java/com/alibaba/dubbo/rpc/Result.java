@@ -29,7 +29,7 @@ import java.util.Map;
 public interface Result { // read finish （执行调用返回的结果：包含返回值（对象、Map形式）、异常信息）
 
     /**
-     * Get invoke result.
+     * Get invoke result.（获取调用的结果）
      *
      * @return result. if no result return null.
      */
@@ -81,7 +81,7 @@ public interface Result { // read finish （执行调用返回的结果：包含
     Map<String, String> getAttachments();
 
     /**
-     * get attachment by key.
+     * get attachment by key.（从结果中获取指定key对应的值）
      *
      * @return attachment value.
      */

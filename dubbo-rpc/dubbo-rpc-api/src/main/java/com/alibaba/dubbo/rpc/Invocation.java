@@ -18,7 +18,7 @@ package com.alibaba.dubbo.rpc;
 import java.util.Map;
 
 /**
- * Invocation. (API, Prototype, NonThreadSafe)
+ * Invocation. (API, Prototype, NonThreadSafe) 领域模型：会话域
  *
  * @author qian.lei
  * @author william.liangf

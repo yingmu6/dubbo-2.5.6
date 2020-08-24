@@ -86,7 +86,7 @@ public abstract class AbstractConfigurator implements Configurator {
     private URL configureIfMatch(String host, URL url) {
         if (Constants.ANYHOST_VALUE.equals(configuratorUrl.getHost()) || host.equals(configuratorUrl.getHost())) { //配置url的host是任意主机或输入host与配置的host相等时
             String configApplication = configuratorUrl.getParameter(Constants.APPLICATION_KEY,
-                    configuratorUrl.getUsername()); /**@c 获取配置的应用名，默认为username */ //todo pause 1
+                    configuratorUrl.getUsername()); /**@c 获取配置的应用名，默认为username */
             String currentApplication = url.getParameter(Constants.APPLICATION_KEY, url.getUsername());
             if (configApplication == null || Constants.ANY_VALUE.equals(configApplication)
                     || configApplication.equals(currentApplication)) {

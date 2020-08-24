@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * RPC Invocation.（todo @csy-new 此处是哪里设置的）
+ * RPC Invocation.（此处是哪里设置的? 解：在执行Invoker的invoke(Invocation invocation) 调用时设置的）
  *
  * @author qian.lei
  * @serial Don't change the class name and properties.

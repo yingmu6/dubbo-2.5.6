@@ -21,6 +21,7 @@ import java.util.Map;
 
 /**
  * RPC Result.
+ * 返回结果包含：结果result、异常exception、附加参数attachments
  *
  * @author qianlei
  * @serial Don't change the class name and properties.
@@ -63,7 +64,7 @@ public class RpcResult implements Result, Serializable {// read finish
     }
 
     /**
-     * @see com.alibaba.dubbo.rpc.RpcResult#setValue()
+     * @see com.alibaba.dubbo.rpc.RpcResult
      * @deprecated Replace to setValue()
      */
     @Deprecated
@@ -119,6 +120,7 @@ public class RpcResult implements Result, Serializable {// read finish
 
     @Override
     public String toString() {
+        // 输出结果如：RpcResult [result=java.lang.Object@6f94fa3e, exception=java.lang.Throwable]
         return "RpcResult [result=" + result + ", exception=" + exception + "]";
     }
 }

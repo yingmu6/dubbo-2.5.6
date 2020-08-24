@@ -19,7 +19,7 @@ import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.extension.ExtensionLoader;
 
 /**
- * todo @csy-h3 Comment of ProtocolUtils
+ * Comment of ProtocolUtils
  *
  * @author william.liangf
  * csy test

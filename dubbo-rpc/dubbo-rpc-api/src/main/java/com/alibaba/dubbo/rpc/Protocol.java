@@ -20,7 +20,7 @@ import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
- * Protocol. (API/SPI, Singleton, ThreadSafe)
+ * Protocol. (API/SPI, Singleton, ThreadSafe)  领域模型：服务域
  *
  * @author william.liangf
  */
@@ -46,7 +46,7 @@ public interface Protocol {// read finish
      * @return exporter 暴露服务的引用，用于取消暴露
      * @throws RpcException 当暴露服务出错时抛出，比如端口已占用
      */
-    @Adaptive
+    @Adaptive  //会产生自适应扩展动态生成的子类
     <T> Exporter<T> export(Invoker<T> invoker) throws RpcException;
 
     /**

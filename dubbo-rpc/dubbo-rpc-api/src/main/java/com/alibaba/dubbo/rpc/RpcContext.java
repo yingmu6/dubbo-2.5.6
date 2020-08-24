@@ -46,7 +46,7 @@ import java.util.concurrent.TimeoutException;
 public class RpcContext { // read finish
 
     /**
-     * todo @csy-v1 ThreadLocal学习实践
+     * ThreadLocal学习实践：不同线程中维护的变量互不干扰，同一个线程中作为线程上下文，不同方法中可以引用
      */
     private static final ThreadLocal<RpcContext> LOCAL = new ThreadLocal<RpcContext>() {
         @Override
@@ -57,7 +57,9 @@ public class RpcContext { // read finish
     private final Map<String, String> attachments = new HashMap<String, String>();  //附加参数
     private final Map<String, Object> values = new HashMap<String, Object>(); //用途及含义：存储上下文的值
     /**
-     * todo @csy-v1 Future学习实践
+     * Future学习实践，Runnable不能返回执行接口，用Future获取返回结果
+     * Future represents the result of an asynchronous computation（Future表示一个异步计算的结果）
+     * 能够中断线程cancel(..)、以及判断线程是否取消isCancelled()等
      */
     private Future<?> future;
 
@@ -72,7 +74,8 @@ public class RpcContext { // read finish
     private Object[] arguments;
 
     /**
-     * todo @csy-v1 InetSocketAddress学习实践
+     * InetSocketAddress学习实践
+     * 此类实现IP套接字地址（IP地址 + 端口号）。它还可以是一个对（主机名 + 端口号），在此情况下，将尝试解析主机名。
      */
     private InetSocketAddress localAddress;
 
@@ -569,7 +572,7 @@ public class RpcContext { // read finish
      * @return 通过future.get()获取返回结果.
      */
     @SuppressWarnings("unchecked")
-    public <T> Future<T> asyncCall(Callable<T> callable) { //todo @csy-h2 待理解
+    public <T> Future<T> asyncCall(Callable<T> callable) { //异步调用，并返回结果
         try {
             try {
                 setAttachment(Constants.ASYNC_KEY, Boolean.TRUE.toString());
@@ -578,7 +581,7 @@ public class RpcContext { // read finish
                 if (o != null) {
                     FutureTask<T> f = new FutureTask<T>(new Callable<T>() { //执行任务
                         public T call() throws Exception {
-                            return o;
+                            return o; // 返回结果
                         }
                     });
                     f.run();
@@ -592,7 +595,7 @@ public class RpcContext { // read finish
                 removeAttachment(Constants.ASYNC_KEY);
             }
         } catch (final RpcException e) {
-            return new Future<T>() {
+            return new Future<T>() { //
                 public boolean cancel(boolean mayInterruptIfRunning) {
                     return false;
                 }
@@ -628,7 +631,7 @@ public class RpcContext { // read finish
             setAttachment(Constants.RETURN_KEY, Boolean.FALSE.toString());
             runable.run();
         } catch (Throwable e) {
-            //FIXME 异常是否应该放在future中？
+            //old system 异常是否应该放在future中？
             throw new RpcException("oneway call error ." + e.getMessage(), e);
         } finally {
             removeAttachment(Constants.RETURN_KEY);

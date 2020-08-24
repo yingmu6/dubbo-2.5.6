@@ -18,7 +18,7 @@ package com.alibaba.dubbo.rpc;
 import com.alibaba.dubbo.common.Node;
 
 /**
- * Invoker. (API/SPI, Prototype, ThreadSafe)
+ * Invoker. (API/SPI, Prototype, ThreadSafe)  领域模型：实体域
  *
  * @author william.liangf
  * @see com.alibaba.dubbo.rpc.Protocol#refer(Class, com.alibaba.dubbo.common.URL)
