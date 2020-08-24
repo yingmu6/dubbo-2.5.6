@@ -48,6 +48,7 @@ public class CompatibleFilter implements Filter {//read finish
             Object value = result.getValue();
             if (value != null) {
                 try {
+                    /**@c 获取指定方法名、指定参数类型的Method */
                     Method method = invoker.getInterface().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
                     Class<?> type = method.getReturnType();
                     Object newValue;

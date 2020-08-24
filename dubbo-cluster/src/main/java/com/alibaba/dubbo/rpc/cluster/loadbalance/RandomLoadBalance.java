@@ -64,7 +64,7 @@ public class RandomLoadBalance extends AbstractLoadBalance {
             }
         }
         // 如果权重相同或权重为0则均等随机
-        return invokers.get(random.nextInt(length)); /** todo random.nextInt(length)此处的值会是0吗？ invokers.get()是从0开始取吗 */
+        return invokers.get(random.nextInt(length)); /** random.nextInt(length)是从0开始取吗? 解：区间是[0,length） */
     }
 
 }

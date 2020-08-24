@@ -33,6 +33,7 @@ public class ClassLoaderFilter implements Filter {// read finish
 
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         ClassLoader ocl = Thread.currentThread().getContextClassLoader();
+        /**@c 获取服务接口的类加载器，并设置到当前线程中 */
         Thread.currentThread().setContextClassLoader(invoker.getInterface().getClassLoader());
         try {
             return invoker.invoke(invocation);

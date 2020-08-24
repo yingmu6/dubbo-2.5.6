@@ -111,12 +111,12 @@ public final class URL implements Serializable {//可进行序列化
 
     /**
      * 参数集合(附加参数集合，如side、application、generic等)
-     * todo @csy-v2 断点分析，看里面存入的值以及写入的地方
+     * 断点分析，看里面存入的值以及写入的地方：parameters指URL中的参数集合
      * 将参数值写到map集合中，然后根据key来取值
      */
-    private final Map<String, String> parameters;
+    private final Map<String, String> parameters;// 指URL中的参数，如side -> consumer，methods -> test,sayHello,sayHello,sayHello，dubbo -> 2.0.0，interface -> com.alibaba.dubbo.demo.CommonService
 
-    // ==== cache ====  todo @csy-h1 URL中怎样使用缓存的？
+    // ==== cache ====  URL中怎样使用缓存的？
     // 原子性并且不可以被序列化
     private volatile transient Map<String, Number> numbers;
 
@@ -124,7 +124,11 @@ public final class URL implements Serializable {//可进行序列化
 
     private volatile transient String ip;
 
-    private volatile transient String full;  //todo @csy-h1 用途？指完整的url吗？
+    /**
+     * full的值，完整的url
+     * dubbo://172.16.120.89:20881/com.alibaba.dubbo.demo.CommonService?anyhost=true&application=demo-consumer&check=false&dubbo=2.0.0&dynamic=false&generic=false&interface=com.alibaba.dubbo.demo.CommonService&methods=test,sayHello,sayHello,sayHello&pid=90166&remote.timestamp=1598238030586&side=consumer&timestamp=1598239876167
+     */
+    private volatile transient String full;
 
     private volatile transient String identity;
 
@@ -603,6 +607,12 @@ public final class URL implements Serializable {//可进行序列化
         return f;
     }
 
+    /**
+     * 获取指定key的long数值
+     * 1）先从本地缓存的数值集合Map<String, Number> numbers中查找
+     * 2）若没查找到，则从url参数集合Map<String, String> parameters中查找
+     *    查找后对数值类型进行转换，并设置到本地缓存的数值集合numbers中
+     */
     public long getParameter(String key, long defaultValue) {
         Number n = getNumbers().get(key);
         if (n != null) {
@@ -760,15 +770,22 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     //方法参数是指method列表中内容吗？还是指特定方法中的参数吗？ ： 附加参数map中取值，如"side" -> "consumer"
+
+    /**
+     * 从url参数parameters中查找方法中参数的值
+     * 1）查找method + "." + key对应的值
+     * 2）若没查到，查询key对应的值
+     * 3）若还没查到，则查询"default." + key对应的值
+     */
     public String getMethodParameter(String method, String key) {
-        String value = parameters.get(method + "." + key); //todo @csy-h1 哪种情况是method + key作为键的
+        String value = parameters.get(method + "." + key); //todo @csy-h1 哪种情况是method + key作为键的：是不是参数回调callback会出现？
         if (value == null || value.length() == 0) {
             return getParameter(key);
         }
         return value;
     }
 
-    // todo @csy-v2 方法中的参数是指什么？ 具体使用场景
+    //方法中的参数是指什么？ 具体使用场景：从url的参数集合中获取指定key对应的值
     public String getMethodParameter(String method, String key, String defaultValue) {
         String value = getMethodParameter(method, key);
         if (value == null || value.length() == 0) {
@@ -823,20 +840,20 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     /**
-     * 获取方法参数 todo 0812 场景覆盖？待调试
+     * 获取方法参数 场景覆盖？待调试
      */
     public int getMethodParameter(String method, String key, int defaultValue) {
-        String methodKey = method + "." + key;
-        Number n = getNumbers().get(methodKey);
+        String methodKey = method + "." + key; // 将方法名与参数名构建key，如sayHello.weight
+        Number n = getNumbers().get(methodKey); //从本地缓存中numbers查找指定key的数值，Map<String, Number> numbers
         if (n != null) {
             return n.intValue();
         }
-        String value = getMethodParameter(method, key);
-        if (value == null || value.length() == 0) {
+        String value = getMethodParameter(method, key); //若从numbers没有查到，则从Map<String, String> parameters查找
+        if (value == null || value.length() == 0) { //若value为空，则返回默认值
             return defaultValue;
         }
         int i = Integer.parseInt(value);
-        getNumbers().put(methodKey, i);
+        getNumbers().put(methodKey, i); //URL参数中查找到不为空的值，则写到本地数字缓存中numbers
         return i;
     }
 

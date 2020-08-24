@@ -161,6 +161,6 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         destroyed = true;
     }
 
-    protected abstract List<Invoker<T>> doList(Invocation invocation) throws RpcException; /**@c todo 此处是如何选择StaticDirectory和RegistryDirectory？ */
+    protected abstract List<Invoker<T>> doList(Invocation invocation) throws RpcException; /**@c 此处是如何选择StaticDirectory和RegistryDirectory？解：通过抽象类实现多态的方式 */
 
 }

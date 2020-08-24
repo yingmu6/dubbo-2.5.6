@@ -29,13 +29,12 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author william.liangf
  * @see com.alibaba.dubbo.rpc.filter.ActiveLimitFilter
  * @see com.alibaba.dubbo.rpc.filter.ExecuteLimitFilter
- * @see com.alibaba.dubbo.rpc.cluster.loadbalance.LeastActiveLoadBalance
  */
 public class RpcStatus {// read finish
 
-    private static final ConcurrentMap<String, RpcStatus> SERVICE_STATISTICS = new ConcurrentHashMap<String, RpcStatus>();
+    private static final ConcurrentMap<String, RpcStatus> SERVICE_STATISTICS = new ConcurrentHashMap<String, RpcStatus>(); /**@c 服务统计 */
 
-    private static final ConcurrentMap<String, ConcurrentMap<String, RpcStatus>> METHOD_STATISTICS = new ConcurrentHashMap<String, ConcurrentMap<String, RpcStatus>>();
+    private static final ConcurrentMap<String, ConcurrentMap<String, RpcStatus>> METHOD_STATISTICS = new ConcurrentHashMap<String, ConcurrentMap<String, RpcStatus>>(); /**@c 方法统计 */
     private final ConcurrentMap<String, Object> values = new ConcurrentHashMap<String, Object>();
     private final AtomicInteger active = new AtomicInteger();
     private final AtomicLong total = new AtomicLong();

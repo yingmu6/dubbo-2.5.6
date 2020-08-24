@@ -38,12 +38,8 @@
         <property name="source" value="V1 port:20881"/>
     </bean>
 
-    <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService" dynamic="false"/>
-    <!--
-       todo 服务提供者初次注册时为禁用状态，需人工启用。断线时，将不会被自动删除，需人工禁用。
-       断线时：指啥？目前将zk服务停掉，服务也没有删除。初次时，也没有看到禁用状态
-    -->
-<!--    <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService"/>-->
+    <!-- 声明需要暴露的服务接口 服务提供者初次注册时为禁用状态，需人工启用。断线时，将不会被自动删除，需人工禁用-->
+<!--    <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService" dynamic="false"/>-->
+    <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService"/>
 
 </beans>

@@ -59,6 +59,9 @@ public class ConfigUtils {
                 || "N/A".equalsIgnoreCase(value);
     }
 
+    /**
+     * 是否为默认值：即为"true"或"default"
+     */
     public static boolean isDefault(String value) {
         return "true".equalsIgnoreCase(value)
                 || "default".equalsIgnoreCase(value);

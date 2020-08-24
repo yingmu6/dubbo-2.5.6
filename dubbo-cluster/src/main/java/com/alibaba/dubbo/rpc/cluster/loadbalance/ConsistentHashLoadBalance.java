@@ -53,7 +53,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
 
     private static final class ConsistentHashSelector<T> { /**@c 一致性哈希选择器 */
 
-        private final TreeMap<Long, Invoker<T>> virtualInvokers; /**@c todo 0812 树结构待了解 */
+        private final TreeMap<Long, Invoker<T>> virtualInvokers; /**@c 树结构待了解: TreeMap可对元素进行排序 */
 
         private final int replicaNumber;
 
@@ -114,7 +114,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
             return invoker;
         }
 
-        private long hash(byte[] digest, int number) { /**@c todo hash运算了解 */
+        private long hash(byte[] digest, int number) { /**@c hash运算了解：对任意的输入可获取到固定的输出 */
             return (((long) (digest[3 + number * 4] & 0xFF) << 24)
                     | ((long) (digest[2 + number * 4] & 0xFF) << 16)
                     | ((long) (digest[1 + number * 4] & 0xFF) << 8)
@@ -122,7 +122,10 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
                     & 0xFFFFFFFFL;
         }
 
-        private byte[] md5(String value) { /**@c todo 0812 md5使用 */
+        /**
+         * MD5信息摘要算法（英语：MD5 Message-Digest Algorithm），一种被广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致
+         */
+        private byte[] md5(String value) {
             MessageDigest md5;
             try {
                 md5 = MessageDigest.getInstance("MD5");

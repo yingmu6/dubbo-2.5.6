@@ -50,7 +50,7 @@ public class RpcContext { // read finish
      */
     private static final ThreadLocal<RpcContext> LOCAL = new ThreadLocal<RpcContext>() {
         @Override
-        protected RpcContext initialValue() {
+        protected RpcContext initialValue() { //初始化值对象值，若不重新，默认返回null
             return new RpcContext();
         }
     };
@@ -95,7 +95,7 @@ public class RpcContext { // read finish
      *
      * @return context
      */
-    public static RpcContext getContext() {
+    public static RpcContext getContext() { //从ThreadLocal获取当前线程维护的对象值
         return LOCAL.get();
     }
 

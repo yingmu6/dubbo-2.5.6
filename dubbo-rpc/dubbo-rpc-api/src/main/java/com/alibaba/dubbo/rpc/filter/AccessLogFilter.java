@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 记录Service的Access Log。
+ * 在调用前，启动延迟任务，将日志写到文件中
  * <p>
  * 使用的Logger key是<code><b>dubbo.accesslog</b></code>。
  * 如果想要配置Access Log只出现在指定的Appender中，可以在Log4j中注意配置上additivity。配置示例:
@@ -80,6 +81,7 @@ public class AccessLogFilter implements Filter {// read finish
 
     private volatile ScheduledFuture<?> logFuture = null;
 
+    /**@c 若延迟任务为空，则创建延迟任务 */
     private void init() {
         if (logFuture == null) {
             synchronized (logScheduled) {
@@ -98,7 +100,7 @@ public class AccessLogFilter implements Filter {// read finish
             logSet = logQueue.get(accesslog);
         }
         if (logSet.size() < LOG_MAX_BUFFER) {
-            logSet.add(logmessage);
+            logSet.add(logmessage); //加入日志内容
         }
     }
 
@@ -112,6 +114,7 @@ public class AccessLogFilter implements Filter {// read finish
                 String version = invoker.getUrl().getParameter(Constants.VERSION_KEY);
                 String group = invoker.getUrl().getParameter(Constants.GROUP_KEY);
                 StringBuilder sn = new StringBuilder();
+                /**@c 拼接需要打印的信息：[日期格式化] + "remote host:port -> " + "local host:port - " */
                 sn.append("[").append(new SimpleDateFormat(MESSAGE_DATE_FORMAT).format(new Date())).append("] ").append(context.getRemoteHost()).append(":").append(context.getRemotePort())
                         .append(" -> ").append(context.getLocalHost()).append(":").append(context.getLocalPort())
                         .append(" - ");
@@ -126,6 +129,7 @@ public class AccessLogFilter implements Filter {// read finish
                 sn.append(inv.getMethodName());
                 sn.append("(");
                 Class<?>[] types = inv.getParameterTypes();
+                /**@c 拼接参数类型 */
                 if (types != null && types.length > 0) {
                     boolean first = true;
                     for (Class<?> type : types) {
@@ -143,7 +147,7 @@ public class AccessLogFilter implements Filter {// read finish
                     sn.append(JSON.json(args));
                 }
                 String msg = sn.toString();
-                if (ConfigUtils.isDefault(accesslog)) {
+                if (ConfigUtils.isDefault(accesslog)) { /**@c 输出日志 */
                     LoggerFactory.getLogger(ACCESS_LOG_KEY + "." + invoker.getInterface().getName()).info(msg);
                 } else {
                     log(accesslog, msg);
@@ -152,21 +156,24 @@ public class AccessLogFilter implements Filter {// read finish
         } catch (Throwable t) {
             logger.warn("Exception in AcessLogFilter of service(" + invoker + " -> " + inv + ")", t);
         }
+        /**@c 在调用之前打印出日志 */
         return invoker.invoke(inv);
     }
 
-    //日志线程
+    /**
+     *  日志线程: 会检测logQueue是否存在日志，若存在则打印到文件中
+     */
     private class LogTask implements Runnable {
         public void run() {
             try {
                 if (logQueue != null && logQueue.size() > 0) {
-                    for (Map.Entry<String, Set<String>> entry : logQueue.entrySet()) {
+                    for (Map.Entry<String, Set<String>> entry : logQueue.entrySet()) { //遍历ConcurrentMap<String, Set<String>> logQueue日志集合
                         try {
                             String accesslog = entry.getKey();
                             Set<String> logSet = entry.getValue();
-                            File file = new File(accesslog);
+                            File file = new File(accesslog); /**@c 构建指定路径的文件 */
                             File dir = file.getParentFile();
-                            if (null != dir && !dir.exists()) {
+                            if (null != dir && !dir.exists()) { /**@c 若文件所属目录不存在，则创建 */
                                 dir.mkdirs();
                             }
                             if (logger.isDebugEnabled()) {
@@ -175,7 +182,7 @@ public class AccessLogFilter implements Filter {// read finish
                             if (file.exists()) {
                                 String now = new SimpleDateFormat(FILE_DATE_FORMAT).format(new Date());
                                 String last = new SimpleDateFormat(FILE_DATE_FORMAT).format(new Date(file.lastModified()));
-                                if (!now.equals(last)) {
+                                if (!now.equals(last)) { /**@c yyyyMMdd，判断文件最近修改日期与当前是否相同，如果不同则修改文件名 */
                                     File archive = new File(file.getAbsolutePath() + "." + last);
                                     file.renameTo(archive);
                                 }
@@ -184,11 +191,11 @@ public class AccessLogFilter implements Filter {// read finish
                             try {
                                 for (Iterator<String> iterator = logSet.iterator();
                                      iterator.hasNext();
-                                     iterator.remove()) {
+                                     iterator.remove()) { /**@c 遍历日志集合，逐行写入文件中 */
                                     writer.write(iterator.next());
                                     writer.write("\r\n");
                                 }
-                                writer.flush();
+                                writer.flush(); /**@c 强制刷新写到文件中 */
                             } finally {
                                 writer.close();
                             }
