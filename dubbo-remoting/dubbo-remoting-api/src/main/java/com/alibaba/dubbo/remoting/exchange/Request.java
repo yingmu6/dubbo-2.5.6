@@ -27,11 +27,11 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class Request { //请求对象
 
-    public static final String HEARTBEAT_EVENT = null;
+    public static final String HEARTBEAT_EVENT = null; // 心跳事件
 
-    public static final String READONLY_EVENT = "R";
+    public static final String READONLY_EVENT = "R"; // 只读事件
 
-    private static final AtomicLong INVOKE_ID = new AtomicLong(0);
+    private static final AtomicLong INVOKE_ID = new AtomicLong(0); // 调用id
 
     private final long mId; //id
 
@@ -43,7 +43,7 @@ public class Request { //请求对象
 
     private boolean mBroken = false;
 
-    private Object mData;
+    private Object mData; // 请求体数据
 
     public Request() {
         mId = newId();
@@ -58,6 +58,10 @@ public class Request { //请求对象
         return INVOKE_ID.getAndIncrement();
     }
 
+    /**
+     * 将对象转换为字符串，若出现转换异常，则进行捕获，转换为相应的提示字符串
+     * 安全：捕获异常并转换，不会抛出异常
+     */
     private static String safeToString(Object data) {
         if (data == null) return null;
         String dataStr;

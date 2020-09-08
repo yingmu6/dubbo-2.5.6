@@ -30,15 +30,20 @@ import java.io.IOException;
 @SPI
 public interface Codec2 {
 
+    /**
+     * 与Codec相比，就是把对字节输入输出流换位ChannelBuffer处理
+     * 字节输入输出流是单向的，ChannelBuffer有游标readerIndex、writerIndex，可以双向处理
+     */
+
     //编码：将POJO对象转换为byte数据在网络传输
-    @Adaptive({Constants.CODEC_KEY})
+    @Adaptive({Constants.CODEC_KEY}) //自适应扩展，会从url中获取到codec对应的值，然后选择不同编码器进行编码
     void encode(Channel channel, ChannelBuffer buffer, Object message) throws IOException;
 
     //解码：从网络中接收到byte数据并转换为对应的POJO对象
     @Adaptive({Constants.CODEC_KEY})
     Object decode(Channel channel, ChannelBuffer buffer) throws IOException;
 
-    enum DecodeResult {
+    enum DecodeResult { //解码时，若没有收到完整的包，选择继续等待接收，还是忽视不管
         NEED_MORE_INPUT, SKIP_SOME_INPUT
     }
 

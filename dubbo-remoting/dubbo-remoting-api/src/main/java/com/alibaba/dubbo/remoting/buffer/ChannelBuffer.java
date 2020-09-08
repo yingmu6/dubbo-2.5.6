@@ -206,7 +206,7 @@ import java.nio.ByteBuffer;
  *
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-//todo @csy-h2 有几个方法方法中的参数就是当前的接口，接口中含有当前接口的引用，这个属于什么设计模式
+//有几个方法方法中的参数就是当前的接口，接口中含有当前接口的引用，这个属于什么设计模式？泛型的声明方式： 限定类型范围
 
 //对外以接口的形式提供出去，外部调用，内部实现接口
 //点击实现的时候，会把直接实现类和间接实现类展示出来
@@ -217,8 +217,8 @@ import java.nio.ByteBuffer;
  * 1）Java Buffer使用 2）Netty Buffer使用 3）Dubbo Buffer使用
  * 1.1) https://tech.meituan.com/2016/11/04/nio.html  http://ifeve.com/java-nio-all/  java NIO教程
  * I/O与NIO的比较
- * 1.1.1) IO面向流，只能逐字节读取，不能前后移动，NIO是面向缓冲区的，可以启动移动
- * 1.1.2）IO是阻塞的，当线程调用read()或write()时，线程会被阻塞，知道读取或写入完成
+ * 1.1.1) IO面向流，只能逐字节读取，不能前后移动，NIO是面向缓冲区的，可以前后移动
+ * 1.1.2）IO是阻塞的，当线程调用read()或write()时，线程会被阻塞，直到读取或写入完成
  * 1.1.3）Java NIO的选择器允许一个单独的线程来监视多个输入通道，你可以注册多个通道使用一个选择器，使用选择器“选择”通道。
  *
  * Buffer缓冲区：本质上是一块既能写入又能从中读取的内存块。包含几个参数capacity（容量），position（从0开始，读或写后向前移动到下一个位置）和limit（限制数）
@@ -229,7 +229,7 @@ import java.nio.ByteBuffer;
  */
 public interface ChannelBuffer extends Comparable<ChannelBuffer> {//finish understand(完成理解)
 
-    /** todo @csy-h2 AbstractChannelBuffer 内容是使用ByteBuffer、索引使用的是readIndex、writeIndex
+    /**AbstractChannelBuffer 内容是使用ByteBuffer、索引使用的是readIndex、writeIndex
     也就是既使用了Java NIO中的ByteBuffer、又使用了Netty NIO的readIndex、writeIndex，
     那么position是怎样和readIndex、writeIndex转换的 **/
 
@@ -658,7 +658,7 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {//finish under
      */
     //将channelBuffer指定index的字节值，替换为value值
     //set方法不会更改readerIndex，writerIndex，只是对内容进行更改
-    //todo @csy-h2 setByte虽然不改变readerIndex，writerIndex，但改变ByteBuffer中的position，加入多次set，会不会出现越界？
+    //setByte虽然不改变readerIndex，writerIndex，但改变ByteBuffer中的position，加入多次set，会不会出现越界？ 并没有看到会影响position的地方
     void setByte(int index, int value);
 
     /**

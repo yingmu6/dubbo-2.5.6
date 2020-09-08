@@ -39,6 +39,7 @@ import java.util.Map;
 import static com.alibaba.dubbo.rpc.protocol.dubbo.CallbackServiceCodec.decodeInvocationArgument;
 
 /**
+ * RpcInvocation解码器：实现Codec的接口中的解密方法decode()
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
 public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Decodeable {// read finish
@@ -53,7 +54,7 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
 
     private Request request;//请求的公有信息
 
-    private volatile boolean hasDecoded;  //todo DecodeableRpcInvocation，可解码的RpcInvocation
+    private volatile boolean hasDecoded;
 
     public DecodeableRpcInvocation(Channel channel, Request request, InputStream is, byte id) {
         Assert.notNull(channel, "channel == null");
@@ -82,7 +83,7 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
         }
     }
 
-    //为啥此处没有实现体：此处编码操作不支持
+    //为啥此处没有实现体：此处编码操作不支持 (该类的功能是解码，没有编码功能，若调用编码功能抛出异常提示)
     public void encode(Channel channel, OutputStream output, Object message) throws IOException {
         throw new UnsupportedOperationException();
     }

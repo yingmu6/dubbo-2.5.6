@@ -25,8 +25,10 @@ import java.nio.ByteBuffer;
  *
  * @author qian.lei
  */
-//todo @csy-h1 当前类的用途是什么？与netty 中Unsafe有没有相似之处 ，不安全是指使用直接内存吗？
 public class UnsafeByteArrayOutputStream extends OutputStream {
+    /**
+     * 重写字节输出流OutputStream的write()方法，然后对自身维护字节数组、数组数量进行维护
+     */
     protected byte mBuffer[];
 
     protected int mCount;
@@ -41,6 +43,7 @@ public class UnsafeByteArrayOutputStream extends OutputStream {
         mBuffer = new byte[size];
     }
 
+    // 往字节数组里面添加一个字节
     public void write(int b) {
         int newcount = mCount + 1;
         if (newcount > mBuffer.length) //容量不够了，就扩容，按两倍扩容
@@ -49,14 +52,17 @@ public class UnsafeByteArrayOutputStream extends OutputStream {
         mCount = newcount;
     }
 
+    // 往字节数组里面添加指定长度的字节数组
     public void write(byte b[], int off, int len) {
+        // 对下标进行越界判断
         if ((off < 0) || (off > b.length) || (len < 0) || ((off + len) > b.length) || ((off + len) < 0))
             throw new IndexOutOfBoundsException();
         if (len == 0)
             return;
         int newcount = mCount + len;
-        if (newcount > mBuffer.length)
+        if (newcount > mBuffer.length) // 扩容处理，计算出新数组的长度与原数组2倍长度进行比较，选择最大值作为新的长度
             mBuffer = Bytes.copyOf(mBuffer, Math.max(mBuffer.length << 1, newcount));
+        // 数组拷贝：把原数组指定内容拷贝到目标数组中
         System.arraycopy(b, off, mBuffer, mCount, len);
         mCount = newcount;
     }

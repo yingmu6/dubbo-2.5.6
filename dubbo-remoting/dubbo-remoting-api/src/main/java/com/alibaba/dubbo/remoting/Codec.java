@@ -42,7 +42,7 @@ public interface Codec {
     Object NEED_MORE_INPUT = new Object();
 
     /**
-     * Encode message. 编码
+     * Encode message. 编码（把对象序列化后形成字节数组，并写到输出流中）
      *
      * @param channel channel.
      * @param output  output stream.
@@ -52,7 +52,7 @@ public interface Codec {
     void encode(Channel channel, OutputStream output, Object message) throws IOException;
 
     /**
-     * Decode message. 解码
+     * Decode message. 解码（从输入流中读取字节数组，并反序列为对象）
      *
      * @param channel channel.
      * @param input   input stream.

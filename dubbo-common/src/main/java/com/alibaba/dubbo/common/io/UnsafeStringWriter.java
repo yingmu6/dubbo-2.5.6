@@ -21,6 +21,7 @@ import java.io.Writer;
 /**
  * Thread unsafed StringWriter.
  *
+ * 重写字符输出流Writer的write()方法，然后对自身维护的字符串mBuffer进行维护
  * @author qian.lei
  */
 

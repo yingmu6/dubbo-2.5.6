@@ -451,7 +451,7 @@ public final class StringUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(camelToSplitName("ABC", "—"));
+//        System.out.println(camelToSplitName("ABC", "—"));
     }
 
     public static String toArgumentString(Object[] args) {/**@c 将参数列表转换为字符串 */
