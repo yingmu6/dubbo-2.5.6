@@ -55,7 +55,14 @@ public class TelnetCodec extends TransportCodec {
 
     private static final List<?> EXIT = Arrays.asList(new Object[]{new byte[]{3} /* Windows Ctrl+C */, new byte[]{-1, -12, -1, -3, 6} /* Linux Ctrl+C */, new byte[]{-1, -19, -1, -3, 6} /* Linux Pause */});
 
-    //字符集处理
+    /**
+     * 获取通道中对应的字符集
+     * 1）从通道中维护的属性获取对应的字符集
+     *    若是字符串，通过字符集名称获取到字符集
+     *    若是Charset对象，则直接转换为Charset对象
+     * 2）若通道中没有查到，则尝试从url中查找字符集
+     * 3）若都没有查到，尝试获取"GBK"字符集，若没有该字符集，则获取默认字符集
+     */
     private static Charset getCharset(Channel channel) {
         if (channel != null) {
             Object attribute = channel.getAttribute(Constants.CHARSET_KEY);
@@ -140,6 +147,10 @@ public class TelnetCodec extends TransportCodec {
         return true;
     }
 
+    /**
+     * 对消息对象进行类型判断
+     * 1）若是字符串类型，直接转为字节数组写到buffer中
+     */
     public void encode(Channel channel, ChannelBuffer buffer, Object message) throws IOException {
         if (message instanceof String) {
             if (isClientSide(channel)) {

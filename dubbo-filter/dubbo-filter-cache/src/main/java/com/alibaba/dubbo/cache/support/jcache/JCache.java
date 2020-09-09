@@ -43,7 +43,7 @@ public class JCache implements com.alibaba.dubbo.cache.Cache {/**@c java缓存�
         // jcache 为SPI实现的全限定类名
         String type = url.getParameter("jcache");
 
-        //todo @csy-h3 java 缓存了解
+        //java 缓存了解
         CachingProvider provider = type == null || type.length() == 0 ? Caching.getCachingProvider() : Caching.getCachingProvider(type);
         CacheManager cacheManager = provider.getCacheManager();
         Cache<Object, Object> cache = cacheManager.getCache(key);
@@ -73,6 +73,18 @@ public class JCache implements com.alibaba.dubbo.cache.Cache {/**@c java缓存�
 
     public Object get(Object key) {
         return store.get(key);
+    }
+
+    public static void main(String[] args) {
+        JCache cache = new JCache(URL.valueOf("dubbo://172.16.120.89:20881/com.alibaba.dubbo.demo.CommonService?anyhost=true&application=demo-consumer&check=false&dubbo=2.0.0&dynamic=false&generic=false&interface=com.alibaba.dubbo.demo.CommonService&methods=test,sayHello,sayHello,sayHello&pid=90166&remote.timestamp=1598238030586&side=consumer&timestamp=1598239876167"));
+        cache.put("test", 101);
+        System.out.println(cache.get("test"));
+        /**
+         * @chen 此处为啥报？JCache是否能用
+         * Error: A JNI error has occurred, please check your installation and try again
+         * Exception in thread "main" java.lang.NoClassDefFoundError: javax/cache/CacheException
+         *
+         */
     }
 
 }

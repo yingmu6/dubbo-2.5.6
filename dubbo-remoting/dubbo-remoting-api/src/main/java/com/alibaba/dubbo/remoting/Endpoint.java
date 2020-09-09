@@ -31,7 +31,7 @@ import java.net.InetSocketAddress;
 // 解：是一个网络节点，dubbo自身的节点。从代码看，没有父节点、子节点、根节点概念，所以不是树结构
 // 可以把一个provider或者consumer认为是一个endpoint节点吗
 // 解：不能说为provider、consumer，从子接口看，应该是Client、Server客户端和服务端属于一个节点
-public interface Endpoint { // 集中的节点
+public interface Endpoint { // 集中的节点（包含Client、Server、Channel等节点）
 
     /**
      * get url. dubbo自定义的URL
@@ -41,7 +41,7 @@ public interface Endpoint { // 集中的节点
     URL getUrl();
 
     /**
-     * get channel handler.
+     * get channel handler.（获取通道处理器）
      *
      * @return channel handler
      */
@@ -55,7 +55,7 @@ public interface Endpoint { // 集中的节点
     InetSocketAddress getLocalAddress();
 
     /**
-     * send message.
+     * send message.  @chen 为啥只能发送信息，那节点怎么接收信息的？
      *
      * @param message
      * @throws RemotingException

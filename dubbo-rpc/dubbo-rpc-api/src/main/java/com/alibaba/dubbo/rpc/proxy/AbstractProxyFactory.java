@@ -29,7 +29,7 @@ import com.alibaba.dubbo.rpc.service.EchoService;
  */
 public abstract class AbstractProxyFactory implements ProxyFactory {// read finish
 
-    public <T> T getProxy(Invoker<T> invoker) throws RpcException { //@chenSy 待调试了解
+    public <T> T getProxy(Invoker<T> invoker) throws RpcException { //待调试了解
         Class<?>[] interfaces = null;
         /**
          * todo @csy-v2 此处需要调试，看下interfaces里面可能是啥内容？怎么会有多个interface

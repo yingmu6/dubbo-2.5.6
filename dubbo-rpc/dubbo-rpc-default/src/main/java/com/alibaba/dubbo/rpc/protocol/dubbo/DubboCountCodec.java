@@ -31,12 +31,12 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public final class DubboCountCodec implements Codec2 {// read finish
+public final class DubboCountCodec implements Codec2 {// read finish @chen 从字面意思来看，这个类计数的，有计数功能吗？
 
     private DubboCodec codec = new DubboCodec();
 
     public void encode(Channel channel, ChannelBuffer buffer, Object msg) throws IOException {
-        codec.encode(channel, buffer, msg);
+        codec.encode(channel, buffer, msg); //调用父类的ExchangeCodec的encode编码方法
     }
 
     public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
