@@ -23,7 +23,7 @@
     <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="demo-provider"/>
 
-    <!--静态服务 人工管理服务提供者的上线和下线，此时需将注册中心标识为非动态管理模式 --> <!--todo dynamic="false" 为啥没用显示静态服务？官网上有说显示 是不是被覆盖了-->
+    <!--静态服务 人工管理服务提供者的上线和下线，此时需将注册中心标识为非动态管理模式 --> <!--dynamic="false" 为啥没用显示静态服务？官网上有说显示 是不是被覆盖了-->
     <dubbo:registry address="zookeeper://127.0.0.1:2181" check="true"/>
 <!--    <dubbo:registry address="zookeeper://127.0.0.1:2181" check="true" />  &lt;!&ndash; 注册地址里需要指定协议如 zookeeper，否则默认dubbo，就会出现无法注册的问题&ndash;&gt;-->
 

@@ -67,7 +67,7 @@
     <dubbo:protocol name="" buffer="" transporter=""/> 协议配置 方法配置 该元素不能被加载-->
     <!-- <dubbo:method name="" timeout="" async="" loadbalance="" /> -->
 
-    <!--todo @csy-h3 此处出现 failed to connect to server /192.168.1.100:7070, error message is:connection timed out， 该监控ip地址从哪里来的，没看到配置地方-->
+    <!--此处出现 failed to connect to server /192.168.1.100:7070, error message is:connection timed out， 该监控ip地址从哪里来的，没看到配置地方-->
     <!--<dubbo:monitor protocol="registry"/>-->
 </beans>
 

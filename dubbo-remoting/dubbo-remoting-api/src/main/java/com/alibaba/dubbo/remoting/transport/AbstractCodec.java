@@ -39,7 +39,7 @@ public abstract class AbstractCodec implements Codec2 {
     //检查通道中传输的数据是否超过有效负荷，默认最大负荷为8M
     protected static void checkPayload(Channel channel, long size) throws IOException {
         int payload = Constants.DEFAULT_PAYLOAD;
-        if (channel != null && channel.getUrl() != null) {
+        if (channel != null && channel.getUrl() != null) { //从通道中获取url，然后再从url中获取到指定参数
             payload = channel.getUrl().getParameter(Constants.PAYLOAD_KEY, Constants.DEFAULT_PAYLOAD);
         }
         if (payload > 0 && size > payload) { //数据超过指定负载
@@ -65,7 +65,13 @@ public abstract class AbstractCodec implements Codec2 {
             // 根据ip和port判断是否是client
             InetSocketAddress address = channel.getRemoteAddress();
             URL url = channel.getUrl();
-            boolean client = url.getPort() == address.getPort() // todo @csy-v1 待调试，为啥是这个判断逻辑
+            /**
+             * 判断逻辑
+             * URL里的信息是服务提供者的信息，是服务端的信息，包含远程的ip、port
+             * channel.getRemoteAddress() 获取远程地址(客户端的远程地址是服务端，反之服务端的远程地址是客户端)，若远程地址的ip、port与url相同，则表明是客服端
+             * url中服务端的ip、port 《=》 channel.getRemoteAddress()进行比较
+             */
+            boolean client = url.getPort() == address.getPort()
                     && NetUtils.filterLocalHost(url.getIp()).equals(
                     NetUtils.filterLocalHost(address.getAddress()
                             .getHostAddress()));

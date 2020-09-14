@@ -38,7 +38,7 @@ public class AvailableCluster implements Cluster {
 
         return new AbstractClusterInvoker<T>(directory) { //匿名类
             public Result doInvoke(Invocation invocation, List<Invoker<T>> invokers, LoadBalance loadbalance) throws RpcException {
-                for (Invoker<T> invoker : invokers) { //todo @csy-h1 此处没用到loadbalance ？
+                for (Invoker<T> invoker : invokers) { //此处没用到loadbalance？解：因为该集群策略是查找可用的invoker，并不需要进行负载均衡
                     if (invoker.isAvailable()) {
                         return invoker.invoke(invocation); //依次执行有效invoker的调用
                     }

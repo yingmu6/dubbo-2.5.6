@@ -41,6 +41,6 @@ public interface Cluster { /** 集群策略，包含：容错、合并、并行�
      * @throws RpcException
      */
     @Adaptive
-    <T> Invoker<T> join(Directory<T> directory) throws RpcException; /**@c 构建相关集群容错对象，如FailoverClusterInvoker对象，todo 0817 但此处没有看到invoker的合并 */
+    <T> Invoker<T> join(Directory<T> directory) throws RpcException; /**@c 构建相关集群容错对象，如FailoverClusterInvoker对象 */
 
 }
