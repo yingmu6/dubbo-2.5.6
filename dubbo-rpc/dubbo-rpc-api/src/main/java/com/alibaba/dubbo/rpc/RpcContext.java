@@ -43,7 +43,7 @@ import java.util.concurrent.TimeoutException;
  * @export
  * @see com.alibaba.dubbo.rpc.filter.ContextFilter
  */
-public class RpcContext { // read finish
+public class RpcContext { // read finish todo @csy 10/01 是在何处设置进入的，结合官网流程图看下
 
     /**
      * ThreadLocal学习实践：不同线程中维护的变量互不干扰，同一个线程中作为线程上下文，不同方法中可以引用
@@ -130,7 +130,7 @@ public class RpcContext { // read finish
         } else {
             host = address.getAddress().getHostAddress();
         }
-        return url.getPort() != address.getPort() ||
+        return url.getPort() != address.getPort() || //当前url的port、ip与remote的地址信息不相同，即为服务端
                 !NetUtils.filterLocalHost(url.getIp()).equals(NetUtils.filterLocalHost(host));
     }
 
@@ -140,7 +140,6 @@ public class RpcContext { // read finish
      * @return consumer side.
      */
     public boolean isConsumerSide() {
-        //与isProviderSide有啥不同？ port、ip判断不同
         URL url = getUrl();
         if (url == null) {
             return false;
@@ -155,7 +154,7 @@ public class RpcContext { // read finish
         } else {
             host = address.getAddress().getHostAddress();
         }
-        return url.getPort() == address.getPort() &&
+        return url.getPort() == address.getPort() && //当前url的port、ip与remote的地址信息相同，即为消费端
                 NetUtils.filterLocalHost(url.getIp()).equals(NetUtils.filterLocalHost(host));
     }
 
@@ -245,7 +244,7 @@ public class RpcContext { // read finish
         if (port < 0) {
             port = 0;
         }
-        this.localAddress = InetSocketAddress.createUnresolved(host, port);
+        this.localAddress = InetSocketAddress.createUnresolved(host, port); //根据主机名和端口号创建未解析的套接字地址
         return this;
     }
 
@@ -515,11 +514,11 @@ public class RpcContext { // read finish
      */
     @Deprecated
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public List<Invoker<?>> getInvokers() {
+    public List<Invoker<?>> getInvokers() { //invokers、invoker是否为空，不为空则选择对应的值
         return invokers == null && invoker != null ? (List) Arrays.asList(invoker) : invokers;
     }
 
-    public RpcContext setInvokers(List<Invoker<?>> invokers) {
+    public RpcContext setInvokers(List<Invoker<?>> invokers) { //设置invokers以及invoker中的url列表
         this.invokers = invokers;
         if (invokers != null && invokers.size() > 0) {
             List<URL> urls = new ArrayList<URL>(invokers.size());
@@ -557,7 +556,7 @@ public class RpcContext { // read finish
 
     public RpcContext setInvocation(Invocation invocation) {
         this.invocation = invocation;
-        if (invocation != null) {
+        if (invocation != null) { //设置调用信息：方法名、参数类型、参数值
             setMethodName(invocation.getMethodName());
             setParameterTypes(invocation.getParameterTypes());
             setArguments(invocation.getArguments());
@@ -595,7 +594,7 @@ public class RpcContext { // read finish
                 removeAttachment(Constants.ASYNC_KEY);
             }
         } catch (final RpcException e) {
-            return new Future<T>() { //
+            return new Future<T>() { //使用向上转型
                 public boolean cancel(boolean mayInterruptIfRunning) {
                     return false;
                 }

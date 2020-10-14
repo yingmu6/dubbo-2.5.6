@@ -34,7 +34,7 @@ public class GenericObjectOutput extends GenericDataOutput implements ObjectOutp
     private ClassDescriptorMapper mMapper;
     private Map<Object, Integer> mRefs = new ConcurrentHashMap<Object, Integer>();
 
-    public GenericObjectOutput(OutputStream out) {
+    public GenericObjectOutput(OutputStream out) {//todo @pause 4
         this(out, Builder.DEFAULT_CLASS_DESCRIPTOR_MAPPER);
     }
 

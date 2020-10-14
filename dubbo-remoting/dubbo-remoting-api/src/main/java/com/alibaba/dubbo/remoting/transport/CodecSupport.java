@@ -30,17 +30,17 @@ import java.util.Set;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public class CodecSupport {
+public class CodecSupport { //本地缓存序列化方式，并且提供获取序列化的方法
 
     private static final Logger logger = LoggerFactory.getLogger(CodecSupport.class);
-    private static Map<Byte, Serialization> ID_SERIALIZATION_MAP = new HashMap<Byte, Serialization>(); //序列化id与Serialization映射
+    private static Map<Byte, Serialization> ID_SERIALIZATION_MAP = new HashMap<Byte, Serialization>(); //序列化id与Serialization实例映射
 
     static {
-        Set<String> supportedExtensions = ExtensionLoader.getExtensionLoader(Serialization.class).getSupportedExtensions();
-        for (String name : supportedExtensions) {
+        Set<String> supportedExtensions = ExtensionLoader.getExtensionLoader(Serialization.class).getSupportedExtensions(); //todo @pause 2
+        for (String name : supportedExtensions) { //遍历所有扩展名，然后获取扩展名的实例，判断序列化id是否已存在（检测配置的序列化是否正确）
             Serialization serialization = ExtensionLoader.getExtensionLoader(Serialization.class).getExtension(name);
             byte idByte = serialization.getContentTypeId();
-            if (ID_SERIALIZATION_MAP.containsKey(idByte)) {//已存在key
+            if (ID_SERIALIZATION_MAP.containsKey(idByte)) {//id值如1，2，3等
                 logger.error("Serialization extension " + serialization.getClass().getName()
                         + " has duplicate id to Serialization extension "
                         + ID_SERIALIZATION_MAP.get(idByte).getClass().getName()
@@ -65,7 +65,7 @@ public class CodecSupport {
     }
 
     public static Serialization getSerialization(URL url, Byte id) {
-        Serialization result = getSerializationById(id);//先从缓存中查找
+        Serialization result = getSerializationById(id);//先从本地缓存Map中查找，若没有
         if (result == null) {
             result = getSerialization(url);
         }

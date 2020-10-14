@@ -27,7 +27,7 @@ import java.io.OutputStream;
 /**
  * @author ding.lid
  */
-public class DubboSerialization implements Serialization {
+public class DubboSerialization implements Serialization { //dubbo自定义的序列化方式
 
     public byte getContentTypeId() {
         return 1;

@@ -58,7 +58,7 @@ import java.util.regex.Matcher;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 //todo @csy-h2 用途？
-public abstract class Builder<T> implements GenericDataFlags {
+public abstract class Builder<T> implements GenericDataFlags { //todo @pause 7
     static final Builder<Serializable> SerializableBuilder = new Builder<Serializable>() {
         @Override
         public Class<Serializable> getType() {
@@ -133,7 +133,7 @@ public abstract class Builder<T> implements GenericDataFlags {
 
     private static final Map<String, Integer> mDescMap = new ConcurrentHashMap<String, Integer>();
 
-    public static ClassDescriptorMapper DEFAULT_CLASS_DESCRIPTOR_MAPPER = new ClassDescriptorMapper() {
+    public static ClassDescriptorMapper DEFAULT_CLASS_DESCRIPTOR_MAPPER = new ClassDescriptorMapper() { //todo @pause 5
         public String getDescriptor(int index) {
             if (index < 0 || index >= mDescList.size())
                 return null;

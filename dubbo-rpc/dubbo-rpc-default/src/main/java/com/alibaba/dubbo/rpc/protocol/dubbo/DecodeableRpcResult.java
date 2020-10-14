@@ -38,7 +38,7 @@ import java.lang.reflect.Type;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-//todo @csy-h2 用途以及待了解？
+//用途以及待了解？对RpcResult结果进行解码
 public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable {// read finish
 
     private static final Logger log = LoggerFactory.getLogger(DecodeableRpcResult.class);
@@ -70,10 +70,10 @@ public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable 
         throw new UnsupportedOperationException();
     }
 
-    /**@c 反序列化*/
+    /**@c 解码：反序列化*/
     public Object decode(Channel channel, InputStream input) throws IOException {
         ObjectInput in = CodecSupport.getSerialization(channel.getUrl(), serializationType)
-                .deserialize(channel.getUrl(), input);
+                .deserialize(channel.getUrl(), input); //todo @pause 1
 
         byte flag = in.readByte();
         switch (flag) {
@@ -117,7 +117,7 @@ public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable 
                 response.setStatus(Response.CLIENT_ERROR);
                 response.setErrorMessage(StringUtils.toString(e));
             } finally {
-                hasDecoded = true;
+                hasDecoded = true; //设置解码状态
             }
         }
     }

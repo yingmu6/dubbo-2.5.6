@@ -25,7 +25,7 @@ public class ApiConsumer {
         reference.setRegistry(registry);
         reference.setInterface(ApiDemo.class);
 
-        reference.setMock("return 112233");
+        reference.setMock("return 112233"); //todo @csy 10/01 mock怎么使用？为啥此处没生效？
 
         //reference.setMethods(); 可以指定调用的方法列表
 

@@ -84,7 +84,7 @@ public class RegistryConfig extends AbstractConfig {
     private Boolean subscribe;
 
     // 自定义参数
-    private Map<String, String> parameters;
+    private Map<String, String> parameters; //todo @csy 10/01 此处的参数是怎么使用的？
 
     // 是否为缺省
     private Boolean isDefault;
@@ -119,7 +119,7 @@ public class RegistryConfig extends AbstractConfig {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(String address) { //形式为：ip:port，todo @csy 10/01 此处是在哪里进行解析校验的？
         this.address = address;
     }
 

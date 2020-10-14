@@ -22,7 +22,7 @@ package com.alibaba.dubbo.common.serialize.support.dubbo;
  */
 
 //todo @csy-h2 数据标位怎么处理的？
-public interface GenericDataFlags {
+public interface GenericDataFlags { //todo @pause 8
     // prefix three bits
     byte VARINT = 0, OBJECT = (byte) 0x80;
 

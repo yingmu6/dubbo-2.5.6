@@ -56,7 +56,7 @@ import java.util.Properties;
  * @author william.liangf
  * @export
  */
-public class ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引用配置 核心配置 <dubbo:reference />*/
+public class  ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引用配置 核心配置 <dubbo:reference />*/
 
     private static final long serialVersionUID = -5864351140409987595L;
 

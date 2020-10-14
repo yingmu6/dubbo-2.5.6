@@ -54,7 +54,7 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
         write0(v ? VARINT_1 : VARINT_0);
     }
 
-    public void writeByte(byte v) throws IOException {
+    public void writeByte(byte v) throws IOException {//todo @pause 9
         switch (v) {
             case 0:
                 write0(VARINT_0);
@@ -178,7 +178,7 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
         writeVarint64(Double.doubleToRawLongBits(v));
     }
 
-    public void writeUTF(String v) throws IOException {
+    public void writeUTF(String v) throws IOException {//todo @pause 10
         if (v == null) {
             write0(OBJECT_NULL);
         } else {

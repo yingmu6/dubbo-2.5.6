@@ -36,7 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 配置解析的工具方法、公共方法
+ * 配置解析的工具方法、公共方法 todo @csy 10/01 配置config类继承图画下
  * 抽象类，但该类没有抽象方法
  *
  * @author william.liangf
