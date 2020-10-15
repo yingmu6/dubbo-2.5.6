@@ -22,7 +22,7 @@ import java.io.IOException;
  *
  * @author qian.lei
  */
-public interface DataOutput { //支持写入多种基础类型，适配多种基础类型
+public interface DataOutput { //支持写入多种基础类型，适配多种基础类型（对外呈现多种类型数据，对内最终都是写到字节数组中，并维护数组游标）
     /**
      * Write boolean.
      *

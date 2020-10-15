@@ -30,11 +30,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 public class GenericObjectOutput extends GenericDataOutput implements ObjectOutput {
-    private final boolean isAllowNonSerializable;
-    private ClassDescriptorMapper mMapper;
+    private final boolean isAllowNonSerializable; //是否允许不序列化，true：可以不序列化，false：不允许不序列化，即需要序列化
+    private ClassDescriptorMapper mMapper; //类描述信息：包含类描述符、下标信息
     private Map<Object, Integer> mRefs = new ConcurrentHashMap<Object, Integer>();
 
-    public GenericObjectOutput(OutputStream out) {//todo @pause 4
+    public GenericObjectOutput(OutputStream out) { //提供多个重载的构造函数，更方便使用
         this(out, Builder.DEFAULT_CLASS_DESCRIPTOR_MAPPER);
     }
 
@@ -61,7 +61,7 @@ public class GenericObjectOutput extends GenericDataOutput implements ObjectOutp
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void writeObject(Object obj) throws IOException {
         if (obj == null) {
-            write0(OBJECT_NULL);
+            write0(OBJECT_NULL); //写空对象
             return;
         }
 
@@ -84,7 +84,7 @@ public class GenericObjectOutput extends GenericDataOutput implements ObjectOutp
     }
 
     public void addRef(Object obj) {
-        mRefs.put(obj, mRefs.size());
+        mRefs.put(obj, mRefs.size()); //设置map时，map的引用会变，所以mRefs.size()能取到值
     }
 
     public int getRef(Object obj) {

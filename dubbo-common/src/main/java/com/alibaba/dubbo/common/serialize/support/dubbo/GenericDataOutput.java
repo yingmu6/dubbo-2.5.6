@@ -30,17 +30,17 @@ import java.io.OutputStream;
 public class GenericDataOutput implements DataOutput, GenericDataFlags {
     private static final int CHAR_BUF_SIZE = 256;
 
-    private final byte[] mBuffer, mTemp = new byte[9];
+    private final byte[] mBuffer, mTemp = new byte[9]; //mBuffer数据存储的数组
 
     private final char[] mCharBuf = new char[CHAR_BUF_SIZE];
 
     private final OutputStream mOutput;
 
-    private final int mLimit;
+    private final int mLimit; //限制数
 
-    private int mPosition = 0;
+    private int mPosition = 0; //游标所处位置
 
-    public GenericDataOutput(OutputStream out) {
+    public GenericDataOutput(OutputStream out) { //构造对象时，可以指定字节数，若不指定则默认为1024
         this(out, 1024);
     }
 
@@ -50,7 +50,7 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
         mBuffer = new byte[buffSize];
     }
 
-    public void writeBool(boolean v) throws IOException {
+    public void writeBool(boolean v) throws IOException { //写入值操作：写入到数组中、变更游标
         write0(v ? VARINT_1 : VARINT_0);
     }
 
@@ -245,7 +245,12 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
         }
     }
 
-    public void flushBuffer() throws IOException {
+    /**
+     * 此处为啥不扩容？若不扩容，之前的数据是否会被覆盖？或者取实现元素的大小作为下标值：
+     * 处理流程：将缓存区满时，将缓存中数据写到输出流中，并将下标置为0，新加入的数据会覆盖之前的数据。
+     *         当缓存区下次满时，又会写到输出流中，基础处理数据的添加
+     */
+    public void flushBuffer() throws IOException { //刷新缓冲区，把数据写到输出流中，并充值下标
         if (mPosition > 0) {
             mOutput.write(mBuffer, 0, mPosition);
             mPosition = 0;
@@ -265,17 +270,27 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
         }
     }
 
-    protected void write0(byte b) throws IOException {
-        if (mPosition == mLimit)
+    protected void write0(byte b) throws IOException { //单字节写入
+        if (mPosition == mLimit) //若游标位置达到限制数，则重新将mPosition置为0
             flushBuffer();
 
-        mBuffer[mPosition++] = b;
+        mBuffer[mPosition++] = b; //mPosition++ ，表达式值为mPosition，变量值+1
     }
 
+    /**
+     * 字节数组写入，使用字节数组拷贝
+     * 1）判断是否有可写入的空间
+     * 2）有可写入的空间，直接使用数组拷贝，并更新游标
+     * 3）若无可写入的空间
+     *   3.1）从原数组中取部分元素将缓冲区写满，并且刷新缓冲区
+     *   3.2）更新原数组的游标和长度，判断是否在允许写入的范围内
+     *     3.2.1）若在允许写入的范围内，则拷贝数组，更新游标
+     *     3.2.2）若不在允许写入的范围内，表明当前的缓存区不够存储，直接写到输出流中
+     */
     protected void write0(byte[] b, int off, int len) throws IOException {
-        int rem = mLimit - mPosition;
-        if (rem > len) {
-            System.arraycopy(b, off, mBuffer, mPosition, len);
+        int rem = mLimit - mPosition; //可写入的大小
+        if (rem > len) { //
+            System.arraycopy(b, off, mBuffer, mPosition, len); //从原数组指定位置拷贝指定长度的元素到目标数组，并且指定目标数组的起始位置
             mPosition += len;
         } else {
             System.arraycopy(b, off, mBuffer, mPosition, rem);

@@ -21,8 +21,8 @@ package com.alibaba.dubbo.common.serialize.support.dubbo;
  * @author qian.lei
  */
 
-//todo @csy-h2 数据标位怎么处理的？
-public interface GenericDataFlags { //todo @pause 8
+// 接口中定义常量，实现类可以使用 (GenericDataInput、GenericDataOutput泛型数据输入、输出都使用同一套常量约束)
+public interface GenericDataFlags {
     // prefix three bits
     byte VARINT = 0, OBJECT = (byte) 0x80;
 

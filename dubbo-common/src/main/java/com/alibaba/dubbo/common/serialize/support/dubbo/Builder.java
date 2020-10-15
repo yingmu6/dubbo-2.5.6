@@ -129,20 +129,20 @@ public abstract class Builder<T> implements GenericDataFlags { //todo @pause 7
     };
 
     // class-descriptor mapper
-    private static final List<String> mDescList = new ArrayList<String>();
+    private static final List<String> mDescList = new ArrayList<String>(); // 类描述符列表
 
-    private static final Map<String, Integer> mDescMap = new ConcurrentHashMap<String, Integer>();
+    private static final Map<String, Integer> mDescMap = new ConcurrentHashMap<String, Integer>();  //类描述符与下标的映射
 
-    public static ClassDescriptorMapper DEFAULT_CLASS_DESCRIPTOR_MAPPER = new ClassDescriptorMapper() { //todo @pause 5
+    public static ClassDescriptorMapper DEFAULT_CLASS_DESCRIPTOR_MAPPER = new ClassDescriptorMapper() { //匿名类：默认类描述符
         public String getDescriptor(int index) {
-            if (index < 0 || index >= mDescList.size())
+            if (index < 0 || index >= mDescList.size()) //描述符越界，返回null
                 return null;
             return mDescList.get(index);
         }
 
         public int getDescriptorIndex(String desc) {
             Integer ret = mDescMap.get(desc);
-            return ret == null ? -1 : ret.intValue();
+            return ret == null ? -1 : ret.intValue();  //查找不到下标，则返回-1
         }
     };
     // Must be protected. by qian.lei

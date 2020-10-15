@@ -17,7 +17,7 @@ package com.alibaba.dubbo.common.serialize.support.dubbo;
 
 public interface ClassDescriptorMapper {
     /**
-     * get Class-Descriptor by index.
+     * get Class-Descriptor by index.（根据下标获取描述符）
      *
      * @param index index.
      * @return string.
@@ -25,7 +25,7 @@ public interface ClassDescriptorMapper {
     String getDescriptor(int index);
 
     /**
-     * get Class-Descriptor index
+     * get Class-Descriptor index（根据描述符获取下标）
      *
      * @param desc Class-Descriptor
      * @return index.
