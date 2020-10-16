@@ -54,7 +54,7 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
         write0(v ? VARINT_1 : VARINT_0);
     }
 
-    public void writeByte(byte v) throws IOException {//todo @pause 9
+    public void writeByte(byte v) throws IOException {//todo @pause 1.5
         switch (v) {
             case 0:
                 write0(VARINT_0);
@@ -178,12 +178,15 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
         writeVarint64(Double.doubleToRawLongBits(v));
     }
 
-    public void writeUTF(String v) throws IOException {//todo @pause 10
-        if (v == null) {
+    /**
+     * 将字符串拆分为字符数组后依次做运算
+     */
+    public void writeUTF(String v) throws IOException {//todo @pause 1.6
+        if (v == null) { //空对象
             write0(OBJECT_NULL);
         } else {
             int len = v.length();
-            if (len == 0) {
+            if (len == 0) { //空字符串
                 write0(OBJECT_DUMMY);
             } else {
                 write0(OBJECT_BYTES);
@@ -193,11 +196,11 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
                 char[] buf = mCharBuf;
                 do {
                     size = Math.min(len - off, CHAR_BUF_SIZE);
-                    v.getChars(off, off + size, buf, 0);
+                    v.getChars(off, off + size, buf, 0); // 从字符串中拷贝指定长度的字符到字符数组
 
                     for (int i = 0; i < size; i++) {
                         char c = buf[i];
-                        if (mPosition > limit) {
+                        if (mPosition > limit) { //todo @csy 此处的逻辑运算待了解
                             if (c < 0x80) {
                                 write0((byte) c);
                             } else if (c < 0x800) {
@@ -261,7 +264,7 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
         byte tmp;
         while (true) {
             tmp = (byte) (v & 0x7f);
-            if ((v >>>= 7) == 0) {
+            if ((v >>>= 7) == 0) { //todo @csy 运算的含义
                 write0((byte) (tmp | 0x80));
                 return;
             } else {

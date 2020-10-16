@@ -49,7 +49,7 @@ public interface Serialization {
 
     /**
      * create serializer
-     * 创建序列化对象
+     * 序列化，并获取对象输出流
      *
      * @param url
      * @param output
@@ -61,13 +61,13 @@ public interface Serialization {
 
     /**
      * create deserializer
-     * 反序列化对象
+     * 反序列化，并创建对象输入流
      * @param url
      * @param input
      * @return deserializer
      * @throws IOException
      */
     @Adaptive
-    ObjectInput deserialize(URL url, InputStream input) throws IOException; //todo @pause 2
+    ObjectInput deserialize(URL url, InputStream input) throws IOException; //todo @pause 1.2
 
 }

@@ -36,7 +36,7 @@ public class CodecSupport { //本地缓存序列化方式，并且提供获取�
     private static Map<Byte, Serialization> ID_SERIALIZATION_MAP = new HashMap<Byte, Serialization>(); //序列化id与Serialization实例映射
 
     static {
-        Set<String> supportedExtensions = ExtensionLoader.getExtensionLoader(Serialization.class).getSupportedExtensions(); //todo @pause 2
+        Set<String> supportedExtensions = ExtensionLoader.getExtensionLoader(Serialization.class).getSupportedExtensions(); //todo @pause 1.3
         for (String name : supportedExtensions) { //遍历所有扩展名，然后获取扩展名的实例，判断序列化id是否已存在（检测配置的序列化是否正确）
             Serialization serialization = ExtensionLoader.getExtensionLoader(Serialization.class).getExtension(name);
             byte idByte = serialization.getContentTypeId();

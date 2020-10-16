@@ -120,7 +120,7 @@ public final class ReflectUtils {
 
     private static final ConcurrentMap<String, Class<?>> DESC_CLASS_CACHE = new ConcurrentHashMap<String, Class<?>>();
 
-    private static final ConcurrentMap<String, Class<?>> NAME_CLASS_CACHE = new ConcurrentHashMap<String, Class<?>>();
+    private static final ConcurrentMap<String, Class<?>> NAME_CLASS_CACHE = new ConcurrentHashMap<String, Class<?>>(); //类名称与class的缓存
 
     private static final ConcurrentMap<String, Method> Signature_METHODS_CACHE = new ConcurrentHashMap<String, Method>();
 
@@ -628,7 +628,7 @@ public final class ReflectUtils {
      * @param name name.
      * @return Class instance.
      */
-    public static Class<?> name2class(String name) throws ClassNotFoundException {
+    public static Class<?> name2class(String name) throws ClassNotFoundException { //todo @pause 2.3 将名称映射为class
         return name2class(ClassHelper.getClassLoader(), name);
     }
 
@@ -650,7 +650,7 @@ public final class ReflectUtils {
             c = (name.length() - index) / 2;
             name = name.substring(0, index);
         }
-        if (c > 0) {
+        if (c > 0) { //todo @csy 封装类型?
             StringBuilder sb = new StringBuilder();
             while (c-- > 0)
                 sb.append("[");

@@ -58,7 +58,7 @@ import java.util.regex.Matcher;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 //todo @csy-h2 用途？
-public abstract class Builder<T> implements GenericDataFlags { //todo @pause 7
+public abstract class Builder<T> implements GenericDataFlags { //todo @pause 1.4
     static final Builder<Serializable> SerializableBuilder = new Builder<Serializable>() {
         @Override
         public Class<Serializable> getType() {

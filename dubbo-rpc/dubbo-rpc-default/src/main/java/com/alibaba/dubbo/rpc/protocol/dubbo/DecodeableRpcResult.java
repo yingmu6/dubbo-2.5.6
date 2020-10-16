@@ -45,7 +45,7 @@ public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable 
 
     private Channel channel;
 
-    private byte serializationType;
+    private byte serializationType; //序列化类型
 
     private InputStream inputStream;
 
@@ -53,7 +53,7 @@ public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable 
 
     private Invocation invocation;
 
-    private volatile boolean hasDecoded;
+    private volatile boolean hasDecoded; //是否已解码
 
     public DecodeableRpcResult(Channel channel, Response response, InputStream is, Invocation invocation, byte id) {
         Assert.notNull(channel, "channel == null");
@@ -70,32 +70,32 @@ public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable 
         throw new UnsupportedOperationException();
     }
 
-    /**@c 解码：反序列化*/
+    /**@c 解码：反序列化，并设置结果值 */
     public Object decode(Channel channel, InputStream input) throws IOException {
         ObjectInput in = CodecSupport.getSerialization(channel.getUrl(), serializationType)
-                .deserialize(channel.getUrl(), input); //todo @pause 1
+                .deserialize(channel.getUrl(), input); //todo @pause 1.1
 
         byte flag = in.readByte();
         switch (flag) {
-            case DubboCodec.RESPONSE_NULL_VALUE:  //2
+            case DubboCodec.RESPONSE_NULL_VALUE:  //响应空值
                 break;
-            case DubboCodec.RESPONSE_VALUE:       //1
+            case DubboCodec.RESPONSE_VALUE:       //响应有值
                 try {
-                    Type[] returnType = RpcUtils.getReturnTypes(invocation);
+                    Type[] returnType = RpcUtils.getReturnTypes(invocation); //todo @pause 2.1
                     //根据返回类型，获取返回结果值
-                    setValue(returnType == null || returnType.length == 0 ? in.readObject() :
+                    setValue(returnType == null || returnType.length == 0 ? in.readObject() : //读取对象
                             (returnType.length == 1 ? in.readObject((Class<?>) returnType[0])
-                                    : in.readObject((Class<?>) returnType[0], returnType[1])));
+                                    : in.readObject((Class<?>) returnType[0], returnType[1]))); //返回参数包含泛型
                 } catch (ClassNotFoundException e) {
                     throw new IOException(StringUtils.toString("Read response data failed.", e));
                 }
                 break;
-            case DubboCodec.RESPONSE_WITH_EXCEPTION: //0
+            case DubboCodec.RESPONSE_WITH_EXCEPTION: //响应带着异常
                 try {
                     Object obj = in.readObject();
                     if (obj instanceof Throwable == false)
                         throw new IOException("Response data error, expect Throwable, but get " + obj);
-                    setException((Throwable) obj);
+                    setException((Throwable) obj); // 设置异常信息
                 } catch (ClassNotFoundException e) {
                     throw new IOException(StringUtils.toString("Read response data failed.", e));
                 }

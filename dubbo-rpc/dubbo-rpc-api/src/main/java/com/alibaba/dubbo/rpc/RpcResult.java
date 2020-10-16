@@ -30,11 +30,11 @@ public class RpcResult implements Result, Serializable {// read finish
 
     private static final long serialVersionUID = -6925924956850004727L;
 
-    private Object result;
+    private Object result; // 结果值
 
-    private Throwable exception;
+    private Throwable exception; //异常
 
-    private Map<String, String> attachments = new HashMap<String, String>();
+    private Map<String, String> attachments = new HashMap<String, String>(); //附加参数
 
     public RpcResult() {
     }

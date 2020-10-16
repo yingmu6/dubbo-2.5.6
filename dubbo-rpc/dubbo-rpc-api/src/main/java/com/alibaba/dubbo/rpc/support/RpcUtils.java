@@ -64,15 +64,15 @@ public class RpcUtils {// read finish
         try {
             if (invocation != null && invocation.getInvoker() != null
                     && invocation.getInvoker().getUrl() != null
-                    && !invocation.getMethodName().startsWith("$")) {
+                    && !invocation.getMethodName().startsWith("$")) { //调用信息有效性检查
                 String service = invocation.getInvoker().getUrl().getServiceInterface();
                 if (service != null && service.length() > 0) {
-                    Class<?> cls = ReflectUtils.forName(service);
-                    Method method = cls.getMethod(invocation.getMethodName(), invocation.getParameterTypes());
+                    Class<?> cls = ReflectUtils.forName(service); //获取指定接口名对应的Class
+                    Method method = cls.getMethod(invocation.getMethodName(), invocation.getParameterTypes()); //获取指定方法名、参数
                     if (method.getReturnType() == void.class) {
                         return null;
                     }
-                    //返回类型和泛华返回类型(为啥返回两个类型？)
+                    //返回类型和泛化返回类型
                     return new Type[]{method.getReturnType(), method.getGenericReturnType()};
                 }
             }
