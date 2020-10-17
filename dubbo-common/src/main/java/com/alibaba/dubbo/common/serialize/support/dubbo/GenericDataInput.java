@@ -36,11 +36,11 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
 
     private final InputStream mInput;
 
-    private final byte[] mBuffer;
+    private final byte[] mBuffer; //缓存数组
 
-    private int mRead = 0;
+    private int mRead = 0; //可读的数
 
-    private int mPosition = 0;
+    private int mPosition = 0; //读游标位置
 
     public GenericDataInput(InputStream is) {
         this(is, 1024);
@@ -55,7 +55,7 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
         byte b = read0();
 
         switch (b) {
-            case VARINT_0:
+            case VARINT_0: //todo @csy 值代表的含义是什么
                 return false;
             case VARINT_1:
                 return true;
@@ -67,7 +67,7 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
     public byte readByte() throws IOException {
         byte b = read0();
 
-        switch (b) {
+        switch (b) { //todo @csy 值的含义是什么
             case VARINT8:
                 return read0();
             case VARINT_0:
@@ -230,13 +230,16 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
         return ret;
     }
 
-    protected byte read0() throws IOException {
+    protected byte read0() throws IOException { //读取数组中当前位置的值
         if (mPosition == mRead)
             fillBuffer();
 
         return mBuffer[mPosition++];
     }
 
+    /**
+     * 从当前的数组中读取指定长度的数据，并返回字节数组
+     */
     protected byte[] read0(int len) throws IOException {
         int rem = mRead - mPosition;
         byte[] ret = new byte[len];
@@ -244,7 +247,7 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
             System.arraycopy(mBuffer, mPosition, ret, 0, len);
             mPosition += len;
         } else {
-            System.arraycopy(mBuffer, mPosition, ret, 0, rem);
+            System.arraycopy(mBuffer, mPosition, ret, 0, rem); //todo @csy 待调试，数据分析
             mPosition = mRead;
 
             len -= rem;
@@ -278,7 +281,7 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
                     return ret | 0xff000000;
                 return ret;
             }
-            case VARINT32: {
+            case VARINT32: { //todo @csy 逻辑运算的含义以及用途
                 byte b1 = read0(), b2 = read0(), b3 = read0(), b4 = read0();
                 return ((b1 & 0xff) |
                         ((b2 & 0xff) << 8) |
@@ -384,7 +387,7 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
         }
     }
 
-    private long readVarint64() throws IOException {
+    private long readVarint64() throws IOException { //todo @csy 计算以及用途
         byte b = read0();
 
         switch (b) {
@@ -555,9 +558,12 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
         }
     }
 
+    /**
+     * 将位置重置，并且从输入流中读取数据，存储到缓存数组中
+     */
     private void fillBuffer() throws IOException {
         mPosition = 0;
-        mRead = mInput.read(mBuffer);
+        mRead = mInput.read(mBuffer); //从输入流中读取数据写到字节数组中，没有读取到数据返回-1
 
         if (mRead == -1) {
             mRead = 0;

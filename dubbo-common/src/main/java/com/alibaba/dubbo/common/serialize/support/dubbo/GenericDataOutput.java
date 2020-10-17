@@ -455,19 +455,19 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
             case 31:
                 write0(VARINT_1F);
                 break;
-            default:
+            default: // 不是指定的特定值
                 int t = v, ix = 0;
                 byte[] b = mTemp;
 
                 while (true) {
-                    b[++ix] = (byte) (v & 0xff);
+                    b[++ix] = (byte) (v & 0xff); //todo @csy 与0xff与运算，用途是？左移
                     if ((v >>>= 8) == 0)
                         break;
                 }
 
                 if (t > 0) {
                     // [ 0a e2 => 0a e2 00 ] [ 92 => 92 00 ]
-                    if (b[ix] < 0)
+                    if (b[ix] < 0) //小于0的置为0
                         b[++ix] = 0;
                 } else {
                     // [ 01 ff ff ff => 01 ff ] [ e0 ff ff ff => e0 ]
@@ -476,7 +476,7 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
                 }
 
                 b[0] = (byte) (VARINT + ix - 1);
-                write0(b, 0, ix + 1);
+                write0(b, 0, ix + 1); //
         }
     }
 
