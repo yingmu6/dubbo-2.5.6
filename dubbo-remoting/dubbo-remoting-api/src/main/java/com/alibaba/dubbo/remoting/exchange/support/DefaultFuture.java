@@ -41,7 +41,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author qian.lei
  * @author chao.liuc
  */
-public class DefaultFuture implements ResponseFuture {
+public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用途？
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultFuture.class);
 

@@ -137,6 +137,12 @@ public class DeprecatedTelnetCodec implements Codec {
         return true;
     }
 
+    /**
+     * 判断是否是客户端
+     * 1）判断通道channel中的属性是否设置
+     * 2）若没设置，获取通道的远程地址，将当前url的port、address与远程地址进行比较
+     *    若相同则为客户端、否则为服务端
+     */
     protected boolean isClientSide(Channel channel) {
         String side = (String) channel.getAttribute(Constants.SIDE_KEY);
         if ("client".equals(side)) {

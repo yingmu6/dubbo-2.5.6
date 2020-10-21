@@ -37,7 +37,7 @@ public interface Codec2 {
 
     //编码：将POJO对象转换为byte数据在网络传输
     @Adaptive({Constants.CODEC_KEY}) //自适应扩展，会从url中获取到codec对应的值，然后选择不同编码器进行编码
-    void encode(Channel channel, ChannelBuffer buffer, Object message) throws IOException; //todo @pause 4.1
+    void encode(Channel channel, ChannelBuffer buffer, Object message) throws IOException;
 
     //解码：从网络中接收到byte数据并转换为对应的POJO对象
     @Adaptive({Constants.CODEC_KEY})

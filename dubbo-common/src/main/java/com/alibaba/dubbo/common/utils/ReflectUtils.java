@@ -628,7 +628,7 @@ public final class ReflectUtils {
      * @param name name.
      * @return Class instance.
      */
-    public static Class<?> name2class(String name) throws ClassNotFoundException { //todo @pause 2.3 将名称映射为class
+    public static Class<?> name2class(String name) throws ClassNotFoundException {
         return name2class(ClassHelper.getClassLoader(), name);
     }
 

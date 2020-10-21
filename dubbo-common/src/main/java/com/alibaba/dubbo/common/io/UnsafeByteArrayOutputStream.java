@@ -37,7 +37,7 @@ public class UnsafeByteArrayOutputStream extends OutputStream {
         this(32);
     }
 
-    public UnsafeByteArrayOutputStream(int size) { //todo @pause 4.2
+    public UnsafeByteArrayOutputStream(int size) {
         if (size < 0)
             throw new IllegalArgumentException("Negative initial size: " + size);
         mBuffer = new byte[size];

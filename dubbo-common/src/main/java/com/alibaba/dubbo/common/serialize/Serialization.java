@@ -68,6 +68,6 @@ public interface Serialization {
      * @throws IOException
      */
     @Adaptive
-    ObjectInput deserialize(URL url, InputStream input) throws IOException; //todo @pause 1.2
+    ObjectInput deserialize(URL url, InputStream input) throws IOException;
 
 }

@@ -29,10 +29,26 @@ public class StreamUtils {
     private StreamUtils() {
     }
 
+    /**
+     * 用途：构建可以限制数据大小的输入流
+     * 思路：
+     * 1）通过匿名类的方式构建抽象类InputStream的实现类
+     * 2）取限制数limit以及输入流中可读数据作比较，取最小值进行后续处理
+     *
+     *
+     * @param is
+     * @param limit
+     * @return
+     * @throws IOException
+     */
     public static InputStream limitedInputStream(final InputStream is, final int limit) throws IOException {
         return new InputStream() {
             private int mPosition = 0, mMark = 0, mLimit = Math.min(limit, is.available());
 
+            /**
+             * 从输入流中读取单个字节
+             * 校验位置下标是否正确，若正确则读取一个数值
+             */
             public int read() throws IOException {
                 if (mPosition < mLimit) {
                     mPosition++;
@@ -41,6 +57,9 @@ public class StreamUtils {
                 return -1;
             }
 
+            /**
+             * 从输入流中读取数据写到字节数组中，并返回读取到的数据个数
+             */
             public int read(byte b[], int off, int len) throws IOException {
                 if (b == null)
                     throw new NullPointerException();
@@ -109,8 +128,13 @@ public class StreamUtils {
             boolean mInReset = false;
             boolean mDry = false;
             private int mPosition = 0;
-            private int mCount = 0;
+            private int mCount = 0; //todo 10/21 标志待了解
 
+            /**
+             * todo 10/21 用途待了解
+             * @return
+             * @throws IOException
+             */
             @Override
             public int read() throws IOException {
                 if (!mInMarked) {

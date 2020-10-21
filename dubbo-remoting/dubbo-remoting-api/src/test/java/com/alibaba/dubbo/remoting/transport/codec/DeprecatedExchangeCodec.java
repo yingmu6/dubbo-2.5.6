@@ -44,34 +44,66 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         return MAGIC;
     }
 
-    public void encode(Channel channel, OutputStream os, Object msg) throws IOException { //todo @pause 4.3
-        if (msg instanceof Request) { //对请求编码
+    /**
+     * 用途：将消息对象进行编码，构造出字节数组并写入到字节输出流中
+     * 思路：
+     * 判断消息对象的类型
+     * 1）若是特殊对象，如Request或Response，则按自定义的协议头进行编码
+     * 2）若是其它的类型，则按字符串或普通对象的方式进行编码
+     *
+     * @param channel 通道：主要用于传入的数据大小进行检查
+     * @param os  字节输出流：将消息对应的字节数组写入输出流
+     * @param msg 消息对象，如Request、Response、String等
+     * @throws IOException IO操作可能出现异常
+     */
+    public void encode(Channel channel, OutputStream os, Object msg) throws IOException {
+        if (msg instanceof Request) {
             encodeRequest(channel, os, (Request) msg);
-        } else if (msg instanceof Response) { //对响应编码
+        } else if (msg instanceof Response) {
             encodeResponse(channel, os, (Response) msg);
         } else {
             super.encode(channel, os, msg);
         }
     }
 
+    /**
+     * 用途：从输入流中读取数据进行解码，构建相关的对象
+     * 思路：
+     * 1）先读取请求头的字节数组，读取16个字节
+     * 2）解码请求体数据，并返回解码后的对象
+     *
+     * @param channel 通道：检查传输大小
+     * @param is 输入流：从输入流中读取需要解码的数据
+     * @return
+     * @throws IOException
+     */
     public Object decode(Channel channel, InputStream is) throws IOException {
-        int readable = is.available();
-        byte[] header = new byte[Math.min(readable, HEADER_LENGTH)];
+        int readable = is.available(); //输入流中可读取的字节数
+        byte[] header = new byte[Math.min(readable, HEADER_LENGTH)]; //取最小数，可能请求头数据不完整
         is.read(header);
         return decode(channel, is, readable, header);
     }
 
+    /**
+     *
+     * @param channel
+     * @param is
+     * @param readable
+     * @param header
+     * @return
+     * @throws IOException
+     */
     protected Object decode(Channel channel, InputStream is, int readable, byte[] header) throws IOException {
         // check magic number.
         if (readable > 0 && header[0] != MAGIC_HIGH
-                || readable > 1 && header[1] != MAGIC_LOW) {
+                || readable > 1 && header[1] != MAGIC_LOW) { //若没有魔法数，则表明不是Request、Response，是普通的对象
             int length = header.length;
             if (header.length < readable) {
-                header = Bytes.copyOf(header, readable);
+                header = Bytes.copyOf(header, readable); //todo 10/21 此处header会补全？
                 is.read(header, length, readable - length);
             }
             for (int i = 1; i < header.length - 1; i++) {
-                if (header[i] == MAGIC_HIGH && header[i + 1] == MAGIC_LOW) {
+                if (header[i] == MAGIC_HIGH && header[i + 1] == MAGIC_LOW) {  //todo 10/21 逻辑待理解
                     UnsafeByteArrayInputStream bis = ((UnsafeByteArrayInputStream) is);
                     bis.position(bis.position() - header.length + i);
                     header = Bytes.copyOf(header, i);
@@ -81,7 +113,7 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
             return super.decode(channel, is, readable, header);
         }
         // check length.
-        if (readable < HEADER_LENGTH) {
+        if (readable < HEADER_LENGTH) { //字节数未达到协议头的长度时，不进行后续操作
             return NEED_MORE_INPUT;
         }
 
@@ -114,6 +146,16 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         }
     }
 
+    /**
+     * 用途：解码请求体或响应体
+     * 思路：
+     *
+     * @param channel
+     * @param is
+     * @param header
+     * @return
+     * @throws IOException
+     */
     protected Object decodeBody(Channel channel, InputStream is, byte[] header) throws IOException {
         byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK);
         Serialization s = CodecSupport.getSerialization(channel.getUrl(), proto);
@@ -121,7 +163,7 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         // get request id.
         long id = Bytes.bytes2long(header, 4);
         if ((flag & FLAG_REQUEST) == 0) {
-            // decode response.
+            // decode response.（解码响应数据）
             Response res = new Response(id);
             if ((flag & FLAG_EVENT) != 0) {
                 res.setEvent(Response.HEARTBEAT_EVENT);
@@ -149,7 +191,7 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
             }
             return res;
         } else {
-            // decode request.
+            // decode request.（解码请求数据）
             Request req = new Request(id);
             req.setVersion("2.0.0");
             req.setTwoWay((flag & FLAG_TWOWAY) != 0);
@@ -185,7 +227,19 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         return req.getData();
     }
 
-    protected void encodeRequest(Channel channel, OutputStream os, Request req) throws IOException { //todo @pause 4.4
+    /**
+     * 用途：编码请求对象，并将构建的字节数组写入输出流
+     * 思路：
+     * 1）构建请求头的字节数组，设置请求相关信息
+     * 2）编码请求体数据
+     * 3）将请求头、请求体的字节数组都写入输出流
+     *
+     * @param channel 通道：检查传输的数据大小
+     * @param os 输出流
+     * @param req 请求对象
+     * @throws IOException
+     */
+    protected void encodeRequest(Channel channel, OutputStream os, Request req) throws IOException {
         Serialization serialization = CodecSupport.getSerialization(channel.getUrl());
         // header.(请求头字节数组)
         byte[] header = new byte[HEADER_LENGTH];
@@ -195,7 +249,7 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         // set request and serialization flag.
         header[2] = (byte) (FLAG_REQUEST | serialization.getContentTypeId());
 
-        if (req.isTwoWay()) header[2] |= FLAG_TWOWAY; //todo @csy 值待调试
+        if (req.isTwoWay()) header[2] |= FLAG_TWOWAY; //todo 10/21 异或运算的结果是啥？
         if (req.isEvent()) header[2] |= FLAG_EVENT;
 
         // set request id.
@@ -204,16 +258,16 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         // encode request data.
         UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(1024);
         ObjectOutput out = serialization.serialize(channel.getUrl(), bos);
-        if (req.isEvent()) { //编码事件数据（事件、请求，最终都是往输出流中写入对象）
+        if (req.isEvent()) { //todo 10/21 数据是怎么扩容的？
             encodeEventData(channel, out, req.getData());
-        } else {             //编码请求数据
+        } else {
             encodeRequestData(channel, out, req.getData());
         }
         out.flushBuffer();
         bos.flush();
         bos.close();
         byte[] data = bos.toByteArray();
-        checkPayload(channel, data.length); //todo @pause 4.6 检查传输大小
+        checkPayload(channel, data.length); //todo 10/21 是否包含请求头的16字节？
         Bytes.int2bytes(data.length, header, 12);
 
         // write
@@ -221,7 +275,20 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         os.write(data); // write data.
     }
 
-    protected void encodeResponse(Channel channel, OutputStream os, Response res) throws IOException {
+    /**
+     * 用途：编码响应对象，并将构建的字节数组写入输出流
+     * 思路：
+     * 1）构建响应头的字节数组，设置请求相关信息
+     * 2）编码响应体数据
+     * 3）将响应头、响应体的字节数组都写入输出流
+     * 4）异常处理：发送失败信息给Consumer，否则Consumer只能等超时了
+     *
+     * @param channel 通道：检查传输的数据大小
+     * @param os 输出流
+     * @param res 响应对象
+     * @throws IOException
+     */
+    protected void encodeResponse(Channel channel, OutputStream os, Response res) throws IOException { //编码响应内容（将对象序列化为字节数组）
         try {
             Serialization serialization = CodecSupport.getSerialization(channel.getUrl());
             // header.
@@ -267,7 +334,7 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
                     Response r = new Response(res.getId(), res.getVersion());
                     r.setStatus(Response.BAD_RESPONSE);
                     r.setErrorMessage("Failed to send response: " + res + ", cause: " + StringUtils.toString(t));
-                    channel.send(r);
+                    channel.send(r); //todo 10/21 底层是怎样发送数据的？Netty吗
 
                     return;
                 } catch (RemotingException e) {

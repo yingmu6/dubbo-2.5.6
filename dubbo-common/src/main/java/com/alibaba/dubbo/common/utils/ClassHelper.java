@@ -120,8 +120,8 @@ public class ClassHelper { //todo @csy-h1 待了解
      * 获取类加载器
      * 1）通过getClassLoader获取ClassHelper的类加载器
      */
-    public static ClassLoader getClassLoader() { //todo @pause 2.4 类加载器
-        return getClassLoader(ClassHelper.class); //todo @pause 2.5 ClassHelper了解
+    public static ClassLoader getClassLoader() {
+        return getClassLoader(ClassHelper.class);
     }
 
     /**

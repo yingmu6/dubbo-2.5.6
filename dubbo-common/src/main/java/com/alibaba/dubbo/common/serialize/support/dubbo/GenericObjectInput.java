@@ -51,7 +51,7 @@ public class GenericObjectInput extends GenericDataInput implements ObjectInput 
     }
 
     public GenericObjectInput(InputStream is, int buffSize, ClassDescriptorMapper mapper) {
-        super(is, buffSize); //todo @pause 3.1 输入流
+        super(is, buffSize);
         mMapper = mapper;
     }
 

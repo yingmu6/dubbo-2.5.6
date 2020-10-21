@@ -54,7 +54,7 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
         write0(v ? VARINT_1 : VARINT_0);
     }
 
-    public void writeByte(byte v) throws IOException {//todo @pause 1.5
+    public void writeByte(byte v) throws IOException {
         switch (v) {
             case 0:
                 write0(VARINT_0);
@@ -181,7 +181,7 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
     /**
      * 将字符串拆分为字符数组后依次做运算
      */
-    public void writeUTF(String v) throws IOException {//todo @pause 1.6
+    public void writeUTF(String v) throws IOException {
         if (v == null) { //空对象
             write0(OBJECT_NULL);
         } else {
