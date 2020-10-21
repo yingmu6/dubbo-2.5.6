@@ -25,7 +25,7 @@ import java.io.OutputStream;
 /**
  * @author <a href="mailto:gang.lvg@taobao.com">kimi</a>
  */
-final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Codec {
+final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Codec { //不推荐的类使用
 
     // header length.
     protected static final int HEADER_LENGTH = 16;
@@ -44,10 +44,10 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         return MAGIC;
     }
 
-    public void encode(Channel channel, OutputStream os, Object msg) throws IOException {
-        if (msg instanceof Request) {
+    public void encode(Channel channel, OutputStream os, Object msg) throws IOException { //todo @pause 4.3
+        if (msg instanceof Request) { //对请求编码
             encodeRequest(channel, os, (Request) msg);
-        } else if (msg instanceof Response) {
+        } else if (msg instanceof Response) { //对响应编码
             encodeResponse(channel, os, (Response) msg);
         } else {
             super.encode(channel, os, msg);
@@ -185,17 +185,17 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         return req.getData();
     }
 
-    protected void encodeRequest(Channel channel, OutputStream os, Request req) throws IOException {
+    protected void encodeRequest(Channel channel, OutputStream os, Request req) throws IOException { //todo @pause 4.4
         Serialization serialization = CodecSupport.getSerialization(channel.getUrl());
-        // header.
+        // header.(请求头字节数组)
         byte[] header = new byte[HEADER_LENGTH];
-        // set magic number.
-        Bytes.short2bytes(MAGIC, header);
+        // set magic number.(设置魔法数)
+        Bytes.short2bytes(MAGIC, header); //把魔法数转换为两个字节，并设置到数组中
 
         // set request and serialization flag.
         header[2] = (byte) (FLAG_REQUEST | serialization.getContentTypeId());
 
-        if (req.isTwoWay()) header[2] |= FLAG_TWOWAY;
+        if (req.isTwoWay()) header[2] |= FLAG_TWOWAY; //todo @csy 值待调试
         if (req.isEvent()) header[2] |= FLAG_EVENT;
 
         // set request id.
@@ -204,16 +204,16 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         // encode request data.
         UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(1024);
         ObjectOutput out = serialization.serialize(channel.getUrl(), bos);
-        if (req.isEvent()) {
+        if (req.isEvent()) { //编码事件数据（事件、请求，最终都是往输出流中写入对象）
             encodeEventData(channel, out, req.getData());
-        } else {
+        } else {             //编码请求数据
             encodeRequestData(channel, out, req.getData());
         }
         out.flushBuffer();
         bos.flush();
         bos.close();
         byte[] data = bos.toByteArray();
-        checkPayload(channel, data.length);
+        checkPayload(channel, data.length); //todo @pause 4.6 检查传输大小
         Bytes.int2bytes(data.length, header, 12);
 
         // write

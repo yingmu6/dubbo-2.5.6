@@ -55,7 +55,7 @@ public class GenericObjectInput extends GenericDataInput implements ObjectInput 
         mMapper = mapper;
     }
 
-    public Object readObject() throws IOException {
+    public Object readObject() throws IOException { //读取对象的值，并返回
         String desc;
         byte b = read0();
 

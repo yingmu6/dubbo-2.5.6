@@ -628,7 +628,7 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     //如果参数中没取到值，就使用默认的值
-    public int getParameter(String key, int defaultValue) {
+    public int getParameter(String key, int defaultValue) { //todo @pause 4.7
         Number n = getNumbers().get(key);
         if (n != null) {
             return n.intValue();

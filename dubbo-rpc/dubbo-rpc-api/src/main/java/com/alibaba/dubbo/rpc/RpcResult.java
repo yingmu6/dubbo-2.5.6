@@ -84,7 +84,7 @@ public class RpcResult implements Result, Serializable {// read finish
         return exception;
     }
 
-    public void setException(Throwable e) {
+    public void setException(Throwable e) { //设置异常信息
         this.exception = e;
     }
 

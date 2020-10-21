@@ -37,7 +37,7 @@ public class UnsafeByteArrayOutputStream extends OutputStream {
         this(32);
     }
 
-    public UnsafeByteArrayOutputStream(int size) {
+    public UnsafeByteArrayOutputStream(int size) { //todo @pause 4.2
         if (size < 0)
             throw new IllegalArgumentException("Negative initial size: " + size);
         mBuffer = new byte[size];
@@ -75,7 +75,7 @@ public class UnsafeByteArrayOutputStream extends OutputStream {
         mCount = 0;
     }
 
-    public byte[] toByteArray() {
+    public byte[] toByteArray() { //将输出流中的内容转换为字节数组
         return Bytes.copyOf(mBuffer, mCount);
     }
 

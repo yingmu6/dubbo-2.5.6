@@ -23,7 +23,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @author william.liangf
  */
 @SPI
-public interface StatusChecker {
+public interface StatusChecker { //状态监测
 
     /**
      * check status

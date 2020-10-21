@@ -253,7 +253,7 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
      * 处理流程：将缓存区满时，将缓存中数据写到输出流中，并将下标置为0，新加入的数据会覆盖之前的数据。
      *         当缓存区下次满时，又会写到输出流中，基础处理数据的添加
      */
-    public void flushBuffer() throws IOException { //刷新缓冲区，把数据写到输出流中，并充值下标
+    public void flushBuffer() throws IOException { //刷新缓冲区，把数据写到输出流中，并重置下标
         if (mPosition > 0) {
             mOutput.write(mBuffer, 0, mPosition);
             mPosition = 0;

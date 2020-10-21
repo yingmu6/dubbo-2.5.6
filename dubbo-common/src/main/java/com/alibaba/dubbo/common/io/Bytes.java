@@ -58,7 +58,7 @@ public class Bytes {
      */
     public static byte[] copyOf(byte[] src, int length) {
         byte[] dest = new byte[length];
-        System.arraycopy(src, 0, dest, 0, Math.min(src.length, length));
+        System.arraycopy(src, 0, dest, 0, Math.min(src.length, length)); //若要拷贝的长度超过原数组长度，则只拷贝原数组的内容（取最小长度）
         return dest;
     }
 
@@ -90,7 +90,7 @@ public class Bytes {
      * @param v value.
      * @param b byte array.
      */
-    //todo @csy-h1 右移的算法？
+    //todo @csy-h1 右移的算法？ 待调试
     public static void short2bytes(short v, byte[] b, int off) {
         b[off + 1] = (byte) v;
         b[off + 0] = (byte) (v >>> 8);
@@ -203,7 +203,7 @@ public class Bytes {
      * @param b   byte array.
      * @param off array offset.
      */
-    public static void long2bytes(long v, byte[] b, int off) {
+    public static void long2bytes(long v, byte[] b, int off) { //todo @pause 4.5 具体值调试，是怎么排列的？
         b[off + 7] = (byte) v;
         b[off + 6] = (byte) (v >>> 8);
         b[off + 5] = (byte) (v >>> 16);

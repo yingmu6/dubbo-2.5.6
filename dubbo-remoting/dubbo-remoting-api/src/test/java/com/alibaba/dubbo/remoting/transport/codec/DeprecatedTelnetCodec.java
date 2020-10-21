@@ -41,7 +41,7 @@ public class DeprecatedTelnetCodec implements Codec {
 
     private static final List<?> EXIT = Arrays.asList(new Object[]{new byte[]{3} /* Windows Ctrl+C */, new byte[]{-1, -12, -1, -3, 6} /* Linux Ctrl+C */, new byte[]{-1, -19, -1, -3, 6} /* Linux Pause */});
 
-    static void checkPayload(Channel channel, long size) throws IOException {
+    static void checkPayload(Channel channel, long size) throws IOException { //检查要传输的数据大小是否超过负载大小
         int payload = Constants.DEFAULT_PAYLOAD;
         if (channel != null && channel.getUrl() != null) {
             payload = channel.getUrl().getPositiveParameter(Constants.PAYLOAD_KEY, Constants.DEFAULT_PAYLOAD);
