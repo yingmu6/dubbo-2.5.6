@@ -42,7 +42,7 @@ import java.util.concurrent.Future;
  * @author william.liangf
  */
 @Activate(group = Constants.CONSUMER)
-public class FutureFilter implements Filter {// read finish
+public class FutureFilter implements Filter {// read finish todo 10/22 待了解功能用途
     //FutureFilter主要是用来处理事件通知的过滤器
     //此类比较模糊
     protected static final Logger logger = LoggerFactory.getLogger(FutureFilter.class);

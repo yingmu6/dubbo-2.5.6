@@ -44,7 +44,7 @@ public class CompatibleFilter implements Filter {//read finish
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         Result result = invoker.invoke(invocation);
         //在执行以后过滤拦截
-        if (!invocation.getMethodName().startsWith("$") && !result.hasException()) {
+        if (!invocation.getMethodName().startsWith("$") && !result.hasException()) { //todo 10/22 哪种方法是$开头的
             Object value = result.getValue();
             if (value != null) {
                 try {
@@ -58,7 +58,7 @@ public class CompatibleFilter implements Filter {//read finish
                             || "fastjson".equals(serialization)) {
                         Type gtype = method.getGenericReturnType();
                         newValue = PojoUtils.realize(value, type, gtype);
-                    } else if (!type.isInstance(value)) {
+                    } else if (!type.isInstance(value)) { //todo 10/22 不知道是做啥的？
                         newValue = PojoUtils.isPojo(type)
                                 ? PojoUtils.realize(value, type)
                                 : CompatibleTypeUtils.compatibleTypeConvert(value, type);

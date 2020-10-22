@@ -18,7 +18,7 @@ package com.alibaba.dubbo.rpc;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
- * Filter. (SPI, Singleton, ThreadSafe)
+ * Filter. (SPI, Singleton, ThreadSafe) //todo 10/22 Singleton, ThreadSafe是啥意思
  * spring过滤器以及dubbo过滤器，过滤器链了解
  *
  * @author william.liangf
@@ -48,6 +48,6 @@ public interface Filter {  // read finish
      * 入参包括调用者invoker、调用上下文invocation
      * 通过调用invoker的invoke(invocation) 方法可以在调用前后进行处理
      */
-    Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException;
+    Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException; //todo 10/22 框架是怎么组装并传入invoker, invocation值的
 
 }

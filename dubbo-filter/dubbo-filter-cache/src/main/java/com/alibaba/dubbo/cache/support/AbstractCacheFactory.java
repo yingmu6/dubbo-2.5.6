@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author william.liangf
  */
-public abstract class AbstractCacheFactory implements CacheFactory {/**@c */
+public abstract class AbstractCacheFactory implements CacheFactory { //todo 10/22 缓存方式有哪些？用怎样的数据结构处理缓存的？
 
     private final ConcurrentMap<String, Cache> caches = new ConcurrentHashMap<String, Cache>();
 

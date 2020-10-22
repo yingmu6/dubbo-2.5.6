@@ -36,6 +36,9 @@ import java.util.Map;
 @Activate(group = Constants.PROVIDER, order = -10000)
 public class ContextFilter implements Filter {//read finish
 
+    /**
+     * 对调用上下文参数进行过滤
+     */
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         Map<String, String> attachments = invocation.getAttachments();
         if (attachments != null) {//移除部分参数

@@ -39,7 +39,7 @@ public class ExecuteLimitFilter implements Filter {
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         URL url = invoker.getUrl();
         String methodName = invocation.getMethodName();
-        Semaphore executesLimit = null;
+        Semaphore executesLimit = null; //todo 10/22 信号量待了解
         boolean acquireResult = false;
         int max = url.getMethodParameter(methodName, Constants.EXECUTES_KEY, 0);
         if (max > 0) {
@@ -57,7 +57,7 @@ public class ExecuteLimitFilter implements Filter {
         }
         long begin = System.currentTimeMillis();
         boolean isSuccess = true;
-        //RpcStatus中beginCount、endCount用途？
+        //todo 10/22 RpcStatus中beginCount、endCount用途？
         RpcStatus.beginCount(url, methodName);
         try {
             Result result = invoker.invoke(invocation);

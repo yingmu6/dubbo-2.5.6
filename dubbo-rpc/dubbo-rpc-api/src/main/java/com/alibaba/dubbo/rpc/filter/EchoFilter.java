@@ -32,7 +32,7 @@ import com.alibaba.dubbo.rpc.RpcResult;
 @Activate(group = Constants.PROVIDER, order = -110000)
 public class EchoFilter implements Filter {//read finish
     //回响测试主要用来检测服务是否正常
-    public Result invoke(Invoker<?> invoker, Invocation inv) throws RpcException {
+    public Result invoke(Invoker<?> invoker, Invocation inv) throws RpcException { //todo 10/22 功能待使用
         if (inv.getMethodName().equals(Constants.$ECHO) && inv.getArguments() != null && inv.getArguments().length == 1)
             return new RpcResult(inv.getArguments()[0]);
         return invoker.invoke(inv);

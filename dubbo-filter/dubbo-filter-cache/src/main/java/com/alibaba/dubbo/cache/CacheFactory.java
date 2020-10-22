@@ -25,7 +25,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @author william.liangf
  */
 @SPI("lru")
-public interface CacheFactory {/**@c */
+public interface CacheFactory {
 
     @Adaptive("cache")
     Cache getCache(URL url);

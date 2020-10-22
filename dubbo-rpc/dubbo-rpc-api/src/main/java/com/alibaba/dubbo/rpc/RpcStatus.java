@@ -36,8 +36,8 @@ public class RpcStatus {// read finish
 
     private static final ConcurrentMap<String, ConcurrentMap<String, RpcStatus>> METHOD_STATISTICS = new ConcurrentHashMap<String, ConcurrentMap<String, RpcStatus>>(); /**@c 方法统计 */
     private final ConcurrentMap<String, Object> values = new ConcurrentHashMap<String, Object>();
-    private final AtomicInteger active = new AtomicInteger();
-    private final AtomicLong total = new AtomicLong();
+    private final AtomicInteger active = new AtomicInteger(); //激活次数
+    private final AtomicLong total = new AtomicLong(); //todo AtomicLong 代码看下
     private final AtomicInteger failed = new AtomicInteger();
     private final AtomicLong totalElapsed = new AtomicLong();
     private final AtomicLong failedElapsed = new AtomicLong();
@@ -82,7 +82,7 @@ public class RpcStatus {// read finish
      * @param methodName
      * @return status
      */
-    public static RpcStatus getStatus(URL url, String methodName) {
+    public static RpcStatus getStatus(URL url, String methodName) { //todo 10/22 待了解
         String uri = url.toIdentityString();
         ConcurrentMap<String, RpcStatus> map = METHOD_STATISTICS.get(uri);
         if (map == null) {
@@ -117,7 +117,7 @@ public class RpcStatus {// read finish
     }
 
     private static void beginCount(RpcStatus status) {
-        status.active.incrementAndGet();
+        status.active.incrementAndGet(); //原子增加
     }
 
     /**
@@ -130,6 +130,9 @@ public class RpcStatus {// read finish
         endCount(getStatus(url, methodName), elapsed, succeeded);
     }
 
+    /**
+     * todo 10/22 用途含义是啥？计算逻辑是啥
+     */
     private static void endCount(RpcStatus status, long elapsed, boolean succeeded) {
         status.active.decrementAndGet();
         status.total.incrementAndGet();
@@ -317,7 +320,7 @@ public class RpcStatus {// read finish
      * @param maxThreadNum executes设置的值
      * @return
      */
-    public Semaphore getSemaphore(int maxThreadNum) {
+    public Semaphore getSemaphore(int maxThreadNum) { //todo 10/22 信号量机制待了解
         if(maxThreadNum <= 0) {
             return null;
         }

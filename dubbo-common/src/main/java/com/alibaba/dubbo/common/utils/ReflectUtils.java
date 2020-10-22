@@ -221,7 +221,7 @@ public final class ReflectUtils {
         return true;
     }
 
-    public static String getCodeBase(Class<?> cls) {
+    public static String getCodeBase(Class<?> cls) { //todo 10/22 如何获取包路径的？待调试
         if (cls == null)
             return null;
         ProtectionDomain domain = cls.getProtectionDomain();

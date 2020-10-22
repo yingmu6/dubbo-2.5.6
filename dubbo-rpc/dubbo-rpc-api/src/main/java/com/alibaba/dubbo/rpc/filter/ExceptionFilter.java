@@ -59,6 +59,9 @@ public class ExceptionFilter implements Filter {
         this.logger = logger;
     }
 
+    /**
+     * 对调用结果中的异常处理
+     */
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try {
             Result result = invoker.invoke(invocation);
@@ -66,11 +69,11 @@ public class ExceptionFilter implements Filter {
                 try {
                     Throwable exception = result.getException();
 
-                    // 如果是checked异常，直接抛出
+                    // 如果是checked异常，直接抛出 //todo 10/22 了解下checked异常、非checked异常
                     if (!(exception instanceof RuntimeException) && (exception instanceof Exception)) {
                         return result;
                     }
-                    // 在方法签名上有声明，直接抛出
+                    // 在方法签名上有声明，直接抛出，交由上层调用处理异常
                     try {
                         Method method = invoker.getInterface().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
                         Class<?>[] exceptionClassses = method.getExceptionTypes();

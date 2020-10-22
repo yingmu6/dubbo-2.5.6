@@ -42,10 +42,18 @@ public class CacheFilter implements Filter {
         this.cacheFactory = cacheFactory;
     }
 
+    /**
+     * 缓存过滤调用
+     * 1）缓存工厂以及缓存key不为空时，获取缓存对象cache
+     * 2）尝试从缓存对象中获取
+     *  2.1）若值不为空直接返回
+     *  2.2）若值为空，执行invoke调用，获取result值
+     * 3）执行invoke调用
+     */
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         if (cacheFactory != null && ConfigUtils.isNotEmpty(invoker.getUrl().getMethodParameter(invocation.getMethodName(), Constants.CACHE_KEY))) {
             Cache cache = cacheFactory.getCache(invoker.getUrl().addParameter(Constants.METHOD_KEY, invocation.getMethodName()));
-            if (cache != null) {/**@c */
+            if (cache != null) {
                 String key = StringUtils.toArgumentString(invocation.getArguments());
                 if (cache != null && key != null) {
                     Object value = cache.get(key);
