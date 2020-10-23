@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * URL statistics. (API, Cached, ThreadSafe)
+ * Rpc调用的统计信息（对服务调用、方法调用进行统计）
  *
  * @author william.liangf
  * @see com.alibaba.dubbo.rpc.filter.ActiveLimitFilter
@@ -32,14 +33,14 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class RpcStatus {// read finish
 
-    private static final ConcurrentMap<String, RpcStatus> SERVICE_STATISTICS = new ConcurrentHashMap<String, RpcStatus>(); /**@c 服务统计 */
+    private static final ConcurrentMap<String, RpcStatus> SERVICE_STATISTICS = new ConcurrentHashMap<String, RpcStatus>(); /**@c 服务统计（内嵌对象，避免新增加类了）*/
 
     private static final ConcurrentMap<String, ConcurrentMap<String, RpcStatus>> METHOD_STATISTICS = new ConcurrentHashMap<String, ConcurrentMap<String, RpcStatus>>(); /**@c 方法统计 */
     private final ConcurrentMap<String, Object> values = new ConcurrentHashMap<String, Object>();
-    private final AtomicInteger active = new AtomicInteger(); //激活次数
-    private final AtomicLong total = new AtomicLong(); //todo AtomicLong 代码看下
+    private final AtomicInteger active = new AtomicInteger(); //激活数
+    private final AtomicLong total = new AtomicLong(); //10/23 AtomicLong代码看下：解：atomic variables（原子变量），底层使用Unsafe的CAS机制保证原子性、线程安全e
     private final AtomicInteger failed = new AtomicInteger();
-    private final AtomicLong totalElapsed = new AtomicLong();
+    private final AtomicLong totalElapsed = new AtomicLong(); //10/23 Elapsed相关的值的含义是啥？ 解：表示执行的时间
     private final AtomicLong failedElapsed = new AtomicLong();
     private final AtomicLong maxElapsed = new AtomicLong();
     private final AtomicLong failedMaxElapsed = new AtomicLong();
@@ -56,6 +57,7 @@ public class RpcStatus {// read finish
     }
 
     /**
+     * 获取服务对应的Rpc状态信息
      * @param url
      * @return status
      */
@@ -63,7 +65,7 @@ public class RpcStatus {// read finish
         String uri = url.toIdentityString();
         RpcStatus status = SERVICE_STATISTICS.get(uri);
         if (status == null) {
-            SERVICE_STATISTICS.putIfAbsent(uri, new RpcStatus());
+            SERVICE_STATISTICS.putIfAbsent(uri, new RpcStatus()); //设置服务统计信息
             status = SERVICE_STATISTICS.get(uri);
         }
         return status;
@@ -78,11 +80,12 @@ public class RpcStatus {// read finish
     }
 
     /**
+     * 获取方法对应的Rpc状态信息
      * @param url
      * @param methodName
      * @return status
      */
-    public static RpcStatus getStatus(URL url, String methodName) { //todo 10/22 待了解
+    public static RpcStatus getStatus(URL url, String methodName) { //10/22 待了解：已解
         String uri = url.toIdentityString();
         ConcurrentMap<String, RpcStatus> map = METHOD_STATISTICS.get(uri);
         if (map == null) {
@@ -109,18 +112,20 @@ public class RpcStatus {// read finish
     }
 
     /**
+     * 开始统计
      * @param url
      */
     public static void beginCount(URL url, String methodName) {
-        beginCount(getStatus(url));
-        beginCount(getStatus(url, methodName));
+        beginCount(getStatus(url)); //统计服务的调用次数递增1
+        beginCount(getStatus(url, methodName)); //方法的调用次数递增1
     }
 
     private static void beginCount(RpcStatus status) {
-        status.active.incrementAndGet(); //原子增加
+        status.active.incrementAndGet(); //原子自动加1
     }
 
     /**
+     * 结束统计
      * @param url
      * @param elapsed
      * @param succeeded
@@ -131,23 +136,28 @@ public class RpcStatus {// read finish
     }
 
     /**
-     * todo 10/22 用途含义是啥？计算逻辑是啥
+     * 10/22 用途含义是啥？计算逻辑是啥
+     * 解：对统计的相关值进行处理
+     *
+     * @param status  RpcStatus信息
+     * @param elapsed 调用执行的时间
+     * @param succeeded 是否成功
      */
     private static void endCount(RpcStatus status, long elapsed, boolean succeeded) {
         status.active.decrementAndGet();
         status.total.incrementAndGet();
-        status.totalElapsed.addAndGet(elapsed);
+        status.totalElapsed.addAndGet(elapsed); //计算到总时长
         if (status.maxElapsed.get() < elapsed) {
-            status.maxElapsed.set(elapsed);
+            status.maxElapsed.set(elapsed); //重新更新最大执行时间
         }
-        if (succeeded) {
+        if (succeeded) { //执行成功
             if (status.succeededMaxElapsed.get() < elapsed) {
-                status.succeededMaxElapsed.set(elapsed);
+                status.succeededMaxElapsed.set(elapsed); //重新更新最大成功的执行时间
             }
-        } else {
-            status.failed.incrementAndGet();
-            status.failedElapsed.addAndGet(elapsed);
-            if (status.failedMaxElapsed.get() < elapsed) {
+        } else {        //执行失败
+            status.failed.incrementAndGet(); //记录失败次数
+            status.failedElapsed.addAndGet(elapsed); //记录失败时间
+            if (status.failedMaxElapsed.get() < elapsed) { //若失败时间超过了最大失败执行时间，则更新最大失败时间
                 status.failedMaxElapsed.set(elapsed);
             }
         }
@@ -320,14 +330,14 @@ public class RpcStatus {// read finish
      * @param maxThreadNum executes设置的值
      * @return
      */
-    public Semaphore getSemaphore(int maxThreadNum) { //todo 10/22 信号量机制待了解
+    public Semaphore getSemaphore(int maxThreadNum) {
         if(maxThreadNum <= 0) {
             return null;
         }
 
         if (executesLimit == null || executesPermits != maxThreadNum) {
             synchronized (this) {
-                if (executesLimit == null || executesPermits != maxThreadNum) {
+                if (executesLimit == null || executesPermits != maxThreadNum) { //双重判断，确保线程安全
                     executesLimit = new Semaphore(maxThreadNum);
                     executesPermits = maxThreadNum;
                 }

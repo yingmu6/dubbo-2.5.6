@@ -840,7 +840,7 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     /**
-     * 获取方法参数 场景覆盖？todo 10/22 待调试
+     * 获取方法参数 场景覆盖？10/22 待调试
      */
     public int getMethodParameter(String method, String key, int defaultValue) {
         String methodKey = method + "." + key; // 将方法名与参数名构建key，如sayHello.weight
@@ -1265,6 +1265,9 @@ public final class URL implements Serializable {//可进行序列化
         return buildString(false, true, parameters); // no show username and password
     }
 
+    /**
+     * 构建带有身份信息的url字符串
+     */
     public String toIdentityString() {
         if (identity != null) {
             return identity;
@@ -1344,7 +1347,7 @@ public final class URL implements Serializable {//可进行序列化
     /**@c 将url参数构建成字符串 */
 
     /**
-     * 构建url字符串
+     * 根据指定参数，构建url字符串
      * 1）若协议不为空，则字符创为"protocol://"
      * 2）若需要拼接用户并且用户名不为空，则添加用户；
      *    若密码不为空，则添加密码，如 username:password，附加"@"

@@ -18,9 +18,14 @@ public class ConsumerForCommon {
 
         for (int i = 0; i < 10; i++) {
             CommonService commonService = (CommonService) context.getBean("commonService");
-            System.out.println(commonService.sayHello());
+//            System.out.println(commonService.sayHello());
+//            System.out.println(commonService.sayHello("你好"));
 //        ConsumerForCommon test = new ConsumerForCommon();
 //        test.dealRpcContext(context);1
+            String[] arr = new String[2];
+            arr[0] = "aa";
+            arr[1] = "cc";
+            commonService.test(1,2.5, arr);
         }
         System.in.read();
     }

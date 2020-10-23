@@ -39,7 +39,12 @@ public class ExecuteLimitFilter implements Filter {
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         URL url = invoker.getUrl();
         String methodName = invocation.getMethodName();
-        Semaphore executesLimit = null; //todo 10/22 信号量待了解
+        /**
+         * 10/22 信号量了解
+         * 解：Semaphore:信号量，维护一组许可证，可对许可证设置公平与不公平，来保证顺序。可用于限制线程数
+         * 底层用了Unsafe来保证顺序性的
+         */
+        Semaphore executesLimit = null;
         boolean acquireResult = false;
         int max = url.getMethodParameter(methodName, Constants.EXECUTES_KEY, 0);
         if (max > 0) {
@@ -51,13 +56,13 @@ public class ExecuteLimitFilter implements Filter {
              * 2017-08-21 yizhenqiang
              */
             executesLimit = count.getSemaphore(max);
-            if(executesLimit != null && !(acquireResult = executesLimit.tryAcquire())) {
+            if(executesLimit != null && !(acquireResult = executesLimit.tryAcquire())) {//若没有获取许可证，则抛出异常（服务使用的线程数超过最大值）
                 throw new RpcException("Failed to invoke method " + invocation.getMethodName() + " in provider " + url + ", cause: The service using threads greater than <dubbo:service executes=\"" + max + "\" /> limited.");
             }
         }
         long begin = System.currentTimeMillis();
         boolean isSuccess = true;
-        //todo 10/22 RpcStatus中beginCount、endCount用途？
+        //10/22 RpcStatus中beginCount、endCount用途？解 beginCount开始统计，endCount结束统计
         RpcStatus.beginCount(url, methodName);
         try {
             Result result = invoker.invoke(invocation);
@@ -72,9 +77,16 @@ public class ExecuteLimitFilter implements Filter {
         } finally {
             RpcStatus.endCount(url, methodName, System.currentTimeMillis() - begin, isSuccess);
             if(acquireResult) {
-                executesLimit.release();
+                executesLimit.release(); //释放许可证
             }
         }
     }
+
+    /**
+     * Unsafe  https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html
+     * Unsafe是位于sun.misc包下的一个类，主要提供一些用于执行低级别、不安全操作的方法，如直接访问系统内存资源、自主管理内存资源等，这些方法在提升Java运行效率、
+     * 增强Java语言底层资源操作能力方面起到了很大的作用。但由于Unsafe类使Java语言拥有了类似C语言指针一样操作内存空间的能力，
+     * 这无疑也增加了程序发生相关指针问题的风险。在程序中过度、不正确使用Unsafe类会使得程序出错的概率变大，使得Java这种安全的语言变得不再“安全”，因此对Unsafe的使用一定要慎重
+     */
 
 }
