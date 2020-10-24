@@ -18,7 +18,7 @@ package com.alibaba.dubbo.rpc;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
- * Filter. (SPI, Singleton, ThreadSafe) //todo 10/22 Singleton, ThreadSafe是啥意思
+ * Filter. (SPI, Singleton, ThreadSafe) // 10/22 Singleton, ThreadSafe是啥意思: 解：给出约束信息，SPI的实现者都需要满足约束，分别表示单例和线程安全
  * spring过滤器以及dubbo过滤器，过滤器链了解
  *
  * @author william.liangf
@@ -50,4 +50,22 @@ public interface Filter {  // read finish
      */
     Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException; //todo 10/22 框架是怎么组装并传入invoker, invocation值的
 
+    /**
+     * 单例模式 https://www.runoob.com/design-pattern/singleton-pattern.html
+     * 1、单例类只能有一个实例。
+     * 2、单例类必须自己创建自己的唯一实例。
+     * 3、单例类必须给所有其他对象提供这一实例。
+     *
+     * Spring过滤器和拦截器执行流程  https://www.jianshu.com/p/394480ae9b7c
+     *
+     * 过滤器与拦截器的区别 https://www.jianshu.com/p/3e6433ead5c3
+     * Filter 是基于 函数回调的，而 Interceptor（拦截器） 则是基于 Java反射 和 动态代理。
+     * Filter 依赖于 Servlet 容器，而 Interceptor 不依赖于 Servlet 容器。
+     * Filter 对几乎 所有的请求 起作用，而 Interceptor 只对 Controller 对请求起作用。
+     */
+
+    /**
+     * todo 10/24 过滤链是怎么构建起来的，哪些是系统的过滤链？
+     */
 }
+

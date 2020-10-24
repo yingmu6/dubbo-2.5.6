@@ -1196,7 +1196,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                exportLocal(url);
            }
            if (!Constants.SCOPE_LOCAL.equals(scope)) {
-               logger.warn("暴露远程服务：interface:" + interfaceClass.getName() + ", to url :" + url.toFullString());
+               //logger.warn("暴露远程服务：interface:" + interfaceClass.getName() + ", to url :" + url.toFullString());
+               if (logger.isInfoEnabled()) {
+                   logger.info("Export dubbo service " + interfaceClass.getName() + " to url " + url);
+               }
 
                if (registryURLs != null && registryURLs.size() > 0
                      && url.getParameter("register", true)) {

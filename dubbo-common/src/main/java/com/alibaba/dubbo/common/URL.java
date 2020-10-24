@@ -772,20 +772,23 @@ public final class URL implements Serializable {//可进行序列化
     //方法参数是指method列表中内容吗？还是指特定方法中的参数吗？ ： 附加参数map中取值，如"side" -> "consumer"
 
     /**
-     * 从url参数parameters中查找方法中参数的值
-     * 1）查找method + "." + key对应的值
-     * 2）若没查到，查询key对应的值
-     * 3）若还没查到，则查询"default." + key对应的值
+     * 从url参数parameters中查找方法中参数的值（方法级别的参数）
+     * 1）查找 method + "." + key 对应的值
+     * 2）若没查到，查询 key 对应的值
+     * 3）若还没查到，则查询 "default." + key 对应的值
      */
     public String getMethodParameter(String method, String key) {
-        String value = parameters.get(method + "." + key); //todo @csy-h1 哪种情况是method + key作为键的：是不是参数回调callback会出现？
+        String value = parameters.get(method + "." + key); //@csy-h1 哪种情况是method + key作为键的：是不是参数回调callback会出现？解：不是参数回调的，是指方法级别的参数配置，<dubbo:method/>，如sayHello.timeout
         if (value == null || value.length() == 0) {
             return getParameter(key);
         }
         return value;
     }
 
-    //方法中的参数是指什么？ 具体使用场景：从url的参数集合中获取指定key对应的值
+    /**
+     * 方法中的参数是指什么？ 具体使用场景：从url的参数集合中获取指定key对应的值
+     * 10/24 此处method：sayHello，key：mock值从哪里来？是指配置的属性值，如<dubbo:reference/> 的配置属性值
+     */
     public String getMethodParameter(String method, String key, String defaultValue) {
         String value = getMethodParameter(method, key);
         if (value == null || value.length() == 0) {

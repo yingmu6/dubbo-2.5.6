@@ -46,7 +46,7 @@ public abstract class AbstractProxyFactory implements ProxyFactory {// read fini
                 }
             }
         }
-        // 若invoker中没有指定接口，则创建回声检测服务的代理类
+        // 若url中没有指定interfaces，则接口包含当前接口和EchoService
         if (interfaces == null) {
             interfaces = new Class<?>[]{invoker.getInterface(), EchoService.class};
         }

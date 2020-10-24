@@ -196,7 +196,7 @@ public abstract class Wrapper {/**@c 包装类 */
     }
 
     //todo @csy-h2 用途？ 待调试
-    private static Wrapper makeWrapper(Class<?> c) {/**@c 运行时根据反射机制解析Class，构造java文件*/
+    private static Wrapper makeWrapper(Class<?> c) {/**@c 运行时根据反射机制解析Class，构造java文件*/ //todo 10/24 待阅读
         if (c.isPrimitive())/**@c 判断是否是基本类型 */
             throw new IllegalArgumentException("Can not create wrapper for primitive type: " + c);
 
@@ -338,7 +338,6 @@ public abstract class Wrapper {/**@c 包装类 */
             for (Method m : ms.values())
                 wc.getField("mts" + ix++).set(null, m.getParameterTypes());
 
-            logger.info("封装类处理结果: "+ wc.toString());
             return (Wrapper) wc.newInstance();
         } catch (RuntimeException e) {
             throw e;

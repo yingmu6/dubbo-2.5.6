@@ -17,6 +17,8 @@ package com.alibaba.dubbo.rpc.service;
 
 /**
  * Echo service.
+ * 回声测试用于检测服务是否可用，回声测试按照正常请求流程执行，能够测试整个调用是否通畅，可用于监控。
+ * 所有服务自动实现 EchoService 接口，只需将任意服务引用强制转型为 EchoService，即可使用。
  *
  * @author qian.lei
  * @export
@@ -31,5 +33,9 @@ public interface EchoService {// todo @csy-v1 为啥没有实现类？用途是�
      * @return message.
      */
     Object $echo(Object message);
+
+    /**
+     * todo 10/24 是怎么与EchoFilter关联起来的？所有服务自动实现 EchoService 接口是在哪里体现的？
+     */
 
 }

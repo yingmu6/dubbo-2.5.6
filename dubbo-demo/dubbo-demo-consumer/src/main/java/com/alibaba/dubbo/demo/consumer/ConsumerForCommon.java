@@ -4,6 +4,7 @@ import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.demo.CommonService;
 import com.alibaba.dubbo.rpc.RpcContext;
+import com.alibaba.dubbo.rpc.service.EchoService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -16,17 +17,29 @@ public class ConsumerForCommon {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/dubbo-demo-consumer.xml"});
         context.start();
 
-        for (int i = 0; i < 10; i++) {
-            CommonService commonService = (CommonService) context.getBean("commonService");
-//            System.out.println(commonService.sayHello());
-//            System.out.println(commonService.sayHello("你好"));
-//        ConsumerForCommon test = new ConsumerForCommon();
-//        test.dealRpcContext(context);1
-            String[] arr = new String[2];
-            arr[0] = "aa";
-            arr[1] = "cc";
-            commonService.test(1,2.5, arr);
-        }
+//        for (int i = 0; i < 10; i++) {
+//            CommonService commonService = (CommonService) context.getBean("commonService");
+////            System.out.println(commonService.sayHello());
+////            System.out.println(commonService.sayHello("你好"));
+////        ConsumerForCommon test = new ConsumerForCommon();
+////        test.dealRpcContext(context);1
+//            String[] arr = new String[2];
+//            arr[0] = "aa";
+//            arr[1] = "cc";
+//            System.out.println("测试：" + commonService.test(1,2.5, arr));
+//        }
+        CommonService commonService = (CommonService) context.getBean("commonService");
+
+        //回声测试
+        EchoService echoService = (EchoService) commonService;
+        String msg = (String)echoService.$echo("aaa");
+        System.out.println("回声测试：" + msg);
+        /**
+         * 输出：  来自：V1 port:20881 ,hello 你好
+         * 其中："V1 port:20881" 是提供者初始化对象时，设置的属性值
+         * 就像使用本地对象一样：提供者将对象实例化，消费者取对象
+         */
+        System.out.println(commonService.sayHello());
         System.in.read();
     }
 

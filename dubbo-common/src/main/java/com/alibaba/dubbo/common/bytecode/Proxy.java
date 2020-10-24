@@ -33,19 +33,19 @@ import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Proxy.
+ * Proxy. todo 10/24 代理的思想了解下
  *
  * @author qian.lei
  */
 
-public abstract class Proxy { //todo @csy-h2 获取代理处理
-    public static final InvocationHandler RETURN_NULL_INVOKER = new InvocationHandler() {
-        public Object invoke(Object proxy, Method method, Object[] args) {
+public abstract class Proxy { // todo 10/24 没有看到实现类，是怎么使用的？
+    public static final InvocationHandler RETURN_NULL_INVOKER = new InvocationHandler() { //代理实例的调用处理对象
+        public Object invoke(Object proxy, Method method, Object[] args) { //返回空的invoker调用
             return null;
         }
     };
     public static final InvocationHandler THROW_UNSUPPORTED_INVOKER = new InvocationHandler() {
-        public Object invoke(Object proxy, Method method, Object[] args) {
+        public Object invoke(Object proxy, Method method, Object[] args) { //不支持异常的invoker
             throw new UnsupportedOperationException("Method [" + ReflectUtils.getName(method) + "] unimplemented.");
         }
     };
@@ -59,7 +59,7 @@ public abstract class Proxy { //todo @csy-h2 获取代理处理
     }
 
     /**
-     * Get proxy.
+     * Get proxy.（获取同一类接口的代理）
      *
      * @param ics interface class array.
      * @return Proxy instance.
@@ -69,7 +69,7 @@ public abstract class Proxy { //todo @csy-h2 获取代理处理
     }
 
     /**
-     * Get proxy.
+     * Get proxy. todo 10/24 待调试以及用途了解
      *
      * @param cl  class loader.
      * @param ics interface class array.
@@ -87,14 +87,14 @@ public abstract class Proxy { //todo @csy-h2 获取代理处理
 
             Class<?> tmp = null;
             try {
-                tmp = Class.forName(itf, false, cl);
+                tmp = Class.forName(itf, false, cl); //获取指定名称的Class类
             } catch (ClassNotFoundException e) {
             }
 
             if (tmp != ics[i])
                 throw new IllegalArgumentException(ics[i] + " is not visible from class loader");
 
-            sb.append(itf).append(';');
+            sb.append(itf).append(';'); //将多个类名拼接
         }
 
         // use interface class name list as key.

@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 扩展点接口的标识。
+ * 扩展点接口的标识。（需要扩展的都要带上SPI注解）
  * <p/>
  * 扩展点声明配置文件，格式修改。<br />
  * 以Protocol示例，配置文件META-INF/dubbo/com.xxx.Protocol内容：<br />
@@ -51,7 +51,11 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface SPI {//表示可以通过SPI的方式，目的是获取直接接口的实现类，
+public @interface SPI {//表示可以通过SPI的方式，目的是获取直接接口的实现类（SPI是服务动态发现的机制）
+    /**
+     * SPI 全称为 (Service Provider Interface) ，是JDK内置的一种服务提供发现机制。SPI是一种动态替换发现的机制，
+     * 比如有个接口，想运行时动态的给它添加实现，你只需要添加一个实现
+     */
 
     //在指定目录下配置文件，当实例类时就会在文件中就找
     //为啥用SPI，不可以写个子类继承吗？SPI到底用来做啥？
