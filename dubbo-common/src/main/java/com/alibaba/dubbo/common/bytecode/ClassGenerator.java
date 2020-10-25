@@ -48,11 +48,11 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author qian.lei
  */
 
-public final class ClassGenerator {
+public final class ClassGenerator { //todo 10/25 待了解，javassist了解
     private static final AtomicLong CLASS_NAME_COUNTER = new AtomicLong(0);
     private static final String SIMPLE_NAME_TAG = "<init>";
     private static final Map<ClassLoader, ClassPool> POOL_MAP = new ConcurrentHashMap<ClassLoader, ClassPool>(); //ClassLoader - ClassPool
-    private ClassPool mPool;
+    private ClassPool mPool; //todo 10/25 待了解
     private CtClass mCtc;
     private String mClassName, mSuperClass;
     private Set<String> mInterfaces;
@@ -80,7 +80,7 @@ public final class ClassGenerator {
         return ClassGenerator.DC.class.isAssignableFrom(cl); //判断DC是否和cl相同；DC是否是cl超类；DC是否是cl的接口
     }
 
-    public static ClassPool getClassPool(ClassLoader loader) {
+    public static ClassPool getClassPool(ClassLoader loader) { //todo 10/25 ClassPool了解，以及Javassist了解
         if (loader == null)
             return ClassPool.getDefault();
 
@@ -253,7 +253,7 @@ public final class ClassGenerator {
         return mPool;
     }
 
-    public Class<?> toClass() {
+    public Class<?> toClass() { //todo 10/25 待了解
         return toClass(ClassHelper.getClassLoader(ClassGenerator.class), getClass().getProtectionDomain());
     }
 
@@ -304,6 +304,7 @@ public final class ClassGenerator {
         }
     }
 
+    //清除相关数据
     public void release() {
         if (mCtc != null) mCtc.detach();
         if (mInterfaces != null) mInterfaces.clear();

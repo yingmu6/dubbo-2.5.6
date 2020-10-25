@@ -32,10 +32,10 @@ public abstract class AbstractProxyFactory implements ProxyFactory {// read fini
     public <T> T getProxy(Invoker<T> invoker) throws RpcException { //待调试了解
         Class<?>[] interfaces = null;
         /**
-         * todo @csy-v2 此处需要调试，看下interfaces里面可能是啥内容？怎么会有多个interface
+         * todo @csy-v2 此处需要调试，看下interfaces里面可能是啥内容？怎么会有多个interface，看下标签配置
          */
         String config = invoker.getUrl().getParameter("interfaces");
-        if (config != null && config.length() > 0) {
+        if (config != null && config.length() > 0) { //todo 10/25 构建满足条件
             String[] types = Constants.COMMA_SPLIT_PATTERN.split(config);
             if (types != null && types.length > 0) {//逗号分隔
                 interfaces = new Class<?>[types.length + 2];

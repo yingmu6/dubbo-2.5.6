@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 
 public abstract class Proxy { // todo 10/24 没有看到实现类，是怎么使用的？
-    public static final InvocationHandler RETURN_NULL_INVOKER = new InvocationHandler() { //代理实例的调用处理对象
+    public static final InvocationHandler RETURN_NULL_INVOKER = new InvocationHandler() { //代理的处理类Handler
         public Object invoke(Object proxy, Method method, Object[] args) { //返回空的invoker调用
             return null;
         }
@@ -51,9 +51,10 @@ public abstract class Proxy { // todo 10/24 没有看到实现类，是怎么使
     };
     private static final AtomicLong PROXY_CLASS_COUNTER = new AtomicLong(0);
     private static final String PACKAGE_NAME = Proxy.class.getPackage().getName();
+    // 类加载器与缓存对象的映射，Value是缓存Map（Key是接口名，值是代理对象Proxy）
     private static final Map<ClassLoader, Map<String, Object>> ProxyCacheMap = new WeakHashMap<ClassLoader, Map<String, Object>>();
 
-    private static final Object PendingGenerationMarker = new Object();
+    private static final Object PendingGenerationMarker = new Object(); //等待生成标志
 
     protected Proxy() {
     }
@@ -76,12 +77,12 @@ public abstract class Proxy { // todo 10/24 没有看到实现类，是怎么使
      * @return Proxy instance.
      */
     public static Proxy getProxy(ClassLoader cl, Class<?>... ics) {
-        if (ics.length > 65535)
+        if (ics.length > 65535) //65535为2^16 - 1
             throw new IllegalArgumentException("interface limit exceeded");
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ics.length; i++) {
-            String itf = ics[i].getName();
+            String itf = ics[i].getName(); //获取类名，如com.alibaba.dubbo.common.bytecode.Proxy
             if (!ics[i].isInterface())
                 throw new RuntimeException(itf + " is not a interface.");
 
@@ -102,7 +103,7 @@ public abstract class Proxy { // todo 10/24 没有看到实现类，是怎么使
 
         // get cache by class loader.
         Map<String, Object> cache;
-        synchronized (ProxyCacheMap) {
+        synchronized (ProxyCacheMap) { //保持线程安全
             cache = ProxyCacheMap.get(cl);
             if (cache == null) {
                 cache = new HashMap<String, Object>();
@@ -116,11 +117,11 @@ public abstract class Proxy { // todo 10/24 没有看到实现类，是怎么使
                 Object value = cache.get(key);
                 if (value instanceof Reference<?>) {
                     proxy = (Proxy) ((Reference<?>) value).get();
-                    if (proxy != null)
+                    if (proxy != null) //若本地缓存中代理对象，直接返回， todo 10/25 缓存的概念了解
                         return proxy;
                 }
 
-                if (value == PendingGenerationMarker) {
+                if (value == PendingGenerationMarker) { //todo 10/25 Object对象可以直接比较==？此处的含义是？
                     try {
                         cache.wait();
                     } catch (InterruptedException e) {
@@ -142,20 +143,20 @@ public abstract class Proxy { // todo 10/24 没有看到实现类，是怎么使
             Set<String> worked = new HashSet<String>();
             List<Method> methods = new ArrayList<Method>();
 
-            for (int i = 0; i < ics.length; i++) {
+            for (int i = 0; i < ics.length; i++) {// todo 10/25 此处循环待了解
                 if (!Modifier.isPublic(ics[i].getModifiers())) {
                     String npkg = ics[i].getPackage().getName();
-                    if (pkg == null) {
+                    if (pkg == null) { //todo 10/25 包名比较待调试
                         pkg = npkg;
                     } else {
-                        if (!pkg.equals(npkg))
+                        if (!pkg.equals(npkg)) //若接口在不同包中，则抛出异常，todo 10/25 接口和EchoService在同一个包？是怎么比较的？
                             throw new IllegalArgumentException("non-public interfaces from different packages");
                     }
                 }
                 ccp.addInterface(ics[i]);
 
                 for (Method method : ics[i].getMethods()) {
-                    String desc = ReflectUtils.getDesc(method);
+                    String desc = ReflectUtils.getDesc(method); //获取方法的描述
                     if (worked.contains(desc))
                         continue;
                     worked.add(desc);
@@ -180,7 +181,7 @@ public abstract class Proxy { // todo 10/24 没有看到实现类，是怎么使
                 pkg = PACKAGE_NAME;
 
             // create ProxyInstance class.
-            String pcn = pkg + ".proxy" + id;
+            String pcn = pkg + ".proxy" + id; //如：com.alibaba.dubbo.common.bytecode.proxy0
             ccp.setClassName(pcn);
             ccp.addField("public static java.lang.reflect.Method[] methods;");
             ccp.addField("private " + InvocationHandler.class.getName() + " handler;");
@@ -196,7 +197,7 @@ public abstract class Proxy { // todo 10/24 没有看到实现类，是怎么使
             ccm.addDefaultConstructor();
             ccm.setSuperClass(Proxy.class);
             ccm.addMethod("public Object newInstance(" + InvocationHandler.class.getName() + " h){ return new " + pcn + "($1); }");
-            Class<?> pc = ccm.toClass();
+            Class<?> pc = ccm.toClass(); //构建对象class对应的字符串，然后生成代理
             proxy = (Proxy) pc.newInstance();
         } catch (RuntimeException e) {
             throw e;
@@ -219,7 +220,7 @@ public abstract class Proxy { // todo 10/24 没有看到实现类，是怎么使
         return proxy;
     }
 
-    private static String asArgument(Class<?> cl, String name) {
+    private static String asArgument(Class<?> cl, String name) { //todo 10/25 待调试
         if (cl.isPrimitive()) {
             if (Boolean.TYPE == cl)
                 return name + "==null?false:((Boolean)" + name + ").booleanValue()";

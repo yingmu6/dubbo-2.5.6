@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  */
 public final class ReflectUtils {
 
-    //类型符号简写 todo JVM首字母含义？
+    //类型符号简写
     /**
      * void(V).
      */
@@ -356,7 +356,7 @@ public final class ReflectUtils {
             c = c.getComponentType();
         }
 
-        //获取类型的简写
+        //获取类型的简写 todo 10/25 JVM首字母含义？JVM初步了解
         if (c.isPrimitive()) {
             String t = c.getName();
             if ("void".equals(t)) ret.append(JVM_VOID);
@@ -395,7 +395,7 @@ public final class ReflectUtils {
     }
 
     /**
-     * get method desc.
+     * get method desc.（获取方法的描述信息）
      * int do(int arg1) => "do(I)I"
      * void do(String arg1,boolean arg2) => "do(Ljava/lang/String;Z)V"
      *
