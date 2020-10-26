@@ -20,7 +20,7 @@ package com.alibaba.dubbo.remoting.exchange;
  *
  * @author william.liangf
  */
-public interface ResponseCallback {
+public interface ResponseCallback { //todo 10/26 响应回调？应用场景以及实践
 
     /**
      * done.

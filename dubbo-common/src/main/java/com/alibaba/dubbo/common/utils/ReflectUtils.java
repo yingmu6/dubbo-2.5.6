@@ -237,7 +237,7 @@ public final class ReflectUtils {
     }
 
     /**
-     * get name.
+     * get name.（获取类Class的名称）
      * java.lang.Object[][].class => "java.lang.Object[][]"
      *
      * @param c class.
@@ -248,7 +248,7 @@ public final class ReflectUtils {
             StringBuilder sb = new StringBuilder();
             do {
                 sb.append("[]");
-                c = c.getComponentType();
+                c = c.getComponentType(); //todo 10/26 ComponentType了解
             }
             while (c.isArray());
 

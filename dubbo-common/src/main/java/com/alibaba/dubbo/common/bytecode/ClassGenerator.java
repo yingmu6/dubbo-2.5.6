@@ -48,11 +48,12 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author qian.lei
  */
 
-public final class ClassGenerator { //todo 10/25 待了解，javassist了解
+public final class ClassGenerator { //10/25 待了解：类产生器，javassist了解；解:getClassPool方法处已标明
     private static final AtomicLong CLASS_NAME_COUNTER = new AtomicLong(0);
     private static final String SIMPLE_NAME_TAG = "<init>";
+    // 类加载器与类池的映射
     private static final Map<ClassLoader, ClassPool> POOL_MAP = new ConcurrentHashMap<ClassLoader, ClassPool>(); //ClassLoader - ClassPool
-    private ClassPool mPool; //todo 10/25 待了解
+    private ClassPool mPool; //10/25 待了解；解：类池，用来管理字节码的
     private CtClass mCtc;
     private String mClassName, mSuperClass;
     private Set<String> mInterfaces;
@@ -80,14 +81,35 @@ public final class ClassGenerator { //todo 10/25 待了解，javassist了解
         return ClassGenerator.DC.class.isAssignableFrom(cl); //判断DC是否和cl相同；DC是否是cl超类；DC是否是cl的接口
     }
 
-    public static ClassPool getClassPool(ClassLoader loader) { //todo 10/25 ClassPool了解，以及Javassist了解
+    /**
+     * 10/25 ClassPool了解，以及Javassist了解
+     * Javassist了解：
+     * https://juejin.im/post/6844903957223981063 字节码增强技术-Javassist
+     * Java 生态里有很多可以动态处理字节码的技术，比较流行的有两个，一个是 ASM，一个是 Javassist 。
+     * ASM：直接操作字节码指令，执行效率高，但涉及到JVM的操作和指令，要求使用者掌握Java类字节码文件格式及指令，对使用者的要求比较高。
+     * Javassist：提供了更高级的API，执行效率相对较差，但无需掌握字节码指令的知识，简单、快速，对使用者要求较低
+     * 字节码文件（.class）就是普通的二进制文件，它是通过 Java 编译器生成的。
+     * 动态字节码技术优势在于 Java 字节码生成之后，对其进行修改，增强其功能，这种方式相当于对应用程序的二进制文件进行修改
+     *
+     * todo 10/26 ClassPool了解&实践
+     */
+
+    /**
+     * 获取类加载器对应的类池ClassPool
+     * 1）类加载器为空，返回默认类池
+     * 2）从本地缓存Map中获取类池，若不存在则创建类池
+     *
+     * @param loader
+     * @return
+     */
+    public static ClassPool getClassPool(ClassLoader loader) {
         if (loader == null)
             return ClassPool.getDefault();
 
         ClassPool pool = POOL_MAP.get(loader);
         if (pool == null) {
             pool = new ClassPool(true);
-            pool.appendClassPath(new LoaderClassPath(loader));
+            pool.appendClassPath(new LoaderClassPath(loader)); //todo 10/26 LoaderClassPath了解
             POOL_MAP.put(loader, pool);
         }
         return pool;

@@ -41,7 +41,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author qian.lei
  * @author chao.liuc
  */
-public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用途？
+public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用途？Future：异步执行的结果  @pause 1.1
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultFuture.class);
 
@@ -49,7 +49,7 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
 
     private static final Map<Long, DefaultFuture> FUTURES = new ConcurrentHashMap<Long, DefaultFuture>();
 
-    static {
+    static { //todo 10/26 static了解
         Thread th = new Thread(new RemotingInvocationTimeoutScan(), "DubboResponseTimeoutScanTimer");
         th.setDaemon(true);
         th.start();
@@ -58,10 +58,10 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
     // invoke id.
     private final long id;
     private final Channel channel;
-    private final Request request;
+    private final Request request; //todo 10/26 画出request、response类图
     private final int timeout;
     private final Lock lock = new ReentrantLock();
-    private final Condition done = lock.newCondition();
+    private final Condition done = lock.newCondition(); //todo 10/26 Lock、Condition待了解
     private final long start = System.currentTimeMillis();
     private volatile long sent;
     private volatile Response response;
@@ -95,6 +95,11 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
         }
     }
 
+    /**
+     * 接收相信信息 todo 10/26 待调试
+     * @param channel
+     * @param response
+     */
     public static void received(Channel channel, Response response) {
         try {
             DefaultFuture future = FUTURES.remove(response.getId());
@@ -175,7 +180,7 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
         }
     }
 
-    private void invokeCallback(ResponseCallback c) {
+    private void invokeCallback(ResponseCallback c) { //todo @pause 1.2
         ResponseCallback callbackCopy = c;
         if (callbackCopy == null) {
             throw new NullPointerException("callback cannot be null.");
@@ -266,6 +271,11 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
         }
     }
 
+    /**
+     * 获取超时响应消息
+     * @param scan
+     * @return
+     */
     private String getTimeoutMessage(boolean scan) {/**@c 等待服务端响应超时 */
         long nowTimestamp = System.currentTimeMillis();
         return (sent > 0 ? "Waiting server-side response timeout" : "Sending request timeout in client-side")
@@ -279,7 +289,7 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
                 + " -> " + channel.getRemoteAddress();
     }
 
-    private static class RemotingInvocationTimeoutScan implements Runnable {
+    private static class RemotingInvocationTimeoutScan implements Runnable { //远程调用超时异常
 
         public void run() {
             while (true) {

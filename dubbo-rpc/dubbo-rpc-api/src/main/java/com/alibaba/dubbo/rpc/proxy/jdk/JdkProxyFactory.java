@@ -36,7 +36,7 @@ public class JdkProxyFactory extends AbstractProxyFactory {// read finish
         return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces, new InvokerInvocationHandler(invoker));
     }
 
-    //jdk与javassist代理的差异处？
+    //jdk与javassist代理的差异处？解：jdk是java提供的软件开发包，而javassist是字节码增强技术：修改编译好的字节码，让新生成的字节码能满足的定制需求
     public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {
         return new AbstractProxyInvoker<T>(proxy, type, url) {
             @Override

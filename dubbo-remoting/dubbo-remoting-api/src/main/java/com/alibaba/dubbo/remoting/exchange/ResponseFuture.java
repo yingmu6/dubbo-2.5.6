@@ -25,7 +25,7 @@ import com.alibaba.dubbo.remoting.RemotingException;
  * @see com.alibaba.dubbo.remoting.exchange.ExchangeChannel#request(Object)
  * @see com.alibaba.dubbo.remoting.exchange.ExchangeChannel#request(Object, int)
  */
-public interface ResponseFuture {// read finish
+public interface ResponseFuture {// read finish 异步响应，todo 10/26 功能是啥？怎么使用的？
 
     /**
      * get result.

@@ -130,7 +130,7 @@ public class Response {
         return mEvent;
     }
 
-    public void setEvent(String event) {
+    public void setEvent(String event) { //设置事件
         mEvent = true;
         mResult = event;
     }
