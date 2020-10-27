@@ -61,7 +61,7 @@ public class GenericTest {
 }
 
 /**
- * todo @csy-h3
+ * history-h3
  * 1）泛化接口是不是 消费方、提供方联合使用，还是只要一方声明泛化接口？
  * 解答：需要联合使用，提供方暴露com.alibaba.dubbo.rpc.service.GenericService接口， 并且需要实现这个接口，是需要一个实现类即可。一个实现类代替所有泛化实现
  * 若写了多个实现类，不确定请求会落在哪个实现类

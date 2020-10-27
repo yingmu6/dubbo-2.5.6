@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public class HeartBeatTaskTest { // todo @csy 待调试
+public class HeartBeatTaskTest { // history 待调试
 
     private URL url = URL.valueOf("dubbo://localhost:20880");
 

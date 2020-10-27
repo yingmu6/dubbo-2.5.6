@@ -35,7 +35,7 @@ public class RandomLoadBalance extends AbstractLoadBalance {
     private final Random random = new Random();
 
     /**
-     * 随机负载 todo 0812 覆盖调试
+     * 随机负载
      * 1）计算总权重以及依次判断节点与上一个节点的权重比较，判断是否有不同权重的节点
      * 2）若节点的权重都相同，则按列表长度做随机值从列表中取值
      *    若节点的权重存在不相同的值，则按权重值做随机处理，将算出来的值判断是落在哪个区域
@@ -52,10 +52,10 @@ public class RandomLoadBalance extends AbstractLoadBalance {
                 sameWeight = false; // 计算所有权重是否一样
             }
         }
-        if (totalWeight > 0 && !sameWeight) {/**@c todo 0812 此处权重随机，需要调试 */
+        if (totalWeight > 0 && !sameWeight) {
             // 如果权重不相同且权重大于0则按总权重数随机
             int offset = random.nextInt(totalWeight);
-            // 并确定随机值落在哪个片断上  todo 0815 算片段这里需要调试
+            // 并确定随机值落在哪个片断上
             for (int i = 0; i < length; i++) {
                 offset -= getWeight(invokers.get(i), invocation);
                 if (offset < 0) {

@@ -395,7 +395,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
     protected void retry() {/**@c 重试失败的集合 注册、取消注册、订阅、取消订阅*/
         if (!failedRegistered.isEmpty()) { //注册失败，就尝试重新注册，若成功，将url从失败列表中移除
             Set<URL> failed = new HashSet<URL>(failedRegistered);
-            if (failed.size() > 0) { // todo @csy 此处是否多余判断了，failedRegistered.isEmpty()是否会判断size？
+            if (failed.size() > 0) { // history 此处是否多余判断了，failedRegistered.isEmpty()是否会判断size？
                 if (logger.isInfoEnabled()) {
                     logger.info("Retry register " + failed);
                 }
@@ -535,7 +535,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         }
     }
 
-    // todo @csy-h3: 2017/8/30 to abstract this method
+    // history-h3: 2017/8/30 to abstract this method
     protected boolean canDestroy(){
         if (destroyed.compareAndSet(false, true)) {
             return true;

@@ -21,7 +21,7 @@ package com.alibaba.dubbo.common.json;
  * @author qian.lei
  */
 
-public interface JSONVisitor { //todo @csy-v1 此处是访问者模式吗？若是：访问者模式待学
+public interface JSONVisitor { //history-v1 此处是访问者模式吗？若是：访问者模式待学
     public static final String CLASS_PROPERTY = "class";
 
     /**

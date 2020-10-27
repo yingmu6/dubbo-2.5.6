@@ -200,7 +200,7 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
 
                     for (int i = 0; i < size; i++) {
                         char c = buf[i];
-                        if (mPosition > limit) { //todo @csy 此处的逻辑运算待了解
+                        if (mPosition > limit) { //history 此处的逻辑运算待了解
                             if (c < 0x80) {
                                 write0((byte) c);
                             } else if (c < 0x800) {
@@ -264,7 +264,7 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
         byte tmp;
         while (true) {
             tmp = (byte) (v & 0x7f);
-            if ((v >>>= 7) == 0) { //todo @csy 运算的含义
+            if ((v >>>= 7) == 0) { //history 运算的含义
                 write0((byte) (tmp | 0x80));
                 return;
             } else {
@@ -460,7 +460,7 @@ public class GenericDataOutput implements DataOutput, GenericDataFlags {
                 byte[] b = mTemp;
 
                 while (true) {
-                    b[++ix] = (byte) (v & 0xff); //todo @csy 与0xff与运算，用途是？左移
+                    b[++ix] = (byte) (v & 0xff); //history 与0xff与运算，用途是？左移
                     if ((v >>>= 8) == 0)
                         break;
                 }

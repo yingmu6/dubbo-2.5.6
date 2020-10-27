@@ -50,7 +50,7 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
         registryService.register(url);
     }
 
-    public void enableProvider(Long id) {/**@c 启用服务 todo 此处id是bean中的id吗？ */
+    public void enableProvider(Long id) {/**@c 启用服务 */
         if (id == null) {
             throw new IllegalStateException("no provider id");
         }
@@ -60,7 +60,7 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
         if (oldProvider == null) {
             throw new IllegalStateException("Provider was changed!");
         }
-        if (oldProvider.isDynamic()) {/**@c todo 此处处理逻辑 */
+        if (oldProvider.isDynamic()) {
             //保证disable的override唯一
             if (!oldProvider.isEnabled()) {
                 Override override = new Override();

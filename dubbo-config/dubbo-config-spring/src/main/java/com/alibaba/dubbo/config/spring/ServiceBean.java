@@ -44,7 +44,7 @@ import java.util.Map;
 /**
  * ServiceFactoryBean
  *
- * todo @csy-new InitializingBean, DisposableBean,
+ * history-new InitializingBean, DisposableBean,
  * ApplicationContextAware, ApplicationListener, BeanNameAware 待了解
  *
  * @author william.liangf
@@ -114,7 +114,7 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
             }
         }
         /**
-         * 问题点：todo @csy-new
+         * 问题点：history-new
          * 1）spring 2.0.1中的addApplicationListener、addListener了解
          */
     }
@@ -141,7 +141,7 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
             }
         }
         /**
-         * 问题点：todo @csy-new
+         * 问题点：history-new
          * 1）ContextRefreshedEvent与ApplicationEvent有何不同？
          * 2）此处待调试
          */
@@ -337,7 +337,7 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
         }
 
         /**
-         * 问题集 todo @csy-new
+         * 问题集 history-new
          * 1）ProtocolConfig、ProviderConfig的区别？
          * 2）config.isDefault() == null || config.isDefault().booleanValue()此处判断逻辑比较绕，待调试理解
          *

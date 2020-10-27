@@ -58,7 +58,7 @@ public class RouteRule {/**@c 仔细阅读类描述 */
     final Map<String, MatchPair> thenCondition;
     private volatile String tostring = null;
 
-    // FIXME 集合都要加上unmodified的Wrapper，避免构造后的对象被修改
+    // System-t0d0 集合都要加上unmodified的Wrapper，避免构造后的对象被修改
     private RouteRule(Map<String, MatchPair> when, Map<String, MatchPair> then) {
         for (Map.Entry<String, MatchPair> entry : when.entrySet()) {
             entry.getValue().freeze();
@@ -313,7 +313,7 @@ public class RouteRule {/**@c 仔细阅读类描述 */
         return new RouteRule(when, then);
     }
 
-    // todo @csy-h1 目前ToString出来的列表是乱序的，是否要排序？
+    // history-h1 目前ToString出来的列表是乱序的，是否要排序？
     static void join(StringBuilder sb, Set<String> valueSet) {
         boolean isFirst = true;
         for (String s : valueSet) {
@@ -349,14 +349,14 @@ public class RouteRule {/**@c 仔细阅读类描述 */
     }
 
 
-    // FIXME 去掉这样的方法调用
+    // System-t0d0 去掉这样的方法调用
     public static String join(Set<String> valueSet) {
         StringBuilder sb = new StringBuilder(128);
         join(sb, valueSet);
         return sb.toString();
     }
 
-    // todo @csy-h1 目前Condition的多个Key是乱序的，是否要排序？
+    // history-h1 目前Condition的多个Key是乱序的，是否要排序？
     public static void contidionToString(StringBuilder sb, Map<String, MatchPair> condition) {
         boolean isFirst = true;
         for (Entry<String, MatchPair> entry : condition.entrySet()) {

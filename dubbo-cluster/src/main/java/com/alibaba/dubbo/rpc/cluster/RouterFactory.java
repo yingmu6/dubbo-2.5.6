@@ -44,7 +44,6 @@ public interface RouterFactory {/**@c 路由工厂 */
 }
 
 /**
- * todo 0817 从自适应代码中，并没有看到@Adaptive("protocol") "protocol"的使用
  * package com.alibaba.dubbo.rpc.cluster;
  * import com.alibaba.dubbo.common.extension.ExtensionLoader;
  * public class RouterFactory$Adaptive implements com.alibaba.dubbo.rpc.cluster.RouterFactory {

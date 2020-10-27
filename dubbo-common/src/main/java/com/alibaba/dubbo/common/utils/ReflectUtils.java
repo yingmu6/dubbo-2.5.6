@@ -642,7 +642,7 @@ public final class ReflectUtils {
      * @return Class instance.
      */
     /**
-     * todo @csy-new 将类型名称转换为class？ 转换后的class具体怎么使用的？
+     * history-new 将类型名称转换为class？ 转换后的class具体怎么使用的？
      */
     private static Class<?> name2class(ClassLoader cl, String name) throws ClassNotFoundException {
         int c = 0, index = name.indexOf('[');
@@ -650,7 +650,7 @@ public final class ReflectUtils {
             c = (name.length() - index) / 2;
             name = name.substring(0, index);
         }
-        if (c > 0) { //todo @csy 封装类型?
+        if (c > 0) { //history 封装类型?
             StringBuilder sb = new StringBuilder();
             while (c-- > 0)
                 sb.append("[");
@@ -711,7 +711,7 @@ public final class ReflectUtils {
      * @return Class instance.
      * @throws ClassNotFoundException
      */
-    private static Class<?> desc2class(ClassLoader cl, String desc) throws ClassNotFoundException { //todo @csy 待调试
+    private static Class<?> desc2class(ClassLoader cl, String desc) throws ClassNotFoundException { //history 待调试
         //将对象的描述信息 转换为Class对象
         switch (desc.charAt(0)) {//如果是基本类型，直接返回
             case JVM_VOID:
@@ -784,7 +784,7 @@ public final class ReflectUtils {
     }
 
     /**
-     * 根据方法签名从类中找出方法。
+     * 根据方法签名从类中找出方法。 todo 10/27 待调试了解
      *
      * @param clazz      查找的类。
      * @param methodName 方法签名，形如method1(int, String)。也允许只给方法名不参数只有方法名，形如method2。

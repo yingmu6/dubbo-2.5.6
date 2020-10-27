@@ -101,7 +101,7 @@ public class DataSourceStatusChecker implements StatusChecker {
     }
 
     /**
-     * 问题集 todo @csy-new
+     * 问题集 history-new
      * 1）ApplicationContext方法getBeansOfType的了解
      *   解：<T> Map<String, T> getBeansOfType(Class<T> type, boolean includeNonSingletons, boolean allowEagerInit)
      *   includeNonSingletons（是否包含非单例）、allowEagerInit（是否允许急于初始化）

@@ -249,7 +249,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
      */
 
     //方法的用途：根据Active注解上的条件选择加载的实例？是的
-    public List<T> getActivateExtensionOrigin(URL url, String[] values, String group) { //todo @csy-h1 values的用途？
+    public List<T> getActivateExtensionOrigin(URL url, String[] values, String group) { //history-h1 values的用途？
         //new String[]{"","-"} 数组会报错  - 会跳过第一个判断，""进入第二判断 getExtension(name)传入空字符会报错
         List<T> exts = new ArrayList<T>();
         List<String> names = values == null ? new ArrayList<String>(0) : Arrays.asList(values);
@@ -268,7 +268,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                     }
                 }
             }
-            Collections.sort(exts, ActivateComparator.COMPARATOR); //将实例列表排序 todo @csy-h1 排序算法
+            Collections.sort(exts, ActivateComparator.COMPARATOR); //将实例列表排序 history-h1 排序算法
         }
 
         //用例覆盖点5（条件：Activate注解中属性value不为空时）
@@ -762,10 +762,13 @@ public class ExtensionLoader<T> {  //称谓：扩展类
         return clazz;
     }
 
+    /**
+     * 获取扩展类的映射关系，todo @csy 扩展名只能映射一个类？
+     */
     private Map<String, Class<?>> getExtensionClasses() {  //SPI步骤06  获取扩展名与扩展类的映射关系
         Map<String, Class<?>> classes = cachedClasses.get();
         if (classes == null) { //双重检查（单例创建）
-            synchronized (cachedClasses) { /**@c todo @csy-h1 cachedClasses是类的成员变量，私有的为啥考虑线程安全？ */
+            synchronized (cachedClasses) { /**@c history-h1 cachedClasses是类的成员变量，私有的为啥考虑线程安全？ */
                 classes = cachedClasses.get();
                 if (classes == null) { //若映射关系为空，加载配置文件，获取到扩展名与扩展类的映射关系，并设置到内存中cachedClasses
                     classes = loadExtensionClasses();
@@ -867,10 +870,10 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                         /**@c 使用底层流构建高级流（字符缓冲输入流） 将字节流转换为字符流 */
                         BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "utf-8"));
                         try {
-                            String line = null; //todo @csy-h1 为啥加载xxx.xx.SpringExtensionFactory这个文件
+                            String line = null; //history-h1 为啥加载xxx.xx.SpringExtensionFactory这个文件
                             while ((line = reader.readLine()) != null) {
                                 final int ci = line.indexOf('#'); /**@c 取出注释 */
-                                if (ci >= 0) line = line.substring(0, ci); // 去掉注释  //todo @csy-h1 若#在第一个字符，不越界？
+                                if (ci >= 0) line = line.substring(0, ci); // 去掉注释  //history-h1 若#在第一个字符，不越界？
                                 line = line.trim();
                                 if (line.length() > 0) {
                                     try {
@@ -1276,7 +1279,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
             Enumeration<java.net.URL> urls;
             ClassLoader classLoader = findClassLoader();
             if (classLoader != null) {
-                urls = classLoader.getResources(fileName); //todo @csy-h1 文件是从哪个目录取的？相对目录还是绝对目录？
+                urls = classLoader.getResources(fileName); //history-h1 文件是从哪个目录取的？相对目录还是绝对目录？
             } else {
                 urls = ClassLoader.getSystemResources(fileName);
             }
@@ -1392,7 +1395,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
         //System.out.println("-------代码比较--------");
         String code = createAdaptiveExtensionClassCode(); //获取自适应扩展类代码
 
-        //todo @csy-h1 动态编译
+        //history-h1 动态编译
         ClassLoader classLoader = findClassLoader(); //获取类加载器
         com.alibaba.dubbo.common.compiler.Compiler compiler = ExtensionLoader.getExtensionLoader(com.alibaba.dubbo.common.compiler.Compiler.class).getAdaptiveExtension();
         return compiler.compile(code, classLoader);  //将java源代码生成class对象。
@@ -1454,11 +1457,11 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                 }
                 // 参数没有URL类型，但参数对象里包含返回类型为URL的方法
                 else {
-                    // todo @csy-h1 待调试覆盖
+                    // history-h1 待调试覆盖
                     String attribMethod = null;
 
                     // 找到参数的URL属性
-                    LBL_PTS: //todo @csy-h1 是变量吗？为啥没见到类型 ，调试看值
+                    LBL_PTS: //history-h1 是变量吗？为啥没见到类型 ，调试看值
                     for (int i = 0; i < pts.length; ++i) { //对参数列表中的每个参数类型进行分析
                         Method[] ms = pts[i].getMethods();
                         for (Method m : ms) {
@@ -1518,7 +1521,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类
                         // Null Point check
                         String s = String.format("\nif (arg%d == null) throw new IllegalArgumentException(\"invocation == null\");", i);
                         code.append(s);
-                        // todo @csy-h1 Invocation 中的method name是啥？
+                        // history-h1 Invocation 中的method name是啥？
                         s = String.format("\nString methodName = arg%d.getMethodName();", i);
                         code.append(s);
                         hasInvocation = true;

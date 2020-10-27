@@ -60,7 +60,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     public static final String NAME = "dubbo";
 
     public static final int DEFAULT_PORT = 20880;
-    // todo @csy-v2 此key值的用途是啥？
+    // history-v2 此key值的用途是啥？
     private static final String IS_CALLBACK_SERVICE_INVOKE = "_isCallBackServiceInvoke";
     private static DubboProtocol INSTANCE;
     private final Map<String, ExchangeServer> serverMap = new ConcurrentHashMap<String, ExchangeServer>(); // <host:port,Exchanger>
@@ -81,10 +81,10 @@ public class DubboProtocol extends AbstractProtocol {// read finish
      *      判断回调方法是否存在于URL方法名列表中，若没有则抛异常
      *   4.2）若无：执行调用 invoker.invoke(inv)
      */
-    private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() { /**@c todo @csy-h1 成员变量若有对象引用，在什么时候创建的 export中没有调用此方法*/
+    private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() { /**@c history-h1 成员变量若有对象引用，在什么时候创建的 export中没有调用此方法*/
 
         //reply 回答、答复(服务端调用、回复客户端)
-        public Object reply(ExchangeChannel channel, Object message) throws RemotingException { //todo @csy-h1 逻辑待覆盖
+        public Object reply(ExchangeChannel channel, Object message) throws RemotingException { //history-h1 逻辑待覆盖
             if (message instanceof Invocation) {
                 Invocation inv = (Invocation) message; //message转化为的会话信息
                 Invoker<?> invoker = getInvoker(channel, inv);
@@ -190,7 +190,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     }
 
     //是否是消费端
-    private boolean isClientSide(Channel channel) { //todo @csy-h1 判断依据
+    private boolean isClientSide(Channel channel) { //history-h1 判断依据
         InetSocketAddress address = channel.getRemoteAddress();
         URL url = channel.getUrl();
         return url.getPort() == address.getPort() &&
@@ -205,7 +205,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
      * 3）调用export中方法获取invoker，exporter.getInvoker()
      */
     Invoker<?> getInvoker(Channel channel, Invocation inv) throws RemotingException {
-        //todo @csy-h1 这两个服务有啥区别？
+        //history-h1 这两个服务有啥区别？
         boolean isCallBackServiceInvoke = false;
         boolean isStubServiceInvoke = false;
         int port = channel.getLocalAddress().getPort();
@@ -263,7 +263,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         //export an stub service for dispaching event
         //stub method方法是啥？ 解：本地存根，把部分逻辑放在客户端实现,默认为false
         Boolean isStubSupportEvent = url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT);
-        /**@c 回调方法的用途？ 服务端调用客户端逻辑（一般都是客户端调用服务端）todo @csy-h1 参数回调待实现 */
+        /**@c 回调方法的用途？ 服务端调用客户端逻辑（一般都是客户端调用服务端）history-h1 参数回调待实现 */
         Boolean isCallbackservice = url.getParameter(Constants.IS_CALLBACK_SERVICE, false);
         if (isStubSupportEvent && !isCallbackservice) {/**@c 是本地存根 但不是参数回调*/
             //获取本地存根方法，若为空，则打印非法状态异常，否则记录下存根方法
@@ -316,7 +316,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
      * 5）从url中获取client的，判断是否在Transporter支持的扩展集合中
      */
     private ExchangeServer createServer(URL url) {  //service export 步骤10
-        //默认开启server关闭时发送readonly事件（todo @csy-v1 server都关闭了，还能读吗？）
+        //默认开启server关闭时发送readonly事件（history-v1 server都关闭了，还能读吗？）
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
         //默认开启heartbeat(设置心跳检测时间，默认每隔60秒检查一次)
         url = url.addParameterIfAbsent(Constants.HEARTBEAT_KEY, String.valueOf(Constants.DEFAULT_HEARTBEAT)); /**@c 会启动心跳定时任务，每隔指定时间检查心跳*/
@@ -408,7 +408,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
             if (!client.isClosed()) {//如果没有关闭，则原子自增
                 client.incrementAndGetCount();
                 return client;
-            } else { // 已经关闭的，但是referenceClientMap没有被移除（todo @csy-v2 这种会在什么场景出现？ ）
+            } else { // 已经关闭的，但是referenceClientMap没有被移除（history-v2 这种会在什么场景出现？ ）
                 referenceClientMap.remove(key);
             }
         }

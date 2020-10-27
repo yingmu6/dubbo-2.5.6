@@ -76,7 +76,7 @@ public class RegistryServerSync implements InitializingBean, DisposableBean, Not
     }
 
     // 收到的通知对于 ，同一种类型数据（override、subcribe、route、其它是Provider），同一个服务的数据是全量的
-    public void notify(List<URL> urls) {/**@c todo 待了解 */
+    public void notify(List<URL> urls) {
         if (urls == null || urls.isEmpty()) {
             return;
         }

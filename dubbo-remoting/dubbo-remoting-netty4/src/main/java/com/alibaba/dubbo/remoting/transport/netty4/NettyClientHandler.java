@@ -28,7 +28,7 @@ import io.netty.channel.ChannelPromise;
  * @author qinliujie
  */
 @io.netty.channel.ChannelHandler.Sharable
-public class NettyClientHandler extends ChannelDuplexHandler { //todo @csy-v1 netty的ChannelDuplexHandler双工处理器了解
+public class NettyClientHandler extends ChannelDuplexHandler { //history-v1 netty的ChannelDuplexHandler双工处理器了解
 
     private final URL url;
 

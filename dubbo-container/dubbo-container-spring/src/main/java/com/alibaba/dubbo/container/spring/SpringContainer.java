@@ -39,7 +39,7 @@ public class SpringContainer implements Container {
     }
 
     /**
-     * 启动spring容器 todo @csy_new 什么时候被调用
+     * 启动spring容器 history_new 什么时候被调用
      * 1）获取"dubbo.spring.config"对应的文件路径（从系统System中 或从属性文件中获取）
      * 2）若没有查找的文件路径，则取默认的路径"classpath*:META-INF/spring/*.xml"
      *    如：dubbo-demo-provider-common.xml文件所在的位置

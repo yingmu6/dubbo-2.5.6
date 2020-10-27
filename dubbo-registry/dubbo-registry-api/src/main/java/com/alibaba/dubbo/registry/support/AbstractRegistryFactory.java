@@ -64,7 +64,6 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
      *   3.2）移除缓存Map中的所有映射
      * 4）释放可重入锁
      */
-    // todo 2017/8/30 to move somewhere else better
     public static void destroyAll() {
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("Close all registries " + getRegistries());

@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author ding.lid
  */
-// FIXME GhostMethod is Bug!! 下个版本解决
+// System-t0d0 GhostMethod is Bug!! 下个版本解决
 public class RouteUtilsTest {
 
     private Map<String, String> serviceUrls = new HashMap<String, String>();

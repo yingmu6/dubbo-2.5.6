@@ -39,7 +39,7 @@ public class DubboSerializationTest extends AbstractSerializationPersionFailTest
         super.test_StringList_asListReturn();
     }
 
-    // FIXME
+    // System-t0d0
     @Ignore("StackOverflowError")
     @Test(timeout = 3000)
     public void test_LoopReference() throws Exception {

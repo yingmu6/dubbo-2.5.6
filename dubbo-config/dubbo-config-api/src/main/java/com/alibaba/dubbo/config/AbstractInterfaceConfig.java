@@ -146,11 +146,11 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         if (application == null) {
             String applicationName = ConfigUtils.getProperty("dubbo.application.name");
             if (applicationName != null && applicationName.length() > 0) {
-                application = new ApplicationConfig(); //todo @csy-h3 此处为啥不把应用名设置进入
+                application = new ApplicationConfig(); //history-h3 此处为啥不把应用名设置进入
             }
         }
         if (application == null) {/**@c Application 应用配置不能为空 */
-            throw new IllegalStateException( //todo @csy-h3 为啥此处的异常没有抛出来？
+            throw new IllegalStateException( //history-h3 为啥此处的异常没有抛出来？
                     "No such application config! Please add <dubbo:application name=\"...\" /> to your spring config.");
         }
         appendProperties(application);
@@ -216,7 +216,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         return registryList;
     }
 
-    protected URL loadMonitor(URL registryURL) { //service export 步骤06 todo @csy-h3 dubbo监控界面怎么搭建使用？
+    protected URL loadMonitor(URL registryURL) { //service export 步骤06 history-h3 dubbo监控界面怎么搭建使用？
         if (monitor == null) {
             String monitorAddress = ConfigUtils.getProperty("dubbo.monitor.address");
             String monitorProtocol = ConfigUtils.getProperty("dubbo.monitor.protocol");
@@ -348,7 +348,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
             }
         }
         /**
-         * 问题集：todo @csy-new
+         * 问题集：history-new
          * 1）实践：本地服务功能使用
          * 2) 实践：本地stub功能使用
          * 3）实践：Mock功能使用

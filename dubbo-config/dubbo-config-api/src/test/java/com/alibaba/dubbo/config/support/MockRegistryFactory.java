@@ -20,7 +20,7 @@ import com.alibaba.dubbo.registry.Registry;
 import com.alibaba.dubbo.registry.RegistryFactory;
 
 /**
- * todo @csy-h3 Comment of MockRegistryFactory
+ * history-h3 Comment of MockRegistryFactory
  *
  * @author haomin.liuhm
  */

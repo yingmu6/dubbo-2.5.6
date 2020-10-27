@@ -291,10 +291,7 @@ public class PojoUtils {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    /**
-     * todo 0803 此方法的用途？待调试
-     */
-    private static Object realize0(Object pojo, Class<?> type, Type genericType, final Map<Object, Object> history) {
+    private static Object realize0(Object pojo, Class<?> type, Type genericType, final Map<Object, Object> history) { // @pause 6.1 序列化了解
         if (pojo == null) {
             return null;
         }

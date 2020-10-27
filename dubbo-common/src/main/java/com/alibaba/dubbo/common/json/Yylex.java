@@ -351,11 +351,6 @@ public class Yylex {
             do result[j++] = value; while (--count > 0);
         }
         return j;
-        /**
-         * 问题集：todo 0728
-         * 1）用途以及调试？
-         *
-         */
     }
 
     /** number of newlines encountered up to the start of the matched text */
@@ -491,12 +486,6 @@ public class Yylex {
 
         // numRead < 0
         return true;
-
-        /**
-         * 问题集：todo 0728
-         * 1）System.arraycopy 数组拷贝使用
-         * 2）此方法待调试
-         */
     }
 
 
@@ -900,13 +889,6 @@ public class Yylex {
                     }
             }
         }
-        /**
-         * 问题集：todo 0728
-         * 1）此方法的用途？以及调试
-         * 2）zzForAction:{} 在Java里这是什么写法，break zzForAction是啥含义？
-         * 3）zzTransL[zzRowMapL[zzState] + zzCMapL[zzInput]] 此处的了解
-         * 4）此处zzAttributes & 1 逻辑与的用途？zzAttributes & 8
-         */
     }
 
     /**

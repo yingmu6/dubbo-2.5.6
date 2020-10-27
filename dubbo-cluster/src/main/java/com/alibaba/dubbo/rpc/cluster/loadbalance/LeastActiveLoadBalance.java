@@ -43,7 +43,7 @@ public class LeastActiveLoadBalance extends AbstractLoadBalance { /**@c LeastAct
         int totalWeight = 0; // 总权重
         int firstWeight = 0; // 第一个权重，用于于计算是否相同
         boolean sameWeight = true; // 是否所有权重相同
-        for (int i = 0; i < length; i++) { /**@c todo 0812 思路了解 */
+        for (int i = 0; i < length; i++) {
             Invoker<T> invoker = invokers.get(i);
             int active = RpcStatus.getStatus(invoker.getUrl(), invocation.getMethodName()).getActive(); // 活跃数
             int weight = invoker.getUrl().getMethodParameter(invocation.getMethodName(), Constants.WEIGHT_KEY, Constants.DEFAULT_WEIGHT); // 权重

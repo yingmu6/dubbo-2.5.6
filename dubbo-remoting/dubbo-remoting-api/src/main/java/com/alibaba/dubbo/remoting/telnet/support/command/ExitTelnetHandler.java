@@ -22,7 +22,7 @@ import com.alibaba.dubbo.remoting.telnet.support.Help;
 
 /**
  * ExitTelnetHandler
- * todo @csy-v1 使用怎样的命令？
+ * history-v1 使用怎样的命令？
  * @author william.liangf
  */
 @Activate

@@ -21,7 +21,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * FIXME Json Serialization的失败，被暂时被忽略
+ * System-t0d0 Json Serialization的失败，被暂时被忽略
  *
  * @author ding.lid
  */
@@ -30,7 +30,7 @@ public class JsonSerializationTest extends AbstractSerializationPersionOkTest {
         serialization = new JsonSerialization();
     }
 
-    // FIXME
+    // System-t0d0
     @Ignore
     @Test
     public void test_BytesRange() throws Exception {
@@ -228,7 +228,7 @@ public class JsonSerializationTest extends AbstractSerializationPersionOkTest {
     public void test_LoopReference() throws Exception {
     }
 
-    // FIXME DUBBO-63
+    // System-t0d0 DUBBO-63
     @Ignore
     @Test
     public void test_URL_mutable_withType() throws Exception {

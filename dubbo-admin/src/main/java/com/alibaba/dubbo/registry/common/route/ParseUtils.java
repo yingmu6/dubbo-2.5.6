@@ -141,7 +141,7 @@ public class ParseUtils {
                 if (StringUtils.isEmpty(patternNeedItp)) {
                     continue;
                 }
-                // FIXME ERROR!! 原来的实现，这里只和第一个不为空的pattern比较，返回对应的结果！ 和梁飞确认
+                // System-t0d0 ERROR!! 原来的实现，这里只和第一个不为空的pattern比较，返回对应的结果！ 和梁飞确认
                 String pattern = interpolate(patternNeedItp, interpolateParams);
                 if (isMatchGlobPattern(pattern, value)) {
                     return true;
@@ -225,7 +225,7 @@ public class ParseUtils {
      * @return Query String为<code>key1=value1&key2=value2</code>，前缀为<code>pre.</code>时，
      *         则返回<code>Map{pre.key1=value1, pre.key=value2}</code>。
      */
-    // FIXME 抛出的是IllegalStateException异常，是否合理？！
+    // System-t0d0 抛出的是IllegalStateException异常，是否合理？！
     public static Map<String, String> parseQuery(String keyPrefix, String query) {
         if (query == null)
             return new HashMap<String, String>();

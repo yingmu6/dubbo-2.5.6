@@ -28,7 +28,7 @@ public class ChannelBufferInputStream extends InputStream {
     //重新实现InputStream的实现
     private final ChannelBuffer buffer;
     //索引不同于ChannelBuffer，开始下标、结束下标
-    private final int startIndex; //todo @csy-h3 位置是按字节、还是比特位算？
+    private final int startIndex; //history-h3 位置是按字节、还是比特位算？
     private final int endIndex;
 
     public ChannelBufferInputStream(ChannelBuffer buffer) {
@@ -52,7 +52,7 @@ public class ChannelBufferInputStream extends InputStream {
         buffer.markReaderIndex();
     }
 
-    //todo @csy-h3 流的下标是怎样和ChannelBuffer结合使用的？是怎样的顺序
+    //history-h3 流的下标是怎样和ChannelBuffer结合使用的？是怎样的顺序
     public int readBytes() {
         return buffer.readerIndex() - startIndex;
     }
@@ -77,7 +77,7 @@ public class ChannelBufferInputStream extends InputStream {
         if (!buffer.readable()) {
             return -1;
         }
-        //todo @csy-h3 此处按位与的用途
+        //history-h3 此处按位与的用途
         return buffer.readByte() & 0xff;
     }
 

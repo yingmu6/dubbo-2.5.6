@@ -57,7 +57,7 @@ public class RegistryProtocol implements Protocol {
     private final Map<String, ExporterChangeableWrapper<?>> bounds = new ConcurrentHashMap<String, ExporterChangeableWrapper<?>>(); //需要暴露协议的url与ExporterChangeableWrapper的映射，url的值如：dubbo://192.168.1.102:20881/com.alibaba.dubbo.demo.ApiDemo....
     private Cluster cluster;
     private Protocol protocol;
-    private RegistryFactory registryFactory; //todo @csy-h1 注册工厂何处被实例的？
+    private RegistryFactory registryFactory; //history-h1 注册工厂何处被实例的？
     private ProxyFactory proxyFactory;
 
     public RegistryProtocol() {
@@ -142,7 +142,7 @@ public class RegistryProtocol implements Protocol {
         // 通知注册中心发布服务(写到指定目录下) : 创建节点(持久节点 + 临时节点) 比如 /dubbo/xxx.service/providers/dubbo://....
         registry.register(registedProviderUrl); //过滤掉部分参数的url ： dubbo://192.168.1.103:20881/com.alibaba.dubbo.demo.ApiDemo?anyhost=true&application=....
         // 订阅override数据（由dubbo协议转换为provider协议）
-        // FIXME（需要修复的代码） 提供者订阅时，会影响同一JVM即暴露服务，又引用同一服务的的场景，因为subscribed以服务名为缓存的key，导致订阅信息覆盖。
+        // System-t0d0（需要修复的代码） 提供者订阅时，会影响同一JVM即暴露服务，又引用同一服务的的场景，因为subscribed以服务名为缓存的key，导致订阅信息覆盖。
         final URL overrideSubscribeUrl = getSubscribedOverrideUrl(registedProviderUrl);
         // 监听器的使用, overrideSubscribeUrl如：provider://192.168.1.103:20881/com.alibaba.dubbo.demo.ApiDemo?anyhost=true&application=api_demo&category=configurators&check=false...
         final OverrideListener overrideSubscribeListener = new OverrideListener(overrideSubscribeUrl, originInvoker);
@@ -296,14 +296,14 @@ public class RegistryProtocol implements Protocol {
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
         url = url.setProtocol(url.getParameter(Constants.REGISTRY_KEY, Constants.DEFAULT_REGISTRY)).removeParameter(Constants.REGISTRY_KEY); //协议替换为,并且移除键registry zookeeper://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=...
         Registry registry = registryFactory.getRegistry(url); //通过工厂方法创建注册实例Registry
-        if (RegistryService.class.equals(type)) { //todo @csy-h1 此处怎么会有相等的可能？RegistryServicer.class为com.alibaba.dubbo.registry.RegistryService，而暴露的接口为com.alibaba.dubbo.demo.ApiDemo
+        if (RegistryService.class.equals(type)) { //history-h1 此处怎么会有相等的可能？RegistryServicer.class为com.alibaba.dubbo.registry.RegistryService，而暴露的接口为com.alibaba.dubbo.demo.ApiDemo
             return proxyFactory.getInvoker((T) registry, type, url);
         }
 
         // group="a,b" or group="*"
         Map<String, String> qs = StringUtils.parseQueryString(url.getParameterAndDecoded(Constants.REFER_KEY)); //将refer引用部分解析到map中
         String group = qs.get(Constants.GROUP_KEY);
-        if (group != null && group.length() > 0) { //todo @csy-h1 接口分组
+        if (group != null && group.length() > 0) { //history-h1 接口分组
             if ((Constants.COMMA_SPLIT_PATTERN.split(group)).length > 1
                     || "*".equals(group)) {
                 return doRefer(getMergeableCluster(), registry, type, url);
@@ -357,7 +357,7 @@ public class RegistryProtocol implements Protocol {
         /**
          * 获取invoker
          * 判断是否是InvokerDelegete的实例
-         *   若是：强制转换到InvokerDelegete，并调用getInvoker() todo @csy 此处调用InvokerDelegete的getInvoker，又是invoker instanceof InvokerDelegete，递归调用，会不会死循环
+         *   若是：强制转换到InvokerDelegete，并调用getInvoker() history 此处调用InvokerDelegete的getInvoker，又是invoker instanceof InvokerDelegete，递归调用，会不会死循环
          *   若不是：直接返回invoker
          */
         public Invoker<T> getInvoker() {

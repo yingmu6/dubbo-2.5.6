@@ -139,7 +139,7 @@ public class MockClusterInvoker<T> implements Invoker<T> {
      */
     private List<Invoker<T>> selectMockInvoker(Invocation invocation) {
         List<Invoker<T>> invokers = null;
-        //todo @csy-h1 generic invoker？
+        //history-h1 generic invoker？
         if (invocation instanceof RpcInvocation) {
             //存在隐含契约(虽然在接口声明中增加描述，但扩展性会存在问题.同时放在attachement中的做法需要改进
             ((RpcInvocation) invocation).setAttachment(Constants.INVOCATION_NEED_MOCK, Boolean.TRUE.toString());

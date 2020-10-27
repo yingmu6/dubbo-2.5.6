@@ -94,7 +94,7 @@ public class MulticastRegistry extends FailbackRegistry {
                     DatagramPacket recv = new DatagramPacket(buf, buf.length);
                     while (!mutilcastSocket.isClosed()) {
                         try {
-                            mutilcastSocket.receive(recv);/**@c todo @csy-h3 多播使用 */
+                            mutilcastSocket.receive(recv);/**@c history-h3 多播使用 */
                             String msg = new String(recv.getData()).trim();
                             int i = msg.indexOf('\n');
                             if (i > 0) {
@@ -211,7 +211,7 @@ public class MulticastRegistry extends FailbackRegistry {
         } else if (msg.startsWith(Constants.SUBSCRIBE)) {
             URL url = URL.valueOf(msg.substring(Constants.SUBSCRIBE.length()).trim());
             Set<URL> urls = getRegistered();
-            if (urls != null && urls.size() > 0) {/**@c todo @csy-h3 网络知识待了解 */
+            if (urls != null && urls.size() > 0) {/**@c history-h3 网络知识待了解 */
                 for (URL u : urls) {
                     if (UrlUtils.isMatch(url, u)) {
                         String host = remoteAddress != null && remoteAddress.getAddress() != null

@@ -235,7 +235,7 @@ public class ConfigUtils {
      */
 
     /**
-     * 加载指定文件名的属性文件，并且写到Properties对象中  todo @csy_new 待调试
+     * 加载指定文件名的属性文件，并且写到Properties对象中  history_new 待调试
      * 1）若文件名以"/"开头，则按本地文件处理
      *   1.1）通过文件名，获取到文件输入流
      *   1.2）从输入流中读取到属性列表

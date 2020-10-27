@@ -23,7 +23,7 @@ import com.alibaba.dubbo.rpc.Invoker;
  * @author chao.liuc
  *
  */
-//todo @csy-h2 委派模式，同一级别的节点委派，并不是使用向上转型
+//history-h2 委派模式，同一级别的节点委派，并不是使用向上转型
 public class DelegateExporter<T> implements Exporter<T> {// read finish
 
     private final Exporter<T> exporter;

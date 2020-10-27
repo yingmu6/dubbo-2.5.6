@@ -37,7 +37,7 @@ public class Status {
     }
 
     public void execute(Map<String, Object> context) throws Exception {
-        //FIXME cache监控存在性能问题 汇总页面去掉
+        //System-t0d0 cache监控存在性能问题 汇总页面去掉
         Map<String, com.alibaba.dubbo.common.status.Status> statuses = StatusManager.getInstance().getStatusList(new String[]{"cache"});
         com.alibaba.dubbo.common.status.Status status = StatusManager.getInstance().getStatusSummary(statuses);
         Level level = status.getLevel();

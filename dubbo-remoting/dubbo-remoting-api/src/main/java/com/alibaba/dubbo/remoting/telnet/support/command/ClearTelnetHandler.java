@@ -23,7 +23,7 @@ import com.alibaba.dubbo.remoting.telnet.support.Help;
 
 /**
  * ClearTelnetHandler
- * todo @csy-v1 怎样清理服务的？
+ * history-v1 怎样清理服务的？
  *
  * @author william.liangf
  */

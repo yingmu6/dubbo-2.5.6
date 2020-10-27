@@ -61,11 +61,6 @@ public class JSONReader {
             ret.yyreset(reader);
         }
         return ret;
-        /**
-         * 问题集： todo 0728
-         * 1）调试看词法分析器、以及ThreadLocal
-         * 2）调试yyreset() 方法
-         */
     }
 
     public JSONToken nextToken() throws IOException, ParseException {

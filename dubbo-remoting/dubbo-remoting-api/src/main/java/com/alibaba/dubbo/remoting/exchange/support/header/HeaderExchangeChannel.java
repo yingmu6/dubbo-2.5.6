@@ -122,7 +122,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
     }
 
     /**
-     * 通道关闭（todo @csy-new 哪种操作能进入）
+     * 通道关闭（history-new 哪种操作能进入）
      */
     public void close() {
         try {

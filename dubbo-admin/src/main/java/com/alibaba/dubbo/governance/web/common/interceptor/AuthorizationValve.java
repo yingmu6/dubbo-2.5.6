@@ -94,7 +94,7 @@ public class AuthorizationValve extends AbstractValve {
             }
             return;
         }
-        //FIXME
+        //System-t0d0
         if (!uri.startsWith("/status/")) {
             User user = null;
             String authType = null;

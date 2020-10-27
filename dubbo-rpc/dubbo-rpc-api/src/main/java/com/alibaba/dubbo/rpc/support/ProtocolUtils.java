@@ -37,7 +37,7 @@ public class ProtocolUtils {
 
     /**
      * 是否是泛化类型
-     * todo @csy-new 返回类型不是"*"，为啥有这些"nativejava"
+     * history-new 返回类型不是"*"，为啥有这些"nativejava"
      */
     public static boolean isGeneric(String generic) {
         return generic != null

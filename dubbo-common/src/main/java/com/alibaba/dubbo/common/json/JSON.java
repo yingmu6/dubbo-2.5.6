@@ -30,7 +30,7 @@ import java.io.Writer;
  * @author qian.lei
  */
 
-public class JSON { //todo @csy-v1 JSON原生解析了解
+public class JSON { //history-v1 JSON原生解析了解
     public static final char LBRACE = '{', RBRACE = '}';
 
     public static final char LSQUARE = '[', RSQUARE = ']';
@@ -462,11 +462,6 @@ public class JSON { //todo @csy-v1 JSON原生解析了解
         while ((token = jr.nextToken()) != null);
         stack.clear();
         return value;
-
-        /**
-         * 问题集：todo 0728
-         * 1）调试本段代码
-         */
     }
 
     private static Object parse(Reader reader, JSONVisitor handler, int expect) throws IOException, ParseException {

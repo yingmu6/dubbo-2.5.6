@@ -57,7 +57,7 @@ import java.util.regex.Matcher;
  */
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-//todo @csy-h2 用途？
+//history-h2 用途？
 public abstract class Builder<T> implements GenericDataFlags {
     static final Builder<Serializable> SerializableBuilder = new Builder<Serializable>() {
         @Override

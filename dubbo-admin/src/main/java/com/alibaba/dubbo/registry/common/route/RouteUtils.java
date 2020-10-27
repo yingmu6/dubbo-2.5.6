@@ -107,8 +107,8 @@ public class RouteUtils {
      * @param clusters 全部的集群
      * @return 返回路由结果， Map<url-body, url-params>
      */
-    // FIXME clusters和routes的合并，可以在clusters或routes变化时预先做
-    // FIXME 从Util方法中分离出Cache的操作
+    // System-t0d0 clusters和routes的合并，可以在clusters或routes变化时预先做
+    // System-t0d0 从Util方法中分离出Cache的操作
     public static Map<String, String> route(String serviceName, String consumerAddress, String consumerQueryUrl, Map<String, String> serviceUrls,
                                             List<Route> routes, Map<String, List<String>> clusters, List<Route> routed) {
         if (serviceUrls == null || serviceUrls.size() == 0) {

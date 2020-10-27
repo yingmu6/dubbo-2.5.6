@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 /**
  * @author <a href="mailto:gang.lvg@taobao.com">kimi</a>
  */
-public class NettyBackedChannelBuffer implements ChannelBuffer { //todo @csy-h3 备份ChannelBuffer？
+public class NettyBackedChannelBuffer implements ChannelBuffer { //history-h3 备份ChannelBuffer？
 
     private org.jboss.netty.buffer.ChannelBuffer buffer;
 

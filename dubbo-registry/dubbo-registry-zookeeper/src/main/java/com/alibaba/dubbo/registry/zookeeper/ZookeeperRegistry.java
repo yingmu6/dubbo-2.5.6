@@ -374,7 +374,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
     /**
      * 转换到空协议
      * 1）过滤provider url列表，获取到与consumer匹配的url列表
-     * 2）若urls列表不为空 todo @csy 此处需要调试分析下值
+     * 2）若urls列表不为空 history 此处需要调试分析下值
      *    2.1）获取path最后出现'/'字符的位置， 如dubbo://xx， 位置为7
      *    2.2）若没有出现'/'，则取path值，否则取'/'后面的字符串，作为分类的值
      *    2.3）将consumer协议置为"empty"空协议，并且增加category参数

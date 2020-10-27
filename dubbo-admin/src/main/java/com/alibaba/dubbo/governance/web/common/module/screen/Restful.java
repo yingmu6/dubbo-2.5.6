@@ -33,7 +33,7 @@ public abstract class Restful {
     protected static final Logger logger = LoggerFactory.getLogger(Restful.class);
 
     protected static final Pattern SPACE_SPLIT_PATTERN = Pattern.compile("\\s+");
-    //FIXME 把这些辅助方法提取出去
+    //System-t0d0 把这些辅助方法提取出去
     protected String role = null;
     protected String operator = null;
     protected User currentUser = null;

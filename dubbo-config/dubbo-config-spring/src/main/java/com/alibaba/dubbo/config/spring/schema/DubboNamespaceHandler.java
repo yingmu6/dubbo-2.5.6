@@ -36,7 +36,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  * @author william.liangf
  * @export
  */
-public class DubboNamespaceHandler extends NamespaceHandlerSupport { //todo @csy DubboNamespaceHandler什么时候被调用？
+public class DubboNamespaceHandler extends NamespaceHandlerSupport { //history DubboNamespaceHandler什么时候被调用？
 
     /**
      * 静态块，再类加载时就被执行的

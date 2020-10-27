@@ -83,7 +83,6 @@ public class ChanelHandlerTest extends TestCase {
      */
     @Test
     public void testClient() throws Throwable {
-        //todo 暂时先手动设置，待在maven设备
         System.setProperty("server", "127.0.0.1:9911");
 
         // 读取参数

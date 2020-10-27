@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * todo @csy-h2 Comment of NoServicePrivilege
+ * history-h2 Comment of NoServicePrivilege
  *
  * @author guanghui.shigh
  */

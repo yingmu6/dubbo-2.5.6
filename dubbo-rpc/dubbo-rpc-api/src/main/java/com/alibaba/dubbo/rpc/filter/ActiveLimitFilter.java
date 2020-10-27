@@ -50,7 +50,7 @@ public class ActiveLimitFilter implements Filter {
                 synchronized (count) {
                     while ((active = count.getActive()) >= max) {
                         try {
-                            count.wait(remain); //等待指定时间， todo wait与sleep比较
+                            count.wait(remain); //等待指定时间， todo 10/27 wait与sleep比较
                         } catch (InterruptedException e) {
                         }
                         long elapsed = System.currentTimeMillis() - start;

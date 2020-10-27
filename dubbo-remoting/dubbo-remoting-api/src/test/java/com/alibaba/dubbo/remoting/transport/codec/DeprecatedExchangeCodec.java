@@ -328,7 +328,7 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
             // 发送失败信息给Consumer，否则Consumer只能等超时了
             if (!res.isEvent() && res.getStatus() != Response.BAD_RESPONSE) {
                 try {
-                    // FIXME 在Codec中打印出错日志？在IoHanndler的caught中统一处理？
+                    // System-t0d0 在Codec中打印出错日志？在IoHanndler的caught中统一处理？
                     logger.warn("Fail to encode response: " + res + ", send bad_response info instead, cause: " + t.getMessage(), t);
 
                     Response r = new Response(res.getId(), res.getVersion());

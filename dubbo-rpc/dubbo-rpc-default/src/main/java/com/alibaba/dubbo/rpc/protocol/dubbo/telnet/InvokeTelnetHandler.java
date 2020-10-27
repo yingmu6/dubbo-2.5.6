@@ -79,7 +79,7 @@ public class InvokeTelnetHandler implements TelnetHandler {
                 String name = (String) ((Map<?, ?>) arg).get("class"); //判断Map参数中是否包含class参数
                 Class<?> cls = arg.getClass();
                 if (name != null && name.length() > 0) {
-                    cls = ReflectUtils.forName(name); //todo @csy-v1 此处怎么传入才正确？
+                    cls = ReflectUtils.forName(name); //history-v1 此处怎么传入才正确？
                 }
                 if (!type.isAssignableFrom(cls)) {
                     return false;
@@ -100,7 +100,7 @@ public class InvokeTelnetHandler implements TelnetHandler {
     @SuppressWarnings("unchecked")
     //此方法比较模糊，用途？ telnet命令中的invoke 解析
     /**
-     * todo @csy-v1 telnet命令是怎样解析的？待调试， 此处的channel是怎样构造的
+     * history-v1 telnet命令是怎样解析的？待调试， 此处的channel是怎样构造的
      * invoke指令逻辑：
      * 1）从telnet中接收到invoke命令
      * 2）解析输入的内容，构建服务、方法、参数
@@ -116,7 +116,7 @@ public class InvokeTelnetHandler implements TelnetHandler {
             return "Please input method name, eg: \r\ninvoke xxxMethod(1234, \"abcd\", {\"prop\" : \"value\"})\r\ninvoke XxxService.xxxMethod(1234, \"abcd\", {\"prop\" : \"value\"})\r\ninvoke com.xxx.XxxService.xxxMethod(1234, \"abcd\", {\"prop\" : \"value\"})";
         }
         StringBuilder buf = new StringBuilder();
-        String service = (String) channel.getAttribute(ChangeTelnetHandler.SERVICE_KEY); // todo @csy-v1 此处怎么往通道里面设置的？
+        String service = (String) channel.getAttribute(ChangeTelnetHandler.SERVICE_KEY); // history-v1 此处怎么往通道里面设置的？
         if (service != null && service.length() > 0) {
             buf.append("Use default service " + service + ".\r\n"); // 附加输出信息
         }
@@ -169,7 +169,7 @@ public class InvokeTelnetHandler implements TelnetHandler {
                     Object[] array = PojoUtils.realize(list.toArray(), invokeMethod.getParameterTypes(), invokeMethod.getGenericParameterTypes());
                     RpcContext.getContext().setLocalAddress(channel.getLocalAddress()).setRemoteAddress(channel.getRemoteAddress());
                     long start = System.currentTimeMillis();
-                    // 具体执行invoke调用：构建RpcInvocation，调用信息 todo @csy-v1 调用信息待调试
+                    // 具体执行invoke调用：构建RpcInvocation，调用信息 history-v1 调用信息待调试
                     Object result = invoker.invoke(new RpcInvocation(invokeMethod, array)).recreate();
                     long end = System.currentTimeMillis();
                     buf.append(JSON.json(result));

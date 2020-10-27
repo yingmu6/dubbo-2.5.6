@@ -66,7 +66,7 @@ final public class MockInvoker<T> implements Invoker<T> {// read finish
      * 5）若返回类型数组returnTypes不为空，且第一个元素为String类型，则将mock值作为解析后的值
      * 6）若mock字符串以"{" 开始，则解析为Map对象
      * 7）若mock字符串以"[" 开始，则解析为List对象
-     * 8）除了上传字符串，直接返回mock的值，todo 0803 这些值都有哪些？
+     * 8）除了上传字符串，直接返回mock的值
      * 9）若返回类型有多个，
      * 10）返回解析后的值
      */
@@ -100,7 +100,7 @@ final public class MockInvoker<T> implements Invoker<T> {// read finish
         }
         return value;
         /**
-         * 问题集：todo @csy-new
+         * 问题集：history-new
          * 1）mock值都有哪些形式？
          */
     }
@@ -238,7 +238,7 @@ final public class MockInvoker<T> implements Invoker<T> {// read finish
     }
 
     public Class<T> getInterface() {
-        //FIXME
+        //System-t0d0
         return null;
     }
 }

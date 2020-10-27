@@ -74,7 +74,6 @@ class CallbackServiceCodec {// read finish hh
      * @param clazz
      * @param inst
      * @param export
-     * @param out
      * @throws IOException
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -133,7 +132,7 @@ class CallbackServiceCodec {// read finish hh
      * @param url
      */
     @SuppressWarnings("unchecked")
-    // todo @csy-h2 待调试覆盖
+    // history-h2 待调试覆盖
     private static Object referOrdestroyCallbackService(Channel channel, URL url, Class<?> clazz, Invocation inv, int instid, boolean isRefer) {
         Object proxy = null;
         String invokerCacheKey = getServerSideCallbackInvokerCacheKey(channel, clazz.getName(), instid);

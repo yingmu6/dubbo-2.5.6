@@ -77,6 +77,9 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
         return new ClassGenerator(getClassPool(loader));
     }
 
+    /**
+     * 判断是否是动态类
+     */
     public static boolean isDynamicClass(Class<?> cl) {
         return ClassGenerator.DC.class.isAssignableFrom(cl); //判断DC是否和cl相同；DC是否是cl超类；DC是否是cl的接口
     }
@@ -91,7 +94,12 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
      * 字节码文件（.class）就是普通的二进制文件，它是通过 Java 编译器生成的。
      * 动态字节码技术优势在于 Java 字节码生成之后，对其进行修改，增强其功能，这种方式相当于对应用程序的二进制文件进行修改
      *
-     * todo 10/26 ClassPool了解&实践
+     * 10/26 ClassPool了解&实践
+     * A container of CtClass objects（CtClass对象的容器）
+     * A CtClass object must be obtained from this object（必须从此对象获取CtClass对象）
+     *
+     * CtClass是类Class的实例
+     * An instance of CtClass represents a class
      */
 
     /**
@@ -275,10 +283,13 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
         return mPool;
     }
 
-    public Class<?> toClass() { //todo 10/25 待了解
+    public Class<?> toClass() { //10/25 待了解
         return toClass(ClassHelper.getClassLoader(ClassGenerator.class), getClass().getProtectionDomain());
     }
 
+    /**
+     * todo 10/27 待了解调试，javassist待使用
+     */
     public Class<?> toClass(ClassLoader loader, ProtectionDomain pd) {
         if (mCtc != null)
             mCtc.detach();
@@ -349,6 +360,6 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
         return getCtClass(c.getDeclaringClass()).getConstructor(ReflectUtils.getDesc(c));
     }
 
-    public static interface DC {
+    public static interface DC { //todo 10/27 动态类概念了解？
     } // dynamic class tag interface.
 }

@@ -50,7 +50,7 @@ public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {
     }
 
     /**
-     * 调用处理  todo 0812 什么时候触发的？
+     * 调用处理
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Result doInvoke(Invocation invocation, final List<Invoker<T>> invokers, LoadBalance loadbalance) throws RpcException {
@@ -58,7 +58,6 @@ public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {
         checkInvokers(copyinvokers, invocation); //校验Invoker列表是否为空
         /**
          *  getUrl() -》directory.getUrl() -》node.getUrl() 获取节点的url
-         * todo 0812 此处getMethodParameter是指啥？待调试
          */
         int len = getUrl().getMethodParameter(invocation.getMethodName(), Constants.RETRIES_KEY, Constants.DEFAULT_RETRIES) + 1;
         if (len <= 0) { //获取调用次数=重试次数 + 1
@@ -82,9 +81,6 @@ public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {
              */
             Invoker<T> invoker = select(loadbalance, invocation, copyinvokers, invoked);
             invoked.add(invoker);
-            /**
-             * todo 0812 上下文RpcContext中的invokers调用信息为啥是个列表？不应该是单个invoker
-             */
             RpcContext.getContext().setInvokers((List) invoked);
             try {
                 Result result = invoker.invoke(invocation);

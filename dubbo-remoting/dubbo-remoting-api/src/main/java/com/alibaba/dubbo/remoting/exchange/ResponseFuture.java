@@ -25,17 +25,17 @@ import com.alibaba.dubbo.remoting.RemotingException;
  * @see com.alibaba.dubbo.remoting.exchange.ExchangeChannel#request(Object)
  * @see com.alibaba.dubbo.remoting.exchange.ExchangeChannel#request(Object, int)
  */
-public interface ResponseFuture {// read finish 异步响应，todo 10/26 功能是啥？怎么使用的？
+public interface ResponseFuture {// read finish， 10/26 功能是啥？怎么使用的？异步响应结果
 
     /**
-     * get result.
+     * get result.（实现类中：阻塞地获取结果，有加锁）
      *
      * @return result.
      */
     Object get() throws RemotingException;
 
     /**
-     * get result with the specified timeout.
+     * get result with the specified timeout.（带着指定的超时时间获取结果）
      *
      * @param timeoutInMillis timeout.
      * @return result.
@@ -43,14 +43,14 @@ public interface ResponseFuture {// read finish 异步响应，todo 10/26 功能
     Object get(int timeoutInMillis) throws RemotingException;
 
     /**
-     * set callback.
+     * set callback.（设置响应回调）
      *
      * @param callback
      */
     void setCallback(ResponseCallback callback);
 
     /**
-     * check is done.
+     * check is done.（检查是否是完成）
      *
      * @return done or not.
      */

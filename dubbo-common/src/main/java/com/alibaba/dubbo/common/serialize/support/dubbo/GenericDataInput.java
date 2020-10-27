@@ -55,7 +55,7 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
         byte b = read0();
 
         switch (b) {
-            case VARINT_0: //todo @csy 值代表的含义是什么
+            case VARINT_0: //history 值代表的含义是什么
                 return false;
             case VARINT_1:
                 return true;
@@ -67,7 +67,7 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
     public byte readByte() throws IOException {
         byte b = read0();
 
-        switch (b) { //todo @csy 值的含义是什么
+        switch (b) { //history 值的含义是什么
             case VARINT8:
                 return read0();
             case VARINT_0:
@@ -247,7 +247,7 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
             System.arraycopy(mBuffer, mPosition, ret, 0, len);
             mPosition += len;
         } else {
-            System.arraycopy(mBuffer, mPosition, ret, 0, rem); //todo @csy 待调试，数据分析
+            System.arraycopy(mBuffer, mPosition, ret, 0, rem); //history 待调试，数据分析
             mPosition = mRead;
 
             len -= rem;
@@ -281,7 +281,7 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
                     return ret | 0xff000000;
                 return ret;
             }
-            case VARINT32: { //todo @csy 逻辑运算的含义以及用途
+            case VARINT32: { //history 逻辑运算的含义以及用途
                 byte b1 = read0(), b2 = read0(), b3 = read0(), b4 = read0();
                 return ((b1 & 0xff) |
                         ((b2 & 0xff) << 8) |
@@ -387,7 +387,7 @@ public class GenericDataInput implements DataInput, GenericDataFlags {
         }
     }
 
-    private long readVarint64() throws IOException { //todo @csy 计算以及用途
+    private long readVarint64() throws IOException { //history 计算以及用途
         byte b = read0();
 
         switch (b) {

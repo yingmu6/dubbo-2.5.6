@@ -46,7 +46,7 @@ public abstract class AbstractConfigurator implements Configurator {
     }
 
     /**
-     * 配置url todo 用途？以及debug
+     * 配置url
      */
     public URL configure(URL url) {
         if (configuratorUrl == null || configuratorUrl.getHost() == null
@@ -71,7 +71,7 @@ public abstract class AbstractConfigurator implements Configurator {
     //override://172.16.90.78:20883/com.alibaba.dubbo.demo.DemoService?category=configurators&disabled=true&dynamic=false&enabled=true
 
     /**
-     * todo @csy 此方法的用途目前有点模糊，待调试了解
+     * history 此方法的用途目前有点模糊，待调试了解
      * 1）若配置url的host为"0.0.0.0"，或输入的host与配置的host相等，则进入处理
      * 2）获取配置configuratorUrl中键"application"对应的值，默认是username值
      * 3）获取输入url中键"application"对应的值，默认是username值

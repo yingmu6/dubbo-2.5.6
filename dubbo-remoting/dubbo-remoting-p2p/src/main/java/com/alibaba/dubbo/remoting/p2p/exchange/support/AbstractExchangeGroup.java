@@ -87,7 +87,7 @@ public abstract class AbstractExchangeGroup implements ExchangeGroup {
 
     public ExchangePeer join(URL url, ExchangeHandler handler) throws RemotingException {
         ExchangeServer server = servers.get(url);
-        if (server == null) { // todo @csy-h3 有并发间隙
+        if (server == null) { // history-h3 有并发间隙
             server = Exchangers.bind(url, handler);
             servers.put(url, server);
             dispatcher.addChannelHandler(handler);
@@ -107,7 +107,7 @@ public abstract class AbstractExchangeGroup implements ExchangeGroup {
             return null;
         }
         ExchangeClient client = clients.get(url);
-        if (client == null) { // todo @csy-h3 有并发间隙
+        if (client == null) { // history-h3 有并发间隙
             client = Exchangers.connect(url, dispatcher);
             clients.put(url, client);
         }

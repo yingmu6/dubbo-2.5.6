@@ -78,7 +78,7 @@ import java.util.concurrent.ConcurrentHashMap;
 // dubbo的URL采用总线型方法，即配置都放在url里面的参数
 
 /**
- * todo @csy-v1 URL学习实践？dubbo URL的用户以及应用场景
+ * history-v1 URL学习实践？dubbo URL的用户以及应用场景
  */
 public final class URL implements Serializable {//可进行序列化
 
@@ -1133,7 +1133,7 @@ public final class URL implements Serializable {//可进行序列化
         return new URL(protocol, username, password, host, port, path, map);
     }
 
-    public URL addParametersIfAbsent(Map<String, String> parameters) {/**@c todo @csy-h1 没有判断是否存在 */
+    public URL addParametersIfAbsent(Map<String, String> parameters) {/**@c history-h1 没有判断是否存在 */
         if (parameters == null || parameters.size() == 0) {
             return this;
         }
@@ -1409,7 +1409,7 @@ public final class URL implements Serializable {//可进行序列化
         return buf.toString();
     }
 
-    // todo @csy-v2 装换为java URL的用途？
+    // history-v2 装换为java URL的用途？
     public java.net.URL toJavaURL() {
         try {
             return new java.net.URL(toString());
@@ -1448,7 +1448,7 @@ public final class URL implements Serializable {//可进行序列化
         return buf.toString();
     }
 
-    //todo @csy-h1 用途？
+    //history-h1 用途？
     public String toServiceStringWithoutResolving() {
         return buildString(true, false, false, true);
     }

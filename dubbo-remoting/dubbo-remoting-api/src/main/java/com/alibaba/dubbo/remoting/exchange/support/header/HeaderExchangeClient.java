@@ -172,7 +172,7 @@ public class HeaderExchangeClient implements ExchangeClient {
     /**
      * 1）尝试停止心跳定时器
      * 2）若心跳时间大于0
-     *    创建延迟任务，并设置心跳时间 todo @csy-new ScheduledThreadPoolExecutor使用
+     *    创建延迟任务，并设置心跳时间 history-new ScheduledThreadPoolExecutor使用
      */
     private void startHeatbeatTimer() {
         stopHeartbeatTimer();

@@ -117,7 +117,7 @@ public class ServiceMethodNotFoundTest extends AbstractTest {
 
     @Test
     public void testServiceMethodNotFound() throws Exception {
-        // FIXME
+        // System-t0d0
         /*url = url.addParameter( "echoString." + Constants.TIMEOUT_KEY, Integer.MAX_VALUE );
 
         invoker = protocol.refer( Demo.class, url );

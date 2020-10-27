@@ -39,7 +39,7 @@ public class Request { //请求对象
 
     private boolean mTwoWay = true; //是否双向通讯
 
-    private boolean mEvent = false; //todo @csy 是否是事件指啥？
+    private boolean mEvent = false; //history 是否是事件指啥？
 
     private boolean mBroken = false;
 

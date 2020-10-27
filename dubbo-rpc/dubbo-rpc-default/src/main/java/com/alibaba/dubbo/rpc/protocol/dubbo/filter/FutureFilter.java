@@ -44,9 +44,11 @@ import java.util.concurrent.Future;
 @Activate(group = Constants.CONSUMER)
 public class FutureFilter implements Filter {// read finish todo 10/22 待了解功能用途
     //FutureFilter主要是用来处理事件通知的过滤器
-    //此类比较模糊
     protected static final Logger logger = LoggerFactory.getLogger(FutureFilter.class);
 
+    /**
+     * 异步调用过滤处理
+     */
     public Result invoke(final Invoker<?> invoker, final Invocation invocation) throws RpcException {
         final boolean isAsync = RpcUtils.isAsync(invoker.getUrl(), invocation);
 
@@ -70,12 +72,12 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
         }
     }
 
-    //异步调用
+    //异步调用， @pause 1.2 异步调用待使用
     private void asyncCallback(final Invoker<?> invoker, final Invocation invocation) {
         Future<?> f = RpcContext.getContext().getFuture();
         if (f instanceof FutureAdapter) {
             ResponseFuture future = ((FutureAdapter<?>) f).getFuture();
-            future.setCallback(new ResponseCallback() {
+            future.setCallback(new ResponseCallback() { //匿名类
                 public void done(Object rpcResult) {
                     if (rpcResult == null) {
                         logger.error(new IllegalStateException("invalid result value : null, expected " + Result.class.getName()));
@@ -101,6 +103,9 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
         }
     }
 
+    /**
+     * todo 10/27 用途和含义待了解？是指执行回调操作？
+     */
     private void fireInvokeCallback(final Invoker<?> invoker, final Invocation invocation) {
         //onInvokeMethod、onInvokeInst值的格式？
         final Method onInvokeMethod = (Method) StaticContext.getSystemContext().get(StaticContext.getKey(invoker.getUrl(), invocation.getMethodName(), Constants.ON_INVOKE_METHOD_KEY));
@@ -118,7 +123,7 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
 
         Object[] params = invocation.getArguments();
         try {
-            onInvokeMethod.invoke(onInvokeInst, params);
+            onInvokeMethod.invoke(onInvokeInst, params); //调用目标对象的方法
         } catch (InvocationTargetException e) {
             fireThrowCallback(invoker, invocation, e.getTargetException());
         } catch (Throwable e) {
@@ -145,7 +150,7 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
         Object[] args = invocation.getArguments();
         Object[] params;
         Class<?>[] rParaTypes = onReturnMethod.getParameterTypes();
-        //此处逻辑不明确？
+        //todo 10/27 待调试了解
         if (rParaTypes.length > 1) {
             if (rParaTypes.length == 2 && rParaTypes[1].isAssignableFrom(Object[].class)) {
                 params = new Object[2];
@@ -188,7 +193,7 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
                 Object[] args = invocation.getArguments();
                 Object[] params;
 
-                //此处逻辑不明确？
+                //todo 10/27 此处逻辑待了解
                 if (rParaTypes.length > 1) {
                     if (rParaTypes.length == 2 && rParaTypes[1].isAssignableFrom(Object[].class)) {
                         params = new Object[2];

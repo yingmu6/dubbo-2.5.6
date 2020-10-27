@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author qianlei
  */
-public class HessianProtocol extends AbstractProxyProtocol { //todo @csy-v1 hession序列化方式学习实践
+public class HessianProtocol extends AbstractProxyProtocol { //history-v1 hession序列化方式学习实践
 
     private final Map<String, HttpServer> serverMap = new ConcurrentHashMap<String, HttpServer>();
 

@@ -67,7 +67,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {// read finish
         Serialization s = CodecSupport.getSerialization(channel.getUrl(), proto);
         // get request id.
         long id = Bytes.bytes2long(header, 4);
-        if ((flag & FLAG_REQUEST) == 0) { //todo @csy-h2 此处含义？
+        if ((flag & FLAG_REQUEST) == 0) { //history-h2 此处含义？
             // decode response.
             Response res = new Response(id);
             if ((flag & FLAG_EVENT) != 0) {
@@ -84,7 +84,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {// read finish
                     } else if (res.isEvent()) {
                         data = decodeEventData(channel, deserialize(s, channel.getUrl(), is));
                     } else {
-                        //todo @csy-h2 解码逻辑？
+                        //history-h2 解码逻辑？
                         DecodeableRpcResult result;//请求返回结果
                         if (channel.getUrl().getParameter(
                                 Constants.DECODE_IN_IO_THREAD_KEY, //decode.in.io

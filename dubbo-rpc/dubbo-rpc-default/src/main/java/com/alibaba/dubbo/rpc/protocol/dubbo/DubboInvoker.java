@@ -84,7 +84,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {// read finish
             boolean isAsync = RpcUtils.isAsync(getUrl(), invocation);
             boolean isOneway = RpcUtils.isOneway(getUrl(), invocation);
             int timeout = getUrl().getMethodParameter(methodName, Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
-            if (isOneway) {//todo @csy-h2 指同步吗
+            if (isOneway) {//history-h2 指同步吗
                 //获取url中发送参数
                 boolean isSent = getUrl().getMethodParameter(methodName, Constants.SENT_KEY, false);
                 currentClient.send(inv, isSent);//发送对象
@@ -119,7 +119,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {// read finish
     }
 
     /**
-     * dubbo invoker销毁 todo @csy-new 待调试
+     * dubbo invoker销毁 history-new 待调试
      * 1）若已经销毁，则不处理
      * 2）若没有销毁
      *  2.1）用销毁的可重入锁destroyLock加锁

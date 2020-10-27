@@ -49,8 +49,8 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
     private static Pattern ROUTE_PATTERN = Pattern.compile("([&!=,]*)\\s*([^&!=,\\s]+)");/**@c 路由规则正则表达式 */
     private final URL url;
     private final int priority;/**@c 优先级：数字越大、级别越高 */
-    private final boolean force;/**@c todo 此成员变量用途 */
-    private final Map<String, MatchPair> whenCondition;/**@c todo 是否是可以理解为 当什么条件满足，就执行什么条件 */
+    private final boolean force;
+    private final Map<String, MatchPair> whenCondition;
     private final Map<String, MatchPair> thenCondition;
 
     /**
@@ -91,7 +91,7 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
     }
 
     /**
-     * 解析路由规则，生成条件condition与匹配对MatchPair的映射集合Map todo @csy 此处匹配细节待测试用例调试
+     * 解析路由规则，生成条件condition与匹配对MatchPair的映射集合Map history 此处匹配细节待测试用例调试
      * 1）若规则为空，则返回空的集合Map
      * 2）将规则字符串按规则的正式表达式构建Matcher
      * 3）若存在符合正则表达式的字符串，获取到分隔符separator、匹配的内容content
@@ -205,7 +205,7 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
             }
             if (result.size() > 0) {
                 return result;
-            } else if (force) { /**@c todo 0811 强制执行是指？ */
+            } else if (force) {
                 logger.warn("The route result is empty and force execute. consumer: " + NetUtils.getLocalHost() + ", service: " + url.getServiceKey() + ", router: " + url.getParameterAndDecoded(Constants.RULE_KEY));
                 return result;
             }
@@ -249,7 +249,7 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
     private boolean matchCondition(Map<String, MatchPair> condition, URL url, URL param, Invocation invocation) {
         Map<String, String> sample = url.toMap(); /**@c 将url拆分存储到map中 */
         boolean result = false;
-        for (Map.Entry<String, MatchPair> matchPair : condition.entrySet()) { /**@c 遍历条件集合Map todo 0810 condition里面都存储什么内容？设置值的地方在哪里 */
+        for (Map.Entry<String, MatchPair> matchPair : condition.entrySet()) {
             String key = matchPair.getKey();
             String sampleValue;
             //get real invoked method name from invocation

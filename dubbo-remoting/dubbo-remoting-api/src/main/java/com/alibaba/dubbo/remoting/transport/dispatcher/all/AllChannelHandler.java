@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
- * todo @csy-v1
+ * history-v1
  * 1）AllChannelHandler表明所有的事件执行都使用线程池吗？包含send吗
  * 2）与ExecutionChannelHandler有啥不同？感觉都是一样的
  */
@@ -59,7 +59,7 @@ public class AllChannelHandler extends WrappedChannelHandler {
         }
     }
 
-    public void received(Channel channel, Object message) throws RemotingException { //todo @csy-h2 待调试
+    public void received(Channel channel, Object message) throws RemotingException { //history-h2 待调试
         ExecutorService cexecutor = getExecutorService();
         try {
             cexecutor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));

@@ -23,7 +23,7 @@ import com.alibaba.dubbo.rpc.cluster.Merger;
  */
 public class LongArrayMerger implements Merger<long[]> {
 
-    public long[] merge(long[]... items) { /**@c todo debug 调试下 */
+    public long[] merge(long[]... items) {
         int total = 0;
         for (long[] array : items) {
             total += array.length;

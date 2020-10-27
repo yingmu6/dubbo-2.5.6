@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * GrizzlyClient
  *
- * todo @csy-v1 grizzly 环境搭建，并基本使用
+ * history-v1 grizzly 环境搭建，并基本使用
  * @author william.liangf
  */
 public class GrizzlyClient extends AbstractClient {

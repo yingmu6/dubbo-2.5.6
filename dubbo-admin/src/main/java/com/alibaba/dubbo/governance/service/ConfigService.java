@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * todo|history Comment of ConfigDAO
- *
  * @author rain.chenjr
  *
  */

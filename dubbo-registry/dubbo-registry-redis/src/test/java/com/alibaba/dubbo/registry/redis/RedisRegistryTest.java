@@ -50,9 +50,6 @@ public class RedisRegistryTest {
         //registry.register(service, serviceUrl);
     }
 
-    /**
-     * Test method for {@link com.alibaba.dubbo.registry.support.injvm.InjvmRegistry#register(java.util.Map)}.
-     */
     @Test
     public void testRegister() {
         /*List<URL> registered = null;
@@ -69,11 +66,6 @@ public class RedisRegistryTest {
         assertEquals(1, registered.size());*/
     }
 
-    /**
-     * Test method for
-     * {@link com.alibaba.dubbo.registry.support.injvm.InjvmRegistry#subscribe(java.util.Map, com.alibaba.dubbo.registry.support.NotifyListener)}
-     * .
-     */
     @Test
     public void testSubscribe() {
         /*final String subscribearg = "arg1=1&arg2=2";
@@ -82,7 +74,7 @@ public class RedisRegistryTest {
         registry.subscribe(service, new URL("dubbo", NetUtils.getLocalHost(), 0, StringUtils.parseQueryString(subscribearg)), new NotifyListener() {
 
             public void notify(List<URL> urls) {
-                // FIXME assertEquals(RedisRegistry.this.service, service);
+                // System-t0d0 assertEquals(RedisRegistry.this.service, service);
                 args.set(urls.get(0).getParameters());
             }
         });

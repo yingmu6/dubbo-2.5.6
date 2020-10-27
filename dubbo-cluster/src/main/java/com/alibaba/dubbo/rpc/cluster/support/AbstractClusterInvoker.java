@@ -105,7 +105,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
          */
         boolean sticky = invokers.get(0).getUrl().getMethodParameter(methodName, Constants.CLUSTER_STICKY_KEY, Constants.DEFAULT_CLUSTER_STICKY);
         {
-            //ignore overloaded method  todo 0812 stickyInvoker的使用场景？粘粘invoker？
+            //ignore overloaded method
             if (stickyInvoker != null && !invokers.contains(stickyInvoker)) {
                 stickyInvoker = null;
             }
@@ -126,7 +126,6 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
 
     /**
      * 做负载均衡选择invoker
-     * todo 0812 invokers、selected的区别？selected表示已选择过的invoker列表吗
      */
     private Invoker<T> doselect(LoadBalance loadbalance, Invocation invocation, List<Invoker<T>> invokers, List<Invoker<T>> selected) throws RpcException {
         if (invokers == null || invokers.size() == 0)
@@ -184,7 +183,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
      */
     private Invoker<T> reselect(LoadBalance loadbalance, Invocation invocation,
                                 List<Invoker<T>> invokers, List<Invoker<T>> selected, boolean availablecheck)
-            throws RpcException {/**@c todo */
+            throws RpcException {
 
         //预先分配一个，这个列表是一定会用到的.
         List<Invoker<T>> reselectInvokers = new ArrayList<Invoker<T>>(invokers.size() > 1 ? (invokers.size() - 1) : invokers.size());

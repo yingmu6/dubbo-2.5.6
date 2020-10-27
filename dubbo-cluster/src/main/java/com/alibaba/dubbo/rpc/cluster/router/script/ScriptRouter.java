@@ -56,7 +56,7 @@ public class ScriptRouter implements Router {/**@c */
 
     private final URL url;
 
-    public ScriptRouter(URL url) {/**@c todo 是javascript处理吗 */
+    public ScriptRouter(URL url) {
         this.url = url;
         String type = url.getParameter(Constants.TYPE_KEY);
         this.priority = url.getParameter(Constants.PRIORITY_KEY, 0);
@@ -90,7 +90,7 @@ public class ScriptRouter implements Router {/**@c */
     public <T> List<Invoker<T>> route(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
         try {
             List<Invoker<T>> invokersCopy = new ArrayList<Invoker<T>>(invokers);
-            Compilable compilable = (Compilable) engine;/**@c todo 0812 脚本路由是指啥？用到哪些知识点 */
+            Compilable compilable = (Compilable) engine;
             Bindings bindings = engine.createBindings();
             bindings.put("invokers", invokersCopy);
             bindings.put("invocation", invocation);

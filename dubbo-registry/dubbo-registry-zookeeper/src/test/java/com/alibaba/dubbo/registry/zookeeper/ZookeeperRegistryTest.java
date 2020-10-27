@@ -63,9 +63,6 @@ public class ZookeeperRegistryTest {
         Assert.assertEquals("10.20.153.10:2181", ZookeeperRegistry.appendDefaultPort("10.20.153.10"));
     }
 
-    /**
-     * Test method for {@link com.alibaba.dubbo.registry.support.injvm.InjvmRegistry#register(java.util.Map)}.
-     */
     @Test
     public void testRegister() {
         /*List<URL> registered = null;
@@ -82,11 +79,6 @@ public class ZookeeperRegistryTest {
         assertEquals(1, registered.size());*/
     }
 
-    /**
-     * Test method for
-     * {@link com.alibaba.dubbo.registry.support.injvm.InjvmRegistry#subscribe(java.util.Map, com.alibaba.dubbo.registry.support.NotifyListener)}
-     * .
-     */
     @Test
     public void testSubscribe() {
         /*final String subscribearg = "arg1=1&arg2=2";
@@ -95,7 +87,7 @@ public class ZookeeperRegistryTest {
         registry.subscribe(service, new URL("dubbo", NetUtils.getLocalHost(), 0, StringUtils.parseQueryString(subscribearg)), new NotifyListener() {
 
             public void notify(List<URL> urls) {
-                // FIXME assertEquals(ZookeeperRegistry.this.service, service);
+                // System-t0d0 assertEquals(ZookeeperRegistry.this.service, service);
                 args.set(urls.get(0).getParameters());
             }
         });

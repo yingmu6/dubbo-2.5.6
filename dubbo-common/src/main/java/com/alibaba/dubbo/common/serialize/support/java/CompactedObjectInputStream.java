@@ -29,7 +29,7 @@ import java.io.StreamCorruptedException;
  *
  * @author qianlei
  */
-//todo @csy-h2 用途？
+//history-h2 用途？
 public class CompactedObjectInputStream extends ObjectInputStream {
     private ClassLoader mClassLoader;
 

@@ -11,7 +11,7 @@ package com.alibaba.dubbo.governance.web.util;
 import java.io.Serializable;
 
 /**
- * todo @csy-h1 Comment of Paginator
+ * history-h1 Comment of Paginator
  *
  * @author guanghui.shigh
  */
@@ -39,8 +39,6 @@ public class Paginator implements Serializable, Cloneable {
 
     /**
      * 最简化的分页构造器。
-     *
-     * @param itemsPerPage 每页项数。
      */
     public Paginator(int currentPage, int totalItems, String path) {
         initPagination(currentPage, totalItems, 0, 0, path);
@@ -57,10 +55,6 @@ public class Paginator implements Serializable, Cloneable {
     /**
      * 完整的分页构造器。
      *
-     * @param currentPage 。
-     * @param totalItems(必须项) 记录总数，大于等于0
-     * @param sliderSize
-     * @param itemsPerPage 每页项数。
      */
     public void initPagination(int currentPageT, int totalItemsT, int sliderSizeT, int itemsPerPageT, String path) {
         this.totalItems = (totalItemsT > 0) ? totalItemsT : 0;

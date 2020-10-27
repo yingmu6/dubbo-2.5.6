@@ -73,7 +73,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
             }
             for (Invoker<T> invoker : invokers) {
                 String address = invoker.getUrl().getAddress();
-                for (int i = 0; i < replicaNumber / 4; i++) { /**@c todo 0812 为啥除以4？ */
+                for (int i = 0; i < replicaNumber / 4; i++) {
                     byte[] digest = md5(address + i);
                     for (int h = 0; h < 4; h++) {
                         long m = hash(digest, h);

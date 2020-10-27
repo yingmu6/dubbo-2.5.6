@@ -25,12 +25,12 @@ public class ApiConsumer2 {
     public static void extendUse() throws Exception {
         ReferenceConfig referenceConfig = initApplication();
         /**
-         * todo @csy-v2 destroy() 方法来自哪里？是Node吗？都销毁了啥，怎么使用
+         * history-v2 destroy() 方法来自哪里？是Node吗？都销毁了啥，怎么使用
          */
 //        referenceConfig.destroy();
 //        referenceConfig
         /**
-         * todo @csy-v2 引用配置ReferenceConfig获取实例的过程都经历了什么？
+         * history-v2 引用配置ReferenceConfig获取实例的过程都经历了什么？
          */
         ApiDemo apiDemo = (ApiDemo) referenceConfig.get();
         String resultStr = apiDemo.sayHello("扩展使用");
@@ -45,7 +45,7 @@ public class ApiConsumer2 {
         registryConfig.setAddress("localhost:2181");
         registryConfig.setProtocol("zookeeper"); // 不设置协议的话，默认dubbo
         /**
-         * todo @csy-v2 为啥填写了注册中心后，消费者启动时会先调用 com.alibaba.dubbo.registry.RegistryService？
+         * history-v2 为啥填写了注册中心后，消费者启动时会先调用 com.alibaba.dubbo.registry.RegistryService？
          */
         applicationConfig.setRegistry(registryConfig);
 
@@ -58,7 +58,7 @@ public class ApiConsumer2 {
         referenceConfig.setApplication(applicationConfig);
 
         /**
-         * todo @csy-v2 目前zookeeper中消费者consumers的com.alibaba.dubbo.demo.ApiDemo节点的内容如下，解释下是如何产生这个url的
+         * history-v2 目前zookeeper中消费者consumers的com.alibaba.dubbo.demo.ApiDemo节点的内容如下，解释下是如何产生这个url的
          * consumer://192.163.103.102/com.alibaba.dubbo.demo.ApiDemo?application=api_demo&category=consumers&check=false&dubbo=2.0.0&interface=com.alibaba.dubbo.demo.ApiDemo&methods=sayHello,sayApi&pid=11902&side=consumer&timestamp=1589933405741
          */
         return referenceConfig;

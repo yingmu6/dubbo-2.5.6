@@ -113,13 +113,18 @@ public class RpcUtils {// read finish
         }
     }
 
+    /**
+     * 从调用信息中获取方法名
+     * 1）判断是否是泛化方法，若是返回调用中的第一个参数值
+     * 2）若不是直接从调用信息中获取
+     */
     public static String getMethodName(Invocation invocation) {
-        //为啥方法名加上$ todo 0809 此处"$invoke" 什么场景会出现
+        //为啥方法名加上$  0809 此处"$invoke" 什么场景会出现? 解：这个方法名是GenericService的方法名，判断是否是泛化调用
         if (Constants.$INVOKE.equals(invocation.getMethodName())
                 && invocation.getArguments() != null
                 && invocation.getArguments().length > 0
                 && invocation.getArguments()[0] instanceof String) {
-            return (String) invocation.getArguments()[0];
+            return (String) invocation.getArguments()[0]; //todo 10/27 为啥是第一个参数？泛化调试下
         }
         return invocation.getMethodName();
     }
@@ -129,7 +134,7 @@ public class RpcUtils {// read finish
                 && invocation.getArguments() != null
                 && invocation.getArguments().length > 2
                 && invocation.getArguments()[2] instanceof Object[]) {
-            //取第三个参数？Invocation具体的值？  todo 0809 此处出现的场景
+            //取第三个参数？Invocation具体的值？
             return (Object[]) invocation.getArguments()[2];
         }
         return invocation.getArguments();
@@ -153,6 +158,11 @@ public class RpcUtils {// read finish
         return invocation.getParameterTypes();
     }
 
+    /**
+     * 判断是否是异步调用
+     * 1）若调用信息的附加参数设置了async值，就按改值判断
+     * 2）调用信息中若没有设置，则获取方法中的参数async，在url中设置的值
+     */
     public static boolean isAsync(URL url, Invocation inv) {
         boolean isAsync;
         //如果Java代码中设置优先.

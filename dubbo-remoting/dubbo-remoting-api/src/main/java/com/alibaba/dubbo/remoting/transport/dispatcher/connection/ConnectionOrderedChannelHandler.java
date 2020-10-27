@@ -46,7 +46,7 @@ public class ConnectionOrderedChannelHandler extends WrappedChannelHandler {
     private final int queuewarninglimit;
 
     /**
-     * todo @csy-v1 此处保证顺序是指啥顺序？ 如果保证顺序，通过LinkedBlockingQueue？
+     * history-v1 此处保证顺序是指啥顺序？ 如果保证顺序，通过LinkedBlockingQueue？
      */
     public ConnectionOrderedChannelHandler(ChannelHandler handler, URL url) {
         super(handler, url);
@@ -56,7 +56,7 @@ public class ConnectionOrderedChannelHandler extends WrappedChannelHandler {
                 new LinkedBlockingQueue<Runnable>(url.getPositiveParameter(Constants.CONNECT_QUEUE_CAPACITY, Integer.MAX_VALUE)),
                 new NamedThreadFactory(threadName, true),
                 new AbortPolicyWithReport(threadName, url)
-        );  // FIXME 没有地方释放connectionExecutor！
+        );  // System-t0d0 没有地方释放connectionExecutor！
         queuewarninglimit = url.getParameter(Constants.CONNECT_QUEUE_WARNING_SIZE, Constants.DEFAULT_CONNECT_QUEUE_WARNING_SIZE);
     }
 

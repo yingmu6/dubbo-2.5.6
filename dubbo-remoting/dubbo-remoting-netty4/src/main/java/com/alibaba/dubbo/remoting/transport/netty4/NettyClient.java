@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 /**
- * todo @csy-v1 netty 客户端、服务端基本使用
+ * history-v1 netty 客户端、服务端基本使用
  */
 public class NettyClient extends AbstractClient { // 使用的是netty 4.x版本以上的包
 
@@ -206,7 +206,7 @@ public class NettyClient extends AbstractClient { // 使用的是netty 4.x版本
     /**
      * 获取通道
      * 1）若当前对象的属性channel为空或没有激活的话，则返回null
-     * 2）获取NettyChannel todo @csy-new 此处NettyChannel与Netty中的channel的关系
+     * 2）获取NettyChannel history-new 此处NettyChannel与Netty中的channel的关系
      */
     @Override
     protected com.alibaba.dubbo.remoting.Channel getChannel() {

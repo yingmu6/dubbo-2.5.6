@@ -125,7 +125,7 @@ import java.util.regex.Matcher;
  * 代理分为：静态代理、动态代理。动态代理：通过反射实现的，就可以避免静态代理中代理类接口过多的问题。
  *
  */
-public abstract class Wrapper {/**@c 包装类 */
+public abstract class Wrapper {/**@c 包装类（抽象类） */
     protected static final Logger logger = LoggerFactory.getLogger(Wrapper.class);
 
     private static final Map<Class<?>, Wrapper> WRAPPER_MAP = new ConcurrentHashMap<Class<?>, Wrapper>(); //class wrapper map
@@ -175,19 +175,19 @@ public abstract class Wrapper {/**@c 包装类 */
     private static AtomicLong WRAPPER_CLASS_COUNTER = new AtomicLong(0);
 
     /**
-     * get wrapper.
+     * get wrapper.  @pause 7.1 封装流程
      *
      * @param c Class instance.
      * @return Wrapper instance(not null).
      */
-    public static Wrapper getWrapper(Class<?> c) { //todo @csy-h2 封装类的用涂？
+    public static Wrapper getWrapper(Class<?> c) { //history-h2 封装类的用涂？
         while (ClassGenerator.isDynamicClass(c)) // can not wrapper on dynamic class.
             c = c.getSuperclass();
 
-        if (c == Object.class)
+        if (c == Object.class) //返回对象的封装类
             return OBJECT_WRAPPER;
 
-        Wrapper ret = WRAPPER_MAP.get(c);
+        Wrapper ret = WRAPPER_MAP.get(c); //从本地缓存中获取类对应的封装对象Wrapper
         if (ret == null) {
             ret = makeWrapper(c);
             WRAPPER_MAP.put(c, ret);
@@ -195,7 +195,11 @@ public abstract class Wrapper {/**@c 包装类 */
         return ret;
     }
 
-    //todo @csy-h2 用途？ 待调试
+    //history-h2 用途？ 待调试
+
+    /**
+     * 创建指定类的封装类
+     */
     private static Wrapper makeWrapper(Class<?> c) {/**@c 运行时根据反射机制解析Class，构造java文件*/ //todo 10/24 待阅读
         if (c.isPrimitive())/**@c 判断是否是基本类型 */
             throw new IllegalArgumentException("Can not create wrapper for primitive type: " + c);
@@ -338,7 +342,7 @@ public abstract class Wrapper {/**@c 包装类 */
             for (Method m : ms.values())
                 wc.getField("mts" + ix++).set(null, m.getParameterTypes());
 
-            return (Wrapper) wc.newInstance();
+            return (Wrapper) wc.newInstance(); //todo 10/27 待调试封装的内容
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable e) {

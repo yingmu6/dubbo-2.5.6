@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author chao.liuc
  * @author william.liangf
  */
-public abstract class AbstractRegistry implements Registry { //将公共信息放到抽象类，供子类调用 todo 此类中相关的参数需要调试看下，便于理解
+public abstract class AbstractRegistry implements Registry { //将公共信息放到抽象类，供子类调用
 
     // URL地址分隔符，用于文件缓存中，服务提供者URL分隔
     private static final char URL_SEPARATOR = ' ';
@@ -74,7 +74,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
     private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>(); /**@c 订阅、取消订阅，一个主题URL被多个监听者NotifyListener监听 */
     private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>(); /**@c 通知的集合 */
     private URL registryUrl;
-    // 本地磁盘缓存文件 todo @csy 此处的值需要调试下
+    // 本地磁盘缓存文件 history 此处的值需要调试下
     private File file;
 
     private AtomicBoolean destroyed = new AtomicBoolean(false);
@@ -321,7 +321,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
                     reference.set(urls);
                 }
             };
-            //todo @csy-h1 此处订阅的用途？
+            //history-h1 此处订阅的用途？
             subscribe(url, listener); // 订阅逻辑保证第一次notify后再返回
             List<URL> urls = reference.get();
             if (urls != null && urls.size() > 0) {
@@ -406,7 +406,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         }
     }
 
-    protected void recover() throws Exception {/**@c todo @csy-h1 恢复什么*/
+    protected void recover() throws Exception {/**@c history-h1 恢复什么*/
         // register
         Set<URL> recoverRegistered = new HashSet<URL>(getRegistered());
         if (!recoverRegistered.isEmpty()) {
@@ -441,7 +441,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         for (Map.Entry<URL, Set<NotifyListener>> entry : getSubscribed().entrySet()) {
             URL url = entry.getKey();
 
-            if (!UrlUtils.isMatch(url, urls.get(0))) { // todo @csy-v1 为啥url只和列表的第一个比较？
+            if (!UrlUtils.isMatch(url, urls.get(0))) { // history-v1 为啥url只和列表的第一个比较？
                 continue;
             }
 

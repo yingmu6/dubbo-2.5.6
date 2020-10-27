@@ -417,7 +417,7 @@ public class ConfigTest {
                 try {
                     demoService.sayName("Haha");
                     fail();
-                } catch (RpcException expected) {//todo @csy-h2 怎么重试了3次
+                } catch (RpcException expected) {//history-h2 怎么重试了3次
                     assertThat(expected.getMessage(), containsString("Tried 3 times"));
                 }
 

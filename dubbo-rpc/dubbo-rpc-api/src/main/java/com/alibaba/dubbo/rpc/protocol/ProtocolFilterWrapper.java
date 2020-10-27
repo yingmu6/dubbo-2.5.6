@@ -52,7 +52,7 @@ public class ProtocolFilterWrapper implements Protocol {// read finish
     private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
         Invoker<T> last = invoker;
         /**
-         * todo @csy-v2 自动激活了解
+         * history-v2 自动激活了解
          */
         List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);
         if (filters.size() > 0) {

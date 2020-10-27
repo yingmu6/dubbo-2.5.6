@@ -180,7 +180,7 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
         }
     }
 
-    private void invokeCallback(ResponseCallback c) { //todo @pause 1.2
+    private void invokeCallback(ResponseCallback c) { // @pause 1.2
         ResponseCallback callbackCopy = c;
         if (callbackCopy == null) {
             throw new NullPointerException("callback cannot be null.");

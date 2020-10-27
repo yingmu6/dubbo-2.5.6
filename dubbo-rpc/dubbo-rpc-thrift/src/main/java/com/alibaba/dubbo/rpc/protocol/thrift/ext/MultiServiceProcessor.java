@@ -77,7 +77,6 @@ public class MultiServiceProcessor implements TProcessor {
             return false;
         }
 
-        // todo if exception
         boolean result = processor.process(in, protocol);
 
         ByteArrayOutputStream header = new ByteArrayOutputStream(512);

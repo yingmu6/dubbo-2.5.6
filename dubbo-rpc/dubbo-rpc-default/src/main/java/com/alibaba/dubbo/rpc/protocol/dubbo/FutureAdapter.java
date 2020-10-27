@@ -31,7 +31,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author william.liangf
  */
-public class FutureAdapter<V> implements Future<V> {// read finish
+public class FutureAdapter<V> implements Future<V> {// read finish  @pause 1.3 Future适配器了解
 
     private final ResponseFuture future;
 

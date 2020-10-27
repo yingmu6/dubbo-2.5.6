@@ -29,13 +29,13 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * 日志输出器工厂
- * todo @csy-v1 dubbo日志学习实践
+ * history-v1 dubbo日志学习实践
  * @author william.liangf
  */
 public class LoggerFactory {
 
     /**
-     * todo @csy-v1 ConcurrentMap结合源码学习实践
+     * history-v1 ConcurrentMap结合源码学习实践
      */
     private static final ConcurrentMap<String, FailsafeLogger> LOGGERS = new ConcurrentHashMap<String, FailsafeLogger>();
     private static volatile LoggerAdapter LOGGER_ADAPTER;

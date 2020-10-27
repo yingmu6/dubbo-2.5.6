@@ -87,7 +87,7 @@ public class RmiProtocolTest {
         }
     }
 
-    // FIXME RMI协议目前的实现不支持转型成 EchoService
+    // System-t0d0 RMI协议目前的实现不支持转型成 EchoService
     @Ignore
     @Test
     public void testRmiProtocol_echoService() throws Exception {

@@ -79,7 +79,7 @@ public abstract class AbstractGroup implements Group {
 
     public Peer join(URL url, ChannelHandler handler) throws RemotingException {
         Server server = servers.get(url);
-        if (server == null) { // todo @csy-h3 有并发间隙
+        if (server == null) { // history-h3 有并发间隙
             server = Transporters.bind(url, handler);
             servers.put(url, server);
             dispatcher.addChannelHandler(handler);
@@ -99,7 +99,7 @@ public abstract class AbstractGroup implements Group {
             return null;
         }
         Client client = clients.get(url);
-        if (client == null) { // todo @csy-h3 有并发间隙
+        if (client == null) { // history-h3 有并发间隙
             client = Transporters.connect(url, dispatcher);
             clients.put(url, client);
         }

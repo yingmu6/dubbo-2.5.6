@@ -262,7 +262,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
      *  ThreadPoolExecutor 参数说明：
      *
      *  https://blog.csdn.net/Jack_SivenChen/article/details/53394058  ThreadPoolExecutor 参数详解（图解）
-     *  https://www.jianshu.com/p/6f82b738ac58 todo @csy-v1 参数还需再了解
+     *  https://www.jianshu.com/p/6f82b738ac58 history-v1 参数还需再了解
      *  https://www.jianshu.com/p/67add4f5939c   http://www.matools.com/api/java8(Java API)
      *  corePoolSize ：核心线程数，即线程池中能运行的线程数
      *  maximumPoolSize：线程池的最大线程数

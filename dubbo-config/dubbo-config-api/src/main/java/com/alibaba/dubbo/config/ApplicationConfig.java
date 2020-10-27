@@ -39,7 +39,7 @@ public class ApplicationConfig extends AbstractConfig {
     private String name;
 
     // 模块版本
-    private String version; //todo @csy 10/01 若提供者指定了版本等约束条件，消费者是怎么校验处理的
+    private String version; //history 10/01 若提供者指定了版本等约束条件，消费者是怎么校验处理的
 
     // 应用负责人
     private String owner;
@@ -51,7 +51,7 @@ public class ApplicationConfig extends AbstractConfig {
     private String architecture;
 
     // 环境，如：dev/test/run
-    private String environment; //todo @csy 10/01 探究下项目环境是否用这个字段标识的？
+    private String environment; //history 10/01 探究下项目环境是否用这个字段标识的？
 
     // Java代码编译器
     private String compiler;

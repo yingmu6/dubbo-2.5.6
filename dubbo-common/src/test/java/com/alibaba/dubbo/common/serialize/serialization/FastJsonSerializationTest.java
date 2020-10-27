@@ -29,7 +29,7 @@ import java.io.ByteArrayInputStream;
 import static org.junit.Assert.fail;
 
 /**
- * FIXME FastJson Serialization的失败，被暂时被忽略
+ * System-t0d0 FastJson Serialization的失败，被暂时被忽略
  *
  * @author ding.lid
  */
@@ -38,7 +38,7 @@ public class FastJsonSerializationTest extends AbstractSerializationPersionOkTes
         serialization = new FastJsonSerialization();
     }
 
-    @Ignore // FIXME
+    @Ignore // System-t0d0
     @Test
     public void test_BytesRange() throws Exception {
     }
@@ -143,7 +143,7 @@ public class FastJsonSerializationTest extends AbstractSerializationPersionOkTes
     public void test_BizExceptionNoDefaultConstructor() throws Exception {
     }
 
-    // FIXME 没有缺省构造函数失败
+    // System-t0d0 没有缺省构造函数失败
     @Ignore("NoDefaultConstructor")
     @Test
     public void test_BizExceptionNoDefaultConstructor_WithType() throws Exception {
@@ -258,7 +258,7 @@ public class FastJsonSerializationTest extends AbstractSerializationPersionOkTes
         }
     }
 
-    // FIXME DUBBO-63
+    // System-t0d0 DUBBO-63
     @Ignore
     @Test
     public void test_URL_mutable_withType() throws Exception {

@@ -68,7 +68,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
     private final Class<?> beanClass;
     private final boolean required;
 
-    public DubboBeanDefinitionParser(Class<?> beanClass, boolean required) { //todo @csy 此处的required，是指bean是否必须还是指id是否必须？因为xml中并没有看到ModuleConfig
+    public DubboBeanDefinitionParser(Class<?> beanClass, boolean required) { //history 此处的required，是指bean是否必须还是指id是否必须？因为xml中并没有看到ModuleConfig
         this.beanClass = beanClass; // bean的类型，如ApplicationConfig.class、ProtocolConfig.class等
         this.required = required;
     }
@@ -210,14 +210,14 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
             for (String name : parserContext.getRegistry().getBeanDefinitionNames()) {
                 BeanDefinition definition = parserContext.getRegistry().getBeanDefinition(name);
                 PropertyValue property = definition.getPropertyValues().getPropertyValue("protocol");
-                if (property != null) {// todo @csy-new 此处如何覆盖进入？目前<dubbo:protocol> 没有protocol属性
+                if (property != null) {// history-new 此处如何覆盖进入？目前<dubbo:protocol> 没有protocol属性
                     Object value = property.getValue();
                     if (value instanceof ProtocolConfig && id.equals(((ProtocolConfig) value).getName())) {
                         definition.getPropertyValues().addPropertyValue("protocol", new RuntimeBeanReference(id));
                     }
                 }
             }
-        } else if (ServiceBean.class.equals(beanClass)) { //todo @csy-new <dubbo:service class=""> 此处的class的用途是？
+        } else if (ServiceBean.class.equals(beanClass)) { //history-new <dubbo:service class=""> 此处的class的用途是？
             String className = element.getAttribute("class");
             if (className != null && className.length() > 0) {
                 RootBeanDefinition classDefinition = new RootBeanDefinition();
@@ -354,8 +354,8 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
 
         /**
          * parse()
-         * 问题集：todo @csy-new
-         * 1）待调试看数据 todo 进行到ProviderConfig.class.equals(beanClass)
+         * 问题集：history-new
+         * 1）待调试看数据
          * 2）6.1.6.4.5.1.1中此处的配置含义不清楚
          * 3）3.1.1.2中 此处的interface值会是啥？
          * 4）&&与||的优先级
@@ -399,7 +399,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
         }
         return null;
         /**
-         * 问题集：todo @csy-new
+         * 问题集：history-new
          * 1）能看懂正则表达式的串，并能使用Pattern、Matcher
          */
     }
@@ -409,7 +409,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
      * Class中的isPrimitive()方法：
      * Determines if the specified Class object represents a primitive type
      * （确定指定的Class对象是否表示基本的类型）
-     * todo @csy-new 此处cls.isPrimitive()是否有cls == Boolean.class的功能，属不属于重复判断？
+     * history-new 此处cls.isPrimitive()是否有cls == Boolean.class的功能，属不属于重复判断？
      */
     private static boolean isPrimitive(Class<?> cls) {
         return cls.isPrimitive() || cls == Boolean.class || cls == Byte.class
@@ -423,11 +423,11 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
      * 1）将value按逗号进行分隔
      * 2）遍历解析的数组
      *   2.1）若值不为空，构建RuntimeBeanReference实例，并加到ManagedList列表
-     * 3）将构建的列表，添加到属性中  todo @csy 待调试
+     * 3）将构建的列表，添加到属性中  history 待调试
      */
     @SuppressWarnings("unchecked")
     private static void parseMultiRef(String property, String value, RootBeanDefinition beanDefinition,
-                                      ParserContext parserContext) {/**@c todo @csy-h2 解析多引用 ？*/
+                                      ParserContext parserContext) {/**@c history-h2 解析多引用 ？*/
         String[] values = value.split("\\s*[,]+\\s*");
         ManagedList list = null;
         for (int i = 0; i < values.length; i++) {
@@ -447,7 +447,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
      * 1）获取元素对应的所有子节点
      * 2）若节点列表不为空，遍历节点列表
      *  2.1）获取每个节点，若节点是Element实例时
-     *   2.1.1）若节点名称NodeName与便签tag名称相等 或getLocalName与tag名称相等 todo @csy-new getLocalName待了解
+     *   2.1.1）若节点名称NodeName与便签tag名称相等 或getLocalName与tag名称相等 history-new getLocalName待了解
      *    2.1.1.1）判断是否是第一个节点 first是否为true，若是第一个节点
      *         获取元素的default的值，若默认值为空，则将"default"属性置为false
      *    2.1.1.2）递归解析节点获取到BeanDefinition实例
@@ -492,10 +492,10 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
      *     2.1.1.1.3）若value、ref值都为空，则抛出未支持的异常
      */
     private static void parseProperties(NodeList nodeList, RootBeanDefinition beanDefinition) { //解析属性
-        if (nodeList != null && nodeList.getLength() > 0) {//todo @csy-new 哪种情况进入该判断？
+        if (nodeList != null && nodeList.getLength() > 0) {//history-new 哪种情况进入该判断？
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
-                if (node instanceof Element) { //todo @csy-new Node、Element待了解实践？
+                if (node instanceof Element) { //history-new Node、Element待了解实践？
                     if ("property".equals(node.getNodeName())
                             || "property".equals(node.getLocalName())) {
                         String name = ((Element) node).getAttribute("name");
@@ -522,7 +522,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
      *   1.1）遍历每个节点nodeList.item(i)
      *   1.2）若节点是Element的实例
      *     1.2.1）若节点的名字为"parameter"或节点的本地名字为"parameter"
-     *      1.2.1.1）若ManagedMap为空，则初始化对象 todo @csy 了解ManagedMap
+     *      1.2.1.1）若ManagedMap为空，则初始化对象 history 了解ManagedMap
      *      1.2.1.2）获取节点的属性"key"、"value"对应的值
      *      1.2.1.3）获取节点的属性"hide"，并判断是否与"true"相等
      *              若相等，则为key加上前缀"."
@@ -605,7 +605,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser { // dubb
     }
 
     /**
-     * 解析方法元素 <dubbo:argument>  todo @csy 与parameters有啥不同
+     * 解析方法元素 <dubbo:argument>  history 与parameters有啥不同
      * 若节点列表不为空，遍历节点
      * 1）遍历每个节点
      *    1.1）若节点node是Element的实例

@@ -286,7 +286,7 @@ public abstract class AbstractChannelBuffer implements ChannelBuffer { //finish 
         writeBytes(src, src.readableBytes());
     }
 
-    //todo @csy-h3 待调试，看数值
+    //history-h3 待调试，看数值
     public void writeBytes(ChannelBuffer src, int length) {
         if (length > src.readableBytes()) {
             throw new IndexOutOfBoundsException();

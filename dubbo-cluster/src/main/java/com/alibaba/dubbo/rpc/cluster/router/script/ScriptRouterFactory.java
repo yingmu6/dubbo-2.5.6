@@ -34,7 +34,6 @@ import com.alibaba.dubbo.rpc.cluster.RouterFactory;
  * @author william.liangf
  */
 
-/**@c todo routerfile.js 是指可以本地上传文件吗？*/
 public class ScriptRouterFactory implements RouterFactory {
 
     public static final String NAME = "script";

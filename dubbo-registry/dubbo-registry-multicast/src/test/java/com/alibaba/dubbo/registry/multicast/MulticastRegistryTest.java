@@ -68,9 +68,6 @@ public class MulticastRegistryTest {
         new MulticastRegistry(errorUrl);
     }
 
-    /**
-     * Test method for {@link com.alibaba.dubbo.registry.support.injvm.InjvmRegistry#register(java.util.Map)}.
-     */
     @Test
     public void testRegister() {
         Set<URL> registered = null;
@@ -87,11 +84,6 @@ public class MulticastRegistryTest {
         assertEquals(1, registered.size());
     }
 
-    /**
-     * Test method for
-     * {@link com.alibaba.dubbo.registry.support.injvm.InjvmRegistry#subscribe(java.util.Map, com.alibaba.dubbo.registry.support.NotifyListener)}
-     * .
-     */
     @Test
     public void testSubscribe() {
         // verify lisener.
@@ -99,7 +91,7 @@ public class MulticastRegistryTest {
         registry.subscribe(consumerUrl, new NotifyListener() {
 
             public void notify(List<URL> urls) {
-                // FIXME assertEquals(MulticastRegistry.this.service, service);
+                // System-t0d0 assertEquals(MulticastRegistry.this.service, service);
                 args.set(urls.get(0));
             }
         });

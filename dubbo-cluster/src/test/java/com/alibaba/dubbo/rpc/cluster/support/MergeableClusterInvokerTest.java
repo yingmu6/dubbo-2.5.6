@@ -166,7 +166,7 @@ public class MergeableClusterInvokerTest {
         merge(expected, secondMenuMap);
         TestCase.assertEquals(expected.keySet(), menu.getMenus().keySet());
         for (String key : expected.keySet()) {
-            // FIXME: cannot guarantee the sequence of the merge result, check implementation in
+            // System-t0d0: cannot guarantee the sequence of the merge result, check implementation in
             // MergeableClusterInvoker#invoke
             List<String> values1 = new ArrayList<String>(expected.get(key));
             List<String> values2 = new ArrayList<String>(menu.getMenus().get(key));

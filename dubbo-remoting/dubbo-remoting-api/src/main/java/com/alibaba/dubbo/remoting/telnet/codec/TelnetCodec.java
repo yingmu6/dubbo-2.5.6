@@ -94,7 +94,7 @@ public class TelnetCodec extends TransportCodec {
         }
         return Charset.defaultCharset();
     }
-    //todo @csy-h1 实现逻辑不清楚？待调试
+    //history-h1 实现逻辑不清楚？待调试
     private static String toString(byte[] message, Charset charset) throws UnsupportedEncodingException {
         byte[] copy = new byte[message.length];
         int index = 0;

@@ -225,7 +225,7 @@ public class BuilderTest {
         Assert.assertArrayEquals(obj, builder.parseFrom(b));
     }
 
-    // FIXME MyList的从ArrayList中继承来的属性size会在decode时设置好，再Add时就不对了！！
+    // System-t0d0 MyList的从ArrayList中继承来的属性size会在decode时设置好，再Add时就不对了！！
     @Ignore
     @Test
     @SuppressWarnings({"rawtypes", "unchecked"})

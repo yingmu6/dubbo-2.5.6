@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * 系统存储，内部类.
+ * 系统存储，内部类. todo 10/27 待了解
  */
 public class StaticContext extends ConcurrentHashMap<Object, Object> {// read finish
     //用途？

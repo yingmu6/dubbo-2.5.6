@@ -100,7 +100,7 @@ public class SpringStatusChecker implements StatusChecker {
     }
 
     /**
-     * 问题点：todo @csy-new
+     * 问题点：history-new
      * 1）Lifecycle了解？定义了生命周期中的start/stop方案
      * 2）Class、Method、getDeclaredMethod()、getSuperclass()了解下
      * 3） while (cls != null && method == null)此处是否会出现死循环

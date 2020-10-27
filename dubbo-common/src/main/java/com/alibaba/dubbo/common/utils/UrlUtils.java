@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class UrlUtils {
 
-    public static URL parseURL(String address, Map<String, String> defaults) { //todo @csy-h1 待细节调试
+    public static URL parseURL(String address, Map<String, String> defaults) { //history-h1 待细节调试
         if (address == null || address.length() == 0) {
             return null;
         }
@@ -384,7 +384,7 @@ public class UrlUtils {
          * 2.若consumerInterface不是泛化接口，并且不等于providerInterface，则认为不相等，返回false
          * 非运算，取反运算， !true == false, !false == true
          */
-        if (!(Constants.ANY_VALUE.equals(consumerInterface) || StringUtils.isEquals(consumerInterface, providerInterface))) // todo @csy 此处正常逻辑不好理解，是指consumerInterface不为"*" 就返回false吗？
+        if (!(Constants.ANY_VALUE.equals(consumerInterface) || StringUtils.isEquals(consumerInterface, providerInterface))) // history 此处正常逻辑不好理解，是指consumerInterface不为"*" 就返回false吗？
             return false;
 
         if (!isMatchCategory(providerUrl.getParameter(Constants.CATEGORY_KEY, Constants.DEFAULT_CATEGORY),

@@ -42,7 +42,7 @@ public abstract class AbstractProtocol implements Protocol {// read finish
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * 将serviceKey与Exporter映射起来 todo @csy-h2 这是局部变量，属于各个对象，其它线程能用吗？怎样实现缓存效果？
+     * 将serviceKey与Exporter映射起来 history-h2 这是局部变量，属于各个对象，其它线程能用吗？怎样实现缓存效果？
      * 在什么时候缓存的？ 在AbstractProxyProtocol中的export中，在从本地缓存中没找到时，就会创建暴露对象，并且缓存下来
      */
 
@@ -50,7 +50,7 @@ public abstract class AbstractProtocol implements Protocol {// read finish
 
     protected final Set<Invoker<?>> invokers = new ConcurrentHashSet<Invoker<?>>();//ConcurrentHashSet由dubbo实现的
 
-    protected static String serviceKey(URL url) { //todo @csy-v1 ConcurrentHashMap、ConcurrentHashSet原理学习实践
+    protected static String serviceKey(URL url) { //history-v1 ConcurrentHashMap、ConcurrentHashSet原理学习实践
         return ProtocolUtils.serviceKey(url);
     }
 

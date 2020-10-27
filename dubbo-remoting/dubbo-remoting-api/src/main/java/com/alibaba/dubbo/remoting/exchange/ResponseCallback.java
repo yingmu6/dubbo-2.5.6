@@ -20,7 +20,7 @@ package com.alibaba.dubbo.remoting.exchange;
  *
  * @author william.liangf
  */
-public interface ResponseCallback { //todo 10/26 响应回调？应用场景以及实践
+public interface ResponseCallback { //10/26 响应回调？应用场景以及实践；解：目前没看到具体实现类，都是按匿名类使用的，在FutureFilter有使用
 
     /**
      * done.

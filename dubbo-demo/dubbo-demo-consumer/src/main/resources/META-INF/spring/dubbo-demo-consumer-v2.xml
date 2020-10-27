@@ -29,7 +29,7 @@
     <dubbo:registry address="zookeeper://127.0.0.1:2181" check="true"/>
 
     <!-- generate proxy for the remote service, then demoService can be used in the same way as the
-    local regular interface --> <!-- todo @csy 为啥此处mock没有效果 -->
+    local regular interface --> <!-- history 为啥此处mock没有效果 -->
     <dubbo:reference id="commonService" check="false" interface="com.alibaba.dubbo.demo.CommonService" mock="return null"/>
 
 </beans>

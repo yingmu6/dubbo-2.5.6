@@ -51,9 +51,9 @@ public abstract class AbstractReferenceConfig extends AbstractInterfaceConfig {
 
     protected String reconnect;
 
-    protected Boolean sticky; //todo @csy-h3 记住上次结果？
+    protected Boolean sticky; //history-h3 记住上次结果？
 
-    //stub是否支持event事件. //todo @csy-h3 slove merge problem
+    //stub是否支持event事件. //history-h3 slove merge problem
     protected Boolean stubevent;//= Constants.DEFAULT_STUB_EVENT;
 
     // 版本

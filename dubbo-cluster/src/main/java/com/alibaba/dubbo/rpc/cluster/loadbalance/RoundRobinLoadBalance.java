@@ -47,7 +47,7 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {/**@c 循环负�
         int weightSum = 0;
         for (int i = 0; i < length; i++) {
             int weight = getWeight(invokers.get(i), invocation);
-            maxWeight = Math.max(maxWeight, weight); // 累计最大权重 todo 0812 方法待使用
+            maxWeight = Math.max(maxWeight, weight); // 累计最大权重
             minWeight = Math.min(minWeight, weight); // 累计最小权重
             if (weight > 0) {
                 invokerToWeightMap.put(invokers.get(i), new IntegerWrapper(weight));

@@ -49,7 +49,7 @@ public class JSONToken {
     static String token2string(int t) {
         switch (t) {
             case LBRACE:
-                return "{";  //todo 0803 待调试，这些值从哪里来
+                return "{";
             case RBRACE:
                 return "}";
             case LSQUARE:
@@ -76,10 +76,4 @@ public class JSONToken {
                 return "ANY";
         }
     }
-
-    /**
-     * 问题集：todo 0728
-     * 1）词法分析器中的token的含义？
-     * 2）token2string(int t)方法待覆盖调试？
-     */
 }
