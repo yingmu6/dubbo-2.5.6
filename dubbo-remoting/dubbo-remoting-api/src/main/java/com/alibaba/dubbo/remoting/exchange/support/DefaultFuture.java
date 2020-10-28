@@ -41,15 +41,20 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author qian.lei
  * @author chao.liuc
  */
-public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用途？Future：异步执行的结果  @pause 1.1
+public class DefaultFuture implements ResponseFuture { //10/21 此类的用途？Future：异步执行的响应  @pause doing 1.1
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultFuture.class);
 
-    private static final Map<Long, Channel> CHANNELS = new ConcurrentHashMap<Long, Channel>();
+    private static final Map<Long, Channel> CHANNELS = new ConcurrentHashMap<Long, Channel>(); //请求id与Channel的缓存map
 
-    private static final Map<Long, DefaultFuture> FUTURES = new ConcurrentHashMap<Long, DefaultFuture>();
+    private static final Map<Long, DefaultFuture> FUTURES = new ConcurrentHashMap<Long, DefaultFuture>(); //请求id与DefaultFuture的缓存map
 
-    static { //todo 10/26 static了解
+    /**
+     * 10/26 static块了解：静态代码块以优化程序性能，static块可以置于类中的任何地方，类中可以有多个static块。
+     * 在类初次被加载的时候，会按照static块的顺序来执行每个static块，并且只会执行一次。
+     * 很多时候会将一些只需要进行一次的初始化操作都放在static代码块中进行。（方法中若有对象创建，会在每次方法调用时创建对象，造成空间浪费）
+     */
+    static {
         Thread th = new Thread(new RemotingInvocationTimeoutScan(), "DubboResponseTimeoutScanTimer");
         th.setDaemon(true);
         th.start();
@@ -58,19 +63,21 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
     // invoke id.
     private final long id;
     private final Channel channel;
-    private final Request request; //todo 10/26 画出request、response类图
+    private final Request request; //10/26 画出request、response类图
     private final int timeout;
     private final Lock lock = new ReentrantLock();
     private final Condition done = lock.newCondition(); //todo 10/26 Lock、Condition待了解
     private final long start = System.currentTimeMillis();
-    private volatile long sent;
+    //todo 10/28 volatile了解
+    private volatile long sent; //发送的时间戳
     private volatile Response response;
     private volatile ResponseCallback callback;
 
+    //构建对象，进行初始化处理
     public DefaultFuture(Channel channel, Request request, int timeout) {
         this.channel = channel;
         this.request = request;
-        this.id = request.getId();
+        this.id = request.getId(); //@10/28 请求id是怎么产生的？Request中既可以接收指定的id，也可以按原子递增产生
         this.timeout = timeout > 0 ? timeout : channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
         // put into waiting map.
         FUTURES.put(id, this);
@@ -102,7 +109,7 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
      */
     public static void received(Channel channel, Response response) {
         try {
-            DefaultFuture future = FUTURES.remove(response.getId());
+            DefaultFuture future = FUTURES.remove(response.getId()); //从等待处理的map中，移除id对应Future，并进行处理
             if (future != null) {
                 future.doReceived(response);
             } else {
@@ -180,6 +187,9 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
         }
     }
 
+    /**
+     * 响应时执行回调
+     */
     private void invokeCallback(ResponseCallback c) { // @pause 1.2
         ResponseCallback callbackCopy = c;
         if (callbackCopy == null) {
@@ -191,20 +201,20 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
             throw new IllegalStateException("response cannot be null. url:" + channel.getUrl());
         }
 
-        if (res.getStatus() == Response.OK) {
+        if (res.getStatus() == Response.OK) { //响应状态正常，正常回调
             try {
-                callbackCopy.done(res.getResult());
+                callbackCopy.done(res.getResult()); //ResponseCallback实例是FutureFilter中asyncCallback异步调用时设置的
             } catch (Exception e) {
                 logger.error("callback invoke error .reasult:" + res.getResult() + ",url:" + channel.getUrl(), e);
             }
-        } else if (res.getStatus() == Response.CLIENT_TIMEOUT || res.getStatus() == Response.SERVER_TIMEOUT) {
+        } else if (res.getStatus() == Response.CLIENT_TIMEOUT || res.getStatus() == Response.SERVER_TIMEOUT) { //客户端超时、服务端超时异常
             try {
                 TimeoutException te = new TimeoutException(res.getStatus() == Response.SERVER_TIMEOUT, channel, res.getErrorMessage());
                 callbackCopy.caught(te);
             } catch (Exception e) {
                 logger.error("callback invoke error ,url:" + channel.getUrl(), e);
             }
-        } else {
+        } else { //运行时异常
             try {
                 RuntimeException re = new RuntimeException(res.getErrorMessage());
                 callbackCopy.caught(re);
@@ -252,21 +262,21 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
         return start;
     }
 
-    private void doSent() {
+    private void doSent() { //记录发送的时间
         sent = System.currentTimeMillis();
     }
 
-    private void doReceived(Response res) {
+    private void doReceived(Response res) {//接收响应信息并做处理
         lock.lock();
         try {
-            response = res;
+            response = res; //todo 10/28 公有资源，需要加锁的条件有哪些？
             if (done != null) {
-                done.signal();
+                done.signal(); //发信号，唤起正在等待的线程
             }
         } finally {
             lock.unlock();
         }
-        if (callback != null) {
+        if (callback != null) { //若有响应回调不会空，则执行回调
             invokeCallback(callback);
         }
     }
@@ -289,7 +299,7 @@ public class DefaultFuture implements ResponseFuture { //todo 10/21 此类的用
                 + " -> " + channel.getRemoteAddress();
     }
 
-    private static class RemotingInvocationTimeoutScan implements Runnable { //远程调用超时异常
+    private static class RemotingInvocationTimeoutScan implements Runnable { //远程调用超时异常（静态内部类）
 
         public void run() {
             while (true) {

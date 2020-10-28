@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author qian.lei
  * @author william.liangf
  */
-public class Request { //请求对象
+public class Request { //请求对象（包含请求id、版本version以及请求数据data等）
 
     public static final String HEARTBEAT_EVENT = null; // 心跳事件
 
@@ -39,7 +39,7 @@ public class Request { //请求对象
 
     private boolean mTwoWay = true; //是否双向通讯
 
-    private boolean mEvent = false; //history 是否是事件指啥？
+    private boolean mEvent = false; //history 是否是事件指啥？解：判断事件的标识
 
     private boolean mBroken = false;
 
@@ -98,6 +98,9 @@ public class Request { //请求对象
         return mEvent;
     }
 
+    /**
+     * 设置事件（设置事件标识为true，并且设置请求的数据）
+     */
     public void setEvent(String event) {
         mEvent = true;
         mData = event;

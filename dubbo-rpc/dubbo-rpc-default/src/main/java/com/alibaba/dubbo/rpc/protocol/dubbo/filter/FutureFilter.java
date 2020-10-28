@@ -63,7 +63,7 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
         return result;
     }
 
-    //同步调用
+    //同步调用（直接回调方法）
     private void syncCallback(final Invoker<?> invoker, final Invocation invocation, final Result result) {
         if (result.hasException()) {
             fireThrowCallback(invoker, invocation, result.getException());
@@ -72,13 +72,13 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
         }
     }
 
-    //异步调用， @pause 1.2 异步调用待使用
+    //异步调用（通过Future执行调用） @pause 1.2 异步调用待使用
     private void asyncCallback(final Invoker<?> invoker, final Invocation invocation) {
         Future<?> f = RpcContext.getContext().getFuture();
         if (f instanceof FutureAdapter) {
             ResponseFuture future = ((FutureAdapter<?>) f).getFuture();
             future.setCallback(new ResponseCallback() { //匿名类
-                public void done(Object rpcResult) {
+                public void done(Object rpcResult) { //todo 10/28 此处待调试？
                     if (rpcResult == null) {
                         logger.error(new IllegalStateException("invalid result value : null, expected " + Result.class.getName()));
                         return;
@@ -89,14 +89,14 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
                         return;
                     }
                     Result result = (Result) rpcResult;
-                    if (result.hasException()) {
+                    if (result.hasException()) { //若有异常，则发出异常信息进行回调，若无异常，则发出结果信息进行回调
                         fireThrowCallback(invoker, invocation, result.getException());
                     } else {
                         fireReturnCallback(invoker, invocation, result.getValue());
                     }
                 }
 
-                public void caught(Throwable exception) {
+                public void caught(Throwable exception) { //回调异常信息
                     fireThrowCallback(invoker, invocation, exception);
                 }
             });
@@ -131,6 +131,9 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
         }
     }
 
+    /**
+     * 执行回调信息
+     */
     private void fireReturnCallback(final Invoker<?> invoker, final Invocation invocation, final Object result) {
         final Method onReturnMethod = (Method) StaticContext.getSystemContext().get(StaticContext.getKey(invoker.getUrl(), invocation.getMethodName(), Constants.ON_RETURN_METHOD_KEY));
         final Object onReturnInst = StaticContext.getSystemContext().get(StaticContext.getKey(invoker.getUrl(), invocation.getMethodName(), Constants.ON_RETURN_INSTANCE_KEY));
@@ -151,7 +154,7 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
         Object[] params;
         Class<?>[] rParaTypes = onReturnMethod.getParameterTypes();
         //todo 10/27 待调试了解
-        if (rParaTypes.length > 1) {
+        if (rParaTypes.length > 1) { //与异常信息不同点，就是没有设置exception
             if (rParaTypes.length == 2 && rParaTypes[1].isAssignableFrom(Object[].class)) {
                 params = new Object[2];
                 params[0] = result;
@@ -173,18 +176,30 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
         }
     }
 
+    /**
+     * 发出异常信息并做回调
+     * todo 10/28 回调Callback待实践
+     */
     private void fireThrowCallback(final Invoker<?> invoker, final Invocation invocation, final Throwable exception) {
+        /**
+         * 步骤拆分
+         * 1）StaticContext.getSystemContext() 获取system对应的StaticContext
+         * 2）StaticContext.getKey(invoker.getUrl(), invocation.getMethodName(), Constants.ON_THROW_METHOD_KEY) 获取由getKey(servicekey, methodName, suffix)组成的字符串str
+         * 3）StaticContext.getSystemContext().get(str)
+         * 4）强转转换为Method，Method onthrowMethod = (Method)StaticContext.getSystemContext().get(str) //todo 10/28 待调试，看是怎么获取到Method值的
+         */
         final Method onthrowMethod = (Method) StaticContext.getSystemContext().get(StaticContext.getKey(invoker.getUrl(), invocation.getMethodName(), Constants.ON_THROW_METHOD_KEY));
+        // 实例
         final Object onthrowInst = StaticContext.getSystemContext().get(StaticContext.getKey(invoker.getUrl(), invocation.getMethodName(), Constants.ON_THROW_INSTANCE_KEY));
 
         //没有设置onthrow callback.
         if (onthrowMethod == null && onthrowInst == null) {
             return;
         }
-        if (onthrowMethod == null || onthrowInst == null) {
+        if (onthrowMethod == null || onthrowInst == null) { //回调的方法和实例为空，则抛出异常
             throw new IllegalStateException("service:" + invoker.getUrl().getServiceKey() + " has a onthrow callback config , but no such " + (onthrowMethod == null ? "method" : "instance") + " found. url:" + invoker.getUrl());
         }
-        if (onthrowMethod != null && !onthrowMethod.isAccessible()) {
+        if (onthrowMethod != null && !onthrowMethod.isAccessible()) { //若方法不可访问，则修改为可访问
             onthrowMethod.setAccessible(true);
         }
         Class<?>[] rParaTypes = onthrowMethod.getParameterTypes();
@@ -193,7 +208,7 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
                 Object[] args = invocation.getArguments();
                 Object[] params;
 
-                //todo 10/27 此处逻辑待了解
+                //todo 10/27 此处逻辑待了解，调试
                 if (rParaTypes.length > 1) {
                     if (rParaTypes.length == 2 && rParaTypes[1].isAssignableFrom(Object[].class)) {
                         params = new Object[2];
@@ -207,6 +222,10 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
                 } else {
                     params = new Object[]{exception};
                 }
+
+                /**
+                 * 传入参数，调用实例方法
+                 */
                 onthrowMethod.invoke(onthrowInst, params);
             } catch (Throwable e) {
                 logger.error(invocation.getMethodName() + ".call back method invoke error . callback method :" + onthrowMethod + ", url:" + invoker.getUrl(), e);

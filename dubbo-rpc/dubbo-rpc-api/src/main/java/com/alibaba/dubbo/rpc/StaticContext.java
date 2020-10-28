@@ -23,17 +23,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * 系统存储，内部类. todo 10/27 待了解
+ * 系统存储，内部类.  10/27 待了解，解：静态上下文
  */
 public class StaticContext extends ConcurrentHashMap<Object, Object> {// read finish
-    //用途？
     private static final long serialVersionUID = 1L;
     private static final String SYSTEMNAME = "system";
     private static final ConcurrentMap<String, StaticContext> context_map = new ConcurrentHashMap<String, StaticContext>();
-    private String name;
+    private String name; //缓存的名称， todo 10/28 实际只存储到name吗？因为context_map又嵌套了StaticContext
 
     private StaticContext(String name) {
-        super();
+        super(); //创建父类对象ConcurrentHashMap，初始大小为16
         this.name = name;
     }
 
@@ -41,6 +40,10 @@ public class StaticContext extends ConcurrentHashMap<Object, Object> {// read fi
         return getContext(SYSTEMNAME);
     }
 
+    /**
+     * 获取指定名称name对应的StaticContext
+     * 从本地缓存map中获取，若存在则直接返回；若不存在，创建存入本地map中
+     */
     public static StaticContext getContext(String name) {
         StaticContext appContext = context_map.get(name);
         if (appContext == null) {

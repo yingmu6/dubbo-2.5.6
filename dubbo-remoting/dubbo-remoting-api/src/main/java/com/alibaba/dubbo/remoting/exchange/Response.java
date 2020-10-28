@@ -17,11 +17,11 @@ package com.alibaba.dubbo.remoting.exchange;
 
 /**
  * Response
- *
+ * //todo 10/28 网络抓包，看下请求报文以及数据
  * @author qian.lei
  * @author william.liangf
  */
-public class Response {
+public class Response { //响应对象（包含响应的id、版本version、响应的结果以及错误信息等）
 
     public static final String HEARTBEAT_EVENT = null;
 
@@ -74,7 +74,7 @@ public class Response {
     public static final byte CLIENT_ERROR      = 90;
     
     /**
-     * server side threadpool exhausted and quick return.
+     * server side threadpool exhausted（线程池已耗尽） and quick return（快速返回）.
      */
     public static final byte SERVER_THREADPOOL_EXHAUSTED_ERROR      = 100;
 
@@ -86,9 +86,9 @@ public class Response {
 
     private boolean mEvent = false;
 
-    private String mErrorMsg;
+    private String mErrorMsg; //响应错误信息
 
-    private Object mResult;
+    private Object mResult; //响应结果
 
     public Response() {
     }
@@ -135,7 +135,7 @@ public class Response {
         mResult = event;
     }
 
-    //history-h2 检查心跳的标准是什么？
+    //history-h2 检查心跳的标准是什么？解：是事件并且响应结果与心跳设置的值相等
     public boolean isHeartbeat() {
         return mEvent && HEARTBEAT_EVENT == mResult;
     }
@@ -164,7 +164,7 @@ public class Response {
     }
 
     @Override
-    public String toString() {
+    public String toString() { //todo 10/28 这段日志信息什么时候看到？
         return "Response [id=" + mId + ", version=" + mVersion + ", status=" + mStatus + ", event=" + mEvent
                 + ", error=" + mErrorMsg + ", result=" + (mResult == this ? "this" : mResult) + "]";
     }

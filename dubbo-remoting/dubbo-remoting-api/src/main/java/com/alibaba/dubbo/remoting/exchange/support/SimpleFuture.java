@@ -24,7 +24,7 @@ import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
  *
  * @author william.liangf
  */
-public class SimpleFuture implements ResponseFuture {
+public class SimpleFuture implements ResponseFuture { //简易Future：功能简单的Future，没有过多的业务逻辑，目前没有使用
 
     private final Object value;
 
