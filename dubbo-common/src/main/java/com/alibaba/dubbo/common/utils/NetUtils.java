@@ -161,7 +161,7 @@ public class NetUtils {
     }
 
     /**
-     * 过滤主机host（若是无效的host，则返回本地host，NetUtils.getLocalHost()）
+     * 过滤本地主机LocalHost（若是无效的host，则返回本地host，NetUtils.getLocalHost()）
      * 1）若主机host为空，直接返回
      * 2）判断host是否包含"://"，表明是带上协议的，如dubbo://
      *    2.1）直接构建URL，如"dubbo://172.16.120.188:20881"

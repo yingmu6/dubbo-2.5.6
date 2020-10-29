@@ -38,6 +38,8 @@ import java.util.concurrent.TimeoutException;
  * 注意：RpcContext是一个临时状态记录器，当接收到RPC请求，或发起RPC请求时，RpcContext的状态都会变化。
  * 比如：A调B，B再调C，则B机器上，在B调C之前，RpcContext记录的是A调B的信息，在B调C之后，RpcContext记录的是B调C的信息。
  *
+ * 上下文：会记住调用信息，如invoker、methodName等，还会记录localAddress、remoteAddress调用地址信息等
+ *
  * @author qian.lei
  * @author william.liangf
  * @export
@@ -48,14 +50,14 @@ public class RpcContext { // read finish history 10/01 是在何处设置进入�
     /**
      * ThreadLocal学习实践：不同线程中维护的变量互不干扰，同一个线程中作为线程上下文，不同方法中可以引用
      */
-    private static final ThreadLocal<RpcContext> LOCAL = new ThreadLocal<RpcContext>() {
+    private static final ThreadLocal<RpcContext> LOCAL = new ThreadLocal<RpcContext>() { //todo 10/29 ThreadLocal源码查看
         @Override
         protected RpcContext initialValue() { //初始化值对象值，若不重新，默认返回null
             return new RpcContext();
         }
     };
     private final Map<String, String> attachments = new HashMap<String, String>();  //附加参数
-    private final Map<String, Object> values = new HashMap<String, Object>(); //用途及含义：存储上下文的值
+    private final Map<String, Object> values = new HashMap<String, Object>(); //用途及含义：存储上下文的值，键值可自定义
     /**
      * Future学习实践，Runnable不能返回执行接口，用Future获取返回结果
      * Future represents the result of an asynchronous computation（Future表示一个异步计算的结果）
@@ -67,7 +69,7 @@ public class RpcContext { // read finish history 10/01 是在何处设置进入�
 
     private URL url;
 
-    private String methodName;
+    private String methodName; //从调用信息Invocation中获取到的
 
     private Class<?>[] parameterTypes;
 
@@ -83,9 +85,9 @@ public class RpcContext { // read finish history 10/01 是在何处设置进入�
     @Deprecated
     private List<Invoker<?>> invokers;
     @Deprecated
-    private Invoker<?> invoker;
+    private Invoker<?> invoker; //通过ContextFilter设置
     @Deprecated
-    private Invocation invocation;
+    private Invocation invocation; //通过ContextFilter设置
 
     protected RpcContext() { //没有公有的构造函数
     }
@@ -100,7 +102,7 @@ public class RpcContext { // read finish history 10/01 是在何处设置进入�
     }
 
     /**
-     * remove context.
+     * remove context.（移除上下文信息）
      *
      * @see com.alibaba.dubbo.rpc.filter.ContextFilter
      */
@@ -112,6 +114,7 @@ public class RpcContext { // read finish history 10/01 是在何处设置进入�
      * is provider side.
      * 怎样根据IP地址判断提供方还是消费方？
      * 将URL中的远端port、ip与RpcContext中存储内容进行比较，若都相等则为消费端，不相等则为提供端
+     * （站在消费者角度进行比较，将消费者的远程地址与url进行比较）
      *
      * @return provider side.
      */
@@ -135,7 +138,7 @@ public class RpcContext { // read finish history 10/01 是在何处设置进入�
     }
 
     /**
-     * is consumer side.
+     * is consumer side.（是否是消费者）
      *
      * @return consumer side.
      */
@@ -244,7 +247,7 @@ public class RpcContext { // read finish history 10/01 是在何处设置进入�
         if (port < 0) {
             port = 0;
         }
-        this.localAddress = InetSocketAddress.createUnresolved(host, port); //根据主机名和端口号创建未解析的套接字地址
+        this.localAddress = InetSocketAddress.createUnresolved(host, port); //根据主机名和端口号创建未解析的套接字地址（创建未解析的地址）
         return this;
     }
 
@@ -394,19 +397,19 @@ public class RpcContext { // read finish history 10/01 是在何处设置进入�
     }
 
     /**
-     * set attachment.
+     * set attachment.（设置附加参数）
      *
      * @param key
      * @param value
      * @return context
      */
-    public RpcContext setAttachment(String key, String value) {
-        if (value == null) {
+    public RpcContext setAttachment(String key, String value) { //在设置的时候返回变更后的对象，即可对值设置，也可以通过返回对象进行下一次设置，可连续设置值
+        if (value == null) { //确保附加参数的值不为空
             attachments.remove(key);
         } else {
             attachments.put(key, value);
         }
-        return this;
+        return this; //返回当前对象，  此种方式和平常set方式不一样
     }
 
     /**
@@ -566,19 +569,21 @@ public class RpcContext { // read finish history 10/01 是在何处设置进入�
 
     /**
      * 异步调用 ，需要返回值，即使步调用Future.get方法，也会处理调用超时问题.
+     * todo 10/29 与FutureFilter中的asyncCallback有啥区别？
+     * 回调与异步调用的区别， 目前只看到测试用例中有引用，通常的异步调用不用这个吗？
      *
      * @param callable
      * @return 通过future.get()获取返回结果.
      */
     @SuppressWarnings("unchecked")
-    public <T> Future<T> asyncCall(Callable<T> callable) { //异步调用，并返回结果
+    public <T> Future<T> asyncCall(Callable<T> callable) { //异步调用，并返回结果  @pause 9.1 上下文中的异步调用
         try {
             try {
                 setAttachment(Constants.ASYNC_KEY, Boolean.TRUE.toString());
                 final T o = callable.call();
                 //local调用会直接返回结果.
                 if (o != null) {
-                    FutureTask<T> f = new FutureTask<T>(new Callable<T>() { //执行任务
+                    FutureTask<T> f = new FutureTask<T>(new Callable<T>() { //执行任务 todo 10/29 FutureTask、Callable、Runnable了解&实践
                         public T call() throws Exception {
                             return o; // 返回结果
                         }

@@ -65,7 +65,7 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 /**
  * @author ding.lid
  */
-public class ExtensionLoaderTest {
+public class ExtensionLoaderTest { //todo 10/29 测试用例待调试
     @Test
     public void test_getExtensionLoader_Null() throws Exception {
         try {

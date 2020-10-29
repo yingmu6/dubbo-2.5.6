@@ -50,8 +50,8 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface SPI {//表示可以通过SPI的方式，目的是获取直接接口的实现类（SPI是服务动态发现的机制）
+@Target({ElementType.TYPE}) //用在类、接口上
+public @interface SPI {//表示可以通过SPI的方式，目的是获取接口的实现类（SPI是服务动态发现的机制）
     /**
      * SPI 全称为 (Service Provider Interface) ，是JDK内置的一种服务提供发现机制。SPI是一种动态替换发现的机制，
      * 比如有个接口，想运行时动态的给它添加实现，你只需要添加一个实现

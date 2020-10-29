@@ -628,6 +628,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     //暴露的服务没有host和port，所以暴露不成功
     //Export dubbo service com.alibaba.dubbo.demo.ApiDemo to url dubbo:///com.alibaba.dubbo.demo.ApiDemo?anyhost=true&application=api_demo&delay=5&dubbo=2.0.0&export=true&generic=false&interface=com.alibaba.dubbo.demo.ApiDemo&methods=sayApi&pid=44803&side=provider&timeout=3000&timestamp=1562077212572, dubbo version: 2.0.0, current host: 192.168.0.102
 
+    /**
+     * @pause 9.1 暴露本地服务
+     * @param url
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void exportLocal(URL url) { //service export 步骤06  history-h3 本地暴露，待调试
         if (!Constants.LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) {

@@ -33,11 +33,12 @@ import java.util.Map;
  *
  * @author william.liangf
  */
-@Activate(group = Constants.PROVIDER, order = -10000)
+@Activate(group = Constants.PROVIDER, order = -10000) //应用到服务端
 public class ContextFilter implements Filter {//read finish
 
     /**
      * 对调用上下文参数进行过滤
+     * 从调用信息中获取信息设置到上下文中，并执行调用
      */
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         Map<String, String> attachments = invocation.getAttachments();
@@ -52,13 +53,13 @@ public class ContextFilter implements Filter {//read finish
             attachments.remove(Constants.ASYNC_KEY);//清空消费端的异步参数
         }
         RpcContext.getContext()
-                .setInvoker(invoker)
-                .setInvocation(invocation)
+                .setInvoker(invoker) //设置调用者
+                .setInvocation(invocation) //设置调用信息
                 .setAttachments(attachments)
                 .setLocalAddress(invoker.getUrl().getHost(),
                         invoker.getUrl().getPort());
         if (invocation instanceof RpcInvocation) {
-            ((RpcInvocation) invocation).setInvoker(invoker);
+            ((RpcInvocation) invocation).setInvoker(invoker); //先将invocation转换为RpcInvocation，再调用setInvoker设置调用者
         }
         try {
             return invoker.invoke(invocation);
