@@ -56,8 +56,11 @@ import java.util.regex.Pattern;
  * 3）缓存工厂ExtensionFactory、Set<Class<?>> cachedWrapperClasses 缓存的类集合
  * 4）异常缓存Map<String, IllegalStateException>等
  */
-public class ExtensionLoader<T> {  //称谓：扩展加载器
+public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-实践点，泛型了解以及使用
 
+    /**
+     * todo 10/30-实践点，static、final了解以及使用
+     */
     private static final Logger logger = LoggerFactory.getLogger(ExtensionLoader.class);
 
     private static final String SERVICES_DIRECTORY = "META-INF/services/";
@@ -98,28 +101,35 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
     // 扩展名与实例的持有对象的映射
     private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
 
+    /**
+     * todo 10/30 怎么区分是共享变量还是对象私有变量
+     */
     // 缓存中的实例对象，只存在一个实例
     private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>(); //缓存中对象
     private volatile Class<?> cachedAdaptiveClass = null;  //缓存自适应类的class
-    private String cachedDefaultName; //缓存SPI中value值
+    private String cachedDefaultName; //缓存SPI中value值，在加载配置文件时写入loadExtensionClasses
     private volatile Throwable createAdaptiveInstanceError;
 
     private Set<Class<?>> cachedWrapperClasses;
     // 扩展类对应的异常集合，如key=netty
     private Map<String, IllegalStateException> exceptions = new ConcurrentHashMap<String, IllegalStateException>();
 
-//    private ExtensionLoaderOrigin(Class<?> type) {/**@c 私有的构造方法，对外隐藏 */
-//        this.type = type;
-//        /**@c objectFactory负责所有IOC创建的对象 对象工厂*/
-//        objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
-//    }
+    private ExtensionLoader(Class<?> type) {/**@c 私有的构造方法，对外隐藏 */
+        this.type = type;
+        /**@c objectFactory负责所有IOC创建的对象 对象工厂 todo 10/30 此处的递归待了解 */
+        objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
+    }
 
     private static <T> boolean withExtensionAnnotation(Class<T> type) {
         return type.isAnnotationPresent(SPI.class);/**@c 判断接口是否包含SPI注解 */  //todo 10/29 Annotation注解接口了解&实践
     }
 
+    /**
+     * 获取指定接口的加载器 todo 10/30 静态方法构造属于单例模式吗
+     * 因为ExtensionLoader不提供公有构造函数，使用静态方法构造和获取
+     */
     @SuppressWarnings("unchecked")
-    public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) { // 获取接口的扩展类
+    public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
         if (type == null)
             throw new IllegalArgumentException("Extension type == null");
         if (!type.isInterface()) {/**@c 扩展类型是接口类型 */
@@ -226,11 +236,11 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
      * 2.为当前对象的objectFactory赋值
      *   判断type是否是ExtensionFactory类型，若是置为null，若不是则type改为ExtensionFactory继续调用
      */
-    private ExtensionLoader(Class<?> type) { //SPI步骤02  记录下扩展接口类型以及使用的扩展工厂实例
-        this.type = type;
-        this.objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
-        //todo 10/29 直到type == ExtensionFactory.class终止，那其它类型都做了啥，为啥用递归？待调试
-    }
+//    private ExtensionLoaderOverwrite(Class<?> type) { //SPI步骤02  记录下扩展接口类型以及使用的扩展工厂实例
+//        this.type = type;
+//        this.objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
+//        //10/29 直到type == ExtensionFactory.class终止，那其它类型都做了啥，为啥用递归？待调试
+//    }
 
 
     /**
@@ -623,12 +633,17 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
         }
     }
 
+    /**
+     * 获取自适应的实例（不需要指定扩展名，就可以动态获取自适应的扩展实例）
+     * 1）从本地缓存中获取自适应实例，若能获取则直接返回，否则创建实例
+     * 2）若有异常直接抛出，不用尝试创建
+     */
     @SuppressWarnings("unchecked")
     public T getAdaptiveExtension() { //SPI步骤03  adaptive 自适应 （获取自适应的实例）
         Object instance = cachedAdaptiveInstance.get();
         if (instance == null) {
             if (createAdaptiveInstanceError == null) { //若有异常直接抛出，不用尝试创建
-                synchronized (cachedAdaptiveInstance) {
+                synchronized (cachedAdaptiveInstance) { //todo 10/30-实践点 synchronized使用的各种方式
                     instance = cachedAdaptiveInstance.get();
                     if (instance == null) { //若缓存中没有自适应实例，先创建后增加，然后是设置到缓存
                         try {
@@ -775,7 +790,7 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
     }
 
     /**
-     * 获取扩展类的映射，扩展名与类的映射
+     * 获取当前SPI接口扩展类映射关系
      */
     private Map<String, Class<?>> getExtensionClasses() {  //SPI步骤06  获取扩展名与扩展类的映射关系
         Map<String, Class<?>> classes = cachedClasses.get();
@@ -869,7 +884,8 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
      * 思路：
      * 1）通过类加载加载文件，读取文件内容
      * 2）按等号"="分隔每行数据，获取到扩展名或扩展类名称，并对扩展类做正确性检查
-     * 3）
+     * 3）处理方法参数extensionClasses，将扩展名与扩展类映射起来
+     *    还处理其它的缓存，如cachedActivates（自动激活类缓存）、cachedNames、cachedAdaptiveClass（自适应类的缓存）、cachedWrapperClasses（封装类的缓存）
      */
     private void loadFile(Map<String, Class<?>> extensionClasses, String dir) {   //SPI步骤08
         String fileName = dir + type.getName(); //将SPI目录 + 接口的全称作为文件名（如META-INF/dubbo/internal/com.alibaba.dubbo.rpc.Filter）
@@ -1043,7 +1059,7 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
              * 1) 获取实例 getAdaptiveExtensionClass().newInstance()
              * 2）为实例注入依赖
              */
-            return injectExtension((T) getAdaptiveExtensionClass().newInstance()); //newInstance() 创建类的实例
+            return injectExtension((T) getAdaptiveExtensionClass().newInstance()); //newInstance() 创建类的实例，就像用new来创建对象一样
         } catch (Exception e) {
             throw new IllegalStateException("Can not create adaptive extenstion " + type + ", cause: " + e.getMessage(), e);
         }
@@ -1074,7 +1090,7 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
      * 8）循环接口中的每一个方法，做如上判断处理，结束后加上类的、方法的声明，然后把动态生成的类以字符串形式返回
      *
      */
-    private String createAdaptiveExtensionClassCode() {
+    private String createAdaptiveExtensionClassCodeOverwrite() {
         boolean isHasAdapter = false;
         for (Method method : type.getMethods()) {
             if (method.isAnnotationPresent(Adaptive.class)) {
@@ -1403,34 +1419,45 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
 
     }
 
-    private Class<?> getAdaptiveExtensionClass() { /**@c 获取适合的扩展Class */  //SPI步骤05
-        getExtensionClasses(); //获取扩展名和扩展类的映射关系，如没有映射关系会创建，此处没有用返回值
+    /**
+     * 获取适合的扩展Class
+     * 1）从配置文件加载扩展类
+     * 2）判断缓存中是否有自适应的扩展类
+     *    若有直接返回，若没有则创建
+     */
+    private Class<?> getAdaptiveExtensionClass() { //SPI步骤05
+        getExtensionClasses();
         if (cachedAdaptiveClass != null) {
             return cachedAdaptiveClass;
         }
         return cachedAdaptiveClass = createAdaptiveExtensionClass(); //设置值，并返回
     }
 
-    private Class<?> createAdaptiveExtensionClass() { //SPI步骤09 （生成自适应代码、并且生成class类）
-        //String code2 = createAdaptiveExtensionClassCodeOrigin();
-        //System.out.println("-------代码比较--------");
+    /**
+     * 创建自适应扩展类
+     * 1）创建自适应扩展类的代码
+     * 2）通过编译器编译生成Class类
+     */
+    private Class<?> createAdaptiveExtensionClass() { //SPI步骤09
         String code = createAdaptiveExtensionClassCode(); //获取自适应扩展类代码
 
-        //history-h1 动态编译
-        ClassLoader classLoader = findClassLoader(); //获取类加载器
+        //动态编译 todo 10/30-实践点 Compiler了解以及使用
+        ClassLoader classLoader = findClassLoader();
         com.alibaba.dubbo.common.compiler.Compiler compiler = ExtensionLoader.getExtensionLoader(com.alibaba.dubbo.common.compiler.Compiler.class).getAdaptiveExtension();
         return compiler.compile(code, classLoader);  //将java源代码生成class对象。
     }
 
-    // 1）怎样适应不同接口 2)怎样调试生成的动态代理类
-
     /**
-     * 1:运行时，从url动态获取相关参数得到扩展名
-     * 2：目前暂不知，但是可以通过比较文件差异检验
+     * 创建自适应扩展类的代码（功能：不显示指定扩展名，动态构建出扩展名，并获取到相应的扩展类）
+     * 1）接口检查（方法中@Adaptive注解检查和URL类型的参数检查）
+     * 2）构建URL变量（从URL参数类型获取或者非URL参数的方法获取）
+     * 3）构建用于查找的键key列表（由注解上声明的值或由类名组成的值构成）
+     * 4）获取扩展名（从url中通过key列表做逻辑处理，获取到扩展名）
+     * 5）通过扩展名获取扩展类（ExtensionLoader.getExtensionLoader(T).getExtension(extName)）
      */
-    private String createAdaptiveExtensionClassCodeOrigin() { //SPI步骤10
+    private String createAdaptiveExtensionClassCode() { //SPI步骤10
         StringBuilder codeBuidler = new StringBuilder();
-        Method[] methods = type.getMethods();
+        Method[] methods = type.getMethods(); //获取当前接口的方法列表
         boolean hasAdaptiveAnnotation = false;
         for (Method m : methods) { //方法上是否含有适配器Adaptive注解
             if (m.isAnnotationPresent(Adaptive.class)) {
@@ -1444,16 +1471,19 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
 
         codeBuidler.append("package " + type.getPackage().getName() + ";");
         codeBuidler.append("\nimport " + ExtensionLoader.class.getName() + ";"); //getCanonicalName 获取规范名称
+        /**
+         * 自适应类名，接口名 + "$Adaptive"，如Protocol$Adaptive
+         */
         codeBuidler.append("\npublic class " + type.getSimpleName() + "$Adaptive" + " implements " + type.getCanonicalName() + " {");
 
         for (Method method : methods) {
             Class<?> rt = method.getReturnType();
-            Class<?>[] pts = method.getParameterTypes();   //方法参数列表类型
-            Class<?>[] ets = method.getExceptionTypes();   //方法异常类型
+            Class<?>[] pts = method.getParameterTypes();   //方法参数类型列表
+            Class<?>[] ets = method.getExceptionTypes();   //方法异常类型列表
 
             Adaptive adaptiveAnnotation = method.getAnnotation(Adaptive.class);
             StringBuilder code = new StringBuilder(512);
-            //判断方法上是否带有适配器注解
+            //判断方法上是否带有适配器注解（若方法上不带有@adaptive注解，则抛出不支持异常）
             if (adaptiveAnnotation == null) {
                 code.append("throw new UnsupportedOperationException(\"method ")
                         .append(method.toString()).append(" of interface ")
@@ -1466,7 +1496,7 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
                         break;
                     }
                 }
-                // 有类型为URL的参数
+                // 参数列表中有URL类型的参数
                 if (urlTypeIndex != -1) {
                     // Null Point check
                     String s = String.format("\nif (arg%d == null) throw new IllegalArgumentException(\"url == null\");",
@@ -1476,20 +1506,19 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
                     s = String.format("\n%s url = arg%d;", URL.class.getName(), urlTypeIndex); // java字符串格式化  https://blog.csdn.net/lonely_fireworks/article/details/7962171
                     code.append(s);
                 }
-                // 参数没有URL类型，但参数对象里包含返回类型为URL的方法
+                // 参数列表中没有URL类型的参数
                 else {
-                    // history-h1 待调试覆盖
                     String attribMethod = null;
 
                     // 找到参数的URL属性
-                    LBL_PTS: //history-h1 是变量吗？为啥没见到类型 ，调试看值
+                    LBL_PTS: //todo 10/30 是变量吗？为啥没见到类型, 调试看值，是跳出循环的标志吗
                     for (int i = 0; i < pts.length; ++i) { //对参数列表中的每个参数类型进行分析
                         Method[] ms = pts[i].getMethods();
                         for (Method m : ms) {
                             String name = m.getName();
                             if ((name.startsWith("get") || name.length() > 3)
                                     && Modifier.isPublic(m.getModifiers())
-                                    && !Modifier.isStatic(m.getModifiers())
+                                    && !Modifier.isStatic(m.getModifiers()) //非静态方法
                                     && m.getParameterTypes().length == 0
                                     && m.getReturnType() == URL.class) { //参数类型中分析有返回类型为URL的方法
                                 urlTypeIndex = i;
@@ -1534,15 +1563,23 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
                     value = new String[]{sb.toString()}; //值例如：TransporterSelf，处理后的值transporter.self
                 }
 
+                /**
+                 * 判断是否包含Invocation
+                 * 1）遍历方法的参数列表
+                 * 2）若参数列表中存在包含Invocation类型的参数
+                 *    则获取方法名methodName，并且将标识hasInvocation置为true
+                 * 3）若有方法名methodName，后续会通过url.getMethodParameter()获取扩展名
+                 *
+                 * 例如：String methodName = invocation.getMethodName();
+                 * String extName = url.getMethodParameter(methodName, "transporter.self", "nettySelf");
+                 */
                 boolean hasInvocation = false;
-                //判断是否包含Invocation，若包含则从其中获取方法名, 例如：
-                // String methodName = invocation.getMethodName();  String extName = url.getMethodParameter(methodName, "transporter.self", "nettySelf");
                 for (int i = 0; i < pts.length; ++i) {
                     if (pts[i].getName().equals("com.alibaba.dubbo.rpc.Invocation")) {
                         // Null Point check
                         String s = String.format("\nif (arg%d == null) throw new IllegalArgumentException(\"invocation == null\");", i);
                         code.append(s);
-                        // history-h1 Invocation 中的method name是啥？
+                        // Invocation 中的method name是啥？某次调用中的执行方法
                         s = String.format("\nString methodName = arg%d.getMethodName();", i);
                         code.append(s);
                         hasInvocation = true;
@@ -1550,10 +1587,24 @@ public class ExtensionLoader<T> {  //称谓：扩展加载器
                     }
                 }
 
+                /**
+                 * todo 10/30 待调试，有点绕
+                 * 获取扩展名（若@Adaptive上声明的值有多个时，从右往左遍历，依次把上一次从url中获取的结果作为下一次的默认值）
+                 * 1）从右到左依次遍历查找的键key列表
+                 * 2）若是键key列表的最后一个
+                 *   2.1）若SPI上声明的默认扩展名defaultExtName不为空
+                 *     2.1.1）若值不为"protocol"
+                 *       2.1.1.1）若包含invocation参数，则通过url.getMethodParameter()获取参数值，默认值为defaultExtName
+                 *       2.1.1.2）若不包含invocation参数，则通过url.getParameter()获取参数值，默认值为defaultExtName
+                 *     2.1.2）若值为"protocol"，通过url.getProtocol()获取参数值，默认值为defaultExtName
+                 *   2.2）若SPI上声明的默认扩展名defaultExtName为空
+                 *     2.2.1）若值不为"protocol"，如2.1.1，通过url.getMethodParameter()或url.getParameter()获取值，就没默认值了
+                 * 3）若不是key列表的最后一个
+                 */
                 String defaultExtName = cachedDefaultName;
                 String getNameCode = null; // getNameCode的生成以及用途 : 获取扩展名
-                for (int i = value.length - 1; i >= 0; --i) { //遍历查询的键key
-                    if (i == value.length - 1) { //数组第一个值
+                for (int i = value.length - 1; i >= 0; --i) { //遍历查询的@Adaptive注解上的值
+                    if (i == value.length - 1) { //数组最后一个值
                         if (null != defaultExtName) { //判断默认值是否为空，若不为空，url获取值时带上默认值
                             if (!"protocol".equals(value[i]))  //判断url的key是否是"protocol"，若是单独处理，用url.getProtocol获取
                                 if (hasInvocation)  //url.getMethodParameter(methodName, "grizzlySelf", "nettySelf") 从右到左，键key覆盖，最终取第一个值

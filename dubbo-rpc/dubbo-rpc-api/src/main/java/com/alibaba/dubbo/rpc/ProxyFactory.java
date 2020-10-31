@@ -36,7 +36,7 @@ public interface ProxyFactory {// read finish
      * @param invoker
      * @return proxy
      */
-    @Adaptive({Constants.PROXY_KEY}) //todo 10/25 加载原理了解下
+    @Adaptive({Constants.PROXY_KEY}) //10/25 加载原理了解下，10/30-done
     <T> T getProxy(Invoker<T> invoker) throws RpcException;
 
     /**

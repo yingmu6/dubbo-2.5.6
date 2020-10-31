@@ -22,6 +22,8 @@ public interface TransporterSelf {
     @Adaptive(value = {"protocol", "nettySelf", "protocol"}) //带有protocol参数
     Server bind(URL url, ChannelHandler handler) throws RemotingException;
 
+    //url.getParameter("grizzlySelf", url.getParameter("nettySelf"))
+
     //@Adaptive({Constants.CLIENT_KEY, Constants.TRANSPORTER_KEY})
     // 带有invocation参数，从右到左，一次替换key，默认值不改变
     // url.getMethodParameter(methodName, "grizzlySelf", "nettySelf")

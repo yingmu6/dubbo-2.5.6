@@ -52,6 +52,6 @@ public @interface Adaptive { /**@c 适配器类，加上该注解，表明会生
      *
      * @see SPI#value()
      */
-    String[] value() default {};
+    String[] value() default {}; //值是数组
 
 }
