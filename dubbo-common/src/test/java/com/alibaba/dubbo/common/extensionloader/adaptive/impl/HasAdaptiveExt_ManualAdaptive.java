@@ -24,7 +24,7 @@ import com.alibaba.dubbo.common.extensionloader.adaptive.HasAdaptiveExt;
  * @author ding.lid
  */
 @Adaptive
-public class HasAdaptiveExt_ManualAdaptive implements HasAdaptiveExt {
+public class HasAdaptiveExt_ManualAdaptive implements HasAdaptiveExt { // 20/11 flag
     public String echo(URL url, String s) {
         HasAdaptiveExt addExt1 = ExtensionLoader.getExtensionLoader(HasAdaptiveExt.class).getExtension(url.getParameter("key"));
         return addExt1.echo(url, s);
