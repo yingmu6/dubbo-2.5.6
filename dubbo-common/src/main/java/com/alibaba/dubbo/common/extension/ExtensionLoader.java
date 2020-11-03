@@ -120,6 +120,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
         objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
     }
 
+    //todo 11/2 @Activate @Adaper 是怎么通过校验的？
     private static <T> boolean withExtensionAnnotation(Class<T> type) {
         return type.isAnnotationPresent(SPI.class);/**@c 判断接口是否包含SPI注解 */  //todo 10/29 Annotation注解接口了解&实践
     }
@@ -257,11 +258,12 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
     // 从url中获取key对应的value，比如：test://localhost/test?ext=order1,default， ext对应的值为order1,default
     public List<T> getActivateExtension(URL url, String key, String group) {
         String value = url.getParameter(key);
+        //value == null || value.length() == 0 ? null : Constants.COMMA_SPLIT_PATTERN.split(value) 将值按分隔符分隔
         return getActivateExtension(url, value == null || value.length() == 0 ? null : Constants.COMMA_SPLIT_PATTERN.split(value), group);
     }
 
     /**
-     * Get activate extensions.
+     * Get activate extensions.（获取激活的扩展列表）
      *
      * @param url    url
      * @param values extension point names
@@ -271,17 +273,16 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
      */
 
     //方法的用途：根据Active注解上的条件选择加载的实例？是的
-    public List<T> getActivateExtension(URL url, String[] values, String group) { //history-h1 values的用途？
+    public List<T> getActivateExtension(URL url, String[] values, String group) { //todo 11/02 values的用途？是否包含group、values
         //new String[]{"","-"} 数组会报错  - 会跳过第一个判断，""进入第二判断 getExtension(name)传入空字符会报错
         List<T> exts = new ArrayList<T>();
         List<String> names = values == null ? new ArrayList<String>(0) : Arrays.asList(values);
-        //用例覆盖点1（条件：包含与不包含 -）
-        if (!names.contains(Constants.REMOVE_VALUE_PREFIX + Constants.DEFAULT_KEY)) { //是否包含"-"
+        if (!names.contains(Constants.REMOVE_VALUE_PREFIX + Constants.DEFAULT_KEY)) { //是否包含"-","-"
             getExtensionClasses();
             for (Map.Entry<String, Activate> entry : cachedActivates.entrySet()) { //遍历缓存中activate的Map映射关系
                 String name = entry.getKey();
                 Activate activate = entry.getValue();
-                if (isMatchGroup(group, activate.group())) { //取注解中的group进行匹配过滤，并没有拿配置文件中key比较
+                if (isMatchGroup(group, activate.group())) { //判断
                     T ext = getExtension(name); //匹配成功，获取该activate对应key的实例
                     if (!names.contains(name)
                             && !names.contains(Constants.REMOVE_VALUE_PREFIX + name)
@@ -293,7 +294,6 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
             Collections.sort(exts, ActivateComparator.COMPARATOR); //将实例列表排序 history-h1 排序算法
         }
 
-        //用例覆盖点5（条件：Activate注解中属性value不为空时）
         List<T> usrs = new ArrayList<T>();
         for (int i = 0; i < names.size(); i++) {
             String name = names.get(i);
@@ -318,12 +318,12 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
 
     //判断组group是否在注解中group数组里 (将传入的group值，与注解中的group[] 比较)
     private boolean isMatchGroup(String group, String[] groups) {
-        //用例覆盖点2（条件：group空与非空）
-        if (group == null || group.length() == 0) { //未传入值，认为是匹配的
+        //未传入group值时，与注解中的group值匹配
+        if (group == null || group.length() == 0) {
             return true;
         }
 
-        //用例覆盖点3（条件：group是否在groups）  匹配group参数
+        //条件：group是否在groups  匹配group参数
         if (groups != null && groups.length > 0) {
             for (String g : groups) {
                 if (group.equals(g)) {
@@ -341,7 +341,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
             return true;
         }
 
-        //用例覆盖点4（条件：activate.value是否为空） 匹配value参数
+        //条件：activate.value是否为空, 匹配value参数
         for (String key : keys) {  //遍历注解中的value数组，看value值是否存在url参数列表中
             for (Map.Entry<String, String> entry : url.getParameters().entrySet()) {
                 String k = entry.getKey();
@@ -449,7 +449,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
      * @return
      */
     @SuppressWarnings("unchecked")
-    public T getExtensionOrigin(String name) { //SPI步骤12  创建指定名称的接口实例
+    public T getExtension(String name) { //创建指定名称的接口实例
         // 一开始时此处cachedClass的映射为
         // "spring" -> "class com.alibaba.dubbo.config.spring.extension.SpringExtensionFactory"
         // "spi" -> "class com.alibaba.dubbo.common.extension.factory.SpiExtensionFactory"
@@ -458,14 +458,18 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
         if ("true".equals(name)) { //取默认的扩展，即SPI注解中的扩展名对应的实例
             return getDefaultExtension();
         }
-        Holder<Object> holder = cachedInstances.get(name); //项目重新启动时，会清除内存中的值，所以要重新设置值
+
+        /**
+         * 从缓存中获取指定扩展名的实例
+         */
+        Holder<Object> holder = cachedInstances.get(name);
         if (holder == null) {
             cachedInstances.putIfAbsent(name, new Holder<Object>());
             holder = cachedInstances.get(name);
         }
         Object instance = holder.get();
         if (instance == null) {
-            synchronized (holder) {
+            synchronized (holder) { //双重判断 + 同步锁定：减少范围并且线程安全
                 instance = holder.get();
                 if (instance == null) {
                     instance = createExtension(name);
@@ -511,9 +515,9 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
      * 3）获取缓存中的实例，若没有则创建实例，并返回
      *
      */
-    public T getExtension(String name) {
+    public T getExtensionOverwrite(String name) {
         if (name == null || name.trim().length() == 0) {
-            throw new IllegalArgumentException("扩展名 name == null");
+            throw new IllegalArgumentException("extension name == null");
         }
         if ("true".equals(name)) {
             return getDefaultExtension();
@@ -663,7 +667,11 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
         return (T) instance;
     }
 
-    private IllegalStateException findException(String name) { //构造异常信息
+    /**
+     * 构造查找扩展类的异常信息
+     * IllegalStateException 非法状态异常
+     */
+    private IllegalStateException findException(String name) {
         for (Map.Entry<String, IllegalStateException> entry : exceptions.entrySet()) {
             if (entry.getKey().toLowerCase().contains(name.toLowerCase())) { //
                 return entry.getValue();
@@ -671,8 +679,6 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
         }
         // 没有找到接口的扩展类
         StringBuilder buf = new StringBuilder("No such extension " + type.getName() + " by name " + name);
-
-
         int i = 1;
         for (Map.Entry<String, IllegalStateException> entry : exceptions.entrySet()) {
             if (i == 1) {
@@ -689,16 +695,19 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
         return new IllegalStateException(buf.toString());
     }
 
+    /**
+     * 创建指定扩展名的实例
+     */
     @SuppressWarnings("unchecked")
-    private T createExtensionOrigin(String name) { //SPI步骤13
+    private T createExtension(String name) {
         Class<?> clazz = getExtensionClasses().get(name);
-        if (clazz == null) { //没有找到扩展类
+        if (clazz == null) { //没有找到扩展类，则抛出异常
             throw findException(name);
         }
         try {
             T instance = (T) EXTENSION_INSTANCES.get(clazz);
             if (instance == null) {
-                EXTENSION_INSTANCES.putIfAbsent(clazz, (T) clazz.newInstance());
+                EXTENSION_INSTANCES.putIfAbsent(clazz, (T) clazz.newInstance()); //通过反射机制的clazz.newInstance()创建实例
                 instance = (T) EXTENSION_INSTANCES.get(clazz);
             }
             injectExtension(instance);
@@ -715,20 +724,25 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
         }
     }
 
-    // 为接口的实现类 通过set设置依赖
-    private T injectExtensionOrigin(T instance) {/**@c inject注入 参数instance是由框架传入的 */  //SPI步骤11
+    /**
+     * 注入依赖（为对象实例注入属性值）
+     * 1）遍历实例的所有set方法
+     * 2）通过扩展工厂创建指定类型、指定名称的实例
+     * 3）调用方法method.invoke，设置属性值
+     */
+    private T injectExtension(T instance) {
         try {
             if (objectFactory != null) {
                 for (Method method : instance.getClass().getMethods()) {
                     if (method.getName().startsWith("set")
                             && method.getParameterTypes().length == 1
-                            && Modifier.isPublic(method.getModifiers())) {
-                        // 可以是基本类型，也可以是SPI类型
+                            && Modifier.isPublic(method.getModifiers())) { //查找实例中的public set方法
+                        // 可以是基本类型，也可以是SPI类型 todo 11/02 基础类型可以？
                         Class<?> pt = method.getParameterTypes()[0];
                         try {
                             //截取set方法，获取属性名 ,例：instance = AdaptiveCompiler, 中setDefaultCompiler的property = defaultCompiler
                             String property = method.getName().length() > 3 ? method.getName().substring(3, 4).toLowerCase() + method.getName().substring(4) : "";
-                            Object object = objectFactory.getExtension(pt, property);
+                            Object object = objectFactory.getExtension(pt, property); //todo 11/02 获取的值是啥？
                             if (object != null) {
                                 method.invoke(instance, object); // 把实例设置到哪里？ 设置到接口接口的实例类：包含set方法，是接口类型，含有SPI注解
                             }
@@ -753,7 +767,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
      * 4）判断cachedWrapperClass是否存在，若存在依次为wrapper类注入依赖
      *
      */
-    private T createExtension(String name) {
+    private T createExtensionOverrite(String name) {
         Class<?> cachedClass = getExtensionClasses().get(name);
         if (cachedClass == null) {
             throw findException(name);
@@ -791,8 +805,10 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
 
     /**
      * 获取当前SPI接口扩展类映射关系
+     * 1）从缓存中获取扩展名与扩展类的映射关系
+     * 2）若没有则去读取配置文件，并加到缓存中
      */
-    private Map<String, Class<?>> getExtensionClasses() {  //SPI步骤06  获取扩展名与扩展类的映射关系
+    private Map<String, Class<?>> getExtensionClasses() {
         Map<String, Class<?>> classes = cachedClasses.get();
         if (classes == null) { //双重检查（单例创建）
             synchronized (cachedClasses) { /**@c history-h1 cachedClasses是类的成员变量，私有的为啥考虑线程安全？ */
@@ -806,10 +822,12 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
         return classes;
     }
 
-    // 此方法已经getExtensionClasses方法同步过。读取配置文件中key=name，并写入缓存Map中extensionClasses
-    private Map<String, Class<?>> loadExtensionClasses() {  //SPI步骤07
+    /**
+     * 从不同目录读取配置扩展文件中的配置，并写入缓存Map中extensionClasses
+     */
+    private Map<String, Class<?>> loadExtensionClasses() {
         final SPI defaultAnnotation = type.getAnnotation(SPI.class);/**@c 获取注解SPI */
-        if (defaultAnnotation != null) {
+        if (defaultAnnotation != null) {// @Activate、@Adaptive注解不进去
             String value = defaultAnnotation.value();/**@c 取注解的值 */
             if (value != null && (value = value.trim()).length() > 0) {
                 String[] names = NAME_SEPARATOR.split(value);
@@ -837,7 +855,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
      * 3）从objectFactory获取pt中属性名对应的值，若不为空，则调用实例对象的方法，并把值通过set方法设置
      *
      */
-    private T injectExtension(T instance) {
+    private T injectExtensionOverWrite(T instance) {
          if (objectFactory != null) {
              Method[] methods = instance.getClass().getMethods();
              if (methods != null && methods.length > 0) {
