@@ -216,7 +216,7 @@ public class ConsumerServiceImpl extends AbstractService implements ConsumerServ
     public Map<Long, URL> findConsumerUrlByService(String service) {
         Map<String, String> filter = new HashMap<String, String>();
         filter.put(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY);
-        filter.put(SyncUtils.SERVICE_FILTER_KEY, service);
+        filter.put(SyncUtils.SERVICE_FILTER_KEY, service); //todo 11/04 用途是啥？
 
         return SyncUtils.filterFromCategory(getRegistryCache(), filter);
     }

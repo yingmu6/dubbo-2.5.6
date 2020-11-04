@@ -32,12 +32,12 @@ import java.util.List;
  * ListenerProtocol
  * @author william.liangf
  */
-public class ProtocolFilterWrapper implements Protocol {// read finish
+public class ProtocolFilterWrapper implements Protocol {// read finish  11/04 协议封装是在哪里引用的？解：这个Protocol的过滤封装类，在com.alibaba.dubbo.rpc.Protocol配置的filter值
 
     //ProtocolFilterWrapper与ProtocolListenerWrapper的区别？
     private final Protocol protocol;
 
-    public ProtocolFilterWrapper(Protocol protocol) {
+    public ProtocolFilterWrapper(Protocol protocol) { //Protocol的封装类
         if (protocol == null) {
             throw new IllegalArgumentException("protocol == null");
         }
@@ -47,14 +47,14 @@ public class ProtocolFilterWrapper implements Protocol {// read finish
     /**
      * 构建调用链（Filter：过滤器，具有拦截过滤的作用）
      * https://juejin.im/post/5ad40ee1f265da2375075a23  Filter链原理
-     *
+     * invoker的实例是JavassistProxyFactory（ProxyFactory的默认实现）生成的代理对象
+     * 提供者：key列如：service.filter，group列如：provider，
+     * 消费者：key列如：reference.filter，group列如：consumer
+     * todo 11/04 Activate中group的provider、consumer是怎么分组的？
      */
     private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
         Invoker<T> last = invoker;
-        /**
-         * history-v2 自动激活了解
-         */
-        List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);
+        List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group); //todo 11/04 是怎么得到EchoFilter、ClassLoaderFilter、ExceptionFilter等基础过滤器的？
         if (filters.size() > 0) {
             for (int i = filters.size() - 1; i >= 0; i--) {
                 final Filter filter = filters.get(i);
@@ -65,8 +65,8 @@ public class ProtocolFilterWrapper implements Protocol {// read finish
                  * 浅复制：实现Cloneable接口，重写Object的clone() 方法
                  * 深复制：实现Cloneable接口，对象以及对象中的对象 都要重写Object的clone() 方法
                  */
-                final Invoker<T> next = last;
-                last = new Invoker<T>() { //匿名类实现
+                final Invoker<T> next = last; //todo 11/04 此处的链表是怎么处理的？链表待实践了解
+                last = new Invoker<T>() { //todo 11/04 匿名类了解、向上转型了解
 
                     public Class<T> getInterface() {
                         return invoker.getInterface();
@@ -85,7 +85,7 @@ public class ProtocolFilterWrapper implements Protocol {// read finish
                      * https://www.jianshu.com/p/73d56c3d228c 链表的数据结构
                      */
                     public Result invoke(Invocation invocation) throws RpcException {
-                        return filter.invoke(next, invocation);
+                        return filter.invoke(next, invocation); //执行具体Filter实例的调用invoke
                     }
 
                     public void destroy() {
@@ -110,6 +110,9 @@ public class ProtocolFilterWrapper implements Protocol {// read finish
         if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) {
             return protocol.export(invoker);
         }
+        /**
+         * 服务暴露前，服务先经过过滤链处理，再做暴露（过滤链的key为service.filter，group为provider）
+         */
         return protocol.export(buildInvokerChain(invoker, Constants.SERVICE_FILTER_KEY, Constants.PROVIDER));
     }
     /**@c 在Protocol中refer执行以后执行*/
@@ -117,6 +120,9 @@ public class ProtocolFilterWrapper implements Protocol {// read finish
         if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
             return protocol.refer(type, url);
         }
+        /**
+         * 对引用的服务做过滤链处理（过滤链的key为reference.filter，group为consumer）
+         */
         return buildInvokerChain(protocol.refer(type, url), Constants.REFERENCE_FILTER_KEY, Constants.CONSUMER);
     }
 

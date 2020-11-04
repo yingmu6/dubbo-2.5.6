@@ -39,9 +39,9 @@
     </bean>
 
     <!-- 声明需要暴露的服务接口 服务提供者初次注册时为禁用状态，需人工启用。断线时，将不会被自动删除，需人工禁用-->
-<!--    <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService" dynamic="false"/>-->
-    <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService">
-        <dubbo:method name="sayHello" timeout="1003"/>
-    </dubbo:service>
+    <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService" dynamic="false" filter="selfFilter"/>
+<!--    <dubbo:service interface="com.alibaba.dubbo.demo.CommonService" ref="commonService">-->
+<!--        <dubbo:method name="sayHello" timeout="1003"/>-->
+<!--    </dubbo:service>-->
 
 </beans>

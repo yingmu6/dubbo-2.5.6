@@ -26,7 +26,7 @@ import java.util.Comparator;
  *
  * @author william.liangf
  */
-public class ActivateComparator implements Comparator<Object> { //比较器
+public class ActivateComparator implements Comparator<Object> { //比较器 todo 11/04 待调试
 
     public static final Comparator<Object> COMPARATOR = new ActivateComparator();
 

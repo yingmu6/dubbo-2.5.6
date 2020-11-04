@@ -95,7 +95,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
     /**@c 此处用途？持有对象管理扩展名与接口Class的映射关系 */
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<Map<String, Class<?>>>();
 
-    // 扩展名与自动激活注解Active的映射
+    // 扩展名与自动激活注解@Active的映射 //todo 11/04 为啥没有存自定义@Activate，如SelfFilter
     private final Map<String, Activate> cachedActivates = new ConcurrentHashMap<String, Activate>();
 
     // 扩展名与实例的持有对象的映射
@@ -245,6 +245,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
 
 
     /**
+     * 获取自动激活扩展点的实例列表
      * This is equivalent to <pre>
      *     getActivateExtension(url, url.getParameter(key).split(","), null);
      * </pre>
@@ -255,7 +256,11 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
      * @return extension list which are activated.
      * @see #getActivateExtension(com.alibaba.dubbo.common.URL, String[], String)
      */
-    // 从url中获取key对应的value，比如：test://localhost/test?ext=order1,default， ext对应的值为order1,default
+
+    /**
+     * 从url中获取key对应的value，并且将value按分隔符进行拆分，形成值列表
+     * 比如：test://localhost/test?ext=order1,default， ext对应的值为order1,default
+     */
     public List<T> getActivateExtension(URL url, String key, String group) {
         String value = url.getParameter(key);
         //value == null || value.length() == 0 ? null : Constants.COMMA_SPLIT_PATTERN.split(value) 将值按分隔符分隔
@@ -272,18 +277,29 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
      * @see com.alibaba.dubbo.common.extension.Activate
      */
 
-    //方法的用途：根据Active注解上的条件选择加载的实例？是的
-    public List<T> getActivateExtension(URL url, String[] values, String group) { //todo 11/02 values的用途？是否包含group、values
+    /**
+     * 11/02 values的用途？解：从调用源头可以看出，values是从url根据指定key获取到并按分隔符进行分隔的
+     * getActivateExtension 函数重载，既可以直接传入用于匹配values，也可以传入key，从url中查找values
+     *
+     * 思路：
+     * 1）获取扩展点列表；从缓存中获取或者加载配置文件获取
+     * 2）筛选扩展点列表：按传入条件筛选的values、group条件与@Activate注解上声明的值进行比对
+     * 3）排序扩展点列表；对获取到的扩展点列表进行排序
+     */
+    public List<T> getActivateExtension(URL url, String[] values, String group) {
         //new String[]{"","-"} 数组会报错  - 会跳过第一个判断，""进入第二判断 getExtension(name)传入空字符会报错
         List<T> exts = new ArrayList<T>();
         List<String> names = values == null ? new ArrayList<String>(0) : Arrays.asList(values);
-        if (!names.contains(Constants.REMOVE_VALUE_PREFIX + Constants.DEFAULT_KEY)) { //是否包含"-","-"
+        /**
+         * 原生的扩展点
+         */
+        if (!names.contains(Constants.REMOVE_VALUE_PREFIX + Constants.DEFAULT_KEY)) {
             getExtensionClasses();
             for (Map.Entry<String, Activate> entry : cachedActivates.entrySet()) { //遍历缓存中activate的Map映射关系
                 String name = entry.getKey();
                 Activate activate = entry.getValue();
-                if (isMatchGroup(group, activate.group())) { //判断
-                    T ext = getExtension(name); //匹配成功，获取该activate对应key的实例
+                if (isMatchGroup(group, activate.group())) { //判断group是否匹配
+                    T ext = getExtension(name);
                     if (!names.contains(name)
                             && !names.contains(Constants.REMOVE_VALUE_PREFIX + name)
                             && isActive(activate, url)) { //若Activate中的values不为空，则需要url需要存在value值
@@ -294,6 +310,9 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
             Collections.sort(exts, ActivateComparator.COMPARATOR); //将实例列表排序 history-h1 排序算法
         }
 
+        /**
+         * 用户设置的扩展点，如SelfFilter todo 11/04 为啥没有按注解判断？
+         */
         List<T> usrs = new ArrayList<T>();
         for (int i = 0; i < names.size(); i++) {
             String name = names.get(i);
@@ -337,7 +356,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
     //判断注解的key数组中的值是否在url的参数中
     private boolean isActive(Activate activate, URL url) { //Active 自动激活加载扩展
         String[] keys = activate.value();
-        if (keys == null || keys.length == 0) {
+        if (keys == null || keys.length == 0) { //@Activate中values没设置值
             return true;
         }
 
@@ -346,7 +365,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
             for (Map.Entry<String, String> entry : url.getParameters().entrySet()) {
                 String k = entry.getKey();
                 String v = entry.getValue();
-                if ((k.equals(key) || k.endsWith("." + key))
+                if ((k.equals(key) || k.endsWith("." + key)) //判断url中参数列表是否包含@Activate的values值
                         && ConfigUtils.isNotEmpty(v)) {
                     return true;
                 }
@@ -697,6 +716,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
 
     /**
      * 创建指定扩展名的实例
+     * （通过反射机制的clazz.newInstance()创建实例）
      */
     @SuppressWarnings("unchecked")
     private T createExtension(String name) {
@@ -707,7 +727,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
         try {
             T instance = (T) EXTENSION_INSTANCES.get(clazz);
             if (instance == null) {
-                EXTENSION_INSTANCES.putIfAbsent(clazz, (T) clazz.newInstance()); //通过反射机制的clazz.newInstance()创建实例
+                EXTENSION_INSTANCES.putIfAbsent(clazz, (T) clazz.newInstance());
                 instance = (T) EXTENSION_INSTANCES.get(clazz);
             }
             injectExtension(instance);
@@ -841,7 +861,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
 
         Map<String, Class<?>> extensionClasses = new HashMap<String, Class<?>>();
 
-        //重写加载文件方法
+        //重写加载文件方法 todo 11/04 是加载哪些目录下的文件？比如Filter既加载dubbo-rpc-default，也加载dubbo-rpc-api目录下的文件
         loadFile(extensionClasses, DUBBO_INTERNAL_DIRECTORY);
         loadFile(extensionClasses, DUBBO_DIRECTORY);  /**@c 加载文件中值，写到缓存变量中 */
         loadFile(extensionClasses, SERVICES_DIRECTORY);
@@ -1562,6 +1582,11 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
                     code.append(s);
                 }
 
+                /**
+                 * 获取扩展点的列表
+                 * 1）若@Adaptive有声明，直接使用
+                 * 2）若@Adaptive没有声明，取类名并按点格式化
+                 */
                 // 分析带有@Adaptive 注解的方法
                 String[] value = adaptiveAnnotation.value(); //调用注解中的方法，value作为url获取值的key 例如：url.getParameter("transporter.self", "netty")
                 // 没有设置Key，则使用“扩展点接口名的点分隔 作为Key
