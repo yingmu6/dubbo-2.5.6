@@ -23,7 +23,7 @@ package com.alibaba.dubbo.rpc.service;
  * @author qian.lei
  * @export
  */
-public interface EchoService {// history-v1 为啥没有实现类？用途是啥？
+public interface EchoService {// 为啥没有实现类？用途是啥？解：实现类是通过getProxy获取的
 
     /**
      * echo test.
@@ -35,7 +35,9 @@ public interface EchoService {// history-v1 为啥没有实现类？用途是啥
     Object $echo(Object message);
 
     /**
-     * todo 10/24 是怎么与EchoFilter关联起来的？所有服务自动实现 EchoService 接口是在哪里体现的？
+     * 10/24 是怎么与EchoFilter关联起来的？所有服务自动实现 EchoService 接口是在哪里实现的？ 11/03-done
+     * 解：1）AbstractProxyFactory中getProxy获取代理实例时有用到
+     *    2）EchoService没有实现类，是通过动态代理getProxy获取实例的
      */
 
 }

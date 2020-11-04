@@ -124,7 +124,12 @@ public class RpcUtils {// read finish
                 && invocation.getArguments() != null
                 && invocation.getArguments().length > 0
                 && invocation.getArguments()[0] instanceof String) {
-            return (String) invocation.getArguments()[0]; //todo 10/27 为啥是第一个参数？泛化调试下
+            /**
+             *  10/27 为啥是第一个参数？泛化调试下, 11/03-done
+             *  解：根据GenericService定义的方法Object $invoke(String method, String[] parameterTypes, Object[] args)
+             *  获取到方法名称
+             */
+            return (String) invocation.getArguments()[0];
         }
         return invocation.getMethodName();
     }
