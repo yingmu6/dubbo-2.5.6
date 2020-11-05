@@ -26,22 +26,22 @@ import java.util.Comparator;
  *
  * @author william.liangf
  */
-public class ActivateComparator implements Comparator<Object> { //比较器 todo 11/04 待调试
+public class ActivateComparator implements Comparator<Object> { //比较器
 
     public static final Comparator<Object> COMPARATOR = new ActivateComparator();
 
-    //用例覆盖点1（两个对象比较，可单元测试）
+    //两个对象比较，可单元测试
     public int compare(Object o1, Object o2) {
-        if (o1 == null && o2 == null) {
+        if (o1 == null && o2 == null) { //对象比较
             return 0;
         }
-        if (o1 == null) {
+        if (o1 == null) { // o1 < o2
             return -1;
         }
-        if (o2 == null) {
+        if (o2 == null) { //o1 > o2
             return 1;
         }
-        if (o1.equals(o2)) {
+        if (o1.equals(o2)) { //o1 = o2
             return 0;
         }
         Activate a1 = o1.getClass().getAnnotation(Activate.class);
@@ -51,7 +51,7 @@ public class ActivateComparator implements Comparator<Object> { //比较器 todo
                 && o1.getClass().getInterfaces().length > 0
                 && o1.getClass().getInterfaces()[0].isAnnotationPresent(SPI.class)) {
             ExtensionLoader<?> extensionLoader = ExtensionLoader.getExtensionLoader(o1.getClass().getInterfaces()[0]);
-            if (a1.before().length > 0 || a1.after().length > 0) {
+            if (a1.before().length > 0 || a1.after().length > 0) { //todo 11/04-doing 待调试
                 String n2 = extensionLoader.getExtensionName(o2.getClass());
                 for (String before : a1.before()) {
                     if (before.equals(n2)) {
@@ -78,7 +78,7 @@ public class ActivateComparator implements Comparator<Object> { //比较器 todo
                 }
             }
         }
-        int n1 = a1 == null ? 0 : a1.order();
+        int n1 = a1 == null ? 0 : a1.order(); //若不满足按before、after的比较条件，则按order比较大小
         int n2 = a2 == null ? 0 : a2.order();
         return n1 > n2 ? 1 : -1; // 就算n1 == n2也不能返回0，否则在HashSet等集合中，会被认为是同一值而覆盖
     }

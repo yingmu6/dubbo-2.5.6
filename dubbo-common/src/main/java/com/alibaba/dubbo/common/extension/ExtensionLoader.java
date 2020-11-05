@@ -95,14 +95,15 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
     /**@c 此处用途？持有对象管理扩展名与接口Class的映射关系 */
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<Map<String, Class<?>>>();
 
-    // 扩展名与自动激活注解@Active的映射 //todo 11/04 为啥没有存自定义@Activate，如SelfFilter
+    // 扩展名与自动激活注解@Active的映射 //11/04 为啥没有存自定义@Activate，如SelfFilter，解：因为这个缓存存的时候是判断是否有@Activate注解的
     private final Map<String, Activate> cachedActivates = new ConcurrentHashMap<String, Activate>();
 
     // 扩展名与实例的持有对象的映射
     private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
 
     /**
-     * todo 10/30 怎么区分是共享变量还是对象私有变量
+     * 10/30 怎么区分是共享变量还是对象私有变量
+     * 解：共享变量就是类变量（静态变量），所有对象共有； 私有变量是每个对象单独拥有
      */
     // 缓存中的实例对象，只存在一个实例
     private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>(); //缓存中对象
@@ -116,7 +117,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
 
     private ExtensionLoader(Class<?> type) {/**@c 私有的构造方法，对外隐藏 */
         this.type = type;
-        /**@c objectFactory负责所有IOC创建的对象 对象工厂 todo 10/30 此处的递归待了解 */
+        /**@c objectFactory负责所有IOC创建的对象 对象工厂 todo 10/30 此处的递归待了解，调试下，一个非ExtensionFactory设置两次，为啥objectFactory不为空？而是一个AdaptiveExtensionFactory的实例 */
         objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
     }
 
@@ -291,7 +292,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
         List<T> exts = new ArrayList<T>();
         List<String> names = values == null ? new ArrayList<String>(0) : Arrays.asList(values);
         /**
-         * 原生的扩展点
+         * 系统的扩展点
          */
         if (!names.contains(Constants.REMOVE_VALUE_PREFIX + Constants.DEFAULT_KEY)) {
             getExtensionClasses();
@@ -307,11 +308,13 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
                     }
                 }
             }
-            Collections.sort(exts, ActivateComparator.COMPARATOR); //将实例列表排序 history-h1 排序算法
+            Collections.sort(exts, ActivateComparator.COMPARATOR); //按指定的比较器将列表进行排序
         }
 
         /**
-         * 用户设置的扩展点，如SelfFilter todo 11/04 为啥没有按注解判断？
+         * 用户设置的扩展点，如SelfFilter
+         * 11/04 为啥没有按注解判断？在哪里区分是用户还是系统的扩展点的？
+         * 解：加载文件时loadFile，会判断是否带着Activate注解，带着的会放入cachedActivates，没在这个缓存中，表明没有注解，所以不用按注解判断
          */
         List<T> usrs = new ArrayList<T>();
         for (int i = 0; i < names.size(); i++) {
@@ -861,7 +864,11 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
 
         Map<String, Class<?>> extensionClasses = new HashMap<String, Class<?>>();
 
-        //重写加载文件方法 todo 11/04 是加载哪些目录下的文件？比如Filter既加载dubbo-rpc-default，也加载dubbo-rpc-api目录下的文件
+        /**
+         * 加载文件方法
+         * 11/04 是加载哪些目录下的文件？比如Filter既加载dubbo-rpc-default，也加载dubbo-rpc-api目录下的文件
+         * 解：所有模块中指定目录下，执行文件都要加载
+         */
         loadFile(extensionClasses, DUBBO_INTERNAL_DIRECTORY);
         loadFile(extensionClasses, DUBBO_DIRECTORY);  /**@c 加载文件中值，写到缓存变量中 */
         loadFile(extensionClasses, SERVICES_DIRECTORY);
@@ -924,6 +931,8 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
      * 2）按等号"="分隔每行数据，获取到扩展名或扩展类名称，并对扩展类做正确性检查
      * 3）处理方法参数extensionClasses，将扩展名与扩展类映射起来
      *    还处理其它的缓存，如cachedActivates（自动激活类缓存）、cachedNames、cachedAdaptiveClass（自适应类的缓存）、cachedWrapperClasses（封装类的缓存）
+     *
+     * 注：有个dubbo的总模块，会把所有模块组织起来。所以这里加载的文件，会对所有模块中指定目录dir、指定接口名type的文件都加载
      */
     private void loadFile(Map<String, Class<?>> extensionClasses, String dir) {   //SPI步骤08
         String fileName = dir + type.getName(); //将SPI目录 + 接口的全称作为文件名（如META-INF/dubbo/internal/com.alibaba.dubbo.rpc.Filter）
@@ -931,13 +940,13 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
             Enumeration<java.net.URL> urls;
             ClassLoader classLoader = findClassLoader();
             if (classLoader != null) { //没有获取到类加载器
-                urls = classLoader.getResources(fileName); //从资源路径中加载指定文件 todo 10/29 待调试看数据
+                urls = classLoader.getResources(fileName); //从资源路径中加载指定文件  10/29 待调试看数据，11/05-done
             } else {
                 urls = ClassLoader.getSystemResources(fileName); //从系统资源中加载文件
             }
             if (urls != null) {
                 while (urls.hasMoreElements()) { //遍历集合
-                    java.net.URL url = urls.nextElement();
+                    java.net.URL url = urls.nextElement(); //url例如：file:/Users/xxx/selfPro/tuya_basic_dd/dubbo-monitor/dubbo-monitor-api/target/classes/META-INF/dubbo/internal/com.alibaba.dubbo.rpc.Filter, file:/Users/xxx/selfPro/tuya_basic_dd/dubbo-filter/dubbo-filter-validation/target/classes/META-INF/dubbo/internal/com.alibaba.dubbo.rpc.Filter等
                     try {
                         /**@c 使用底层流构建高级流（字符缓冲输入流） 将字节流转换为字符流 */
                         BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "utf-8"));
