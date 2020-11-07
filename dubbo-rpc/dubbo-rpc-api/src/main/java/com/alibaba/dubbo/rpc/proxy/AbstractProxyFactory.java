@@ -27,7 +27,7 @@ import com.alibaba.dubbo.rpc.service.EchoService;
  *
  * @author william.liangf
  */
-public abstract class AbstractProxyFactory implements ProxyFactory {// read finish @pause 10.1 代理工厂以及代理流程
+public abstract class AbstractProxyFactory implements ProxyFactory {// read finish todo @pause 10.1 代理工厂以及代理流程
 
     public <T> T getProxy(Invoker<T> invoker) throws RpcException { //待调试了解
         Class<?>[] interfaces = null;

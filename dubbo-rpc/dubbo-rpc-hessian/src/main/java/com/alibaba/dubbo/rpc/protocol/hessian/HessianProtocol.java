@@ -64,7 +64,7 @@ public class HessianProtocol extends AbstractProxyProtocol { //history-v1 hessio
         return 80;
     }
 
-    protected <T> Runnable doExport(T impl, Class<T> type, URL url) throws RpcException {
+    protected <T> Runnable doExport(T impl, Class<T> type, URL url) throws RpcException { //todo 11/06 这是协议的默认实现吗？
         String addr = url.getIp() + ":" + url.getPort();
         HttpServer server = serverMap.get(addr);
         if (server == null) { // 若本地缓存没有，则绑定url生成server

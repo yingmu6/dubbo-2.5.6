@@ -82,7 +82,7 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {// read fi
             return exporter;
         }
         /**
-         * @csy-v1 创建代理待研究 暴露了什么内容？
+         * 创建代理待研究 暴露了什么内容？todo 11/06 此处待了解
          * 表层含义：将某个invoker的某个接口interface进行暴露，接口中的参数从url获取
          */
         final Runnable runnable = doExport(proxyFactory.getProxy(invoker), invoker.getInterface(), invoker.getUrl());

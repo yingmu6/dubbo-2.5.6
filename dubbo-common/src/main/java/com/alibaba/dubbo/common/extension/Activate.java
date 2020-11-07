@@ -48,7 +48,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Activate { //以group、value作为过滤条件，查找实例类，不需要用配置文件的key  @pause 4.1 自动激活流程待深入了解？SPI机制待深入
+public @interface Activate { //以group、value作为过滤条件，查找实例类，不需要用配置文件的key  todo @pause 4.1 自动激活流程待深入了解？SPI机制待深入
     /**
      * Group过滤条件。
      * <br />

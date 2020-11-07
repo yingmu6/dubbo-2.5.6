@@ -20,7 +20,12 @@ public class ProtocolUtils {
     //拼接服务的key (服务的key，会存入Map<String, Exporter<?>> exporterMap，根据可以找出暴露的服务)
     public static String serviceKey(int port, String serviceName, String serviceVersion, String serviceGroup) {
         StringBuilder buf = new StringBuilder();
-        // ServiceKey格式  serviceGroup/serviceName:serviceVersion:port
+        /**
+         * ServiceKey格式
+         * 1）serviceGroup/serviceName:serviceVersion:port
+         * 2）serviceName:serviceVersion:port
+         * 3）serviceName:port
+         */
         if (serviceGroup != null && serviceGroup.length() > 0) {
             buf.append(serviceGroup);
             buf.append("/");

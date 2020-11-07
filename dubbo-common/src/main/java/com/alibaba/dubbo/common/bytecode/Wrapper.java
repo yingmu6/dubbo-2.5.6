@@ -175,7 +175,7 @@ public abstract class Wrapper {/**@c 包装类（抽象类） */
     private static AtomicLong WRAPPER_CLASS_COUNTER = new AtomicLong(0);
 
     /**
-     * get wrapper.  @pause 7.1 封装流程
+     * get wrapper.  todo @pause 7.1 封装流程
      *
      * @param c Class instance.
      * @return Wrapper instance(not null).

@@ -80,7 +80,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
      * @param ics
      * @return
      */
-    public static Proxy getProxy(ClassLoader cl, Class<?>... ics) { //@pause 2.1
+    public static Proxy getProxy(ClassLoader cl, Class<?>... ics) { //todo @pause 2.1
         if (ics.length > 65535) //65535为2^16 - 1
             throw new IllegalArgumentException("interface limit exceeded");
 
