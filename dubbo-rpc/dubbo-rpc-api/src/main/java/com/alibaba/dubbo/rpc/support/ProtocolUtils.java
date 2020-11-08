@@ -11,21 +11,20 @@ public class ProtocolUtils {
     private ProtocolUtils() {
     }
 
-    //serviceKey的值待测试？ 解：将port、path、version、group拼接（服务的唯一标识key）
     public static String serviceKey(URL url) {// read finish
         return serviceKey(url.getPort(), url.getPath(), url.getParameter(Constants.VERSION_KEY),
                 url.getParameter(Constants.GROUP_KEY));
     }
 
-    //拼接服务的key (服务的key，会存入Map<String, Exporter<?>> exporterMap，根据可以找出暴露的服务)
+    /**
+     * 拼接服务的key (服务的key，会存入Map<String, Exporter<?>> exporterMap，根据可以找出暴露的服务)
+     * ServiceKey格式
+     * 1）serviceGroup/serviceName:serviceVersion:port
+     * 2）serviceName:serviceVersion:port
+     * 3）serviceName:port
+     */
     public static String serviceKey(int port, String serviceName, String serviceVersion, String serviceGroup) {
         StringBuilder buf = new StringBuilder();
-        /**
-         * ServiceKey格式
-         * 1）serviceGroup/serviceName:serviceVersion:port
-         * 2）serviceName:serviceVersion:port
-         * 3）serviceName:port
-         */
         if (serviceGroup != null && serviceGroup.length() > 0) {
             buf.append(serviceGroup);
             buf.append("/");

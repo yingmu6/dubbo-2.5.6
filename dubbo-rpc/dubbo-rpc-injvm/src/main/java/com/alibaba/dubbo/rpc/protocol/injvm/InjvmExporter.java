@@ -37,7 +37,7 @@ class InjvmExporter<T> extends AbstractExporter<T> {
         super(invoker);
         this.key = key;
         this.exporterMap = exporterMap;
-        exporterMap.put(key, this);
+        exporterMap.put(key, this); //todo 11/07 此处为啥要比DubboExporter多了这一步？
     }
 
     public void unexport() {

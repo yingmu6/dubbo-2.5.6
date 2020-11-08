@@ -47,14 +47,18 @@ public class RpcInvocation implements Invocation, Serializable { // RpcContext�
     public RpcInvocation() {
     }
 
+    /**
+     * 构造RpcInvocation
+     * 1）初始化成员变量，如methodName、parameterTypes等
+     * 2）若invoker中url存在一些参数，则设置到附加参数中attachments，如group、version、timeout等
+     */
     public RpcInvocation(Invocation invocation, Invoker<?> invoker) {
         this(invocation.getMethodName(), invocation.getParameterTypes(),
                 invocation.getArguments(), new HashMap<String, String>(invocation.getAttachments()),
                 invocation.getInvoker());
-        if (invoker != null) {  //将一些参数放到附属参数中
+        if (invoker != null) {
             URL url = invoker.getUrl();
-            setAttachment(Constants.PATH_KEY, url.getPath());
-            //判断url中是否存在一些参数，如group、version、timeout等
+            setAttachment(Constants.PATH_KEY, url.getPath()); //接口的完整名称
             if (url.hasParameter(Constants.INTERFACE_KEY)) {
                 setAttachment(Constants.INTERFACE_KEY, url.getParameter(Constants.INTERFACE_KEY));
             }
@@ -77,7 +81,7 @@ public class RpcInvocation implements Invocation, Serializable { // RpcContext�
     }
 
     /**
-     * 提供多种构造函数，方便选择
+     * 提供多种构造函数，方便选择（包含部分参数的构造函数）
      */
     public RpcInvocation(Invocation invocation) {
         this(invocation.getMethodName(), invocation.getParameterTypes(),
@@ -100,6 +104,9 @@ public class RpcInvocation implements Invocation, Serializable { // RpcContext�
         this(methodName, parameterTypes, arguments, attachments, null);
     }
 
+    /**
+     * 包含完整参数的构造函数
+     */
     public RpcInvocation(String methodName, Class<?>[] parameterTypes, Object[] arguments, Map<String, String> attachments, Invoker<?> invoker) {
         this.methodName = methodName;
         this.parameterTypes = parameterTypes == null ? new Class<?>[0] : parameterTypes;

@@ -28,7 +28,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @author william.liangf
  */
 @SPI("javassist")
-public interface ProxyFactory {// read finish
+public interface ProxyFactory {// read finish //todo 11/07 画类结构图
 
     /**
      * create proxy.(创建invoker的代理对象)
@@ -36,7 +36,7 @@ public interface ProxyFactory {// read finish
      * @param invoker
      * @return proxy
      */
-    @Adaptive({Constants.PROXY_KEY}) //10/25 加载原理了解下，10/30-done
+    @Adaptive({Constants.PROXY_KEY})
     <T> T getProxy(Invoker<T> invoker) throws RpcException;
 
     /**
@@ -51,4 +51,12 @@ public interface ProxyFactory {// read finish
     @Adaptive({Constants.PROXY_KEY})
     <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) throws RpcException;
 
+    /**
+     * 10/25 自适应加载原理了解下，10/30-done
+     * 自适应原理：不需要指定扩展名，可根据url中的配置动态创建扩展类
+     * 1）会从url找Constants.PROXY_KEY对应的值
+     * 2）若没查找会将类名处理查找，如proxy.factory
+     * 3）若还没查到，则取SPI上声明的扩展值
+     * 若@Adaptive声明有多个value，则会从右到左，依次取值作为下一个的默认值
+     */
 }

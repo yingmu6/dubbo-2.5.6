@@ -33,7 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author william.liangf
  */
-public abstract class AbstractProxyProtocol extends AbstractProtocol {// read finish
+public abstract class AbstractProxyProtocol extends AbstractProtocol {// read finish  todo 11/07 抽象代理协议是何时被使用的？
 
     //history-v1 既有export，又有refer，用途？CopyOnWriteArrayList的用途？
     private final List<Class<?>> rpcExceptions = new CopyOnWriteArrayList<Class<?>>();
@@ -63,34 +63,35 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {// read fi
     }
 
     /**
-     * 代码流程：
-     * 方法目的：暴露服务，并将invoker转换为export
-     * 1）通过服务key，serviceGroup/serviceName:serviceVersion:port
-     *    从本地缓存的Map中查找expoter对象，若查到则返回export对象
-     * 2）创建invoker的代理对象 proxyFactory.getProxy(invoker)
-     * 3）通过doExport 暴露服务，产生运行线程Runnable
-     * 4）AbstractExporter通过invoker构造exporter对象
-     *    并重写exporter的unexport，在解除暴露时，根据key移除exporter，若线程不会空时，要继续运行线程
-     *    并且写入到exporterMap中，下次直接重本地缓存中获取，不需要多次暴露
+     * 暴露服务，获取invoker对应的管理者Exporter
+     * 1）从本地缓存中查找Exporter对象，若查到则直接返回，若没查到则创建
+     * 2）通过匿名类方式创建AbstractExporter对象，重写unexport方法，将父类、当前对象、子类对象的缓存都清除
+     * 3）返回创建的Exporter对象
      */
     @SuppressWarnings("unchecked")
     public <T> Exporter<T> export(final Invoker<T> invoker) throws RpcException {
-        //uri内容是啥？exporterMap的内容？ 解：通过uri构建缓存的key，ServiceKey格式 serviceGroup/serviceName:serviceVersion:port
         final String uri = serviceKey(invoker.getUrl());
         Exporter<T> exporter = (Exporter<T>) exporterMap.get(uri);
-        if (exporter != null) {/**@c 判断本地缓存是否存在exporter 若存在则直接返回缓存中暴露者exporter*/
+        if (exporter != null) {
             return exporter;
         }
         /**
-         * 创建代理待研究 暴露了什么内容？todo 11/06 此处待了解
-         * 表层含义：将某个invoker的某个接口interface进行暴露，接口中的参数从url获取
+         * 创建代理待研究？todo 11/06 此处待了解
          */
         final Runnable runnable = doExport(proxyFactory.getProxy(invoker), invoker.getInterface(), invoker.getUrl());
-        exporter = new AbstractExporter<T>(invoker) { //通过invoker构造exporter
-            public void unexport() { //重写取消暴露
+        exporter = new AbstractExporter<T>(invoker) { //匿名类构建AbstractExporter，用来管理invoker生命周期
+            /**
+             * 11/07 这个线程都做了啥？11/07-done
+             * 解：这里是取消暴露的操作
+             * 1）销毁父类中invoker节点
+             * 2）移除当前对象维护的对应key的缓存
+             * 3）移除子类对象维护的对应key的缓存
+             *  （子类对象，把移除操作封装为线程，当需要移除时调用线程即可，就不需要方法回调了）
+             */
+            public void unexport() { //重写取消暴露方法
                 super.unexport();
                 exporterMap.remove(uri);
-                if (runnable != null) { // 取消暴露时，若运行的线程没有结束，继续运行
+                if (runnable != null) {
                     try {
                         runnable.run();
                     } catch (Throwable t) {

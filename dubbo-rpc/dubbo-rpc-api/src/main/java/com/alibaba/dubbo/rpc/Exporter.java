@@ -23,7 +23,7 @@ package com.alibaba.dubbo.rpc;
  * @see com.alibaba.dubbo.rpc.ExporterListener
  * @see com.alibaba.dubbo.rpc.protocol.AbstractExporter
  */
-// 指服务提供者吗？ 解：暴露服务的引用
+// 指服务提供者吗？ 解：暴露服务的引用（负责维护invoker的生命周期，获取invoker、销毁invoker）
 public interface Exporter<T> {// read finish
 
     /**
@@ -51,7 +51,7 @@ public interface Exporter<T> {// read finish
      * Invoker这个可执行对象的执行过程分成三种类型：
      * 本地执行的Invoker
      * 远程通信执行的Invoker
-     * 多个类型2的Invoker聚合成的集群版Invoker
+     * 多个Invoker聚合成的集群版Invoker
      *
      * Invocation则包含了需要执行的方法、参数等信息
      *

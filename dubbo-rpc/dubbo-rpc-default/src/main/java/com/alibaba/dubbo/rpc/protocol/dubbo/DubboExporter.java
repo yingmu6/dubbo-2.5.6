@@ -30,7 +30,7 @@ public class DubboExporter<T> extends AbstractExporter<T> {// read finish
 
     private final String key;
 
-    private final Map<String, Exporter<?>> exporterMap;//暴露export的map
+    private final Map<String, Exporter<?>> exporterMap; //暴露export的map
 
     public DubboExporter(Invoker<T> invoker, String key, Map<String, Exporter<?>> exporterMap) {
         super(invoker);//调用父类的构造函数，把值传入父类
@@ -40,8 +40,8 @@ public class DubboExporter<T> extends AbstractExporter<T> {// read finish
 
     @Override
     public void unexport() {
-        super.unexport();//将父类也接触暴露
-        exporterMap.remove(key);
+        super.unexport(); //将invoker节点销毁
+        exporterMap.remove(key); //移除缓存中对应的值
     }
 
 }

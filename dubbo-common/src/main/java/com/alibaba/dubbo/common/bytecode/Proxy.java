@@ -74,13 +74,9 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
     }
 
     /**
-     * 获取类的代理
-     * 思路：
-     * @param cl
-     * @param ics
-     * @return
+     * 获取指定类加载器、指定类的代理
      */
-    public static Proxy getProxy(ClassLoader cl, Class<?>... ics) { //todo @pause 2.1
+    public static Proxy getProxy(ClassLoader cl, Class<?>... ics) { //todo 11/07 代理过程待阅读
         if (ics.length > 65535) //65535为2^16 - 1
             throw new IllegalArgumentException("interface limit exceeded");
 

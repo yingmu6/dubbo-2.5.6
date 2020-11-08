@@ -22,27 +22,31 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
- * InvokerHandler
+ * InvokerHandler（Java的调用处理类）
  *
  * @author william.liangf
  */
 public class InvokerInvocationHandler implements InvocationHandler {// read finish
 
-    //handler什么时候用上？
     private final Invoker<?> invoker;
 
     public InvokerInvocationHandler(Invoker<?> handler) {
         this.invoker = handler;
     }
 
+    /**
+     * 重写java的InvocationHandler（调用处理类）
+     * InvocationHandler：每一个代理实例都与一个调用处理类关联，
+     *    当代理实例上的方法被调用时，会调用InvocationHandler的invoke方法（方法回调）
+     * 1）
+     *
+     */
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
         Class<?>[] parameterTypes = method.getParameterTypes();
-        // history-v2 此处逻辑覆盖下
-        if (method.getDeclaringClass() == Object.class) {
+        if (method.getDeclaringClass() == Object.class) { //todo 11/07 getDeclaringClass 待调试
             return method.invoke(invoker, args);
         }
-        // history-v2 此处为啥要区分不同这些方法？
         if ("toString".equals(methodName) && parameterTypes.length == 0) {
             return invoker.toString();
         }
@@ -52,6 +56,9 @@ public class InvokerInvocationHandler implements InvocationHandler {// read fini
         if ("equals".equals(methodName) && parameterTypes.length == 1) {
             return invoker.equals(args[0]);
         }
+        /**
+         * 对创建结果判断，RpcResult.recreate() 若有异常抛出来，否则返回结果值
+         */
         return invoker.invoke(new RpcInvocation(method, args)).recreate();
     }
 
