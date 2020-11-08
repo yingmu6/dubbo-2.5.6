@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * ClassGenerator
+ * ClassGenerator todo 11/08 待了解
  *
  * @author qian.lei
  */

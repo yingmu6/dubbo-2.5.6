@@ -92,7 +92,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
             } catch (ClassNotFoundException e) {
             }
 
-            if (tmp != ics[i])
+            if (tmp != ics[i]) //判断传入的类是否与类加载器加载的类相同
                 throw new IllegalArgumentException(ics[i] + " is not visible from class loader");
 
             sb.append(itf).append(';'); //将多个类名拼接
@@ -112,11 +112,11 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
         }
 
         Proxy proxy = null;
-        synchronized (cache) {
+        synchronized (cache) { //todo 11/08 synchronized的使用方式
             do {
                 Object value = cache.get(key);
-                if (value instanceof Reference<?>) {
-                    proxy = (Proxy) ((Reference<?>) value).get();
+                if (value instanceof Reference<?>) { //Reference：Java中的引用对象
+                    proxy = (Proxy) ((Reference<?>) value).get(); //返回引用对象，并强转为Proxy
                     /**
                      * 若本地缓存中代理对象，直接返回， 10/25 缓存的概念了解：提高数据读写速度，采用程序局部性原理(空间、时间局部性)
                      * https://baike.baidu.com/item/%E7%BC%93%E5%AD%98 百科
@@ -136,7 +136,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
                  * == 本质是判断两个对象引用是否是同一对象，即指向是不是同一个对象地址；equals被用来判断两个对象是否相等
                  * https://blog.51cto.com/lavasoft/79863 简单类型与引用对象的判断相等
                  */
-                if (value == PendingGenerationMarker) { //比较引用对象
+                if (value == PendingGenerationMarker) { //比较对象的引用
                     try {
                         cache.wait();
                     } catch (InterruptedException e) {
@@ -213,7 +213,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
             ccm.setSuperClass(Proxy.class);
             ccm.addMethod("public Object newInstance(" + InvocationHandler.class.getName() + " h){ return new " + pcn + "($1); }");
             Class<?> pc = ccm.toClass(); //构建对象class对应的字符串，然后生成代理
-            proxy = (Proxy) pc.newInstance();
+            proxy = (Proxy) pc.newInstance(); //todo 11/08 待调试，看下生产的类是啥？
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
@@ -228,8 +228,8 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
                 if (proxy == null)
                     cache.remove(key);
                 else
-                    cache.put(key, new WeakReference<Proxy>(proxy));
-                cache.notifyAll();
+                    cache.put(key, new WeakReference<Proxy>(proxy)); //todo 11/08 弱引用了解
+                cache.notifyAll(); //todo 11/08 与wait一起使用吗？
             }
         }
         return proxy;
@@ -257,7 +257,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
             if (Short.TYPE == cl)
                 return name + "==null?(short)0:((Short)" + name + ").shortValue()";
             throw new RuntimeException(name + " is unknown primitive type."); //若为Void类型，抛出异常
-        }
+        } //todo 11/08 调试下，看下产生的代码是啥？
         return "(" + ReflectUtils.getName(cl) + ")" + name; //若参数是对象类型，则进行强制转换
     }
 
@@ -266,7 +266,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
      *
      * @return instance.
      */
-    public Object newInstance() {
+    public Object newInstance() { //todo 11/08 为啥没有引用的地方？
         return newInstance(THROW_UNSUPPORTED_INVOKER);
     }
 
@@ -275,5 +275,5 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
      *
      * @return instance.
      */
-    abstract public Object newInstance(InvocationHandler handler);
+    abstract public Object newInstance(InvocationHandler handler); //todo 11/08 没有看到对应的调用？是动态调用的吗
 }
