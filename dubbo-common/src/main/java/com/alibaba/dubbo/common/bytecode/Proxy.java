@@ -75,8 +75,9 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
 
     /**
      * 获取指定类加载器、指定类的代理
+     * (获取同类型的一组类的代理)
      */
-    public static Proxy getProxy(ClassLoader cl, Class<?>... ics) { //todo 11/07 代理过程待阅读
+    public static Proxy getProxy(ClassLoader cl, Class<?>... ics) {
         if (ics.length > 65535) //65535为2^16 - 1
             throw new IllegalArgumentException("interface limit exceeded");
 
@@ -153,13 +154,13 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
         String pkg = null;
         ClassGenerator ccp = null, ccm = null;
         try {
-            ccp = ClassGenerator.newInstance(cl);
+            ccp = ClassGenerator.newInstance(cl); //todo 11/09 此处ClassGenerator待了解以及Javassist实践
 
             Set<String> worked = new HashSet<String>();
             List<Method> methods = new ArrayList<Method>();
 
             for (int i = 0; i < ics.length; i++) {//10/25 此处循环待了解：为每个类的方法增加功能
-                if (!Modifier.isPublic(ics[i].getModifiers())) { //对非公有的接口进行处理
+                if (!Modifier.isPublic(ics[i].getModifiers())) { //对非公有的接口进行判断，看是否在同一个包内
                     String npkg = ics[i].getPackage().getName();
                     if (pkg == null) { //10/25 包名比较待调试，pkg取第一个类的包名，类数组中的其它类的包名依次比较
                         pkg = npkg;

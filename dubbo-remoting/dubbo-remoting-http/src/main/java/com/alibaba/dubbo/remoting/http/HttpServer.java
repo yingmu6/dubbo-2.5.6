@@ -20,6 +20,10 @@ import com.alibaba.dubbo.common.URL;
 
 import java.net.InetSocketAddress;
 
+/**
+ * Http服务
+ * 获取处理类、url、地址等，并能关闭通道
+ */
 public interface HttpServer extends Resetable {
 
     /**

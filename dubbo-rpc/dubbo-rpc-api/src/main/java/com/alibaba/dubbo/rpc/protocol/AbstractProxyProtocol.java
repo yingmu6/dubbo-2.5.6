@@ -75,9 +75,6 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {// read fi
         if (exporter != null) {
             return exporter;
         }
-        /**
-         * 创建代理待研究？todo 11/06 此处待了解
-         */
         final Runnable runnable = doExport(proxyFactory.getProxy(invoker), invoker.getInterface(), invoker.getUrl());
         exporter = new AbstractExporter<T>(invoker) { //匿名类构建AbstractExporter，用来管理invoker生命周期
             /**

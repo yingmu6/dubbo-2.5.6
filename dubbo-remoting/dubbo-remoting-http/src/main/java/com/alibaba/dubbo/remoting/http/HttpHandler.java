@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * http invocation handler.
+ * http invocation handler.（http的调用处理）
  *
  * @author william.liangf
  */

@@ -26,21 +26,25 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Service dispatcher Servlet.
+ * 11/09 Dispatcher是拦截器吗？该模式是怎样的
+ * 解：不是拦截器，是派发器，基于不同的事件采取对应的行动
+ *  Java NIO浅析Reactor模式 https://juejin.im/post/6844903682509635598
+ *  事件派发器模式 https://cloud.tencent.com/developer/article/1178048
  *
+ * Service dispatcher Servlet.
  * @author qian.lei
  */
-public class DispatcherServlet extends HttpServlet { //history-v1 此处拦截器学习实践？
+public class DispatcherServlet extends HttpServlet {
 
     private static final long serialVersionUID = 5766349180380479888L;
-    private static final Map<Integer, HttpHandler> handlers = new ConcurrentHashMap<Integer, HttpHandler>();
+    private static final Map<Integer, HttpHandler> handlers = new ConcurrentHashMap<Integer, HttpHandler>(); //端口与处理类的缓存
     private static DispatcherServlet INSTANCE;
 
     public DispatcherServlet() {
         DispatcherServlet.INSTANCE = this;
     }
 
-    public static void addHttpHandler(int port, HttpHandler processor) {
+    public static void addHttpHandler(int port, HttpHandler processor) { //注册事件处理类
         handlers.put(port, processor);
     }
 
@@ -52,6 +56,11 @@ public class DispatcherServlet extends HttpServlet { //history-v1 此处拦截�
         return INSTANCE;
     }
 
+    /**
+     * 事件派发
+     * 1）从请求对象request中获取端口port，查找对应的处理类HttpHandler
+     * 2）若查到处理类，则调用处理类的handle方法，否则则抛出未找到服务的异常
+     */
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpHandler handler = handlers.get(request.getLocalPort());
