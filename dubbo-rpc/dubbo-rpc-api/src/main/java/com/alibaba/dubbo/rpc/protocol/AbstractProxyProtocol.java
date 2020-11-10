@@ -66,7 +66,7 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {// read fi
      * 暴露服务，获取invoker对应的管理者Exporter
      * 1）从本地缓存中查找Exporter对象，若查到则直接返回，若没查到则创建
      * 2）通过匿名类方式创建AbstractExporter对象，重写unexport方法，将父类、当前对象、子类对象的缓存都清除
-     * 3）返回创建的Exporter对象
+     * 3）将构建的Exporter对象写入缓存，返回创建的Exporter对象
      */
     @SuppressWarnings("unchecked")
     public <T> Exporter<T> export(final Invoker<T> invoker) throws RpcException {
