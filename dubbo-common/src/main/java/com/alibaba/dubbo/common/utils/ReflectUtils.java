@@ -641,16 +641,13 @@ public final class ReflectUtils {
      * @param name name.
      * @return Class instance.
      */
-    /**
-     * history-new 将类型名称转换为class？ 转换后的class具体怎么使用的？
-     */
-    private static Class<?> name2class(ClassLoader cl, String name) throws ClassNotFoundException {
+    private static Class<?> name2class(ClassLoader cl, String name) throws ClassNotFoundException { //todo 待调试
         int c = 0, index = name.indexOf('[');
         if (index > 0) {
             c = (name.length() - index) / 2;
             name = name.substring(0, index);
         }
-        if (c > 0) { //history 封装类型?
+        if (c > 0) {
             StringBuilder sb = new StringBuilder();
             while (c-- > 0)
                 sb.append("[");

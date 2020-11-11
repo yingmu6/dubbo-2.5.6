@@ -29,7 +29,11 @@ import com.alibaba.dubbo.rpc.service.EchoService;
  */
 public abstract class AbstractProxyFactory implements ProxyFactory {// read finish todo @pause 10.1 代理工厂以及代理流程
 
-    public <T> T getProxy(Invoker<T> invoker) throws RpcException { //待调试了解
+    /**
+     * 在调用子类具体的getProxy()实现前，组装参数interfaces
+     * 具体的实现交由子类完成
+     */
+    public <T> T getProxy(Invoker<T> invoker) throws RpcException {
         Class<?>[] interfaces = null;
         /**
          * history-v2 此处需要调试，看下interfaces里面可能是啥内容？怎么会有多个interface，看下标签配置
@@ -56,4 +60,5 @@ public abstract class AbstractProxyFactory implements ProxyFactory {// read fini
     //代理待学习实践 Java以及Javassist
     public abstract <T> T getProxy(Invoker<T> invoker, Class<?>[] types);
 
+    //todo 抽象类可以不全部实现接口的方法，交由实现类来处理？
 }

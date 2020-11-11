@@ -82,7 +82,7 @@ import java.util.regex.Matcher;
  */
 
 /**
- * @csy-v2 设计模式了解
+ * 设计模式了解
  * https://www.runoob.com/design-pattern/design-pattern-intro.html  设计模式讲解
  * 设计模式（Design pattern）代表了最佳的实践，通常被有经验的面向对象的软件开发人员所采用。
  * 设计模式是软件开发人员在软件开发过程中面临的一般问题的解决方案。这些解决方案是众多软件开发人员经过相当长的一段时间的试验和错误总结出来的。
@@ -175,12 +175,12 @@ public abstract class Wrapper {/**@c 包装类（抽象类） */
     private static AtomicLong WRAPPER_CLASS_COUNTER = new AtomicLong(0);
 
     /**
-     * get wrapper.  todo @pause 7.1 封装流程
+     * get wrapper.（获取封装实例）
      *
      * @param c Class instance.
      * @return Wrapper instance(not null).
      */
-    public static Wrapper getWrapper(Class<?> c) { //history-h2 封装类的用涂？
+    public static Wrapper getWrapper(Class<?> c) {
         while (ClassGenerator.isDynamicClass(c)) // can not wrapper on dynamic class.
             c = c.getSuperclass();
 
@@ -342,7 +342,7 @@ public abstract class Wrapper {/**@c 包装类（抽象类） */
             for (Method m : ms.values())
                 wc.getField("mts" + ix++).set(null, m.getParameterTypes());
 
-            return (Wrapper) wc.newInstance(); //todo 10/27 待调试封装的内容
+            return (Wrapper) wc.newInstance(); //todo 11/11 待调试封装的内容
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable e) {

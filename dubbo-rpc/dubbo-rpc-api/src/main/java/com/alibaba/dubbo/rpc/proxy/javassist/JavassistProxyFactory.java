@@ -41,18 +41,19 @@ public class JavassistProxyFactory extends AbstractProxyFactory {// read finish
          *    2.3）执行Result的recreate
          * 3）调用Proxy中newInstance产生Object
          */
-        return (T) Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker)); //todo 11/07-doing
+        return (T) Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker));
     }
 
-    public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {
+    public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {// todo 11/11-doing
         //@system Wrapper类不能正确处理带$的类名
-        final Wrapper wrapper = Wrapper.getWrapper(proxy.getClass().getName().indexOf('$') < 0 ? proxy.getClass() : type);
+        final Wrapper wrapper = Wrapper.getWrapper(proxy.getClass().getName().indexOf('$') < 0 ? proxy.getClass() : type); //若类名中包含$，则取传入的type封装，否则取proxy的class封装
         return new AbstractProxyInvoker<T>(proxy, type, url) {
             @Override
             protected Object doInvoke(T proxy, String methodName,
                                       Class<?>[] parameterTypes,
                                       Object[] arguments) throws Throwable {
-                return wrapper.invokeMethod(proxy, methodName, parameterTypes, arguments);
+                //通过封装类Wrapper执行方法调用
+                return wrapper.invokeMethod(proxy, methodName, parameterTypes, arguments); //todo 11/11 此处调用待了解，外部内访问内部类？
             }
         };
     }
