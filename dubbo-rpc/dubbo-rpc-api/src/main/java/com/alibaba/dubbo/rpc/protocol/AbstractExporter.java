@@ -31,7 +31,7 @@ public abstract class AbstractExporter<T> implements Exporter<T> {// read finish
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Invoker<T> invoker;
+    private final Invoker<T> invoker; //Exporter负责Invoker的生命周期管理，所以持有invoker对象
 
     private volatile boolean unexported = false;
 
@@ -50,7 +50,11 @@ public abstract class AbstractExporter<T> implements Exporter<T> {// read finish
         return invoker;
     }
 
-    //设置状态并销毁节点
+    /**
+     * 取消暴露
+     * 1）设置状态为取消暴露状态 unexported = true
+     * 2）销毁暴露者 持有的invoker信息getInvoker().destroy()
+     */
     public void unexport() {
         if (unexported) {
             return;

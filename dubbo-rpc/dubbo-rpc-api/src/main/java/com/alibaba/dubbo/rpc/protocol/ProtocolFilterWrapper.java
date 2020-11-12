@@ -121,12 +121,16 @@ public class ProtocolFilterWrapper implements Protocol {// read finish  11/04 �
     }
 
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
+        //若是注册协议的，直接协议暴露不经过过滤链
         if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) {
             return protocol.export(invoker);
         }
         /**
          * 服务暴露前，服务先经过过滤链处理，再做暴露（过滤链的key为service.filter，group为provider）
          * service.filter是<dubbo:service filter=""/> 定义的filter，没有指定的，会使用系统默认的filter
+         *
+         * 11/12 是怎么选择接口的实现类的？比如AbstractProxyProtocol，DubboProtocol
+         * 解：因为Protocol的export是自适应方法，所以根据自适应规则，会选择键为dubbo的扩展类
          */
         return protocol.export(buildInvokerChain(invoker, Constants.SERVICE_FILTER_KEY, Constants.PROVIDER));
     }

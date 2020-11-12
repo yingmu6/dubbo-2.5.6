@@ -154,7 +154,11 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
         String pkg = null;
         ClassGenerator ccp = null, ccm = null;
         try {
-            ccp = ClassGenerator.newInstance(cl); //todo 11/09 此处ClassGenerator待了解以及Javassist实践
+            /**
+             * 11/12 此处ClassGenerator待了解以及Javassist实践
+             * Javassist: 是一个开源的分析、编辑和创建Java字节码的类库，可以直接编辑和生成Java生成的字节码 https://zhuanlan.zhihu.com/p/141449080
+             */
+            ccp = ClassGenerator.newInstance(cl);
 
             Set<String> worked = new HashSet<String>();
             List<Method> methods = new ArrayList<Method>();

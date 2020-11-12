@@ -342,7 +342,7 @@ public abstract class Wrapper {/**@c 包装类（抽象类） */
             for (Method m : ms.values())
                 wc.getField("mts" + ix++).set(null, m.getParameterTypes());
 
-            return (Wrapper) wc.newInstance(); //todo 11/11 待调试封装的内容
+            return (Wrapper) wc.newInstance(); //todo 11/12 待调试封装的内容
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable e) {

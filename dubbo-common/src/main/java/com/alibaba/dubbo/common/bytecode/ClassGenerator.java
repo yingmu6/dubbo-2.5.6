@@ -43,12 +43,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * ClassGenerator todo 11/08 待了解
+ * ClassGenerator todo 11/12 了解是如何封装javassist
  *
  * @author qian.lei
  */
 
 public final class ClassGenerator { //10/25 待了解：类产生器，javassist了解；解:getClassPool方法处已标明
+    /**
+     * ClassGenerator的数据结构 todo 11/12 待了解
+     *
+     */
     private static final AtomicLong CLASS_NAME_COUNTER = new AtomicLong(0);
     private static final String SIMPLE_NAME_TAG = "<init>";
     // 类加载器与类池的映射

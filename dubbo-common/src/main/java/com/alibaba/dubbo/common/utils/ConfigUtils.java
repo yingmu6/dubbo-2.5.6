@@ -193,18 +193,13 @@ public class ConfigUtils {
         return getProperty(key, null);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"}) /**@c 从System获取指定的值，如果不存在使用默认值 */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     /**
      * 获取属性key对应的值，若没有值，默认值为defaultValue
-     * 1）从System系统中获取key对应的值
-     *   1.1）若值不为空，则直接返回
-     * 2）若从System系统中获取的属性值为空，则从属性文件中获取
-     *   2.1）从dubbo.properties.file或dubbo.propertie获取
-     *   2.2）先尝试本地文件中查找，若本地文件没有查到，则通过网络流从远程文件中获取
-     *     （若允许出现多个文件，则将所有文件对应的属性值都进行加载）
+     *    从System系统中获取的属性值，若没查到则从dubbo的属性文件中查找
      */
     public static String getProperty(String key, String defaultValue) {
-        String value = System.getProperty(key); //此处为啥再从系统属性中查一次，都是系统属性中没值才去加载配置文件的？ 1）因为开发时查没有，但到此处时，可能其它的线程把值设置进入了。起再次确认的作用 2）还有单独调用的地方
+        String value = System.getProperty(key);
         if (value != null && value.length() > 0) {
             return value;
         }
@@ -235,7 +230,7 @@ public class ConfigUtils {
      */
 
     /**
-     * 加载指定文件名的属性文件，并且写到Properties对象中  history_new 待调试
+     * 加载指定文件名的属性文件，并且写到Properties对象中  todo 11/12 思路进行简化，并调试
      * 1）若文件名以"/"开头，则按本地文件处理
      *   1.1）通过文件名，获取到文件输入流
      *   1.2）从输入流中读取到属性列表

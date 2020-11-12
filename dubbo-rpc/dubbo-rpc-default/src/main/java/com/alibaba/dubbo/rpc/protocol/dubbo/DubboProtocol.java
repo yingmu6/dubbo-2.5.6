@@ -49,7 +49,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * dubbo protocol support.
+ * dubbo protocol support.（DubboProtocol是Protocol的默认协议，若没指定协议，就会进入此类的方法）
  *
  * @author qian.lei
  * @author william.liangf
@@ -57,6 +57,17 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class DubboProtocol extends AbstractProtocol {// read finish
 
+    /**
+     * DubboProtocol的数据结构
+     * 1）从父类继承的数据：AbstractProtocol
+     *   Map<String, Exporter<?>> exporterMap 暴露服务的缓存，key为ServiceKey，置为Exporter
+     *   Set<Invoker<?>> invokers 服务执行者列表，如同一个服务有多个提供者
+     *
+     * 2）当前类维护的数据：DubboProtocol
+     *   NAME（协议名）、DEFAULT_PORT（默认端口）、DubboProtocol INSTANCE 实例的缓存
+     *   ExchangeServer（交换服务）、ReferenceCountExchangeClient（引用计数）
+     *   LazyConnectExchangeClient（延迟连接）、stubServiceMethodsMap（存根方法的映射）等数据
+     */
     public static final String NAME = "dubbo";
 
     public static final int DEFAULT_PORT = 20880;
@@ -252,7 +263,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
      * 4）打开服务openServer(url)
      * 5）返回构建的DubboExporter（服务暴露者）
      */
-    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException { //service export 步骤08
+    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException { //service export 步骤08 todo 11/12-doing
         URL url = invoker.getUrl();
 
         // export service.（根据执行者信息，构造服务暴露引用的信息）

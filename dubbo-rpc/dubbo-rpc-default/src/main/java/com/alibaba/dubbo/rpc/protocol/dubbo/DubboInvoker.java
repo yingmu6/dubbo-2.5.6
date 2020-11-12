@@ -119,15 +119,12 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {// read finish
     }
 
     /**
-     * dubbo invoker销毁 history-new 待调试
-     * 1）若已经销毁，则不处理
-     * 2）若没有销毁
-     *  2.1）用销毁的可重入锁destroyLock加锁
-     *  2.2）再次判断是否被销毁，若已销毁则结束不处理
-     *  2.3）调用父类AbstractInvoker的销毁，将available置为false，不可用
-     *  2.4）若调用集合invokers不为空，将当前DubboInvoker移除
-     *  2.5）遍历客户端clients列表，将客户端在指定停机时间做关闭
-     *  2.6）将destroyLock解锁
+     * dubbo invoker 销毁
+     * 1）判断是否已经销毁，若销毁了则不处理
+     * 2）加锁处理销毁业务：
+     *   2.1）设置销毁状态available=false
+     *   2.2）移除清除本地缓存的invokers.remove(this)
+     *   2.3）关闭客户端连接通道client.close()
      */
     public void destroy() {
         //防止client被关闭多次.在connect per jvm的情况下，client.close方法会调用计数器-1，当计数器小于等于0的情况下，才真正关闭
@@ -140,13 +137,13 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {// read finish
                 if (super.isDestroyed()) {
                     return;
                 }
-                super.destroy();
+                super.destroy(); //设备状态为无效
                 if (invokers != null) {
-                    invokers.remove(this);
+                    invokers.remove(this); //清除本地缓存的invoker
                 }
                 for (ExchangeClient client : clients) {//关闭客户端连接
                     try {
-                        client.close(getShutdownTimeout());
+                        client.close(getShutdownTimeout()); //调用抽象类：公共方法， 关闭连接通道
                     } catch (Throwable t) {
                         logger.warn(t.getMessage(), t);
                     }

@@ -33,7 +33,7 @@ public class JavassistProxyFactory extends AbstractProxyFactory {// read finish
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Invoker<T> invoker, Class<?>[] interfaces) {
         /**
-         * 代码流程：
+         * 代码流程：(通过javassist生成代理对象的代码，并获取实例)
          * 1) 静态方法Proxy.getProxy，获取到Proxy
          * 2）构建InvokerInvocationHandler处理类
          *    2.1）构建RpcInvocation --- new RpcInvocation(method, args)
@@ -44,7 +44,7 @@ public class JavassistProxyFactory extends AbstractProxyFactory {// read finish
         return (T) Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker));
     }
 
-    public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {// todo 11/11-doing
+    public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {// todo 11/11
         //@system Wrapper类不能正确处理带$的类名
         final Wrapper wrapper = Wrapper.getWrapper(proxy.getClass().getName().indexOf('$') < 0 ? proxy.getClass() : type); //若类名中包含$，则取传入的type封装，否则取proxy的class封装
         return new AbstractProxyInvoker<T>(proxy, type, url) {

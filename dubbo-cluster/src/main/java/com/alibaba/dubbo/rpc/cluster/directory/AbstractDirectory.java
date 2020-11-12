@@ -54,7 +54,7 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
 
     private final URL url;
 
-    private volatile boolean destroyed = false;
+    private volatile boolean destroyed = false; //维护着目录销毁状态
 
     private volatile URL consumerUrl;
 
