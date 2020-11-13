@@ -80,7 +80,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * history-v1 URL学习实践？dubbo URL的用户以及应用场景
  */
-public final class URL implements Serializable {//可进行序列化
+public final class URL implements Serializable {//可进行序列化 todo 11/13 URL了解以及实践
 
     // 网络URL学习一下，对比一下与dubbo的自定义的URL的异同
     // URL语法结构  协议：//授权机构/路径?查询条件
@@ -1075,9 +1075,9 @@ public final class URL implements Serializable {//可进行序列化
     }
 
     /**
-     * 判断参数是否存在，如果不存在就添加参数 Absent（缺少的、不存在的），存在就返回当前url，this
-     * 和普通的map不一样，普通的map若存在key，会把key对应的value更新，
-     * 而addParameterIfAbsent不会更改已存在的key对应的value
+     * 如果键不存在的话，则把键值对添加到URL的参数集合中（避免键相同时，值被覆盖）
+     * 1）若key为空或者存在，则不处理，返回当前URL
+     * 2）若key不存在，加入url的参数集合中
      */
     public URL addParameterIfAbsent(String key, String value) {
         if (key == null || key.length() == 0

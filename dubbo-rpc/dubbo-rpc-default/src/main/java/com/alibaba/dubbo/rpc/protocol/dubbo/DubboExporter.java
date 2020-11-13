@@ -28,8 +28,20 @@ import java.util.Map;
  */
 public class DubboExporter<T> extends AbstractExporter<T> {// read finish
     /**
-     * 维护的数据结构
+     * 数据结构 -》
      *
+     * 类继承关系：
+     * 1）DubboExporter继承AbstractExporter抽象类
+     * 2）AbstractExporter实现Exporter接口
+     *
+     * 包含的数据：
+     * 1）Invoker<T> invoker ：具体的执行者
+     * 2）Map<String, Exporter<?>> exporterMap ：暴露服务的本地缓存
+     * 3）unexported：服务销毁状态
+     *
+     * 包含的功能：
+     * 1）构造DubboExporter信息：DubboExporter(Invoker<T> invoker, String key, Map<String, Exporter<?>> exporterMap)
+     * 2）取消服务暴露：unexport()
      */
 
     private final String key;

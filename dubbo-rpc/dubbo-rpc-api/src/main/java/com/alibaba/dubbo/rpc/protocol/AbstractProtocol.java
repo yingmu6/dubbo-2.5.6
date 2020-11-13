@@ -38,6 +38,20 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author william.liangf
  */
 public abstract class AbstractProtocol implements Protocol {// read finish
+    /**
+     * 数据结构 -》
+     *
+     * 类继承关系：
+     * 1）AbstractExporter实现Exporter接口
+     *
+     * 包含的数据：
+     * 1）Set<Invoker<?>> invokers ：调用列表
+     * 2）Map<String, Exporter<?>> exporterMap ：暴露服务的本地缓存
+     *
+     * 包含的功能：
+     * 1）getServerShutdownTimeout()：获取服务停机超时时间
+     * 2）destroy()：释放协议
+     */
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 

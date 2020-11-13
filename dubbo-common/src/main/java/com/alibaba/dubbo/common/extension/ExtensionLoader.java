@@ -514,7 +514,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
         return getExtension(cachedDefaultName);
     }
 
-    // 判断是否包含指定name的扩展：查询指定name的扩展class，看是否存在
+    // 判断扩展名是否在可用的扩展中
     public boolean hasExtension(String name) {
         if (name == null || name.length() == 0)
             throw new IllegalArgumentException("Extension name == null");
@@ -1640,18 +1640,18 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
                 }
 
                 /**
-                 * todo 10/30 待调试，有点绕
-                 * 获取扩展名（若@Adaptive上声明的值有多个时，从右往左遍历，依次把上一次从url中获取的结果作为下一次的默认值）
-                 * 1）从右到左依次遍历查找的键key列表
-                 * 2）若是键key列表的最后一个
-                 *   2.1）若SPI上声明的默认扩展名defaultExtName不为空
-                 *     2.1.1）若值不为"protocol"
-                 *       2.1.1.1）若包含invocation参数，则通过url.getMethodParameter()获取参数值，默认值为defaultExtName
-                 *       2.1.1.2）若不包含invocation参数，则通过url.getParameter()获取参数值，默认值为defaultExtName
-                 *     2.1.2）若值为"protocol"，通过url.getProtocol()获取参数值，默认值为defaultExtName
-                 *   2.2）若SPI上声明的默认扩展名defaultExtName为空
-                 *     2.2.1）若值不为"protocol"，如2.1.1，通过url.getMethodParameter()或url.getParameter()获取值，就没默认值了
-                 * 3）若不是key列表的最后一个
+                 * 自适应扩展查找法：（从右往左设置默认值，然后取值时是正常顺序，从左到右取值）
+                 * 1）获取注解上的扩展值列表，并从由右到左开始执行取值
+                 * 2）若SPI有声明默认值，将这个值做为最右边的默认值，依次向左传递
+                 * 3）取值时，从左向右取值
+                 * 例如：Transporter的bind方法的取法
+                 * url.getParameter("server", url.getParameter("transporter","netty"))
+                 *
+                 * 注意：取值方式
+                 * 1）若扩展值为"protocol"，则直接取url.getProtocol()
+                 * 2）若扩展值不是为"protocol"，判断若参数若包含Invocation
+                 *    2.1）若包含Invocation，则按url.getMethodParameter()取值
+                 *    2.2）若不包含Invocation，否则按url.getParameter()取值
                  */
                 String defaultExtName = cachedDefaultName;
                 String getNameCode = null; // getNameCode的生成以及用途 : 获取扩展名

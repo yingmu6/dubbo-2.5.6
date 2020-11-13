@@ -44,7 +44,7 @@ public interface Transporter {
      * @throws RemotingException
      */
     @Adaptive({Constants.SERVER_KEY, Constants.TRANSPORTER_KEY})
-    Server bind(URL url, ChannelHandler handler) throws RemotingException;
+    Server bind(URL url, ChannelHandler handler) throws RemotingException; //url.getParameter("server", url.getParameter("transporter","netty"))
 
     /**
      * Connect to a server.
@@ -54,7 +54,7 @@ public interface Transporter {
      * @return client
      * @throws RemotingException
      */
-    @Adaptive({Constants.CLIENT_KEY, Constants.TRANSPORTER_KEY})
-    Client connect(URL url, ChannelHandler handler) throws RemotingException;
+    @Adaptive({Constants.CLIENT_KEY, Constants.TRANSPORTER_KEY}) //todo 11/13 暴露的url是怎么组件参数的？
+    Client connect(URL url, ChannelHandler handler) throws RemotingException; //url.getParameter("client", url.getParameter("transporter","netty"))
 
 }

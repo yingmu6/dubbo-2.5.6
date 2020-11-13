@@ -29,7 +29,6 @@ import com.alibaba.dubbo.remoting.transport.DecodeHandler;
  *
  * @author william.liangf
  */
-//history-h1 header交换？
 public class HeaderExchanger implements Exchanger {
 
     public static final String NAME = "header";
@@ -49,12 +48,9 @@ public class HeaderExchanger implements Exchanger {
     }
 
     /**
-     * 绑定服务 -- 代码流程
-     * 1）创建HeaderExchangeHandler处理类，new HeaderExchangeHandler(handler)
-     * 2）将HeaderExchangeHandler作为构造参数，创建DecodeHandler解码处理类，new DecodeHandler(new HeaderExchangeHandler(handler))
-     * 3）
+     * 绑定服务并创建服务对象
      */
-    public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException { //service export 步骤12
+    public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
         //HeaderExchangeServer 会进行心跳检测
         return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(new HeaderExchangeHandler(handler)))); //构建DecodeHandler、HeaderExchangeHandler处理器
     }

@@ -86,7 +86,7 @@ final class NettyCodecAdapter {
         }
     }
 
-    private class InternalDecoder extends SimpleChannelUpstreamHandler {
+    private class InternalDecoder extends SimpleChannelUpstreamHandler { //todo 11/13 内部编码了解
 
         private com.alibaba.dubbo.remoting.buffer.ChannelBuffer buffer =
                 com.alibaba.dubbo.remoting.buffer.ChannelBuffers.EMPTY_BUFFER;

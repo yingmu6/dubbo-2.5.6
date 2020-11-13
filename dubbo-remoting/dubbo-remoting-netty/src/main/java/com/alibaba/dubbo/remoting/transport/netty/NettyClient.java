@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
  * @author qian.lei
  * @author william.liangf
  */
-public class NettyClient extends AbstractClient { //使用的是netty 3.* 的包
+public class NettyClient extends AbstractClient { //使用的是netty 3.* 的包 //todo 11/13 数据结构整理
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 
@@ -62,7 +62,7 @@ public class NettyClient extends AbstractClient { //使用的是netty 3.* 的包
     }
 
     @Override
-    protected void doOpen() throws Throwable {
+    protected void doOpen() throws Throwable { //todo 11/13 netty客户端使用和实践
         /**@启动Netty 客户端*/
         NettyHelper.setNettyLoggerFactory();
         bootstrap = new ClientBootstrap(channelFactory);

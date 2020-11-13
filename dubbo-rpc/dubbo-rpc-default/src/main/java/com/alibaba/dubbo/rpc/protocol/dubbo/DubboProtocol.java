@@ -56,9 +56,14 @@ import java.util.concurrent.ConcurrentMap;
  * @author chao.liuc
  */
 public class DubboProtocol extends AbstractProtocol {// read finish
-
     /**
-     * DubboProtocol的数据结构
+     * 数据结构 -》
+     *
+     * 类继承关系：
+     * 1）DubboProtocol继承了AbstractProtocol抽象类
+     * 2）AbstractProtocol实现了Protocol接口
+     *
+     * 包含的数据：
      * 1）从父类继承的数据：AbstractProtocol
      *   Map<String, Exporter<?>> exporterMap 暴露服务的缓存，key为ServiceKey，置为Exporter
      *   Set<Invoker<?>> invokers 服务执行者列表，如同一个服务有多个提供者
@@ -66,7 +71,13 @@ public class DubboProtocol extends AbstractProtocol {// read finish
      * 2）当前类维护的数据：DubboProtocol
      *   NAME（协议名）、DEFAULT_PORT（默认端口）、DubboProtocol INSTANCE 实例的缓存
      *   ExchangeServer（交换服务）、ReferenceCountExchangeClient（引用计数）
-     *   LazyConnectExchangeClient（延迟连接）、stubServiceMethodsMap（存根方法的映射）等数据
+     *   LazyConnectExchangeClient（延迟连接）、stubServiceMethodsMap（存根方法的映射）
+     *   ExchangeHandler requestHandler（请求回复的事件处理）
+     *
+     * 包含的功能：
+     * 1）<T> Exporter<T> export(Invoker<T> invoker)   服务暴露
+     * 2）<T> Invoker<T> refer(Class<T> type, URL url) 服务引用
+     * 3）void destroy() 释放协议
      */
     public static final String NAME = "dubbo";
 
@@ -263,7 +274,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
      * 4）打开服务openServer(url)
      * 5）返回构建的DubboExporter（服务暴露者）
      */
-    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException { //service export 步骤08 todo 11/12-doing
+    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException { //service export 步骤08 todo 11/13-doing
         URL url = invoker.getUrl();
 
         // export service.（根据执行者信息，构造服务暴露引用的信息）
@@ -274,9 +285,9 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         //export an stub service for dispaching event
         //stub method方法是啥？ 解：本地存根，把部分逻辑放在客户端实现,默认为false
         Boolean isStubSupportEvent = url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT);
-        /**@c 回调方法的用途？ 服务端调用客户端逻辑（一般都是客户端调用服务端）history-h1 参数回调待实现 */
+        /**@c 回调方法的用途？ 服务端调用客户端逻辑（一般都是客户端调用服务端） */
         Boolean isCallbackservice = url.getParameter(Constants.IS_CALLBACK_SERVICE, false);
-        if (isStubSupportEvent && !isCallbackservice) {/**@c 是本地存根 但不是参数回调*/
+        if (isStubSupportEvent && !isCallbackservice) {/**@c 是本地存根 但不是参数回调*/  //todo 11/13 本地存根以及回调实践
             //获取本地存根方法，若为空，则打印非法状态异常，否则记录下存根方法
             String stubServiceMethods = url.getParameter(Constants.STUB_EVENT_METHODS_KEY);
             if (stubServiceMethods == null || stubServiceMethods.length() == 0) {
@@ -296,12 +307,10 @@ public class DubboProtocol extends AbstractProtocol {// read finish
 
     /**
      * 打开服务端 -- 代码流程：
-     * 1）从url获取key为isserver（是否是服务端）的值，判断是否是服务端，只有服务端才打开服务
-     * 2）若是服务端，从Map<String, ExchangeServer> serverMap（交换服务的本地缓存） 本地交换服务中获取key对应的服务
-     * 3）若本地缓存不存在，则重新创建服务，并设备到本地缓存serverMap中
-     *    若本地存在，则重置服务的参数，如心跳时间等
+     * 1）判断是否是服务端，只有服务端才打开服务，客户端不处理
+     * 2）从本地缓存的交换服务获取key对应的服务，若不存在，则重新创建服务，否则重置服务的配置reset(url)
      */
-    private void openServer(URL url) { //service export 步骤09
+    private void openServer(URL url) { //service export
         // find server.
         String key = url.getAddress(); //形式为 host:port或host
         //client 也可以暴露一个只有server可以调用的服务。
@@ -326,8 +335,8 @@ public class DubboProtocol extends AbstractProtocol {// read finish
      *    将URL与requestHandler进行绑定 Exchangers.bind(url, requestHandler);
      * 5）从url中获取client的，判断是否在Transporter支持的扩展集合中
      */
-    private ExchangeServer createServer(URL url) {  //service export 步骤10
-        //默认开启server关闭时发送readonly事件（history-v1 server都关闭了，还能读吗？）
+    private ExchangeServer createServer(URL url) {  //service export
+        //默认开启server关闭时发送readonly事件
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
         //默认开启heartbeat(设置心跳检测时间，默认每隔60秒检查一次)
         url = url.addParameterIfAbsent(Constants.HEARTBEAT_KEY, String.valueOf(Constants.DEFAULT_HEARTBEAT)); /**@c 会启动心跳定时任务，每隔指定时间检查心跳*/
