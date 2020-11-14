@@ -287,9 +287,9 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         Boolean isStubSupportEvent = url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT);
         /**@c 回调方法的用途？ 服务端调用客户端逻辑（一般都是客户端调用服务端） */
         Boolean isCallbackservice = url.getParameter(Constants.IS_CALLBACK_SERVICE, false);
-        if (isStubSupportEvent && !isCallbackservice) {/**@c 是本地存根 但不是参数回调*/  //todo 11/13 本地存根以及回调实践
+        if (isStubSupportEvent && !isCallbackservice) {/**@c 是本地存根 但不是参数回调*/
             //获取本地存根方法，若为空，则打印非法状态异常，否则记录下存根方法
-            String stubServiceMethods = url.getParameter(Constants.STUB_EVENT_METHODS_KEY);
+            String stubServiceMethods = url.getParameter(Constants.STUB_EVENT_METHODS_KEY); //todo 11/14 存根能指定方法？STUB_EVENT_METHODS_KEY是怎么设置的？
             if (stubServiceMethods == null || stubServiceMethods.length() == 0) {
                 if (logger.isWarnEnabled()) {//若支持了stub，就需要stud method
                     logger.warn(new IllegalStateException("consumer [" + url.getParameter(Constants.INTERFACE_KEY) +
