@@ -42,7 +42,7 @@ public class Transporters {
     }
 
     /**
-     * 将URL与多个处理类ChannelHandler绑定
+     * 将URL与多个通道处理类ChannelHandler绑定
      * 1）判断参数url、handlers是否正确
      * 2）判断是否有多个ChannelHandler
      *   2.1）只有一个：取第一个通道处理类ChannelHandler

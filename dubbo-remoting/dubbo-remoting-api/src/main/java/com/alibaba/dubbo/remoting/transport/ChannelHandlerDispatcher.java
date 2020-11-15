@@ -29,11 +29,16 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author william.liangf
  */
-public class ChannelHandlerDispatcher implements ChannelHandler {
+public class ChannelHandlerDispatcher implements ChannelHandler {//通道处理调度器
 
+    /**
+     * 通道处理调度器数据结构
+     * 1）实现ChannelHandler接口，具有通道处理相关功能，如：与通道连接connected()，发送消息sent()等
+     * 2）channelHandlers维护ChannelHandler集合
+     */
     private static final Logger logger = LoggerFactory.getLogger(ChannelHandlerDispatcher.class);
 
-    private final Collection<ChannelHandler> channelHandlers = new CopyOnWriteArraySet<ChannelHandler>();
+    private final Collection<ChannelHandler> channelHandlers = new CopyOnWriteArraySet<ChannelHandler>(); //todo 11/15 CopyOnWriteArraySet待了解
 
     public ChannelHandlerDispatcher() {
     }

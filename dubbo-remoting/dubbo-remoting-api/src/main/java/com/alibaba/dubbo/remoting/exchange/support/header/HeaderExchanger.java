@@ -35,7 +35,7 @@ public class HeaderExchanger implements Exchanger {
     //客户端去连接、服务端去绑定
 
     /**
-     * 连接服务
+     * 连接服务（客户端调用）
      * 1）构建HeaderExchangeHandler（头交换处理类），设置属性它的ExchangeHandler属性
      * 2）构建DecodeHandler，将HeaderExchangeHandler设置到父类AbstractChannelHandlerDelegate
      *   （抽象通道处理委托类）的ChannelHandler属性中，请求header要特殊处理
@@ -48,7 +48,7 @@ public class HeaderExchanger implements Exchanger {
     }
 
     /**
-     * 绑定服务并创建服务对象
+     * 绑定服务并创建服务对象（服务端调用）
      */
     public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
         //HeaderExchangeServer 会进行心跳检测

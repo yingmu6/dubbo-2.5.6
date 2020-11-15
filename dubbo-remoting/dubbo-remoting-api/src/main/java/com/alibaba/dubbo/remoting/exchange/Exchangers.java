@@ -30,7 +30,7 @@ import com.alibaba.dubbo.remoting.transport.ChannelHandlerAdapter;
  *
  * @author william.liangf
  */
-public class Exchangers {
+public class Exchangers {//todo 11/15 门面模式了解
 
     static {
         // check duplicate jar package
@@ -65,7 +65,7 @@ public class Exchangers {
      * 1）url中添加codec参数
      * 2）获取到Exchanger实例，默认为HeaderExchanger，调用bind方法
      */
-    public static ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException { //service export 步骤11
+    public static ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
         if (url == null) {
             throw new IllegalArgumentException("url == null");
         }

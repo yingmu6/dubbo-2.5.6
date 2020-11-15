@@ -29,10 +29,15 @@ import com.alibaba.dubbo.remoting.exchange.Response;
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
 public class DecodeHandler extends AbstractChannelHandlerDelegate { //解码处理器
+    /**
+     *  解码处理器
+     *  DecodeHandler -》AbstractChannelHandlerDelegate -》ChannelHandlerDelegate -》ChannelHandler
+     *
+     *
+     */
 
     private static final Logger log = LoggerFactory.getLogger(DecodeHandler.class);
 
-    /**@c */
     public DecodeHandler(ChannelHandler handler) {
         super(handler);
     }
