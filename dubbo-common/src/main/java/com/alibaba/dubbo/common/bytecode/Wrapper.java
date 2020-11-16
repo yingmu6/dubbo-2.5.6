@@ -48,7 +48,7 @@ import java.util.regex.Matcher;
  */
 
 /**
- * @csy-v2 装饰器模式了解
+ * 装饰器模式了解
  * https://juejin.im/post/5add8e9cf265da0b9d77d377
  * 装饰器模式（Decorator）,动态地给一个对象添加一些额外的职责，就增加功能来说，装饰器模式比生成子类更为灵活；它允许向一个现有的对象添加新的功能，同时又不改变其结构。
  * 装饰器模式又名包装(Wrapper)模式。装饰器模式以对客户端透明的方式拓展对象的功能，是继承关系的一种替代方案。
@@ -66,7 +66,7 @@ import java.util.regex.Matcher;
  */
 
 /**
- * @csy-v2 IOC与AOP了解
+ * IOC与AOP了解
  * https://www.jianshu.com/p/d96a2cf60636  Spring 核心 AOP 及 IOC 详解
  * IoC（Inversion of Control）控制反转：指控制权由应用代码中转到了外部容器，由spring容器来控制，控制权被转移。
  * IoC还有另外一个名字——“依赖注入（Dependency Injection）”。从名字上理解，所谓依赖注入，即组件之间的依赖关系由容器在运行期决定，即由容器动态地将某种依赖关系注入到组件之中。
@@ -117,7 +117,7 @@ import java.util.regex.Matcher;
  */
 
 /**
- * @csy-v2 代理模式了解
+ * 代理模式了解
  * https://www.cnblogs.com/qifengshi/p/6566752.html  Java设计模式之代理模式
  * 代理模式是指客户端并不直接调用实际的对象，而是通过调用代理，来间接的调用实际的对象。
  * 为什么要采用这种间接的形式来调用对象呢？一般是因为客户端不想直接访问实际的对象，或者访问实际的对象存在困难，因此通过一个代理对象来完成间接的访问

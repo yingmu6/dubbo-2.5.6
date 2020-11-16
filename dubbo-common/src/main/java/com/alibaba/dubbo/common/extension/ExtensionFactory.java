@@ -22,7 +22,7 @@ package com.alibaba.dubbo.common.extension;
  * @export
  */
 @SPI
-public interface ExtensionFactory { /**@c 通过扩展工厂方法获取扩展实例  */ //todo @pause 扩展工厂了解 8.1
+public interface ExtensionFactory { /**@c 通过扩展工厂方法获取扩展实例  */ //todo  扩展工厂了解 8.1
 
     /**
      * Get extension.

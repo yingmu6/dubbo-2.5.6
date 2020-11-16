@@ -28,7 +28,7 @@ import java.util.Collection;
  * @author qian.lei
  * @see com.alibaba.dubbo.remoting.Transporter#bind(com.alibaba.dubbo.common.URL, ChannelHandler)
  */
-public interface Server extends Endpoint, Resetable {
+public interface Server extends Endpoint, Resetable { //11/16 Server了解， 解：基于C/S模式
 
     /**
      * is bound.

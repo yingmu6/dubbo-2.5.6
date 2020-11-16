@@ -81,6 +81,7 @@ public class StubProxyFactoryWrapper implements ProxyFactory { // todo 11/11 该
                         //export stub service todo 暴露什么服务？
                         URL url = invoker.getUrl();
                         if (url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT)) {
+                            // 添加存根事件方法（将代理类的方法名进行拼接）
                             url = url.addParameter(Constants.STUB_EVENT_METHODS_KEY, StringUtils.join(Wrapper.getWrapper(proxy.getClass()).getDeclaredMethodNames(), ","));
                             url = url.addParameter(Constants.IS_SERVER_KEY, Boolean.FALSE.toString());
                             try {

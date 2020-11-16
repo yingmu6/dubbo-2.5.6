@@ -92,16 +92,11 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     //servicekey-stubmethods
     private final ConcurrentMap<String, String> stubServiceMethodsMap = new ConcurrentHashMap<String, String>();
     /**
-     * 创建客户端请求处理类 ExchangeHandler（回复客户端reply） -- 代码流程
+     * 创建客户端请求处理类 ExchangeHandler（回复客户端reply）
      * 1）判断回复的消息message是不是调用信息Invocation的实例，若不是则抛出异常
-     * 2）将message强制转换为Invocation类型的实例
-     * 3）通过ExchangeChannel以及Invocation为条件获取到Invoker
-     * 4）判断调用信息中 _isCallBackServiceInvoke的参数值，是否为true（是否有回调方法）
-     *   4.1）若有：
-     *      4.1.1）只有一个方法
-     *      4.1.2）有多个方法
-     *      判断回调方法是否存在于URL方法名列表中，若没有则抛异常
-     *   4.2）若无：执行调用 invoker.invoke(inv)
+     * 2）通过Channel和Invocation 通道信息和调用信息获取invoker， getInvoker(channel, inv)
+     * 3）对回调方法进行判断hasMethod，若调用信息Invocation中不存在回调方法，则提示并返回
+     * 4）设置上下文远程地址，并执行调用invoker.invoke(inv)
      */
     private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() { /**@c history-h1 成员变量若有对象引用，在什么时候创建的 export中没有调用此方法*/
 
@@ -211,23 +206,26 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         return exporterMap;
     }
 
-    //是否是消费端
-    private boolean isClientSide(Channel channel) { //history-h1 判断依据
+    //是否是客户端
+    private boolean isClientSide(Channel channel) {
         InetSocketAddress address = channel.getRemoteAddress();
-        URL url = channel.getUrl();
+        URL url = channel.getUrl(); //服务暴露提供的url
         return url.getPort() == address.getPort() &&
                 NetUtils.filterLocalHost(channel.getUrl().getIp())
                         .equals(NetUtils.filterLocalHost(address.getAddress().getHostAddress()));
+        /**
+         * 11/16 此处比较逻辑待了解
+         * 解：通道中的远程地址和url中的地址相同，表明是客户端
+         */
     }
 
     /**
-     * 获取Invoker（执行者）-- 代码流程：
-     * 1)构建serviceKey ，path、port、version、group
+     * 获取Invoker（查找缓存中的export，并获取对应的invoker，exporter.getInvoker()）
+     * 1）构建serviceKey ，path、port、version、group
      * 2）从缓存中获取export，exporterMap.get(serviceKey)
      * 3）调用export中方法获取invoker，exporter.getInvoker()
      */
     Invoker<?> getInvoker(Channel channel, Invocation inv) throws RemotingException {
-        //history-h1 这两个服务有啥区别？
         boolean isCallBackServiceInvoke = false;
         boolean isStubServiceInvoke = false;
         int port = channel.getLocalAddress().getPort();
@@ -237,7 +235,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         if (isStubServiceInvoke) { //是存根调用，就选remote地址中的port，否则去local地址中port
             port = channel.getRemoteAddress().getPort();
         }
-        //callback
+        //callback 判断是否是回调服务（是客户端且不是存根调用，即为回调调用）
         isCallBackServiceInvoke = isClientSide(channel) && !isStubServiceInvoke;
         if (isCallBackServiceInvoke) { //判断是否回调，若是，path需要拼接，否是直接从会话参数中取 inv.getAttachments().get(Constants.PATH_KEY)
             path = inv.getAttachments().get(Constants.PATH_KEY) + "." + inv.getAttachments().get(Constants.CALLBACK_SERVICE_KEY);
@@ -265,16 +263,12 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     //重点：将invoker转换为exporter，Invoker由框架传入
 
     /**
-     * 暴露服务，将invoker转换成exporter -- 代码流程：
-     * 1）产生服务key，通过invoker（执行者）、key，构建DubboExporter 并写入本地缓存map中exporterMap
-     * 2）从url获取到本地存根、参数回调的值
-     * 3）对本地存根进行判断，若是本地存根服务，那么就需要有存根方法
-     *   3.1) 若存根方法不存在，则抛出异常
-     *   3.2）否则记录到stubServiceMethodsMap（本地存根缓存map中），key为url
-     * 4）打开服务openServer(url)
-     * 5）返回构建的DubboExporter（服务暴露者）
+     * 暴露服务
+     * 1）通过invoker构建DubboExporter，并写入缓存
+     * 2）检查存根方法是否正确
+     * 3）打开服务并返回DubboExporter
      */
-    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException { //service export 步骤08 todo 11/13-doing
+    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException { //todo 11/13-doing
         URL url = invoker.getUrl();
 
         // export service.（根据执行者信息，构造服务暴露引用的信息）
@@ -289,7 +283,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         Boolean isCallbackservice = url.getParameter(Constants.IS_CALLBACK_SERVICE, false);
         if (isStubSupportEvent && !isCallbackservice) {/**@c 是本地存根 但不是参数回调*/
             //获取本地存根方法，若为空，则打印非法状态异常，否则记录下存根方法
-            String stubServiceMethods = url.getParameter(Constants.STUB_EVENT_METHODS_KEY); //todo 11/14 存根能指定方法？STUB_EVENT_METHODS_KEY是怎么设置的？
+            String stubServiceMethods = url.getParameter(Constants.STUB_EVENT_METHODS_KEY); //11/14 存根能指定方法？STUB_EVENT_METHODS_KEY是怎么设置的？解：StubProxyFactoryWrapper中getProxy设置的
             if (stubServiceMethods == null || stubServiceMethods.length() == 0) {
                 if (logger.isWarnEnabled()) {//若支持了stub，就需要stud method
                     logger.warn(new IllegalStateException("consumer [" + url.getParameter(Constants.INTERFACE_KEY) +
@@ -327,13 +321,9 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     }
 
     /**
-     * 创建服务 -- 代码流程：
-     * 1）往url参数中添加channel.readonly.sent（通道是否只读）、heartbeat（心跳检测时间）参数（若存在则不处理key对应的value）
-     * 2）从url获取server对应的值，判断Transporter（传输协议）是否有改扩展，比如netty、mina等
-     * 3）往url添加codec（编码）参数，默认是DubboCodec编码
-     * 4）构建ExchangeHandler  处理客服端的请求类
-     *    将URL与requestHandler进行绑定 Exchangers.bind(url, requestHandler);
-     * 5）从url中获取client的，判断是否在Transporter支持的扩展集合中
+     * 创建指定url对应的服务ExchangeServer
+     * 1）添加服务相关参数，如channel.readonly.sent通道只读事件、heartbeat心跳检测时间、codec编码方式等
+     * 2）把通道处理类绑定到指定url上，并返回交换服务ExchangeServer
      */
     private ExchangeServer createServer(URL url) {  //service export
         //默认开启server关闭时发送readonly事件
@@ -351,7 +341,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
         ExchangeServer server;
         try {
             //重要：requestHandler 请求处理器，注意看初始化的地方，匿名对象
-            server = Exchangers.bind(url, requestHandler); /**@c 构建服务并且打开服务*/
+            server = Exchangers.bind(url, requestHandler); /**@c 构建服务并且打开服务*/ //@pause 1.1
         } catch (RemotingException e) {
             throw new RpcException("Fail to start server(url: " + url + ") " + e.getMessage(), e);
         }

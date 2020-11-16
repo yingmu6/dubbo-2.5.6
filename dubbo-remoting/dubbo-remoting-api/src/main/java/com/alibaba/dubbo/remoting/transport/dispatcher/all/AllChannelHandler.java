@@ -29,12 +29,14 @@ import com.alibaba.dubbo.remoting.transport.dispatcher.WrappedChannelHandler;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
-/**
- * history-v1
- * 1）AllChannelHandler表明所有的事件执行都使用线程池吗？包含send吗
- * 2）与ExecutionChannelHandler有啥不同？感觉都是一样的
- */
 public class AllChannelHandler extends WrappedChannelHandler {
+    /**
+     * 数据结构整理
+     * 类继承关系
+     * 1）AllChannelHandler继承WrappedChannelHandler类
+     * 2）WrappedChannelHandler实现了ChannelHandlerDelegate接口
+     * 3）ChannelHandlerDelegate继承了ChannelHandler接口
+     */
 
     public AllChannelHandler(ChannelHandler handler, URL url) {
         super(handler, url);

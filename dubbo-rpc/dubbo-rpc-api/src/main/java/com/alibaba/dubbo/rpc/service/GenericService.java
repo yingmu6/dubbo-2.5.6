@@ -16,7 +16,7 @@
 package com.alibaba.dubbo.rpc.service;
 
 /**
- * 通用服务接口（ todo @pause 5.1 泛化调用了解以及实现原理）
+ * 通用服务接口（ todo 5.1 泛化调用了解以及实现原理）
  *
  * @author william.liangf
  * @export

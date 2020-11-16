@@ -33,6 +33,9 @@ import java.util.concurrent.Executors;
 
 public class WrappedChannelHandler implements ChannelHandlerDelegate {
 
+    /**
+     * 维护着SHARED_EXECUTOR（共享线程池）、线程池executor，通道处理类ChannelHandler，Url等
+     */
     protected static final Logger logger = LoggerFactory.getLogger(WrappedChannelHandler.class);
 
     protected static final ExecutorService SHARED_EXECUTOR = Executors.newCachedThreadPool(new NamedThreadFactory("DubboSharedHandler", true));
@@ -43,7 +46,7 @@ public class WrappedChannelHandler implements ChannelHandlerDelegate {
 
     protected final URL url;
 
-    public WrappedChannelHandler(ChannelHandler handler, URL url) {
+    public WrappedChannelHandler(ChannelHandler handler, URL url) { //@pause 1.5
         this.handler = handler;
         this.url = url;
         executor = (ExecutorService) ExtensionLoader.getExtensionLoader(ThreadPool.class).getAdaptiveExtension().getExecutor(url);

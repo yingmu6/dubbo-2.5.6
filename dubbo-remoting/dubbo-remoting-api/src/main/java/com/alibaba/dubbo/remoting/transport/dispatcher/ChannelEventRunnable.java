@@ -23,9 +23,15 @@ import com.alibaba.dubbo.remoting.ChannelHandler;
 /**
  * @author chao.liuc
  */
-public class ChannelEventRunnable implements Runnable { //通道事件的线程
+public class ChannelEventRunnable implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ChannelEventRunnable.class);
 
+    /**
+     * 通道事件线程数据结构
+     * 1）继承Runnable，表明是一个线程
+     * 2）维护着通道处理类ChannelHandler、通道Channel、通道状态ChannelState
+     *    异常Throwable， Object发送的消息等
+     */
     private final ChannelHandler handler;
     private final Channel channel;
     private final ChannelState state;
@@ -52,8 +58,12 @@ public class ChannelEventRunnable implements Runnable { //通道事件的线程
         this.exception = exception;
     }
 
+    /**
+     * 线程执行体
+     * 根据通道的状态，执行相应的事件
+     */
     public void run() {
-        switch (state) {    // 根据通道的状态，执行相应的事件
+        switch (state) {
             case CONNECTED:
                 try {
                     handler.connected(channel);

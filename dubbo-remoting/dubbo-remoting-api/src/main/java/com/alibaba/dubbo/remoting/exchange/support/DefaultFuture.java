@@ -41,7 +41,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author qian.lei
  * @author chao.liuc
  */
-public class DefaultFuture implements ResponseFuture { //10/21 此类的用途？Future：异步执行的响应  todo @pause doing 1.1
+public class DefaultFuture implements ResponseFuture { //10/21 此类的用途？Future：异步执行的响应
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultFuture.class);
 
@@ -190,7 +190,7 @@ public class DefaultFuture implements ResponseFuture { //10/21 此类的用途�
     /**
      * 响应时执行回调
      */
-    private void invokeCallback(ResponseCallback c) { // todo @pause 1.2
+    private void invokeCallback(ResponseCallback c) { // todo  1.2
         ResponseCallback callbackCopy = c;
         if (callbackCopy == null) {
             throw new NullPointerException("callback cannot be null.");

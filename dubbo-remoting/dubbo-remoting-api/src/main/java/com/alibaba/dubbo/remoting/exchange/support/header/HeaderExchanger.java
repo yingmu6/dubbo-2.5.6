@@ -29,7 +29,7 @@ import com.alibaba.dubbo.remoting.transport.DecodeHandler;
  *
  * @author william.liangf
  */
-public class HeaderExchanger implements Exchanger {
+public class HeaderExchanger implements Exchanger { //11/16 是指对请求头处理，请求体不处理？都处理的
 
     public static final String NAME = "header";
     //客户端去连接、服务端去绑定
@@ -54,5 +54,21 @@ public class HeaderExchanger implements Exchanger {
         //HeaderExchangeServer 会进行心跳检测
         return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(new HeaderExchangeHandler(handler)))); //构建DecodeHandler、HeaderExchangeHandler处理器
     }
+
+    /**
+     * Dubbo分析之Exchange层  https://segmentfault.com/a/1190000016802475
+     * ----
+     * Exchange层，属于信息交换层，是对Request和Response的抽象。
+     * 为什么要单独抽象出一个Exchange层，而不是在Protocol层直接对Netty或者Mina引用？这个问题其实不难理解，
+     * Netty或者Mina对外接口和调用方式都不一样，如果在Protocol层直接对Mina做引用，对于Protocol层来讲，就依赖了具体而不是抽象，
+     * 过几天想要换成Netty，就需要对Protocol层做大量的修改。这样不符合开闭原则。
+     * Dubbo要使用TCP长连接，就得自己实现Request和Response的抽象概念，这样客户端与服务端之间的交互才能有去有回。
+     *
+     * received方法用于接受信息，这个方法是Provider和Consumer共用的。Provider接收的信息必然是Request，它所处的角色就类似与服务器。
+     * Consumer接收的信息必然是Response，它所处的角色就类似于客户端。
+     *
+     * dubbo的exchange层  https://juejin.im/post/6844904146903154701
+     * Dubbo 剖析：网络通信总结  https://xiaozhuanlan.com/topic/6238415790
+     */
 
 }

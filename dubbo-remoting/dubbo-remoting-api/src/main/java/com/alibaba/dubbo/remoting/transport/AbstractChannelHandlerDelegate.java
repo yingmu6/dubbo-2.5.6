@@ -11,7 +11,7 @@ import com.alibaba.dubbo.remoting.RemotingException;
 public abstract class AbstractChannelHandlerDelegate implements ChannelHandlerDelegate { //channel委派处理类handler
     /**
      * 实现了ChannelHandlerDelegate，可以通过ChannelHandler getHandler()
-     * 获取到委派的通道处理类
+     * 获取到委派的通道处理类，调用目标类的相关方法，比如connected()、disconnected()等
      */
     protected ChannelHandler handler;
 

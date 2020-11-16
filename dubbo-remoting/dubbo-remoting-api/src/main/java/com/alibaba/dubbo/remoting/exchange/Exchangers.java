@@ -61,7 +61,7 @@ public class Exchangers {//todo 11/15 门面模式了解
     }
 
     /**
-     * 将Url与ExchangeHandler进行绑定
+     * 把通道处理类绑定到指定url上
      * 1）url中添加codec参数
      * 2）获取到Exchanger实例，默认为HeaderExchanger，调用bind方法
      */
@@ -125,7 +125,7 @@ public class Exchangers {//todo 11/15 门面模式了解
      * 通过url获取到Exchanger，默认key为header
      */
     public static Exchanger getExchanger(URL url) {
-        String type = url.getParameter(Constants.EXCHANGER_KEY, Constants.DEFAULT_EXCHANGER); //exchanger交换协议，默认header
+        String type = url.getParameter(Constants.EXCHANGER_KEY, Constants.DEFAULT_EXCHANGER); //exchanger交换协议，默认header，即HeaderExchanger
         return getExchanger(type);
     }
 

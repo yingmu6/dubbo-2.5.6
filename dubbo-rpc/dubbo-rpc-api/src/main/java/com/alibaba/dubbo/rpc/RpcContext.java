@@ -576,7 +576,7 @@ public class RpcContext { // read finish history 10/01 是在何处设置进入�
      * @return 通过future.get()获取返回结果.
      */
     @SuppressWarnings("unchecked")
-    public <T> Future<T> asyncCall(Callable<T> callable) { //异步调用，并返回结果  todo @pause 9.1 上下文中的异步调用
+    public <T> Future<T> asyncCall(Callable<T> callable) { //异步调用，并返回结果  todo 9.1 上下文中的异步调用
         try {
             try {
                 setAttachment(Constants.ASYNC_KEY, Boolean.TRUE.toString());

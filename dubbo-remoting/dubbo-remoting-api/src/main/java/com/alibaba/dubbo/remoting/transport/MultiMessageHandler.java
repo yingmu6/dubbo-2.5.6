@@ -9,9 +9,8 @@ import com.alibaba.dubbo.remoting.exchange.support.MultiMessage;
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  * @see MultiMessage
  */
-public class MultiMessageHandler extends AbstractChannelHandlerDelegate {
+public class MultiMessageHandler extends AbstractChannelHandlerDelegate { // 11/16 用途了解？MultiMessageHandler：支持 MultiMessage 消息处理，也就是多条消息处理。
 
-    //
     public MultiMessageHandler(ChannelHandler handler) {
         super(handler);
     }

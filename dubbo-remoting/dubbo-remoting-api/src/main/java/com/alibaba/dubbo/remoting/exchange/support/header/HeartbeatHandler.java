@@ -30,6 +30,17 @@ import com.alibaba.dubbo.remoting.transport.AbstractChannelHandlerDelegate;
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
 public class HeartbeatHandler extends AbstractChannelHandlerDelegate {
+    /**
+     * 数据结构:
+     * 类继承关系:
+     * 1）HeartbeatHandler继承AbstractChannelHandlerDelegate抽象类，
+     * 2）AbstractChannelHandlerDelegate实现ChannelHandlerDelegate接口
+     * 3）ChannelHandlerDelegate继承ChannelHandler接口
+     *
+     * 数据：
+     * 1）读写时间KEY_READ_TIMESTAMP、KEY_WRITE_TIMESTAMP
+     * 2）ChannelHandler委派的处理类
+     */
 
     private static final Logger logger = LoggerFactory.getLogger(HeartbeatHandler.class);
 
@@ -58,11 +69,14 @@ public class HeartbeatHandler extends AbstractChannelHandlerDelegate {
         handler.sent(channel, message);
     }
 
+    /**
+     * 接收通道中的消息（客户端和服务端共用）
+     */
     public void received(Channel channel, Object message) throws RemotingException {
         setReadTimestamp(channel);
         if (isHeartbeatRequest(message)) {
             Request req = (Request) message;
-            if (req.isTwoWay()) {
+            if (req.isTwoWay()) { //若是双向通信，则组装响应信息并发送
                 Response res = new Response(req.getId(), req.getVersion());
                 res.setEvent(Response.HEARTBEAT_EVENT);
                 channel.send(res);
@@ -90,7 +104,7 @@ public class HeartbeatHandler extends AbstractChannelHandlerDelegate {
         handler.received(channel, message);
     }
 
-    private void setReadTimestamp(Channel channel) {
+    private void setReadTimestamp(Channel channel) { //往通道中设置读取的时间
         channel.setAttribute(KEY_READ_TIMESTAMP, System.currentTimeMillis());
     }
 
@@ -102,15 +116,15 @@ public class HeartbeatHandler extends AbstractChannelHandlerDelegate {
         channel.removeAttribute(KEY_READ_TIMESTAMP);
     }
 
-    private void clearWriteTimestamp(Channel channel) {
+    private void clearWriteTimestamp(Channel channel) { //移除通道中写的时间戳
         channel.removeAttribute(KEY_WRITE_TIMESTAMP);
     }
 
-    private boolean isHeartbeatRequest(Object message) {
+    private boolean isHeartbeatRequest(Object message) { //判断是否是心跳检测的请求信息
         return message instanceof Request && ((Request) message).isHeartbeat();
     }
 
-    private boolean isHeartbeatResponse(Object message) {
+    private boolean isHeartbeatResponse(Object message) { //判断是否是心跳检测的响应信息
         return message instanceof Response && ((Response) message).isHeartbeat();
     }
 }

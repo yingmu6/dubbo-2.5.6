@@ -72,7 +72,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
         this.accepts = url.getParameter(Constants.ACCEPTS_KEY, Constants.DEFAULT_ACCEPTS); //history-h2 accepts默认值为0，表示不接受新的请求？
         this.idleTimeout = url.getParameter(Constants.IDLE_TIMEOUT_KEY, Constants.DEFAULT_IDLE_TIMEOUT); // history-v1 空闲时间的使用场景
         try {
-            doOpen(); //
+            doOpen(); //打开服务
             if (logger.isInfoEnabled()) { /**@c 启动服务成功*/
                 logger.info("Start " + getClass().getSimpleName() + " bind " + getBindAddress() + ", export " + getLocalAddress());
             }

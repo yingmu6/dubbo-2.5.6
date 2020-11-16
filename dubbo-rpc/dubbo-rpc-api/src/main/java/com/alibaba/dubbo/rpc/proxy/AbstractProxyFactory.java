@@ -27,7 +27,7 @@ import com.alibaba.dubbo.rpc.service.EchoService;
  *
  * @author william.liangf
  */
-public abstract class AbstractProxyFactory implements ProxyFactory {// read finish todo @pause 10.1 代理工厂以及代理流程
+public abstract class AbstractProxyFactory implements ProxyFactory {// read finish todo 10.1 代理工厂以及代理流程
 
     /**
      * 在调用子类具体的getProxy()实现前，组装参数interfaces

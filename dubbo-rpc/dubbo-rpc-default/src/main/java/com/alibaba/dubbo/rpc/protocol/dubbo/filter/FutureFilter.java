@@ -72,7 +72,7 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
         }
     }
 
-    //异步调用（通过Future执行调用） todo @pause 1.2 异步调用待使用
+    //异步调用（通过Future执行调用） todo 1.2 异步调用待使用
     private void asyncCallback(final Invoker<?> invoker, final Invocation invocation) {
         Future<?> f = RpcContext.getContext().getFuture();
         if (f instanceof FutureAdapter) {

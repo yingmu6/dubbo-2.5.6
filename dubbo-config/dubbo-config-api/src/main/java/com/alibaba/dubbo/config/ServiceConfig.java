@@ -629,7 +629,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     //Export dubbo service com.alibaba.dubbo.demo.ApiDemo to url dubbo:///com.alibaba.dubbo.demo.ApiDemo?anyhost=true&application=api_demo&delay=5&dubbo=2.0.0&export=true&generic=false&interface=com.alibaba.dubbo.demo.ApiDemo&methods=sayApi&pid=44803&side=provider&timeout=3000&timestamp=1562077212572, dubbo version: 2.0.0, current host: 192.168.0.102
 
     /**
-     * todo @pause 9.1 暴露本地服务
+     * todo  9.1 暴露本地服务
      * @param url
      */
     @SuppressWarnings({"unchecked", "rawtypes"})

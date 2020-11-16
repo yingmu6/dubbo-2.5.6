@@ -28,7 +28,7 @@ import java.util.concurrent.Executor;
  * @author william.liangf
  */
 @SPI("fixed")
-public interface ThreadPool {
+public interface ThreadPool { //@pause 1.6 线程池了解
 
     /**
      * 线程池
