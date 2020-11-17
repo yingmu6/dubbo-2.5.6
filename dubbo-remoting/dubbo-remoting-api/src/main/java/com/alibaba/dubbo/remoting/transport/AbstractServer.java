@@ -39,7 +39,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author qian.lei
  * @author ding.lid
  */
-public abstract class AbstractServer extends AbstractEndpoint implements Server {
+public abstract class AbstractServer extends AbstractEndpoint implements Server { //todo 11/17 AbstractServer数据结构了解
 
     protected static final String SERVER_THREAD_POOL_NAME = "DubboServerHandler";
     private static final Logger logger = LoggerFactory.getLogger(AbstractServer.class);
@@ -63,7 +63,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
      * 6）打开服务：默认打开NettyServer中的doOpen()方法
      */
     public AbstractServer(URL url, ChannelHandler handler) throws RemotingException { //service export 步骤15
-        super(url, handler);
+        super(url, handler); //todo java继承中的加载顺序，以及父类的实例化
         localAddress = getUrl().toInetSocketAddress();
         String host = url.getParameter(Constants.ANYHOST_KEY, false)
                 || NetUtils.isInvalidLocalHost(getUrl().getHost())
@@ -84,17 +84,16 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
         executor = (ExecutorService) dataStore.get(Constants.EXECUTOR_SERVICE_COMPONENT_KEY, Integer.toString(url.getPort())); //从缓存中指定的线程池
     }
 
-    /**@ */
     protected abstract void doOpen() throws Throwable;
 
     protected abstract void doClose() throws Throwable;
 
-    public void reset(URL url) {
+    public void reset(URL url) {//todo 此处重置url的逻辑是怎样的？
         if (url == null) {
             return;
         }
         try {
-            if (url.hasParameter(Constants.ACCEPTS_KEY)) { // history-h2 可接收的线程数？
+            if (url.hasParameter(Constants.ACCEPTS_KEY)) { //可接收的线程数
                 int a = url.getParameter(Constants.ACCEPTS_KEY, 0);
                 if (a > 0) {
                     this.accepts = a;
@@ -104,7 +103,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
             logger.error(t.getMessage(), t);
         }
         try {
-            if (url.hasParameter(Constants.IDLE_TIMEOUT_KEY)) { // history-h2 空闲时间？
+            if (url.hasParameter(Constants.IDLE_TIMEOUT_KEY)) { //空闲时间
                 int t = url.getParameter(Constants.IDLE_TIMEOUT_KEY, 0);
                 if (t > 0) {
                     this.idleTimeout = t;
@@ -115,13 +114,13 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
         }
         try {
             if (url.hasParameter(Constants.THREADS_KEY)
-                    && executor instanceof ThreadPoolExecutor && !executor.isShutdown()) { //history-v1 原生的线程池使用？
+                    && executor instanceof ThreadPoolExecutor && !executor.isShutdown()) { //原生的线程池使用
                 ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
                 int threads = url.getParameter(Constants.THREADS_KEY, 0);
                 int max = threadPoolExecutor.getMaximumPoolSize();
                 int core = threadPoolExecutor.getCorePoolSize();
                 if (threads > 0 && (threads != max || threads != core)) { //在线程数大于0 并且不等于最大线程数max或核心线程数core
-                    if (threads < core) { //history-h2 threads、threads、max三者的联系，此处的比较逻辑
+                    if (threads < core) { //todo 11/17 threads、threads、max三者的联系，此处的比较逻辑
                         threadPoolExecutor.setCorePoolSize(threads);
                         if (core == max) {
                             threadPoolExecutor.setMaximumPoolSize(threads);

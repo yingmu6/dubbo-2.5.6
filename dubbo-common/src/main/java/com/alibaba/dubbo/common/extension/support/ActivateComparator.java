@@ -51,7 +51,7 @@ public class ActivateComparator implements Comparator<Object> { //比较器
                 && o1.getClass().getInterfaces().length > 0
                 && o1.getClass().getInterfaces()[0].isAnnotationPresent(SPI.class)) {
             ExtensionLoader<?> extensionLoader = ExtensionLoader.getExtensionLoader(o1.getClass().getInterfaces()[0]);
-            if (a1.before().length > 0 || a1.after().length > 0) { //todo 11/04 待调试
+            if (a1.before().length > 0 || a1.after().length > 0) { // 11/04 待调试
                 String n2 = extensionLoader.getExtensionName(o2.getClass());
                 for (String before : a1.before()) {
                     if (before.equals(n2)) {

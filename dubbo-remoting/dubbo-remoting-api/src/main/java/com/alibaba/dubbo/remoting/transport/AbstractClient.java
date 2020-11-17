@@ -91,7 +91,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
      *    4.2）调用SimpleDataStore的方式get，获取键consumer对应的实例
      * 5）缓存DataStore中的key处理好后，就从本地缓存中移除掉
      */
-    public AbstractClient(URL url, ChannelHandler handler) throws RemotingException { //todo 11/13-doing 流程待看
+    public AbstractClient(URL url, ChannelHandler handler) throws RemotingException { // 11/13-doing 流程待看
         super(url, handler);
 
         send_reconnect = url.getParameter(Constants.SEND_RECONNECT_KEY, false);

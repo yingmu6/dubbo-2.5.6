@@ -54,7 +54,7 @@ public interface Transporter {
      * @return client
      * @throws RemotingException
      */
-    @Adaptive({Constants.CLIENT_KEY, Constants.TRANSPORTER_KEY}) //todo 11/13 暴露的url是怎么组件参数的？
+    @Adaptive({Constants.CLIENT_KEY, Constants.TRANSPORTER_KEY}) // 11/13 暴露的url是怎么组件参数的？
     Client connect(URL url, ChannelHandler handler) throws RemotingException; //url.getParameter("client", url.getParameter("transporter","netty"))
 
 }

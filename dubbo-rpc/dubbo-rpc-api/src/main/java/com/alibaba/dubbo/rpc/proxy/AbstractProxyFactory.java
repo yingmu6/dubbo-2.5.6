@@ -27,7 +27,7 @@ import com.alibaba.dubbo.rpc.service.EchoService;
  *
  * @author william.liangf
  */
-public abstract class AbstractProxyFactory implements ProxyFactory {// read finish todo 10.1 代理工厂以及代理流程
+public abstract class AbstractProxyFactory implements ProxyFactory {// read finish  10.1 代理工厂以及代理流程
 
     /**
      * 在调用子类具体的getProxy()实现前，组装参数interfaces
@@ -39,7 +39,7 @@ public abstract class AbstractProxyFactory implements ProxyFactory {// read fini
          * history-v2 此处需要调试，看下interfaces里面可能是啥内容？怎么会有多个interface，看下标签配置
          */
         String config = invoker.getUrl().getParameter("interfaces");
-        if (config != null && config.length() > 0) { //todo 10/25 构建满足条件
+        if (config != null && config.length() > 0) { // 10/25 构建满足条件
             String[] types = Constants.COMMA_SPLIT_PATTERN.split(config);
             if (types != null && types.length > 0) {//逗号分隔
                 interfaces = new Class<?>[types.length + 2];
@@ -60,5 +60,5 @@ public abstract class AbstractProxyFactory implements ProxyFactory {// read fini
     //代理待学习实践 Java以及Javassist
     public abstract <T> T getProxy(Invoker<T> invoker, Class<?>[] types);
 
-    //todo 抽象类可以不全部实现接口的方法，交由实现类来处理？
+    // 抽象类可以不全部实现接口的方法，交由实现类来处理？
 }

@@ -56,10 +56,10 @@ import java.util.regex.Pattern;
  * 3）缓存工厂ExtensionFactory、Set<Class<?>> cachedWrapperClasses 缓存的类集合
  * 4）异常缓存Map<String, IllegalStateException>等
  */
-public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-实践点，泛型了解以及使用
+public class ExtensionLoader<T> {  //称谓：扩展类的加载器  10/30-实践点，泛型了解以及使用
 
     /**
-     * todo 10/30-实践点，static、final了解以及使用
+     *  10/30-实践点，static、final了解以及使用
      */
     private static final Logger logger = LoggerFactory.getLogger(ExtensionLoader.class);
 
@@ -69,7 +69,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
 
     private static final String DUBBO_INTERNAL_DIRECTORY = DUBBO_DIRECTORY + "internal/";
 
-    private static final Pattern NAME_SEPARATOR = Pattern.compile("\\s*[,]+\\s*"); //匹配任何空白字符，分隔符 todo 10/29 待了解
+    private static final Pattern NAME_SEPARATOR = Pattern.compile("\\s*[,]+\\s*"); //匹配任何空白字符，分隔符  10/29 待了解
 
     /**@c ExtensionLoader 本地缓存，将接口类型type与ExtensionLoader扩展类映射缓存起来 */
     private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
@@ -117,17 +117,17 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
 
     private ExtensionLoader(Class<?> type) {/**@c 私有的构造方法，对外隐藏 */
         this.type = type;
-        /**@c objectFactory负责所有IOC创建的对象 对象工厂 todo 10/30 此处的递归待了解，调试下，一个非ExtensionFactory设置两次，为啥objectFactory不为空？而是一个AdaptiveExtensionFactory的实例 */
+        /**@c objectFactory负责所有IOC创建的对象 对象工厂  10/30 此处的递归待了解，调试下，一个非ExtensionFactory设置两次，为啥objectFactory不为空？而是一个AdaptiveExtensionFactory的实例 */
         objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
     }
 
-    //todo 11/2 @Activate @Adaper 是怎么通过校验的？
+    // 11/2 @Activate @Adaper 是怎么通过校验的？
     private static <T> boolean withExtensionAnnotation(Class<T> type) {
-        return type.isAnnotationPresent(SPI.class);/**@c 判断接口是否包含SPI注解 */  //todo 10/29 Annotation注解接口了解&实践
+        return type.isAnnotationPresent(SPI.class);/**@c 判断接口是否包含SPI注解 */  // 10/29 Annotation注解接口了解&实践
     }
 
     /**
-     * 获取指定接口的加载器 todo 10/30 静态方法构造属于单例模式吗
+     * 获取指定接口的加载器  10/30 静态方法构造属于单例模式吗
      * 因为ExtensionLoader不提供公有构造函数，使用静态方法构造和获取
      */
     @SuppressWarnings("unchecked")
@@ -669,7 +669,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
         Object instance = cachedAdaptiveInstance.get();
         if (instance == null) {
             if (createAdaptiveInstanceError == null) { //若有异常直接抛出，不用尝试创建
-                synchronized (cachedAdaptiveInstance) { //todo 10/30-实践点 synchronized使用的各种方式
+                synchronized (cachedAdaptiveInstance) { // 10/30-实践点 synchronized使用的各种方式
                     instance = cachedAdaptiveInstance.get();
                     if (instance == null) { //若缓存中没有自适应实例，先创建后增加，然后是设置到缓存
                         try {
@@ -760,12 +760,12 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
                     if (method.getName().startsWith("set")
                             && method.getParameterTypes().length == 1
                             && Modifier.isPublic(method.getModifiers())) { //查找实例中的public set方法
-                        // 可以是基本类型，也可以是SPI类型 todo 11/02 基础类型可以？
+                        // 可以是基本类型，也可以是SPI类型  11/02 基础类型可以？
                         Class<?> pt = method.getParameterTypes()[0];
                         try {
                             //截取set方法，获取属性名 ,例：instance = AdaptiveCompiler, 中setDefaultCompiler的property = defaultCompiler
                             String property = method.getName().length() > 3 ? method.getName().substring(3, 4).toLowerCase() + method.getName().substring(4) : "";
-                            Object object = objectFactory.getExtension(pt, property); //todo 11/02 获取的值是啥？
+                            Object object = objectFactory.getExtension(pt, property); // 11/02 获取的值是啥？
                             if (object != null) {
                                 method.invoke(instance, object); // 把实例设置到哪里？ 设置到接口接口的实例类：包含set方法，是接口类型，含有SPI注解
                             }
@@ -1488,7 +1488,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
     private Class<?> createAdaptiveExtensionClass() { //SPI步骤09
         String code = createAdaptiveExtensionClassCode(); //获取自适应扩展类代码
 
-        //动态编译 todo 10/30-实践点 Compiler了解以及使用
+        //动态编译  10/30-实践点 Compiler了解以及使用
         ClassLoader classLoader = findClassLoader();
         com.alibaba.dubbo.common.compiler.Compiler compiler = ExtensionLoader.getExtensionLoader(com.alibaba.dubbo.common.compiler.Compiler.class).getAdaptiveExtension();
         return compiler.compile(code, classLoader);  //将java源代码生成class对象。
@@ -1558,7 +1558,7 @@ public class ExtensionLoader<T> {  //称谓：扩展类的加载器 todo 10/30-�
                     String attribMethod = null;
 
                     // 找到参数的URL属性
-                    LBL_PTS: //todo 10/30 是变量吗？为啥没见到类型, 调试看值，是跳出循环的标志吗
+                    LBL_PTS: // 10/30 是变量吗？为啥没见到类型, 调试看值，是跳出循环的标志吗
                     for (int i = 0; i < pts.length; ++i) { //对参数列表中的每个参数类型进行分析
                         Method[] ms = pts[i].getMethods();
                         for (Method m : ms) {

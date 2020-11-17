@@ -33,7 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author william.liangf
  */
-public abstract class AbstractProxyProtocol extends AbstractProtocol {// read finish  todo 11/07 抽象代理协议是何时被使用的？
+public abstract class AbstractProxyProtocol extends AbstractProtocol {// read finish   11/07 抽象代理协议是何时被使用的？
 
     //history-v1 既有export，又有refer，用途？CopyOnWriteArrayList的用途？
     private final List<Class<?>> rpcExceptions = new CopyOnWriteArrayList<Class<?>>();

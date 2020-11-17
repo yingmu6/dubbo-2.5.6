@@ -15,6 +15,12 @@ public class ProviderForCommon {
     }
 
     /**
+     * todo 11/17
+     * 1）是怎么加载配置文件，读取配置文件的值
+     * 2）怎样把配置文件的值写到config对象的
+     */
+
+    /**
      * 服务提供者启动日志：
      * 第一步：启动Spring容器 [22/02/20 05:44:54:054 CST] main  INFO support.ClassPathXmlApplicationContext: Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@2833cc44: startup date [Sat Feb 22 17:44:54 CST 2020]; root of context hierarchy
      * 第二步：加载dubbo的xml配置文件[22/02/20 05:44:54:054 CST] main  INFO xml.XmlBeanDefinitionReader: Loading XML bean definitions from class path resource [META-INF/spring/dubbo-demo-provider-common.xml]

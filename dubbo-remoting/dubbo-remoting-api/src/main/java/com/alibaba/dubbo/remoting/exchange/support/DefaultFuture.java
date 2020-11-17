@@ -66,9 +66,9 @@ public class DefaultFuture implements ResponseFuture { //10/21 此类的用途�
     private final Request request; //10/26 画出request、response类图
     private final int timeout;
     private final Lock lock = new ReentrantLock();
-    private final Condition done = lock.newCondition(); //todo 10/26 Lock、Condition待了解
+    private final Condition done = lock.newCondition(); // 10/26 Lock、Condition待了解
     private final long start = System.currentTimeMillis();
-    //todo 10/28 volatile了解
+    // 10/28 volatile了解
     private volatile long sent; //发送的时间戳
     private volatile Response response;
     private volatile ResponseCallback callback;
@@ -103,7 +103,7 @@ public class DefaultFuture implements ResponseFuture { //10/21 此类的用途�
     }
 
     /**
-     * 接收相信信息 todo 10/26 待调试
+     * 接收相信信息  10/26 待调试
      * @param channel
      * @param response
      */
@@ -190,7 +190,7 @@ public class DefaultFuture implements ResponseFuture { //10/21 此类的用途�
     /**
      * 响应时执行回调
      */
-    private void invokeCallback(ResponseCallback c) { // todo  1.2
+    private void invokeCallback(ResponseCallback c) { //   1.2
         ResponseCallback callbackCopy = c;
         if (callbackCopy == null) {
             throw new NullPointerException("callback cannot be null.");
@@ -269,7 +269,7 @@ public class DefaultFuture implements ResponseFuture { //10/21 此类的用途�
     private void doReceived(Response res) {//接收响应信息并做处理
         lock.lock();
         try {
-            response = res; //todo 10/28 公有资源，需要加锁的条件有哪些？
+            response = res; // 10/28 公有资源，需要加锁的条件有哪些？
             if (done != null) {
                 done.signal(); //发信号，唤起正在等待的线程
             }

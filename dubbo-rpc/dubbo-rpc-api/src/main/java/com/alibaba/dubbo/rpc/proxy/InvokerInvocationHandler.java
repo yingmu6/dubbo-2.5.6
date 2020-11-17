@@ -44,7 +44,7 @@ public class InvokerInvocationHandler implements InvocationHandler {// read fini
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
         Class<?>[] parameterTypes = method.getParameterTypes();
-        if (method.getDeclaringClass() == Object.class) { //todo 11/07 getDeclaringClass 待调试
+        if (method.getDeclaringClass() == Object.class) { // 11/07 getDeclaringClass 待调试
             return method.invoke(invoker, args);
         }
         if ("toString".equals(methodName) && parameterTypes.length == 0) {

@@ -30,16 +30,16 @@ import com.alibaba.dubbo.rpc.RpcStatus;
  *
  * @author william.liangf
  */
-@Activate(group = Constants.CONSUMER, value = Constants.ACTIVES_KEY) //todo 10/22 是指用在消费端吗
+@Activate(group = Constants.CONSUMER, value = Constants.ACTIVES_KEY) // 10/22 是指用在消费端吗
 public class ActiveLimitFilter implements Filter {
 
-    //连接数控制 todo 10/22 怎么控制的？
+    //连接数控制  10/22 怎么控制的？
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         URL url = invoker.getUrl();
         String methodName = invocation.getMethodName();
         //获取最大连接数
         int max = invoker.getUrl().getMethodParameter(methodName, Constants.ACTIVES_KEY, 0);
-        //todo 10/22 RpcStatus 用途？
+        // 10/22 RpcStatus 用途？
         RpcStatus count = RpcStatus.getStatus(invoker.getUrl(), invocation.getMethodName());
         if (max > 0) {
             long timeout = invoker.getUrl().getMethodParameter(invocation.getMethodName(), Constants.TIMEOUT_KEY, 0);
@@ -50,11 +50,11 @@ public class ActiveLimitFilter implements Filter {
                 synchronized (count) {
                     while ((active = count.getActive()) >= max) {
                         try {
-                            count.wait(remain); //等待指定时间， todo 10/27 wait与sleep比较
+                            count.wait(remain); //等待指定时间，  10/27 wait与sleep比较
                         } catch (InterruptedException e) {
                         }
                         long elapsed = System.currentTimeMillis() - start;
-                        remain = timeout - elapsed; //todo 10/22 调试分析数值
+                        remain = timeout - elapsed; // 10/22 调试分析数值
                         if (remain <= 0) {
                             throw new RpcException("Waiting concurrent invoke timeout in client-side for service:  "
                                     + invoker.getInterface().getName() + ", method: "
@@ -80,7 +80,7 @@ public class ActiveLimitFilter implements Filter {
         } finally {
             if (max > 0) {
                 synchronized (count) {
-                    count.notify(); //todo 10/22 notify与wait同时使用了解
+                    count.notify(); // 10/22 notify与wait同时使用了解
                 }
             }
         }

@@ -69,7 +69,7 @@ public class ExceptionFilter implements Filter {
                 try {
                     Throwable exception = result.getException();
 
-                    // 如果是checked异常，直接抛出 //todo 10/22 了解下checked异常、非checked异常
+                    // 如果是checked异常，直接抛出 // 10/22 了解下checked异常、非checked异常
                     if (!(exception instanceof RuntimeException) && (exception instanceof Exception)) {
                         return result;
                     }

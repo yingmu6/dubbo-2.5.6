@@ -203,7 +203,7 @@ public class Bytes {
      * @param b   byte array.
      * @param off array offset.
      */
-    public static void long2bytes(long v, byte[] b, int off) { //todo 具体值调试，是怎么排列的？
+    public static void long2bytes(long v, byte[] b, int off) { // 具体值调试，是怎么排列的？
         b[off + 7] = (byte) v;
         b[off + 6] = (byte) (v >>> 8);
         b[off + 5] = (byte) (v >>> 16);

@@ -121,7 +121,7 @@ public class NettyServer extends AbstractServer implements Server {
                 .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
                 .childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childHandler(new ChannelInitializer<NioSocketChannel>() {
+                .childHandler(new ChannelInitializer<NioSocketChannel>() { //todo 11/17 childOption和childHandler了解
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
                         NettyCodecAdapter adapter = new NettyCodecAdapter(getCodec(), getUrl(), NettyServer.this);
@@ -133,7 +133,7 @@ public class NettyServer extends AbstractServer implements Server {
                 });
         // bind
         ChannelFuture channelFuture = bootstrap.bind(getBindAddress());
-        channelFuture.syncUninterruptibly();
+        channelFuture.syncUninterruptibly(); //todo 11/17 ChannelFuture了解
         channel = channelFuture.channel();
 
     }

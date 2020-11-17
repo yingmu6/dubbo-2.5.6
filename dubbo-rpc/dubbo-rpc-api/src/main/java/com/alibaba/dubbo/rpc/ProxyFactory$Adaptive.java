@@ -6,7 +6,7 @@ import com.alibaba.dubbo.common.extension.ExtensionLoader;
  * @author chensy
  * @date 2019-06-27 20:45
  */
-public class ProxyFactory$Adaptive implements com.alibaba.dubbo.rpc.ProxyFactory { //todo 11/11 重新生成类，按最新的生成
+public class ProxyFactory$Adaptive implements com.alibaba.dubbo.rpc.ProxyFactory { // 11/11 重新生成类，按最新的生成
     public java.lang.Object getProxy(com.alibaba.dubbo.rpc.Invoker arg0 )  throws com.alibaba.dubbo.rpc.RpcException {
         if(arg0 == null)
             throw new IllegalArgumentException("arg0 == null");

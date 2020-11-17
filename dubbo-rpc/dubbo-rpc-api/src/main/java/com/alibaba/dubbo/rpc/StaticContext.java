@@ -29,7 +29,7 @@ public class StaticContext extends ConcurrentHashMap<Object, Object> {// read fi
     private static final long serialVersionUID = 1L;
     private static final String SYSTEMNAME = "system";
     private static final ConcurrentMap<String, StaticContext> context_map = new ConcurrentHashMap<String, StaticContext>();
-    private String name; //缓存的名称， todo 10/28 实际只存储到name吗？因为context_map又嵌套了StaticContext
+    private String name; //缓存的名称，  10/28 实际只存储到name吗？因为context_map又嵌套了StaticContext
 
     private StaticContext(String name) {
         super(); //创建父类对象ConcurrentHashMap，初始大小为16

@@ -221,7 +221,7 @@ public final class ReflectUtils {
         return true;
     }
 
-    public static String getCodeBase(Class<?> cls) { //todo 10/22 如何获取包路径的？待调试
+    public static String getCodeBase(Class<?> cls) { // 10/22 如何获取包路径的？待调试
         if (cls == null)
             return null;
         ProtectionDomain domain = cls.getProtectionDomain();
@@ -248,7 +248,7 @@ public final class ReflectUtils {
             StringBuilder sb = new StringBuilder();
             do {
                 sb.append("[]");
-                c = c.getComponentType(); //todo 10/26 ComponentType了解
+                c = c.getComponentType(); // 10/26 ComponentType了解
             }
             while (c.isArray());
 
@@ -356,7 +356,7 @@ public final class ReflectUtils {
             c = c.getComponentType();
         }
 
-        //获取类型的简写 todo 10/25 JVM首字母含义？JVM初步了解
+        //获取类型的简写  10/25 JVM首字母含义？JVM初步了解
         if (c.isPrimitive()) {
             String t = c.getName();
             if ("void".equals(t)) ret.append(JVM_VOID);
@@ -641,7 +641,7 @@ public final class ReflectUtils {
      * @param name name.
      * @return Class instance.
      */
-    private static Class<?> name2class(ClassLoader cl, String name) throws ClassNotFoundException { //todo 待调试
+    private static Class<?> name2class(ClassLoader cl, String name) throws ClassNotFoundException { // 待调试
         int c = 0, index = name.indexOf('[');
         if (index > 0) {
             c = (name.length() - index) / 2;
@@ -781,7 +781,7 @@ public final class ReflectUtils {
     }
 
     /**
-     * 根据方法签名从类中找出方法。 todo 10/27 待调试了解
+     * 根据方法签名从类中找出方法。  10/27 待调试了解
      *
      * @param clazz      查找的类。
      * @param methodName 方法签名，形如method1(int, String)。也允许只给方法名不参数只有方法名，形如method2。

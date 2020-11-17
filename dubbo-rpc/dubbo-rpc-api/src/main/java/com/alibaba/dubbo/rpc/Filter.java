@@ -48,7 +48,7 @@ public interface Filter {  // read finish
      * 入参包括调用者invoker、调用上下文invocation
      * 通过调用invoker的invoke(invocation) 方法可以在调用前后进行处理
      */
-    Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException; //todo 10/22 框架是怎么组装并传入invoker, invocation值的
+    Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException; // 10/22 框架是怎么组装并传入invoker, invocation值的
 
     /**
      * 单例模式 https://www.runoob.com/design-pattern/singleton-pattern.html
@@ -65,7 +65,7 @@ public interface Filter {  // read finish
      */
 
     /**
-     * todo 10/24 过滤链是怎么构建起来的，哪些是系统的过滤链？ 11/04
+     *  10/24 过滤链是怎么构建起来的，哪些是系统的过滤链？ 11/04
      * 1）消费者、提供者都会经过过滤链
      */
 }

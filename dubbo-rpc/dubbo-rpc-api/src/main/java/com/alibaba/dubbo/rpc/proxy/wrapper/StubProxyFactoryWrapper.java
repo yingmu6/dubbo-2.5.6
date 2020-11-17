@@ -39,7 +39,7 @@ import java.lang.reflect.Constructor;
  * history-v1 什么叫本地存根？学习实践
  * @author william.liangf
  */
-public class StubProxyFactoryWrapper implements ProxyFactory { // todo 11/11 该类的用途是？
+public class StubProxyFactoryWrapper implements ProxyFactory { //  11/11 该类的用途是？
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StubProxyFactoryWrapper.class);
 
@@ -59,11 +59,11 @@ public class StubProxyFactoryWrapper implements ProxyFactory { // todo 11/11 该
     public <T> T getProxy(Invoker<T> invoker) throws RpcException {
         T proxy = proxyFactory.getProxy(invoker);
         if (GenericService.class != invoker.getInterface()) {
-            //todo 11/11 stub值的形式？Stub与Local区别？
+            // 11/11 stub值的形式？Stub与Local区别？
             String stub = invoker.getUrl().getParameter(Constants.STUB_KEY, invoker.getUrl().getParameter(Constants.LOCAL_KEY)); //从url查找stub键对应的值，local对应的值作为默认值
             if (ConfigUtils.isNotEmpty(stub)) {
                 Class<?> serviceType = invoker.getInterface();
-                if (ConfigUtils.isDefault(stub)) { //todo 11/11 待调试，看stub的形式
+                if (ConfigUtils.isDefault(stub)) { // 11/11 待调试，看stub的形式
                     if (invoker.getUrl().hasParameter(Constants.STUB_KEY)) {
                         stub = serviceType.getName() + "Stub";
                     } else {
@@ -72,13 +72,13 @@ public class StubProxyFactoryWrapper implements ProxyFactory { // todo 11/11 该
                 }
                 try {
                     Class<?> stubClass = ReflectUtils.forName(stub);
-                    if (!serviceType.isAssignableFrom(stubClass)) { //todo isAssignableFrom了解以及使用
+                    if (!serviceType.isAssignableFrom(stubClass)) { // isAssignableFrom了解以及使用
                         throw new IllegalStateException("The stub implementation class " + stubClass.getName() + " not implement interface " + serviceType.getName());
                     }
                     try {
                         Constructor<?> constructor = ReflectUtils.findConstructor(stubClass, serviceType);
                         proxy = (T) constructor.newInstance(new Object[]{proxy});
-                        //export stub service todo 暴露什么服务？
+                        //export stub service  暴露什么服务？
                         URL url = invoker.getUrl();
                         if (url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT)) {
                             // 添加存根事件方法（将代理类的方法名进行拼接）

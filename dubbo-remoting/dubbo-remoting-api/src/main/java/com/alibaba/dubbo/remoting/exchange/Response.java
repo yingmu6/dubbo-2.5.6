@@ -17,7 +17,7 @@ package com.alibaba.dubbo.remoting.exchange;
 
 /**
  * Response
- * //todo 10/28 网络抓包，看下请求报文以及数据
+ * // 10/28 网络抓包，看下请求报文以及数据
  * @author qian.lei
  * @author william.liangf
  */
@@ -164,7 +164,7 @@ public class Response { //响应对象（包含响应的id、版本version、响
     }
 
     @Override
-    public String toString() { //todo 10/28 这段日志信息什么时候看到？
+    public String toString() { // 10/28 这段日志信息什么时候看到？
         return "Response [id=" + mId + ", version=" + mVersion + ", status=" + mStatus + ", event=" + mEvent
                 + ", error=" + mErrorMsg + ", result=" + (mResult == this ? "this" : mResult) + "]";
     }

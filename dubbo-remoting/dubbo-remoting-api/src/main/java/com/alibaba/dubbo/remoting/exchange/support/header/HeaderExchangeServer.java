@@ -199,7 +199,7 @@ public class HeaderExchangeServer implements ExchangeServer {
             if (url.hasParameter(Constants.HEARTBEAT_KEY)
                     || url.hasParameter(Constants.HEARTBEAT_TIMEOUT_KEY)) {
                 int h = url.getParameter(Constants.HEARTBEAT_KEY, heartbeat);
-                int t = url.getParameter(Constants.HEARTBEAT_TIMEOUT_KEY, h * 3);
+                int t = url.getParameter(Constants.HEARTBEAT_TIMEOUT_KEY, h * 3); //心跳超时时间默认值为心跳时间的3倍
                 if (t < h * 2) {
                     throw new IllegalStateException("heartbeatTimeout < heartbeatInterval * 2");
                 }

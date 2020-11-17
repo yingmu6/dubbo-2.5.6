@@ -50,7 +50,7 @@ public class RpcContext { // read finish history 10/01 是在何处设置进入�
     /**
      * ThreadLocal学习实践：不同线程中维护的变量互不干扰，同一个线程中作为线程上下文，不同方法中可以引用
      */
-    private static final ThreadLocal<RpcContext> LOCAL = new ThreadLocal<RpcContext>() { //todo 10/29 ThreadLocal源码查看
+    private static final ThreadLocal<RpcContext> LOCAL = new ThreadLocal<RpcContext>() { // 10/29 ThreadLocal源码查看
         @Override
         protected RpcContext initialValue() { //初始化值对象值，若不重新，默认返回null
             return new RpcContext();
@@ -569,21 +569,21 @@ public class RpcContext { // read finish history 10/01 是在何处设置进入�
 
     /**
      * 异步调用 ，需要返回值，即使步调用Future.get方法，也会处理调用超时问题.
-     * todo 10/29 与FutureFilter中的asyncCallback有啥区别？
+     *  10/29 与FutureFilter中的asyncCallback有啥区别？
      * 回调与异步调用的区别， 目前只看到测试用例中有引用，通常的异步调用不用这个吗？
      *
      * @param callable
      * @return 通过future.get()获取返回结果.
      */
     @SuppressWarnings("unchecked")
-    public <T> Future<T> asyncCall(Callable<T> callable) { //异步调用，并返回结果  todo 9.1 上下文中的异步调用
+    public <T> Future<T> asyncCall(Callable<T> callable) { //异步调用，并返回结果   9.1 上下文中的异步调用
         try {
             try {
                 setAttachment(Constants.ASYNC_KEY, Boolean.TRUE.toString());
                 final T o = callable.call();
                 //local调用会直接返回结果.
                 if (o != null) {
-                    FutureTask<T> f = new FutureTask<T>(new Callable<T>() { //执行任务 todo 10/29 FutureTask、Callable、Runnable了解&实践
+                    FutureTask<T> f = new FutureTask<T>(new Callable<T>() { //执行任务  10/29 FutureTask、Callable、Runnable了解&实践
                         public T call() throws Exception {
                             return o; // 返回结果
                         }

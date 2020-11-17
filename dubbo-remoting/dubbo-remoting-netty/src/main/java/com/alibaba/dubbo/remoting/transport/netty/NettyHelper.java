@@ -27,7 +27,7 @@ import org.jboss.netty.logging.InternalLoggerFactory;
  */
 final class NettyHelper {
 
-    public static void setNettyLoggerFactory() {
+    public static void setNettyLoggerFactory() { //todo 11/17 netty日志工厂了解
         InternalLoggerFactory factory = InternalLoggerFactory.getDefaultFactory();
         if (factory == null || !(factory instanceof DubboLoggerFactory)) {
             InternalLoggerFactory.setDefaultFactory(new DubboLoggerFactory());

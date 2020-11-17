@@ -42,7 +42,7 @@ import java.util.concurrent.Future;
  * @author william.liangf
  */
 @Activate(group = Constants.CONSUMER)
-public class FutureFilter implements Filter {// read finish todo 10/22 待了解功能用途
+public class FutureFilter implements Filter {// read finish  10/22 待了解功能用途
     //FutureFilter主要是用来处理事件通知的过滤器
     protected static final Logger logger = LoggerFactory.getLogger(FutureFilter.class);
 
@@ -72,13 +72,13 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
         }
     }
 
-    //异步调用（通过Future执行调用） todo 1.2 异步调用待使用
+    //异步调用（通过Future执行调用）  1.2 异步调用待使用
     private void asyncCallback(final Invoker<?> invoker, final Invocation invocation) {
         Future<?> f = RpcContext.getContext().getFuture();
         if (f instanceof FutureAdapter) {
             ResponseFuture future = ((FutureAdapter<?>) f).getFuture();
             future.setCallback(new ResponseCallback() { //匿名类
-                public void done(Object rpcResult) { //todo 10/28 此处待调试？
+                public void done(Object rpcResult) { // 10/28 此处待调试？
                     if (rpcResult == null) {
                         logger.error(new IllegalStateException("invalid result value : null, expected " + Result.class.getName()));
                         return;
@@ -104,7 +104,7 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
     }
 
     /**
-     * todo 10/27 用途和含义待了解？是指执行回调操作？
+     *  10/27 用途和含义待了解？是指执行回调操作？
      */
     private void fireInvokeCallback(final Invoker<?> invoker, final Invocation invocation) {
         //onInvokeMethod、onInvokeInst值的格式？
@@ -153,7 +153,7 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
         Object[] args = invocation.getArguments();
         Object[] params;
         Class<?>[] rParaTypes = onReturnMethod.getParameterTypes();
-        //todo 10/27 待调试了解
+        // 10/27 待调试了解
         if (rParaTypes.length > 1) { //与异常信息不同点，就是没有设置exception
             if (rParaTypes.length == 2 && rParaTypes[1].isAssignableFrom(Object[].class)) {
                 params = new Object[2];
@@ -178,7 +178,7 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
 
     /**
      * 发出异常信息并做回调
-     * todo 10/28 回调Callback待实践
+     *  10/28 回调Callback待实践
      */
     private void fireThrowCallback(final Invoker<?> invoker, final Invocation invocation, final Throwable exception) {
         /**
@@ -186,7 +186,7 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
          * 1）StaticContext.getSystemContext() 获取system对应的StaticContext
          * 2）StaticContext.getKey(invoker.getUrl(), invocation.getMethodName(), Constants.ON_THROW_METHOD_KEY) 获取由getKey(servicekey, methodName, suffix)组成的字符串str
          * 3）StaticContext.getSystemContext().get(str)
-         * 4）强转转换为Method，Method onthrowMethod = (Method)StaticContext.getSystemContext().get(str) //todo 10/28 待调试，看是怎么获取到Method值的
+         * 4）强转转换为Method，Method onthrowMethod = (Method)StaticContext.getSystemContext().get(str) // 10/28 待调试，看是怎么获取到Method值的
          */
         final Method onthrowMethod = (Method) StaticContext.getSystemContext().get(StaticContext.getKey(invoker.getUrl(), invocation.getMethodName(), Constants.ON_THROW_METHOD_KEY));
         // 实例
@@ -208,7 +208,7 @@ public class FutureFilter implements Filter {// read finish todo 10/22 待了解
                 Object[] args = invocation.getArguments();
                 Object[] params;
 
-                //todo 10/27 此处逻辑待了解，调试
+                // 10/27 此处逻辑待了解，调试
                 if (rParaTypes.length > 1) {
                     if (rParaTypes.length == 2 && rParaTypes[1].isAssignableFrom(Object[].class)) {
                         params = new Object[2];

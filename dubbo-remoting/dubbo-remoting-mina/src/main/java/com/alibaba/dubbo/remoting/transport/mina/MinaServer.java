@@ -46,7 +46,7 @@ import java.util.concurrent.Executors;
  * @author william.liangf
  * @author ding.lid
  */
-public class MinaServer extends AbstractServer {
+public class MinaServer extends AbstractServer {//todo Mina了解以及基本使用
 
     private static final Logger logger = LoggerFactory.getLogger(MinaServer.class);
 

@@ -59,7 +59,7 @@ public class DecodeHandler extends AbstractChannelHandlerDelegate { //解码处�
     }
 
     /**@c 反序列化对象  */
-    private void decode(Object message) {
+    private void decode(Object message) { //todo 11/17 此处解码了解
         if (message != null && message instanceof Decodeable) {
             try {
                 ((Decodeable) message).decode();

@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD}) //@Adaptive 注解用在类上和方法的使用 todo 10/29 了解应用在类、方法上的场景
+@Target({ElementType.TYPE, ElementType.METHOD}) //@Adaptive 注解用在类上和方法的使用  10/29 了解应用在类、方法上的场景
 public @interface Adaptive { /**@c 适配器类，加上该注解，表明会生成动态代理类 */
     /**
      * 从{@link URL}的Key名，对应的Value作为要Adapt成的Extension名。

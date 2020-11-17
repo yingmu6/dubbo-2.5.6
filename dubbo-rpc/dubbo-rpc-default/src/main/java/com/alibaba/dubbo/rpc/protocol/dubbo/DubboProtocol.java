@@ -263,12 +263,12 @@ public class DubboProtocol extends AbstractProtocol {// read finish
     //重点：将invoker转换为exporter，Invoker由框架传入
 
     /**
-     * 暴露服务
+     * 暴露服务：打开服务并返回构建的服务
      * 1）通过invoker构建DubboExporter，并写入缓存
      * 2）检查存根方法是否正确
      * 3）打开服务并返回DubboExporter
      */
-    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException { //todo 11/13-doing
+    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {//todo 暴露本地服务以及注册服务是哪里用到的？
         URL url = invoker.getUrl();
 
         // export service.（根据执行者信息，构造服务暴露引用的信息）
@@ -315,14 +315,14 @@ public class DubboProtocol extends AbstractProtocol {// read finish
                 serverMap.put(key, createServer(url)); //重点：创建服务
             } else {
                 //server支持reset,配合override功能使用
-                server.reset(url);
+                server.reset(url); //todo 11/17 是怎么选择调用ExchangeServerDelegate、HeaderExchangeServer
             }
         }
     }
 
     /**
-     * 创建指定url对应的服务ExchangeServer
-     * 1）添加服务相关参数，如channel.readonly.sent通道只读事件、heartbeat心跳检测时间、codec编码方式等
+     * 创建指定url对应的交换服务ExchangeServer
+     * 1）设置服务相关参数，如channel.readonly.sent通道只读事件、heartbeat心跳检测时间、codec编码方式等
      * 2）把通道处理类绑定到指定url上，并返回交换服务ExchangeServer
      */
     private ExchangeServer createServer(URL url) {  //service export

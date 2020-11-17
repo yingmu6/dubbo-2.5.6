@@ -30,7 +30,7 @@ import com.alibaba.dubbo.remoting.transport.ChannelHandlerAdapter;
  *
  * @author william.liangf
  */
-public class Exchangers {//todo 11/15 门面模式了解
+public class Exchangers {// 11/15 门面模式了解
 
     static {
         // check duplicate jar package

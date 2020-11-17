@@ -113,7 +113,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
         }
 
         Proxy proxy = null;
-        synchronized (cache) { //todo 11/08 synchronized的使用方式
+        synchronized (cache) { // 11/08 synchronized的使用方式
             do {
                 Object value = cache.get(key);
                 if (value instanceof Reference<?>) { //Reference：Java中的引用对象
@@ -218,7 +218,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
             ccm.setSuperClass(Proxy.class);
             ccm.addMethod("public Object newInstance(" + InvocationHandler.class.getName() + " h){ return new " + pcn + "($1); }");
             Class<?> pc = ccm.toClass(); //构建对象class对应的字符串，然后生成代理
-            proxy = (Proxy) pc.newInstance(); //todo 11/08 待调试，看下生产的类是啥？
+            proxy = (Proxy) pc.newInstance(); // 11/08 待调试，看下生产的类是啥？
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
@@ -233,8 +233,8 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
                 if (proxy == null)
                     cache.remove(key);
                 else
-                    cache.put(key, new WeakReference<Proxy>(proxy)); //todo 11/08 弱引用了解
-                cache.notifyAll(); //todo 11/08 与wait一起使用吗？
+                    cache.put(key, new WeakReference<Proxy>(proxy)); // 11/08 弱引用了解
+                cache.notifyAll(); // 11/08 与wait一起使用吗？
             }
         }
         return proxy;
@@ -262,7 +262,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
             if (Short.TYPE == cl)
                 return name + "==null?(short)0:((Short)" + name + ").shortValue()";
             throw new RuntimeException(name + " is unknown primitive type."); //若为Void类型，抛出异常
-        } //todo 11/08 调试下，看下产生的代码是啥？
+        } // 11/08 调试下，看下产生的代码是啥？
         return "(" + ReflectUtils.getName(cl) + ")" + name; //若参数是对象类型，则进行强制转换
     }
 
@@ -271,7 +271,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
      *
      * @return instance.
      */
-    public Object newInstance() { //todo 11/08 为啥没有引用的地方？
+    public Object newInstance() { // 11/08 为啥没有引用的地方？
         return newInstance(THROW_UNSUPPORTED_INVOKER);
     }
 
@@ -280,5 +280,5 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
      *
      * @return instance.
      */
-    abstract public Object newInstance(InvocationHandler handler); //todo 11/08 没有看到对应的调用？是动态调用的吗
+    abstract public Object newInstance(InvocationHandler handler); // 11/08 没有看到对应的调用？是动态调用的吗
 }

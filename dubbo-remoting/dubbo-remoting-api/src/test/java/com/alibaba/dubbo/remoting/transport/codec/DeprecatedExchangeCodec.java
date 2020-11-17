@@ -99,11 +99,11 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
                 || readable > 1 && header[1] != MAGIC_LOW) { //若没有魔法数，则表明不是Request、Response，是普通的对象
             int length = header.length;
             if (header.length < readable) {
-                header = Bytes.copyOf(header, readable); //todo 10/21 此处header会补全？
+                header = Bytes.copyOf(header, readable); // 10/21 此处header会补全？
                 is.read(header, length, readable - length);
             }
             for (int i = 1; i < header.length - 1; i++) {
-                if (header[i] == MAGIC_HIGH && header[i + 1] == MAGIC_LOW) {  //todo 10/21 逻辑待理解
+                if (header[i] == MAGIC_HIGH && header[i + 1] == MAGIC_LOW) {  // 10/21 逻辑待理解
                     UnsafeByteArrayInputStream bis = ((UnsafeByteArrayInputStream) is);
                     bis.position(bis.position() - header.length + i);
                     header = Bytes.copyOf(header, i);
@@ -249,7 +249,7 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         // set request and serialization flag.
         header[2] = (byte) (FLAG_REQUEST | serialization.getContentTypeId());
 
-        if (req.isTwoWay()) header[2] |= FLAG_TWOWAY; //todo 10/21 异或运算的结果是啥？
+        if (req.isTwoWay()) header[2] |= FLAG_TWOWAY; // 10/21 异或运算的结果是啥？
         if (req.isEvent()) header[2] |= FLAG_EVENT;
 
         // set request id.
@@ -258,7 +258,7 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         // encode request data.
         UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(1024);
         ObjectOutput out = serialization.serialize(channel.getUrl(), bos);
-        if (req.isEvent()) { //todo 10/21 数据是怎么扩容的？
+        if (req.isEvent()) { // 10/21 数据是怎么扩容的？
             encodeEventData(channel, out, req.getData());
         } else {
             encodeRequestData(channel, out, req.getData());
@@ -267,7 +267,7 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         bos.flush();
         bos.close();
         byte[] data = bos.toByteArray();
-        checkPayload(channel, data.length); //todo 10/21 是否包含请求头的16字节？
+        checkPayload(channel, data.length); // 10/21 是否包含请求头的16字节？
         Bytes.int2bytes(data.length, header, 12);
 
         // write
@@ -334,7 +334,7 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
                     Response r = new Response(res.getId(), res.getVersion());
                     r.setStatus(Response.BAD_RESPONSE);
                     r.setErrorMessage("Failed to send response: " + res + ", cause: " + StringUtils.toString(t));
-                    channel.send(r); //todo 10/21 底层是怎样发送数据的？Netty吗
+                    channel.send(r); // 10/21 底层是怎样发送数据的？Netty吗
 
                     return;
                 } catch (RemotingException e) {

@@ -39,7 +39,7 @@ import java.io.IOException;
  *
  * @author qian.lei
  */
-final class NettyCodecAdapter {
+final class NettyCodecAdapter { //todo 适配器模式了解
 
     private final ChannelHandler encoder = new InternalEncoder();
 
@@ -70,7 +70,7 @@ final class NettyCodecAdapter {
     }
 
     @Sharable
-    private class InternalEncoder extends OneToOneEncoder {
+    private class InternalEncoder extends OneToOneEncoder { //todo 11/17 InternalEncoder了解
 
         @Override
         protected Object encode(ChannelHandlerContext ctx, Channel ch, Object msg) throws Exception {
@@ -86,7 +86,7 @@ final class NettyCodecAdapter {
         }
     }
 
-    private class InternalDecoder extends SimpleChannelUpstreamHandler { //todo 11/13 内部编码了解
+    private class InternalDecoder extends SimpleChannelUpstreamHandler { // 11/13 内部编码了解
 
         private com.alibaba.dubbo.remoting.buffer.ChannelBuffer buffer =
                 com.alibaba.dubbo.remoting.buffer.ChannelBuffers.EMPTY_BUFFER;

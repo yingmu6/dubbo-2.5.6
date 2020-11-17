@@ -72,18 +72,20 @@ public class NettyServer extends AbstractServer implements Server {//netty服务
     @Override
     protected void doOpen() throws Throwable { //@pause 1.7 netty客户端使用，了解bootstrap使用
         NettyHelper.setNettyLoggerFactory();
+        //todo 11/17 ExecutorService了解以及实践
         ExecutorService boss = Executors.newCachedThreadPool(new NamedThreadFactory("NettyServerBoss", true));
         ExecutorService worker = Executors.newCachedThreadPool(new NamedThreadFactory("NettyServerWorker", true));
         ChannelFactory channelFactory = new NioServerSocketChannelFactory(boss, worker, getUrl().getPositiveParameter(Constants.IO_THREADS_KEY, Constants.DEFAULT_IO_THREADS));
-        bootstrap = new ServerBootstrap(channelFactory);
+        bootstrap = new ServerBootstrap(channelFactory); //todo netty3和netty4基本使用了解和实践
 
+        //todo 11/17 Socket了解以及实践
         final NettyHandler nettyHandler = new NettyHandler(getUrl(), this);
         channels = nettyHandler.getChannels();
         // https://issues.jboss.org/browse/NETTY-365
         // https://issues.jboss.org/browse/NETTY-379
         // final Timer timer = new HashedWheelTimer(new NamedThreadFactory("NettyIdleTimer", true));
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            public ChannelPipeline getPipeline() {
+        bootstrap.setPipelineFactory(new ChannelPipelineFactory() { //todo ClientBootstrap、ServerBootstrap、Bootstrap了解
+            public ChannelPipeline getPipeline() { //todo ChannelPipeline了解
                 NettyCodecAdapter adapter = new NettyCodecAdapter(getCodec(), getUrl(), NettyServer.this);
                 ChannelPipeline pipeline = Channels.pipeline();
                 /*int idleTimeout = getIdleTimeout();
@@ -98,6 +100,7 @@ public class NettyServer extends AbstractServer implements Server {//netty服务
         });
         /**@c   bind (使用Netty中ServerBootstrap启动服务) */
         channel = bootstrap.bind(getBindAddress()); //Create a new {@link Channel} and bind it. 创建一个通道channel并且绑定它
+        //todo 11/17 java Nio 了解以及实践
     }
 
     @Override

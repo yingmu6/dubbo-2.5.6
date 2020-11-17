@@ -51,7 +51,7 @@ public class Transporters {
      *       并且将handlers设置到ChannelHandlerDispatcher 的属性中 Collection<ChannelHandler> channelHandlers
      * 3）获取传输对象Transporter的实例(默认是NettyTransporter)，并调用bind方法
      */
-    public static Server bind(URL url, ChannelHandler... handlers) throws RemotingException { //service export 步骤13
+    public static Server bind(URL url, ChannelHandler... handlers) throws RemotingException {
         if (url == null) {
             throw new IllegalArgumentException("url == null");
         }

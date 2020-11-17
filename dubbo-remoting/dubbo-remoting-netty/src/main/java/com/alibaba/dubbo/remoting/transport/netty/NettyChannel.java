@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author qian.lei
  * @author william.liangf
  */
-final class NettyChannel extends AbstractChannel { //默认Netty传输
+final class NettyChannel extends AbstractChannel { //默认Netty传输，todo 11/17 待了解
 
     private static final Logger logger = LoggerFactory.getLogger(NettyChannel.class);
 

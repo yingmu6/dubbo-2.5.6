@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author qian.lei
  */
 
-public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，创建线程 */
+public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，创建线程 */ //todo 11/17 工厂模式了解
     private static final AtomicInteger POOL_SEQ = new AtomicInteger(1);
 
     private final AtomicInteger mThreadNum = new AtomicInteger(1);
@@ -36,7 +36,7 @@ public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，�
     /**
      * 线程组 ThreadGroup：A thread group represents a set of threads.（一组线程的集合）
      */
-    private final ThreadGroup mGroup;
+    private final ThreadGroup mGroup; //todo 11/17 线程组了解
 
     public NamedThreadFactory() {
         this("pool-" + POOL_SEQ.getAndIncrement(), false);
@@ -46,14 +46,10 @@ public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，�
         this(prefix, false);
     }
 
-    /**
-     * daemo : 守护线程吗
-     * history-v1 守护线程了解
-     */
-    public NamedThreadFactory(String prefix, boolean daemo) {
+    public NamedThreadFactory(String prefix, boolean daemo) { //todo 11/17 守护线程、SecurityManager了解，
         mPrefix = prefix + "-thread-";
         mDaemo = daemo;
-        SecurityManager s = System.getSecurityManager(); // history-v1 SecurityManager了解
+        SecurityManager s = System.getSecurityManager();
         mGroup = (s == null) ? Thread.currentThread().getThreadGroup() : s.getThreadGroup();
     }
 

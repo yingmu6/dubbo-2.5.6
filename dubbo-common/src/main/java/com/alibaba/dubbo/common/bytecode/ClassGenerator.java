@@ -43,14 +43,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * ClassGenerator todo 11/12 了解是如何封装javassist
+ * ClassGenerator  11/12 了解是如何封装javassist
  *
  * @author qian.lei
  */
 
 public final class ClassGenerator { //10/25 待了解：类产生器，javassist了解；解:getClassPool方法处已标明
     /**
-     * ClassGenerator的数据结构 todo 11/12 待了解
+     * ClassGenerator的数据结构  11/12 待了解
      *
      */
     private static final AtomicLong CLASS_NAME_COUNTER = new AtomicLong(0);
@@ -121,7 +121,7 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
         ClassPool pool = POOL_MAP.get(loader);
         if (pool == null) {
             pool = new ClassPool(true);
-            pool.appendClassPath(new LoaderClassPath(loader)); //todo 10/26 LoaderClassPath了解
+            pool.appendClassPath(new LoaderClassPath(loader)); // 10/26 LoaderClassPath了解
             POOL_MAP.put(loader, pool);
         }
         return pool;
@@ -292,7 +292,7 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
     }
 
     /**
-     * todo 10/27 待了解调试，javassist待使用
+     *  10/27 待了解调试，javassist待使用
      */
     public Class<?> toClass(ClassLoader loader, ProtectionDomain pd) {
         if (mCtc != null)
@@ -364,6 +364,6 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
         return getCtClass(c.getDeclaringClass()).getConstructor(ReflectUtils.getDesc(c));
     }
 
-    public static interface DC { //todo 10/27 动态类概念了解？
+    public static interface DC { // 10/27 动态类概念了解？
     } // dynamic class tag interface.
 }

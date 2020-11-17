@@ -128,10 +128,10 @@ public class StreamUtils {
             boolean mInReset = false;
             boolean mDry = false;
             private int mPosition = 0;
-            private int mCount = 0; //todo 10/21 标志待了解
+            private int mCount = 0; // 10/21 标志待了解
 
             /**
-             * todo 10/21 用途待了解
+             *  10/21 用途待了解
              * @return
              * @throws IOException
              */

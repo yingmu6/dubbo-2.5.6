@@ -37,8 +37,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author william.liangf
  */
 @Sharable
-public class NettyHandler extends SimpleChannelHandler {
+public class NettyHandler extends SimpleChannelHandler { //todo 11/17 netty SimpleChannelHandler、@Sharable了解
 
+    //todo 11/17 ConcurrentHashMap原理了解
     private final Map<String, Channel> channels = new ConcurrentHashMap<String, Channel>(); // <ip:port, channel>   IP:端口 与通道的映射
 
     private final URL url;
@@ -61,7 +62,7 @@ public class NettyHandler extends SimpleChannelHandler {
     }
 
     @Override
-    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {//todo 11/17 ChannelHandlerContext，ChannelStateEvent了解
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.getChannel(), url, handler);
         try {
             if (channel != null) {

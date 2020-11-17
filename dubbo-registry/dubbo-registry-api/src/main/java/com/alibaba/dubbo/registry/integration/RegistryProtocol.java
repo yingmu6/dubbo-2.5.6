@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author william.liangf
  * @author chao.liuc
  */
-public class RegistryProtocol implements Protocol {
+public class RegistryProtocol implements Protocol {//todo 11/17 数据结构了解
 
     private final static Logger logger = LoggerFactory.getLogger(RegistryProtocol.class);
     private static RegistryProtocol INSTANCE;
@@ -187,13 +187,13 @@ public class RegistryProtocol implements Protocol {
      *      3.1.2）通过InvokerDelegete进行协议暴露，获取到export
      *      3.1.3）通过Exporter, Invoker构建ExporterChangeableWrapper（export的代理类），并赋值给exporter
      *      3.1.3）将创建好的exporter写入export 本地绑定的map中 bounds
-     *   3.2）若exporter不为空，直接返回exporter
+     *   3.2）若exporter不为空，直接返回exporter //todo 11/17 注释精简
      */
     @SuppressWarnings("unchecked")
     private <T> ExporterChangeableWrapper<T> doLocalExport(final Invoker<T> originInvoker) {
         String key = getCacheKey(originInvoker); // 获取要暴露的协议url（移除了dynamic、enabled参数），如 dubbo://...
         ExporterChangeableWrapper<T> exporter = (ExporterChangeableWrapper<T>) bounds.get(key); //从缓存中获取export的实现类ExporterChangeableWrapper
-        if (exporter == null) {
+        if (exporter == null) { //todo 11/17 双重判断+synchronized 方式了解
             synchronized (bounds) {
                 exporter = (ExporterChangeableWrapper<T>) bounds.get(key);
                 if (exporter == null) { //使用接口回调，接口调用具体实现类的方法
@@ -203,7 +203,7 @@ public class RegistryProtocol implements Protocol {
                 }
             }
         }
-        return exporter;
+        return exporter; //todo 11/17 模拟多线程，实现线程不安全用例以及解决方法
     }
 
     /**
@@ -455,7 +455,7 @@ public class RegistryProtocol implements Protocol {
      * @author chao.liuc
      */
     //私有内部类
-    private class ExporterChangeableWrapper<T> implements Exporter<T> {
+    private class ExporterChangeableWrapper<T> implements Exporter<T> { //todo 11/17 待了解
 
         private final Invoker<T> originInvoker;
         private Exporter<T> exporter;

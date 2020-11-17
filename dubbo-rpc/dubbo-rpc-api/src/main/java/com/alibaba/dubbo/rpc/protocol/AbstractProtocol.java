@@ -61,8 +61,8 @@ public abstract class AbstractProtocol implements Protocol {// read finish
      */
     protected final Map<String, Exporter<?>> exporterMap = new ConcurrentHashMap<String, Exporter<?>>(); //服务暴露信息Exporter的缓存
 
-    //todo 11/12 ConcurrentHashMap、ConcurrentHashSet原理学习实践
-    protected final Set<Invoker<?>> invokers = new ConcurrentHashSet<Invoker<?>>(); //todo 11/12 这里怎么会有多个Invoker
+    // 11/12 ConcurrentHashMap、ConcurrentHashSet原理学习实践
+    protected final Set<Invoker<?>> invokers = new ConcurrentHashSet<Invoker<?>>(); // 11/12 这里怎么会有多个Invoker
 
     protected static String serviceKey(URL url) {
         return ProtocolUtils.serviceKey(url);

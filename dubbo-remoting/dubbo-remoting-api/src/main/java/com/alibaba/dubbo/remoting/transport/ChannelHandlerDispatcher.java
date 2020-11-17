@@ -38,7 +38,7 @@ public class ChannelHandlerDispatcher implements ChannelHandler {//通道处理�
      */
     private static final Logger logger = LoggerFactory.getLogger(ChannelHandlerDispatcher.class);
 
-    private final Collection<ChannelHandler> channelHandlers = new CopyOnWriteArraySet<ChannelHandler>(); //todo 11/15 CopyOnWriteArraySet待了解
+    private final Collection<ChannelHandler> channelHandlers = new CopyOnWriteArraySet<ChannelHandler>(); // 11/15 CopyOnWriteArraySet待了解
 
     public ChannelHandlerDispatcher() {
     }

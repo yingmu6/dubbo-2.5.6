@@ -34,7 +34,7 @@ import com.alibaba.dubbo.rpc.RpcInvocation;
 @Activate(group = Constants.CONSUMER, order = -10000)//order的值代表什么
 public class ConsumerContextFilter implements Filter { //read finish
 
-    //todo 10/22 此类的用途是什么？
+    // 10/22 此类的用途是什么？
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         RpcContext.getContext()
                 .setInvoker(invoker)

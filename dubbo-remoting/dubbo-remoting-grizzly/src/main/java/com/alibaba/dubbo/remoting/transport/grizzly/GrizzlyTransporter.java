@@ -27,7 +27,7 @@ import com.alibaba.dubbo.remoting.Transporter;
  *
  * @author william.liangf
  */
-public class GrizzlyTransporter implements Transporter {
+public class GrizzlyTransporter implements Transporter { //todo 11/17 Grizzly了解以及基本使用
 
     public static final String NAME = "grizzly";
 

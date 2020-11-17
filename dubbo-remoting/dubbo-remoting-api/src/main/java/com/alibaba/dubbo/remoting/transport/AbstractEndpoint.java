@@ -63,7 +63,7 @@ public abstract class AbstractEndpoint extends AbstractPeer implements Resetable
     /**
      * 从url取值重置timeout、connectTimeout、codec
      */
-    public void reset(URL url) {
+    public void reset(URL url) {//todo 11/17 此处的重置逻辑是怎样的？
         if (isClosed()) {
             throw new IllegalStateException("Failed to reset parameters "
                     + url + ", cause: Channel closed. channel: " + getLocalAddress());

@@ -60,7 +60,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author ding.lid
  */
-@Activate(group = Constants.PROVIDER, value = Constants.ACCESS_LOG_KEY)  //todo 10/22 自动激活的流程图画下
+@Activate(group = Constants.PROVIDER, value = Constants.ACCESS_LOG_KEY)  // 10/22 自动激活的流程图画下
 public class AccessLogFilter implements Filter {// read finish
 
     private static final Logger logger = LoggerFactory.getLogger(AccessLogFilter.class);
@@ -75,16 +75,16 @@ public class AccessLogFilter implements Filter {// read finish
 
     private static final long LOG_OUTPUT_INTERVAL = 5000;
 
-    private final ConcurrentMap<String, Set<String>> logQueue = new ConcurrentHashMap<String, Set<String>>(); //todo 10/22 此Map待了解
+    private final ConcurrentMap<String, Set<String>> logQueue = new ConcurrentHashMap<String, Set<String>>(); // 10/22 此Map待了解
 
-    private final ScheduledExecutorService logScheduled = Executors.newScheduledThreadPool(2, new NamedThreadFactory("Dubbo-Access-Log", true)); //todo 10/22 待了解
+    private final ScheduledExecutorService logScheduled = Executors.newScheduledThreadPool(2, new NamedThreadFactory("Dubbo-Access-Log", true)); // 10/22 待了解
 
     private volatile ScheduledFuture<?> logFuture = null;
 
     /**@c 若延迟任务为空，则创建延迟任务 */
     private void init() {
         if (logFuture == null) {
-            synchronized (logScheduled) { //todo 10/22 synchronized待了解
+            synchronized (logScheduled) { // 10/22 synchronized待了解
                 if (logFuture == null) {
                     logFuture = logScheduled.scheduleWithFixedDelay(new LogTask(), LOG_OUTPUT_INTERVAL, LOG_OUTPUT_INTERVAL, TimeUnit.MILLISECONDS);
                 }
@@ -112,10 +112,10 @@ public class AccessLogFilter implements Filter {// read finish
      */
     public Result invoke(Invoker<?> invoker, Invocation inv) throws RpcException {
         try {
-            String accesslog = invoker.getUrl().getParameter(Constants.ACCESS_LOG_KEY); //todo 10/22 查看下目前这个参数是怎样配置的
+            String accesslog = invoker.getUrl().getParameter(Constants.ACCESS_LOG_KEY); // 10/22 查看下目前这个参数是怎样配置的
             if (ConfigUtils.isNotEmpty(accesslog)) {
                 //RpcContext上下文信息
-                RpcContext context = RpcContext.getContext(); //todo 10/22 RpcContext了解及使用
+                RpcContext context = RpcContext.getContext(); // 10/22 RpcContext了解及使用
                 String serviceName = invoker.getInterface().getName();
                 String version = invoker.getUrl().getParameter(Constants.VERSION_KEY);
                 String group = invoker.getUrl().getParameter(Constants.GROUP_KEY);
@@ -172,7 +172,7 @@ public class AccessLogFilter implements Filter {// read finish
     private class LogTask implements Runnable {
         public void run() {
             try {
-                if (logQueue != null && logQueue.size() > 0) { //todo 10/22 为啥有这限制？
+                if (logQueue != null && logQueue.size() > 0) { // 10/22 为啥有这限制？
                     for (Map.Entry<String, Set<String>> entry : logQueue.entrySet()) { //遍历ConcurrentMap<String, Set<String>> logQueue日志集合
                         try {
                             String accesslog = entry.getKey();
@@ -193,7 +193,7 @@ public class AccessLogFilter implements Filter {// read finish
                                     file.renameTo(archive);
                                 }
                             }
-                            FileWriter writer = new FileWriter(file, true); //todo 10/22 为啥用文件处理的？指的是写日志文件吗？ 看下本地是否有
+                            FileWriter writer = new FileWriter(file, true); // 10/22 为啥用文件处理的？指的是写日志文件吗？ 看下本地是否有
                             try {
                                 for (Iterator<String> iterator = logSet.iterator();
                                      iterator.hasNext();

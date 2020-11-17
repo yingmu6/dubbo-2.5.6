@@ -80,7 +80,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * history-v1 URL学习实践？dubbo URL的用户以及应用场景
  */
-public final class URL implements Serializable {//可进行序列化 todo 11/13 URL了解以及实践
+public final class URL implements Serializable {//可进行序列化 todo 11/17 URL了解以及实践
 
     // 网络URL学习一下，对比一下与dubbo的自定义的URL的异同
     // URL语法结构  协议：//授权机构/路径?查询条件
@@ -212,7 +212,7 @@ public final class URL implements Serializable {//可进行序列化 todo 11/13 
      * @return URL instance
      * @see URL
      */
-    public static URL valueOf(String url) {
+    public static URL valueOf(String url) { //todo 11/17 此处待调试
         if (url == null || (url = url.trim()).length() == 0) {
             throw new IllegalArgumentException("url == null");
         }
