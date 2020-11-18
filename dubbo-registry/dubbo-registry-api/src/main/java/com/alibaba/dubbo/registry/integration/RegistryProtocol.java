@@ -47,13 +47,26 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author william.liangf
  * @author chao.liuc
  */
-public class RegistryProtocol implements Protocol {//todo 11/17 数据结构了解
+public class RegistryProtocol implements Protocol {//11/17 数据结构了解
+
+    /**
+     * 数据结构
+     * 类继承关系：
+     * RegistryProtocol类实现了Protocol接口
+     *
+     * 功能点：
+     * 1）注册协议的暴露、引用
+     * 2）获取注册的url、订阅的信息等
+     *
+     * 维护的数据：
+     *
+     */
 
     private final static Logger logger = LoggerFactory.getLogger(RegistryProtocol.class);
     private static RegistryProtocol INSTANCE;
     private final Map<URL, NotifyListener> overrideListeners = new ConcurrentHashMap<URL, NotifyListener>(); //URL与通知监听器的映射
     //用于解决rmi重复暴露端口冲突的问题，已经暴露过的服务不再重新暴露
-    //providerurl <--> exporter
+    //providerurl <--> exporter (ConcurrentHashMap保证并发安全访问)
     private final Map<String, ExporterChangeableWrapper<?>> bounds = new ConcurrentHashMap<String, ExporterChangeableWrapper<?>>(); //需要暴露协议的url与ExporterChangeableWrapper的映射，url的值如：dubbo://192.168.1.102:20881/com.alibaba.dubbo.demo.ApiDemo....
     private Cluster cluster;
     private Protocol protocol;
@@ -177,33 +190,29 @@ public class RegistryProtocol implements Protocol {//todo 11/17 数据结构了�
     }
 
     /**
-     * 暴露本地服务（暴露注册url中export对应值的服务，registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?export=dubbo%3A%2F%2F192.163.103.104....）
-     * 1）根据invoker获取缓存中的key（即为export暴露服务的url去掉指定参数对应的字符串， 约定Map中的key，以哪种形式存，就用哪种形式取）
-     * 2）从Map<String, ExporterChangeableWrapper<?>> bounds 集合中获取指定key的暴露者ExporterChangeableWrapper
-     * 3）对获取的exporter进行判断
-     *   3.1）若exporter为空，对bounds进行同步资源锁定
-     *       双重判断exporter是否为空，若为空，做相关构建
-     *      3.1.1）通过传入的invoker，以及invoker中url对应export提供者url，构建静态内部类InvokerDelegete（invoker的代理类）
-     *      3.1.2）通过InvokerDelegete进行协议暴露，获取到export
-     *      3.1.3）通过Exporter, Invoker构建ExporterChangeableWrapper（export的代理类），并赋值给exporter
-     *      3.1.3）将创建好的exporter写入export 本地绑定的map中 bounds
-     *   3.2）若exporter不为空，直接返回exporter //todo 11/17 注释精简
+     * 暴露本地服务
+     * 1）获取Invoker对应的缓存的key，并尝试从本地缓存中获取Exporter实例
+     * 2）若从缓存中获取到Exporter，则直接返回，否则构建Exporter实例，设置到缓存中并返回
      */
     @SuppressWarnings("unchecked")
     private <T> ExporterChangeableWrapper<T> doLocalExport(final Invoker<T> originInvoker) {
-        String key = getCacheKey(originInvoker); // 获取要暴露的协议url（移除了dynamic、enabled参数），如 dubbo://...
-        ExporterChangeableWrapper<T> exporter = (ExporterChangeableWrapper<T>) bounds.get(key); //从缓存中获取export的实现类ExporterChangeableWrapper
-        if (exporter == null) { //todo 11/17 双重判断+synchronized 方式了解
+        String key = getCacheKey(originInvoker);
+        ExporterChangeableWrapper<T> exporter = (ExporterChangeableWrapper<T>) bounds.get(key);
+        if (exporter == null) {
             synchronized (bounds) {
                 exporter = (ExporterChangeableWrapper<T>) bounds.get(key);
-                if (exporter == null) { //使用接口回调，接口调用具体实现类的方法
+                if (exporter == null) {
                     final Invoker<?> invokerDelegete = new InvokerDelegete<T>(originInvoker, getProviderUrl(originInvoker));
-                    exporter = new ExporterChangeableWrapper<T>((Exporter<T>) protocol.export(invokerDelegete), originInvoker); //本地暴露
+                    exporter = new ExporterChangeableWrapper<T>((Exporter<T>) protocol.export(invokerDelegete), originInvoker); //做本地暴露，并对Exporter进行封装
                     bounds.put(key, exporter);
                 }
             }
         }
         return exporter; //todo 11/17 模拟多线程，实现线程不安全用例以及解决方法
+        /**
+         * https://www.cnblogs.com/xz816111/p/8470048.html 双重判断
+         * 双重判断 + synchronized + volatile (减少加锁，编码指令重拍)
+         */
     }
 
     /**
@@ -265,11 +274,9 @@ public class RegistryProtocol implements Protocol {//todo 11/17 数据结构了�
     }
 
     /**
-     * 通过invoker的url 获取 providerUrl的地址（即键export对应的值）
-     * 1）获取invoker的url（invoker是Node的子接口，可以通过getUrl()获取到URL）
-     * 2）获取url中export的值，并且解码。因为export的值被编码过的，需要对应解码
-     * 3）从url解析出来的export值为空，表明是非法的url，抛出非法参数异常
-     * 4）通过export的值构建url，这个值是完整的url
+     * 获取服务提供者的url
+     * 1）从调用者对应的url中找到export对应的url值
+     * 2）生成服务提供者的url并返回
      */
     private URL getProviderUrl(final Invoker<?> origininvoker) { //获取提供者url registry://localhost:2181/.../export=dubbo%3A%2F%2F10.118.32.69%3A20881%2
         String export = origininvoker.getUrl().getParameterAndDecoded(Constants.EXPORT_KEY); //url中键对应的值被编码过，所以需要解码
@@ -282,13 +289,13 @@ public class RegistryProtocol implements Protocol {//todo 11/17 数据结构了�
     }
 
     /**
-     * 获取invoker在bounds中缓存的key
-     * 1）获取invoker对应的url中export的对应的URL值，即需要暴露的服务的URL值
-     * 2）从URL的参数集合中移除"dynamic", "enabled"键，并返回url对应的字符串
+     * 获取invoker对应的缓存的key
+     * 1）获取服务提供者的url
+     * 2）移除URL中"dynamic", "enabled"参数并返回url对应的字符串
      */
     private String getCacheKey(final Invoker<?> originInvoker) {
         URL providerUrl = getProviderUrl(originInvoker);
-        String key = providerUrl.removeParameters("dynamic", "enabled").toFullString(); //移除dynamic、enabled参数
+        String key = providerUrl.removeParameters("dynamic", "enabled").toFullString();
         return key;
     }
 
@@ -341,7 +348,7 @@ public class RegistryProtocol implements Protocol {//todo 11/17 数据结构了�
         bounds.clear();
     }
 
-    public static class InvokerDelegete<T> extends InvokerWrapper<T> {
+    public static class InvokerDelegete<T> extends InvokerWrapper<T> { //InvokerDelegete：Invoker的委派类
         private final Invoker<T> invoker;
 
         /**
@@ -454,9 +461,14 @@ public class RegistryProtocol implements Protocol {//todo 11/17 数据结构了�
      * @param <T>
      * @author chao.liuc
      */
-    //私有内部类
-    private class ExporterChangeableWrapper<T> implements Exporter<T> { //todo 11/17 待了解
 
+    //私有内部类（对变化的Exporter的封装）
+    private class ExporterChangeableWrapper<T> implements Exporter<T> {
+        /**
+         * 数据结构：
+         * 1）实现了Exporter暴露服务接口，重新了getInvoker()获取调用者，unexport()取消暴露的方法
+         * 2）维护了invoker（调用者）、exporter（暴露者）成员变量
+         */
         private final Invoker<T> originInvoker;
         private Exporter<T> exporter;
 
@@ -477,6 +489,12 @@ public class RegistryProtocol implements Protocol {//todo 11/17 数据结构了�
             this.exporter = exporter;
         }
 
+        /**
+         * 取消服务暴露
+         * 1）获取invoker对应的缓存的key
+         * 2）从缓存中移除缓存key对应的ExporterChangeableWrapper
+         * 3）取消服务暴露
+         */
         public void unexport() {
             String key = getCacheKey(this.originInvoker);
             bounds.remove(key);

@@ -45,7 +45,7 @@ public class ExecutorUtil {
         return false;
     }
 
-    public static void gracefulShutdown(Executor executor, int timeout) {
+    public static void gracefulShutdown(Executor executor, int timeout) { //优雅停机
         if (!(executor instanceof ExecutorService) || isShutdown(executor)) {
             return;
         }

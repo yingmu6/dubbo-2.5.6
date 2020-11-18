@@ -39,7 +39,13 @@ import java.io.IOException;
  *
  * @author qian.lei
  */
-final class NettyCodecAdapter { //todo 适配器模式了解
+final class NettyCodecAdapter {
+    /**
+     * 适配器模式是Adapter，也称Wrapper
+     * 将一个类的接口转换成客户希望的另外一个接口，使得原本由于接口不兼容而不能一起工作的那些类可以一起工作适配器模式是Adapter，也称Wrapper
+     * 将一个类的接口转换成客户希望的另外一个接口，使得原本由于接口不兼容而不能一起工作的那些类可以一起工作
+     * https://design-patterns.readthedocs.io/zh_CN/latest/structural_patterns/adapter.html
+     */
 
     private final ChannelHandler encoder = new InternalEncoder();
 
@@ -69,8 +75,13 @@ final class NettyCodecAdapter { //todo 适配器模式了解
         return decoder;
     }
 
+    /**
+     * OneToOneEncoder: netty的编码方式
+     * 继承netty的编码方式，将Netty的数据模型转换为dubbo的数据模型
+     * 将netty的Channel转换为dubbo的NettyChannel，并用dubbo封装的编码方式Codec2进行编码
+     */
     @Sharable
-    private class InternalEncoder extends OneToOneEncoder { //todo 11/17 InternalEncoder了解
+    private class InternalEncoder extends OneToOneEncoder {
 
         @Override
         protected Object encode(ChannelHandlerContext ctx, Channel ch, Object msg) throws Exception {
@@ -82,6 +93,15 @@ final class NettyCodecAdapter { //todo 适配器模式了解
             } finally {
                 NettyChannel.removeChannelIfDisconnected(ch);
             }
+
+            /**
+             * 数据模型转换：Dubbo <=> Java <=> Netty，不同Java框架都以Java为中心进行转换
+             * 原则上Dubbo只依赖Java，只有Java做相关的模型转换，不同的框架与Java进行转换
+             *
+             * 将Dubbo的ChannelBuffer转换为Netty的ChannelBuffer
+             * 1）将Dubbo的ChannelBuffer转换为Java NIO的ByteBuffer
+             * 2）利用Netty对Java ByteBuffer的封装，产生Netty的ChannelBuffer
+             */
             return ChannelBuffers.wrappedBuffer(buffer.toByteBuffer());
         }
     }

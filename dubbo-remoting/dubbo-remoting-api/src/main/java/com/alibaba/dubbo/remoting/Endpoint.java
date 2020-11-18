@@ -32,6 +32,14 @@ import java.net.InetSocketAddress;
 // 可以把一个provider或者consumer认为是一个endpoint节点吗
 // 解：不能说为provider、consumer，从子接口看，应该是Client、Server客户端和服务端属于一个节点
 public interface Endpoint { // 集中的节点（包含Client、Server、Channel等节点）
+    /**
+     * 功能点：
+     * 1）获取节点的url数据，URL getUrl()
+     * 2）获取节点绑定的通道处理器，ChannelHandler getChannelHandler()
+     * 3）获取节点的本地IP地址，InetSocketAddress getLocalAddress()
+     * 4）发送消息 void send(Object message)
+     * 5）关闭节点 void close()
+     */
 
     /**
      * get url. dubbo自定义的URL
@@ -55,7 +63,7 @@ public interface Endpoint { // 集中的节点（包含Client、Server、Channel
     InetSocketAddress getLocalAddress();
 
     /**
-     * send message.  @chen 为啥只能发送信息，那节点怎么接收信息的？
+     * send message.  todo 11/18 为啥只能发送信息，那节点怎么接收信息的？给哪里发送消息，是发送给其它节点吗？
      *
      * @param message
      * @throws RemotingException
@@ -71,7 +79,7 @@ public interface Endpoint { // 集中的节点（包含Client、Server、Channel
     void send(Object message, boolean sent) throws RemotingException;
 
     /**
-     * close the channel.
+     * close the channel. todo 11/18 关闭节点，会做什么业务
      */
     void close();
 

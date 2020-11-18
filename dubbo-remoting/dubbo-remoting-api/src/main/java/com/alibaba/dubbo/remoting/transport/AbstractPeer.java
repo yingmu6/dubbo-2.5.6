@@ -23,12 +23,21 @@ import com.alibaba.dubbo.remoting.Endpoint;
 import com.alibaba.dubbo.remoting.RemotingException;
 
 /**
- * AbstractPeer //history-v1 AbstractPeer的含义与用途？
- *
+ * AbstractPeer
+ * wheel（轮子）、Peer（同龄人、匹配、盯着看、凝视）
  * @author qian.lei
  * @author william.liangf
  */
 public abstract class AbstractPeer implements Endpoint, ChannelHandler {
+    /**
+     * 数据结构：
+     * 类继承关系：
+     * AbstractPeer实现了Endpoint、ChannelHandler接口
+     *
+     * 维护的数据：
+     * ChannelHandler（通道处理器）、URL（处理的url）
+     * closing（是否在关闭中）、closed（是否已关闭）
+     */
 
     private final ChannelHandler handler;
 
@@ -39,7 +48,6 @@ public abstract class AbstractPeer implements Endpoint, ChannelHandler {
 
     private volatile boolean closed;
 
-    /**@c */
     public AbstractPeer(URL url, ChannelHandler handler) {
         if (url == null) {
             throw new IllegalArgumentException("url == null");

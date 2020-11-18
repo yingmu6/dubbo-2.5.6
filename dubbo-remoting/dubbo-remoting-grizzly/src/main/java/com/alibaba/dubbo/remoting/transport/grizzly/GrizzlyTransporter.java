@@ -27,7 +27,7 @@ import com.alibaba.dubbo.remoting.Transporter;
  *
  * @author william.liangf
  */
-public class GrizzlyTransporter implements Transporter { //todo 11/17 Grizzly了解以及基本使用
+public class GrizzlyTransporter implements Transporter { // Grizzly了解以及基本使用
 
     public static final String NAME = "grizzly";
 
@@ -39,4 +39,15 @@ public class GrizzlyTransporter implements Transporter { //todo 11/17 Grizzly了
         return new GrizzlyClient(url, listener);
     }
 
+    /**
+     * https://javaee.github.io/grizzly/  官方文档
+     *
+     * Grizzly：Java NIO框架 https://blog.csdn.net/wzyzzu/article/details/51023329
+     * Grizzly NIO框架的设计初衷便是帮助开发者更好地利用Java NIO API，构建强大的可扩展的服务器应用，
+     * 并提供扩展框架的组件：Web框架（HTTP/S）、WebSocket、Comet等
+     *
+     * Grizzly是一种应用程序框架，使用JAVA NIO作为基础，并隐藏其编程的复杂性。
+     * 容易使用的高性能的API。带来非阻塞socketd到协议处理层。利用高性能的缓冲
+     * 和缓冲管理使用高性能的线程池
+     */
 }

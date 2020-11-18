@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author qian.lei
  */
 
-public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，创建线程 */ //todo 11/17 工厂模式了解
+public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，创建线程 */ // ThreadFactory工厂模式了解，解：属于工厂方法模式
     private static final AtomicInteger POOL_SEQ = new AtomicInteger(1);
 
     private final AtomicInteger mThreadNum = new AtomicInteger(1);
@@ -35,8 +35,15 @@ public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，�
 
     /**
      * 线程组 ThreadGroup：A thread group represents a set of threads.（一组线程的集合）
+     * https://juejin.im/post/6844903811899719694
+     *
+     * 线程组(ThreadGroup)简单来说就是一个线程集合。线程组的出现是为了更方便地管理线程。
+     * 线程组是父子结构的，一个线程组可以集成其他线程组，同时也可以拥有其他子线程组。从结构上看，线程组是一个树形结构，
+     * 每个线程都隶属于一个线程组，线程组又有父线程组，这样追溯下去，可以追溯到一个根线程组——System线程组
+     *
+     * 一个线程可以访问其所属线程组的信息，但不能访问其所属线程组的父线程组或者其他线程组的信息。
      */
-    private final ThreadGroup mGroup; //todo 11/17 线程组了解
+    private final ThreadGroup mGroup;
 
     public NamedThreadFactory() {
         this("pool-" + POOL_SEQ.getAndIncrement(), false);
@@ -46,7 +53,19 @@ public class NamedThreadFactory implements ThreadFactory {/**@c 线程工厂，�
         this(prefix, false);
     }
 
-    public NamedThreadFactory(String prefix, boolean daemo) { //todo 11/17 守护线程、SecurityManager了解，
+    /**
+     * 守护线程：
+     * 1）守护线程是为其他线程服务的线程；
+     * 2）所有非守护线程都执行完毕后，虚拟机退出；
+     * 3）守护线程不能持有需要关闭的资源（如打开文件等）
+     *
+     * https://www.liaoxuefeng.com/wiki/1252599548343744/1306580788183074
+     *
+     * SecurityManager:
+     * Java安全：SecurityManager与AccessController   https://juejin.im/post/6844903657775824910
+     * 安全管理器是Java API和应用程序之间的“第三方权威机构”。
+     */
+    public NamedThreadFactory(String prefix, boolean daemo) {
         mPrefix = prefix + "-thread-";
         mDaemo = daemo;
         SecurityManager s = System.getSecurityManager();

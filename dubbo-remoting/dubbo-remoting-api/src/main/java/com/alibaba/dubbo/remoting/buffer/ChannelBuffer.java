@@ -227,7 +227,8 @@ import java.nio.ByteBuffer;
  * 通道Channel：用来处理Buffer，和Buffer进行数据交互。类似于流，但Channel是双向的
  * 从通道中读取数据read()写到缓冲区buffer，把缓冲区的数据写到write() 通道
  */
-public interface ChannelBuffer extends Comparable<ChannelBuffer> {//finish understand(完成理解)
+//模拟Netty的ChannelBuffer，基于Java NIO的ByteBuffer，实现传输数据的管理，可以实现转换 ByteBuffer toByteBuffer()
+public interface ChannelBuffer extends Comparable<ChannelBuffer> {
 
     /**AbstractChannelBuffer 内容是使用ByteBuffer、索引使用的是readIndex、writeIndex
     也就是既使用了Java NIO中的ByteBuffer、又使用了Netty NIO的readIndex、writeIndex，
@@ -847,6 +848,8 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {//finish under
      * buf.toByteBuffer(buf.readerIndex(), buf.readableBytes())}. This method
      * does not modify {@code readerIndex} or {@code writerIndex} of this
      * buffer.
+     *
+     * 将Dubbo的ChannelBuffer转换为Netty中的ByteBuffer
      */
     ByteBuffer toByteBuffer();
 

@@ -133,8 +133,23 @@ public class NettyServer extends AbstractServer implements Server {
                 });
         // bind
         ChannelFuture channelFuture = bootstrap.bind(getBindAddress());
-        channelFuture.syncUninterruptibly(); //todo 11/17 ChannelFuture了解
+        channelFuture.syncUninterruptibly();
         channel = channelFuture.channel();
+        /**
+         * https://www.jianshu.com/p/4835eb4e91ab
+         * https://my.oschina.net/xinxingegeya/blog/278877  包含用例
+         *
+         * The result of an asynchronous Channel I/O operation（异步I/O操作返回的结果）
+         * ChannelFuture的作用是用来保存Channel异步操作的结果。
+         *
+         * 在Netty中所有的I/O操作都是异步的。这意味着任何的I/O调用都将立即返回，
+         * 而不保证这些被请求的I/O操作在调用结束的时候已经完成。取而代之地，
+         * 你会得到一个返回的ChannelFuture实例，这个实例将给你一些关于I/O操作结果或者状态的信息。
+         *
+         * Future提供了一种在操作完成时通知应用程序的方式，这个对象可以看作是一个异步结果的占位符，它将在未来某个时刻完成，并提供对其结果的访问，访问时是阻塞地拿取结果
+         * 而ChannelFuture能够注册一个或多个ChannelFutureListener实例，其回调方法operationComplete()会在对应的操作完成时被调用，这种监听通知机制消除了我们进行手动检查操作是否完成的必要。
+         * 每个Netty的出站I/O操作都会返回一个ChannelFuture，他们都不会阻塞。也体现出了Netty完全是异步和事件驱动的。
+         */
 
     }
 

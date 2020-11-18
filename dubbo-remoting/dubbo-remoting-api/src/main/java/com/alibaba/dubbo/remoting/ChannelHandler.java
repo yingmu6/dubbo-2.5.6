@@ -32,6 +32,12 @@ import com.alibaba.dubbo.common.extension.SPI;
 public interface ChannelHandler { //发生事件时，回调对应的函数
     // 连接通道，是ChannelHandler与channel单向连接吗？那通道与通道怎么连接？
     // 解：不管是否是单向，通道与通道可以用Channel中transport(通道传输)
+
+    /**
+     * 通道处理器功能点：（基于事件回调）todo 11/18 相关事件底层实现查看
+     *
+     */
+
     /**
      * on channel connected.（连接事件）
      * 与Channel建立连接

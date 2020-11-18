@@ -35,7 +35,7 @@ import java.io.IOException;
  * https://www.cnblogs.com/java-my-life/archive/2012/04/13/2442795.html
  * https://design-patterns.readthedocs.io/zh_CN/latest/structural_patterns/adapter.html
  */
-public class CodecAdapter implements Codec2 {
+public class CodecAdapter implements Codec2 { //todo 11/18 编码适配器了解
 
     private Codec codec;
 

@@ -27,14 +27,18 @@ import org.jboss.netty.logging.InternalLoggerFactory;
  */
 final class NettyHelper {
 
-    public static void setNettyLoggerFactory() { //todo 11/17 netty日志工厂了解
+    /**
+     * InternalLoggerFactory 是工厂方法模式：抽象了创建对象的方法，对象的创建交由子类进行
+     * public abstract InternalLogger newInstance(String name);
+     */
+    public static void setNettyLoggerFactory() {
         InternalLoggerFactory factory = InternalLoggerFactory.getDefaultFactory();
         if (factory == null || !(factory instanceof DubboLoggerFactory)) {
             InternalLoggerFactory.setDefaultFactory(new DubboLoggerFactory());
         }
     }
 
-    static class DubboLoggerFactory extends InternalLoggerFactory {
+    static class DubboLoggerFactory extends InternalLoggerFactory { //DubboLoggerFactory静态内部类
 
         @Override
         public InternalLogger newInstance(String name) {

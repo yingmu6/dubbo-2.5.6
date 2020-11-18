@@ -39,7 +39,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @Sharable
 public class NettyHandler extends SimpleChannelHandler { //todo 11/17 netty SimpleChannelHandler、@Sharable了解
 
-    //todo 11/17 ConcurrentHashMap原理了解
+    /**
+     * Java集合--ConcurrentMap - 简书       https://www.jianshu.com/p/8f7b2cd34c47
+     * ConcurrentHashMap演进从Java7到Java8  http://www.jasongj.com/java/concurrenthashmap/
+     *
+     * ConcurrentMap，它是一个接口，是一个能够支持并发访问的java.util.map集合；
+     * ConcurrentHashMap是一个线程安全，并且是一个高效的HashMap。
+     */
     private final Map<String, Channel> channels = new ConcurrentHashMap<String, Channel>(); // <ip:port, channel>   IP:端口 与通道的映射
 
     private final URL url;

@@ -39,13 +39,31 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author qian.lei
  * @author ding.lid
  */
-public abstract class AbstractServer extends AbstractEndpoint implements Server { //todo 11/17 AbstractServer数据结构了解
+public abstract class AbstractServer extends AbstractEndpoint implements Server {
+    /**
+     * 数据结构
+     * 类继承关系
+     * 1）AbstractServer类继承了AbstractEndpoint，并且实现了Server接口
+     * 2）AbstractEndpoint类继承AbstractPeer类，并实现了Resetable接口
+     * 3）AbstractPeer类实现了Endpoint, ChannelHandler接口
+     * 4）Server接口继承了Endpoint、Resetable接口
+     *
+     * 功能点：
+     * 1）实现了Server、Endpoint、Resetable接口，具有相关的功能点
+     * 2）继承了AbstractEndpoint抽象类，能使用该抽象类提供的公有功能点，如getChannelCodec()获取通道编码
+     * 3）间接继承了AbstractPeer，具体该抽象类，抽象的公有功能，如getChannelHandler()获取通道处理器，sent()发送消息等
+     *
+     * 数据点：
+     * 1）当前维护：线程池ExecutorService，本地地址和远程地址InetSocketAddress、accepts可接收的请求数，idleTimeout空闲时间
+     * 2）AbstractEndpoint维护：Codec2编码方式，timeout超时时间，connectTimeout连接超时时间
+     * 3）AbstractPeer维护：ChannelHandler（通道处理器）、URL（处理的url）、closing（是否在关闭中）、closed（是否已关闭）
+     */
 
     protected static final String SERVER_THREAD_POOL_NAME = "DubboServerHandler";
     private static final Logger logger = LoggerFactory.getLogger(AbstractServer.class);
-    ExecutorService executor;
+    ExecutorService executor; //todo 11/18 这个线程池的用途？
     private InetSocketAddress localAddress;
-    private InetSocketAddress bindAddress; //history-v1 localAddress与bindAddress的区别？bindAddress是远程地址吗
+    private InetSocketAddress bindAddress;
     private int accepts;
     private int idleTimeout = 600; //600 seconds
 

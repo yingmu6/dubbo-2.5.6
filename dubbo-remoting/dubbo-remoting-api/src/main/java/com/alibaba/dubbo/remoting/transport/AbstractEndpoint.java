@@ -49,6 +49,11 @@ public abstract class AbstractEndpoint extends AbstractPeer implements Resetable
         this.connectTimeout = url.getPositiveParameter(Constants.CONNECT_TIMEOUT_KEY, Constants.DEFAULT_CONNECT_TIMEOUT);
     }
 
+    /**
+     * 获取url指定的编码方式
+     * 1）若url指定的编码方式已配置，则返回已配置的编码实例
+     * 2）若url指定的编码方式未配置，则通过编码适配器创建编码实例
+     */
     protected static Codec2 getChannelCodec(URL url) {
         String codecName = url.getParameter(Constants.CODEC_KEY, "telnet");
         // 判断Codec2是否有扩展类，若有根据SPI获取对应的实例，若没有则返回Codec的适配器
@@ -61,9 +66,13 @@ public abstract class AbstractEndpoint extends AbstractPeer implements Resetable
     }
 
     /**
-     * 从url取值重置timeout、connectTimeout、codec
+     * 重置当前节点的url的数据
+     * 1）检测节点是否已被关闭，若已关闭则不能重置节点的数据
+     * 2）在url中有设定timeout、connectTimeout、codec时，进行对应的值重更新
+     *   2.1）从url中获取timeout超时时间，connectTimeout连接超时时间重新更新当前节点的数据
+     *   2.2）从url中获取codec编码方式，重新获取编码实例更新当前节点的编码实例
      */
-    public void reset(URL url) {//todo 11/17 此处的重置逻辑是怎样的？
+    public void reset(URL url) {
         if (isClosed()) {
             throw new IllegalStateException("Failed to reset parameters "
                     + url + ", cause: Channel closed. channel: " + getLocalAddress());

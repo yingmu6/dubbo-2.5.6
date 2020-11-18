@@ -46,7 +46,7 @@ import java.util.concurrent.Executors;
  * @author william.liangf
  * @author ding.lid
  */
-public class MinaServer extends AbstractServer {//todo Mina了解以及基本使用
+public class MinaServer extends AbstractServer {//Mina了解以及基本使用
 
     private static final Logger logger = LoggerFactory.getLogger(MinaServer.class);
 
@@ -106,5 +106,20 @@ public class MinaServer extends AbstractServer {//todo Mina了解以及基本使
     public boolean isBound() {
         return acceptor.isManaged(getBindAddress());
     }
+
+    /**
+     * Apache Mina Server 是一个网络通信应用框架，也就是说，它主要是对基于TCP/IP、
+     * UDP/IP协议栈的通信框架（当然，也可以提供JAVA 对象的序列化服务、
+     * 虚拟机管道通信服务等），Mina 可以帮助我们快速开发高性能、高扩展性的网络通信应用
+     * ，Mina 提供了事件驱动、异步（Mina 的异步IO 默认使用的是JAVA NIO 作为底层支持）
+     * 操作的编程模型
+     *
+     * ---
+     * Mina 的底层依赖的主要是 Java NIO 库，上层提供的是基于事件的异步接口
+     * NIO Overview — Apache MINA 官方文档  https://mina.apache.org/mina-project/userguide/ch1-getting-started/ch1.1-nio-overview.html
+     * mina框架详解  https://blog.csdn.net/w13770269691/article/details/8614584
+     * 认识Mina框架  http://www.linkedkeeper.com/1614.html
+     * --
+     */
 
 }

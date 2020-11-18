@@ -36,8 +36,26 @@ import java.util.concurrent.ConcurrentMap;
  * @author qian.lei
  * @author william.liangf
  */
-final class NettyChannel extends AbstractChannel { //默认Netty传输，todo 11/17 待了解
-
+final class NettyChannel extends AbstractChannel { //默认Netty传输，封装Netty3的Channel
+    /**
+     * 数据结构
+     * 类继承关系：
+     * 1）NettyChannel继承了AbstractChannel抽象类
+     * 2）AbstractChannel抽象类继承了AbstractPeer抽象类并实现了Channel接口
+     * 3）AbstractPeer抽象类实现了Endpoint、ChannelHandler接口
+     *
+     * 维护的数据：
+     * 当前类的属性
+     * ConcurrentMap<Channel, NettyChannel> channelMap（Netty中的通道与Dubbo封装的通道进行映射并缓存）
+     * org.jboss.netty.channel.Channel channel（Netty中的通道信息）
+     * Map<String, Object> attributes（通道中的属性集）
+     *
+     * 继承的属性：
+     * 继承AbstractPeer的属性：
+     * ChannelHandler handler（通道处理器）
+     * URL url（维护的url数据信息）
+     * 通道的状态：closing（关闭中）、closed（已经关闭）
+     */
     private static final Logger logger = LoggerFactory.getLogger(NettyChannel.class);
 
     //channelMap 是netty中的通道和dubbo自定义的NettyChannel的映射
@@ -63,7 +81,7 @@ final class NettyChannel extends AbstractChannel { //默认Netty传输，todo 11
         NettyChannel ret = channelMap.get(ch);
         if (ret == null) {
             NettyChannel nc = new NettyChannel(ch, url, handler);
-            if (ch.isConnected()) {
+            if (ch.isConnected()) { //若通道处于被连接状态，则放入通道缓存
                 ret = channelMap.putIfAbsent(ch, nc);
             }
             if (ret == null) {
@@ -73,16 +91,19 @@ final class NettyChannel extends AbstractChannel { //默认Netty传输，todo 11
         return ret;
     }
 
+    //若通道没有被连接，则移除对应的缓存
     static void removeChannelIfDisconnected(org.jboss.netty.channel.Channel ch) {
         if (ch != null && !ch.isConnected()) {
             channelMap.remove(ch);
         }
     }
 
+    //获取通道的本地地址
     public InetSocketAddress getLocalAddress() {
         return (InetSocketAddress) channel.getLocalAddress();
     }
 
+    //获取通道的远程地址
     public InetSocketAddress getRemoteAddress() {
         return (InetSocketAddress) channel.getRemoteAddress();
     }
@@ -92,13 +113,17 @@ final class NettyChannel extends AbstractChannel { //默认Netty传输，todo 11
     }
 
     //消息格式如：Request [id=1, version=2.0.0, twoway=true, event=false, broken=false, data=RpcInvocation [methodName=sayHello, parameterTypes=[class java.lang.String], arguments=[world : ], attachments={path=com.alibaba.dubbo.demo.DemoService, interface=com.alibaba.dubbo.demo.DemoService, version=0.0.0}]]
+
+    /**
+     * 发送消息
+     */
     public void send(Object message, boolean sent) throws RemotingException {
-        super.send(message, sent);
+        super.send(message, sent); //todo 11/18 super了解
 
         boolean success = true;
         int timeout = 0;
         try {
-            ChannelFuture future = channel.write(message);
+            ChannelFuture future = channel.write(message);//todo 11/18 调用netty中功能，往通道中写内容，待了解实践
             if (sent) {
                 timeout = getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
                 success = future.await(timeout);
@@ -117,19 +142,22 @@ final class NettyChannel extends AbstractChannel { //默认Netty传输，todo 11
         }
     }
 
+    /**
+     * 关闭通道
+     */
     public void close() {
         try {
-            super.close();
+            super.close(); //设置关闭状态
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
         }
         try {
-            removeChannelIfDisconnected(channel);
+            removeChannelIfDisconnected(channel); //移除netty通道对应的缓存
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
         }
         try {
-            attributes.clear();
+            attributes.clear(); //清除通道中维护的属性数据
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
         }
@@ -137,7 +165,7 @@ final class NettyChannel extends AbstractChannel { //默认Netty传输，todo 11
             if (logger.isInfoEnabled()) {
                 logger.info("Close netty channel " + channel);
             }
-            channel.close();
+            channel.close(); //关闭netty中的通道
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
         }
@@ -164,7 +192,7 @@ final class NettyChannel extends AbstractChannel { //默认Netty传输，todo 11
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() { //todo 11/18 对象比较hashCode()、equals()了解
         final int prime = 31;
         int result = 1;
         result = prime * result + ((channel == null) ? 0 : channel.hashCode());
@@ -172,7 +200,7 @@ final class NettyChannel extends AbstractChannel { //默认Netty传输，todo 11
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj) { //对象比较，比较NettyChannel中的通道值channel
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
