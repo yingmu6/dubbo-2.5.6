@@ -47,7 +47,7 @@ public interface Protocol {// read finish
      * @throws RpcException 当暴露服务出错时抛出，比如端口已占用
      */
     @Adaptive  //会产生自适应扩展动态生成的子类
-    <T> Exporter<T> export(Invoker<T> invoker) throws RpcException;//todo 11/17 服务暴露是从加载配置到服务暴露的流程是怎样的？都经历了什么？
+    <T> Exporter<T> export(Invoker<T> invoker) throws RpcException;
 
     /**
      * 引用远程服务：<br>

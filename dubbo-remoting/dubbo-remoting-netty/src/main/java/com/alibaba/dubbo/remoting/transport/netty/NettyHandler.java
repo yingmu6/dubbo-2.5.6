@@ -36,8 +36,14 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author william.liangf
  */
+
+/**
+ * @Sharable标注一个channel handler可以被多个channel安全地共享
+ * SimpleChannelHandler:通道处理器
+ * ChannelPipeline：管理ChannelHandler列表，处理事件
+ */
 @Sharable
-public class NettyHandler extends SimpleChannelHandler { //todo 11/17 netty SimpleChannelHandler、@Sharable了解
+public class NettyHandler extends SimpleChannelHandler {
 
     /**
      * Java集合--ConcurrentMap - 简书       https://www.jianshu.com/p/8f7b2cd34c47
@@ -67,8 +73,12 @@ public class NettyHandler extends SimpleChannelHandler { //todo 11/17 netty Simp
         return channels;
     }
 
+    /**
+     * ChannelHandlerContext：通道处理器的上下文
+     * ChannelStateEvent：通道状态新建
+     */
     @Override
-    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {//todo 11/17 ChannelHandlerContext，ChannelStateEvent了解
+    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.getChannel(), url, handler);
         try {
             if (channel != null) {

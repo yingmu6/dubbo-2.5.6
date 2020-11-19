@@ -15,7 +15,7 @@ public class ProviderForCommon {
     }
 
     /**
-     * todo 11/17
+     * 服务启动流程
      * 1）是怎么加载配置文件，读取配置文件的值
      * 2）怎样把配置文件的值写到config对象的
      */

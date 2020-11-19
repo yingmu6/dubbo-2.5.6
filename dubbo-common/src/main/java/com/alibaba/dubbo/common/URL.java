@@ -78,9 +78,20 @@ import java.util.concurrent.ConcurrentHashMap;
 // dubbo的URL采用总线型方法，即配置都放在url里面的参数
 
 /**
- * history-v1 URL学习实践？dubbo URL的用户以及应用场景
+ * URL：统一资源定位符（俗称网页地址或网址）
+ * 统一资源定位符（英语：Uniform Resource Locator，缩写：URL；或称统一资源定位器、定位地址、URL地址，
+ * 俗称网页地址或简称网址）是因特网上标准的资源的地址（Address），如同在网络上的门牌
+ *
+ * 统一资源定位符的标准格式如下：
+ * [协议类型]://[服务器地址]:[端口号]/[资源层级UNIX文件路径][文件名]?[查询]#[片段ID]
+ *
+ * 统一资源定位符的完整格式如下：
+ * [协议类型]://[访问资源需要的凭证信息]@[服务器地址]:[端口号]/[资源层级UNIX文件路径][文件名]?[查询]#[片段ID]
+ *
+ * 其中[访问凭证信息]、[端口号]、[查询]、[片段ID]都属于选填项。
+ *
  */
-public final class URL implements Serializable {//可进行序列化 todo 11/17 URL了解以及实践
+public final class URL implements Serializable {//基于Java URL定义，不可被继承，Dubbo基于URL进行数据传输
 
     // 网络URL学习一下，对比一下与dubbo的自定义的URL的异同
     // URL语法结构  协议：//授权机构/路径?查询条件
@@ -204,15 +215,9 @@ public final class URL implements Serializable {//可进行序列化 todo 11/17 
     }
 
     /**
-     * String与Url转换(把字符串的url构造成URL对象)
-     * 从url字符串中解析出相关的参数，如：username、password、host等，然后构建URL对象
-     * Parse url string
-     *
-     * @param url URL string
-     * @return URL instance
-     * @see URL
+     * 解析url字符串，生成URL对象
      */
-    public static URL valueOf(String url) { //todo 11/17 此处待调试
+    public static URL valueOf(String url) {
         if (url == null || (url = url.trim()).length() == 0) {
             throw new IllegalArgumentException("url == null");
         }

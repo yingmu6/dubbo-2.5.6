@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author william.liangf
  * @author chao.liuc
  */
-public class RegistryProtocol implements Protocol {//11/17 数据结构了解
+public class RegistryProtocol implements Protocol { //todo 11/19 相关数据结构了解
 
     /**
      * 数据结构
@@ -59,7 +59,7 @@ public class RegistryProtocol implements Protocol {//11/17 数据结构了解
      * 2）获取注册的url、订阅的信息等
      *
      * 维护的数据：
-     *
+     * 1）RegistryProtocol（注册协议的实例）
      */
 
     private final static Logger logger = LoggerFactory.getLogger(RegistryProtocol.class);
@@ -208,7 +208,7 @@ public class RegistryProtocol implements Protocol {//11/17 数据结构了解
                 }
             }
         }
-        return exporter; //todo 11/17 模拟多线程，实现线程不安全用例以及解决方法
+        return exporter;
         /**
          * https://www.cnblogs.com/xz816111/p/8470048.html 双重判断
          * 双重判断 + synchronized + volatile (减少加锁，编码指令重拍)

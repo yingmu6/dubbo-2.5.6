@@ -106,7 +106,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
 
     protected abstract void doClose() throws Throwable;
 
-    public void reset(URL url) {//todo 此处重置url的逻辑是怎样的？
+    public void reset(URL url) {
         if (url == null) {
             return;
         }
@@ -131,6 +131,17 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
             logger.error(t.getMessage(), t);
         }
         try {
+            /**
+             * ThreadPoolExecutor参数
+             * 深入理解java线程池—ThreadPoolExecutor https://www.jianshu.com/p/ade771d2c9c0
+             * ThreadPoolExecutor 参数详解（图解） https://blog.csdn.net/Jack_SivenChen/article/details/53394058
+             *
+             * 当执行execute()时，线程池做如下判断
+             * 1）若正在运行的线程数小于corePoolSize，那么马上创建线程运行这个任务
+             * 2）若正在运行的线程数大于或等于corePoolSize，那么将这个任务放入队列
+             * 3）若队列满了，若正在运行的线程数小于maximumPoolSize，那么还是要创建线程运行任务
+             * 4）若队列满了，且正在运行的线程数大于或等于maximumPoolSize，则线程池会抛出异常
+             */
             if (url.hasParameter(Constants.THREADS_KEY)
                     && executor instanceof ThreadPoolExecutor && !executor.isShutdown()) { //原生的线程池使用
                 ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
@@ -138,7 +149,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
                 int max = threadPoolExecutor.getMaximumPoolSize();
                 int core = threadPoolExecutor.getCorePoolSize();
                 if (threads > 0 && (threads != max || threads != core)) { //在线程数大于0 并且不等于最大线程数max或核心线程数core
-                    if (threads < core) { //todo 11/17 threads、threads、max三者的联系，此处的比较逻辑
+                    if (threads < core) {
                         threadPoolExecutor.setCorePoolSize(threads);
                         if (core == max) {
                             threadPoolExecutor.setMaximumPoolSize(threads);

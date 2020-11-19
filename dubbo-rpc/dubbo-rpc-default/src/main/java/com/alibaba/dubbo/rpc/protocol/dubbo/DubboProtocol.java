@@ -315,7 +315,7 @@ public class DubboProtocol extends AbstractProtocol {// read finish
                 serverMap.put(key, createServer(url)); //重点：创建服务
             } else {
                 //server支持reset,配合override功能使用
-                server.reset(url); //todo 11/17 是怎么选择调用ExchangeServerDelegate、HeaderExchangeServer
+                server.reset(url); //是怎么选择调用ExchangeServerDelegate、HeaderExchangeServer？解：是从serverMap缓存中获取的，根据createServer(url)选择
             }
         }
     }

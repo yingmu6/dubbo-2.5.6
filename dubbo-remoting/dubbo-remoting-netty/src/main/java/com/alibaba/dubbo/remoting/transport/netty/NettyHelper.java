@@ -25,7 +25,7 @@ import org.jboss.netty.logging.InternalLoggerFactory;
 /**
  * @author <a href="mailto:gang.lvg@taobao.com">kimi</a>
  */
-final class NettyHelper {
+final class NettyHelper { //继承netty的日志接口进行日志打印
 
     /**
      * InternalLoggerFactory 是工厂方法模式：抽象了创建对象的方法，对象的创建交由子类进行
@@ -46,7 +46,29 @@ final class NettyHelper {
         }
     }
 
+    /**
+     * 静态内部类
+     * 静态内部类与非静态内部类之间存在一个最大的区别，就是非静态内部类在编译完成之后会隐含地保存着一个引用，
+     * 该引用是指向创建它的外围内，但是静态内部类却没有
+     *
+     * 静态内部类：
+     * 1.只能在内部类中定义静态类
+     * 2.静态内部类与外层类绑定，即使没有创建外层类的对象，它一样存在。
+     * 3.静态类的方法可以是静态的方法也可以是非静态的方法，静态的方法可以在外层通过静态类调用，而非静态的方法必须要创建类的对象之后才能调用。
+     * 4.只能引用外部类的static成员变量（也就是类变量）。
+     * 5.如果一个内部类不是被定义成静态内部类，那么在定义成员变量或者成员方法的时候，是不能够被定义成静态的
+     *
+     * https://juejin.im/post/6844903791863529480 静态内部类与非静态内部类的区别
+     */
     static class DubboLogger extends AbstractInternalLogger { //继承Netty日志
+        /**
+         * netty中的AbstractInternalLogger实现了InternalLogger接口，
+         * 但AbstractInternalLogger没有具体实现，交由抽象类的子类去实现
+         *
+         * 类继承关系：
+         * DubboLogger继承了AbstractInternalLogger抽象类
+         * AbstractInternalLogger实现InternalLogger了接口
+         */
 
         private Logger logger;
 
@@ -54,7 +76,7 @@ final class NettyHelper {
             this.logger = logger;
         }
 
-        public boolean isDebugEnabled() {
+        public boolean isDebugEnabled() { //该接口来自InternalLogger
             return logger.isDebugEnabled();
         }
 

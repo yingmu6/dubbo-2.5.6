@@ -43,7 +43,7 @@ public class LoggerFactory {
     // 查找常用的日志框架
     static {
         String logger = System.getProperty("dubbo.application.logger");
-        if ("slf4j".equals(logger)) {
+        if ("slf4j".equals(logger)) { //根据配置参数，选择不同的日志适配器
             setLoggerAdapter(new Slf4jLoggerAdapter());
         } else if ("jcl".equals(logger)) {
             setLoggerAdapter(new JclLoggerAdapter());

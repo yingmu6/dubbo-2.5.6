@@ -19,6 +19,9 @@ import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.utils.NetUtils;
 
+/**
+ * 封装
+ */
 public class FailsafeLogger implements Logger {
 
     private Logger logger;
