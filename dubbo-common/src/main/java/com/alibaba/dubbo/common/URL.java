@@ -1192,8 +1192,6 @@ public final class URL implements Serializable {//基于Java URL定义，不可�
         return removeParameters(keys.toArray(new String[0]));
     }
 
-    /**@c 移除参数后，重新构建URL */
-
     /**
      * 从URL参数集合中移除指定的参数，并构造URL返回
      * 1）若移除的参数列表为空，不做处理，返回当前的URL

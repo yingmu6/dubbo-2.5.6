@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author william.liangf
  * @author chao.liuc
  */
-public class RegistryProtocol implements Protocol { //todo 11/19 相关数据结构了解
+public class RegistryProtocol implements Protocol {
 
     /**
      * 数据结构
@@ -59,7 +59,9 @@ public class RegistryProtocol implements Protocol { //todo 11/19 相关数据结
      * 2）获取注册的url、订阅的信息等
      *
      * 维护的数据：
-     * 1）RegistryProtocol（注册协议的实例）
+     * 1）RegistryProtocol（注册协议的实例）、Map<URL, NotifyListener>（URL与通知监听器的映射）
+     * Map<String, ExporterChangeableWrapper<?>> url与ExporterChangeableWrapper的映射
+     * 2）Cluster（集群）、Protocol（协议）---组合其它对象
      */
 
     private final static Logger logger = LoggerFactory.getLogger(RegistryProtocol.class);
@@ -70,7 +72,7 @@ public class RegistryProtocol implements Protocol { //todo 11/19 相关数据结
     private final Map<String, ExporterChangeableWrapper<?>> bounds = new ConcurrentHashMap<String, ExporterChangeableWrapper<?>>(); //需要暴露协议的url与ExporterChangeableWrapper的映射，url的值如：dubbo://192.168.1.102:20881/com.alibaba.dubbo.demo.ApiDemo....
     private Cluster cluster;
     private Protocol protocol;
-    private RegistryFactory registryFactory; //history-h1 注册工厂何处被实例的？
+    private RegistryFactory registryFactory; //SPI依赖注入
     private ProxyFactory proxyFactory;
 
     public RegistryProtocol() {
@@ -79,7 +81,7 @@ public class RegistryProtocol implements Protocol { //todo 11/19 相关数据结
 
     public static RegistryProtocol getRegistryProtocol() { //初始化实例 RegistryProtocol
         if (INSTANCE == null) {
-            ExtensionLoader.getExtensionLoader(Protocol.class).getExtension(Constants.REGISTRY_PROTOCOL); // load
+            ExtensionLoader.getExtensionLoader(Protocol.class).getExtension(Constants.REGISTRY_PROTOCOL); // load todo 11/20 此处为啥没有赋值操作
         }
         return INSTANCE;
     }
@@ -125,25 +127,8 @@ public class RegistryProtocol implements Protocol { //todo 11/19 相关数据结
     }
 
     /**
-     * 暴露注册协议 是怎么先到RegistryProtocol，然后再到Dubbo的？在什么地方选择的？
-     * 解：若配置了注册中心时，组装暴露的url时，会先把协议名置为registry，并把要暴露的协议放在registry的url中，键位export
-     * 根据自适应扩展时加载选择的实例，一开始时registry协议名
+     * @pause 1.8 注册服务暴露流程
      *
-     * 注册中心注册、并订阅节点
-     */
-
-    /**
-     * 注册协议暴露（将invoker转换位exporter的过程） -- 代码流程
-     * originInvoker中url的值
-     * registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&
-     * export=dubbo%3A%2F%2F192.163.103.104%3A20881%2Fcom.alibaba.dubbo.demo.ApiDemo%3Fanyhost%3Dtrue%26application%3Dapi_demo
-     * %26delay%3D5%26dubbo%3D2.0.0%26export%3Dtrue%26generic%3Dfalse%26interface%3Dcom.alibaba.dubbo.demo.ApiDemo%26methods
-     * %3DsayHello%2CsayApi%26pid%3D56627%26sayApi.0.callback%3Dfalse%26sayApi.3.callback%3Dfalse%26sayApi.retries%3D0%26
-     * sayApi.timeout%3D3000%26service.filter%3DselfFilter%26side%3Dprovider%26timeout%3D3000%26timestamp%3D1591272337789&
-     * pid=56627&registry=zookeeper&timestamp=1591272337777
-     *
-     * 1）暴露指定invoker对应的export值的服务，获取到暴露者 ExporterChangeableWrapper
-     * 2）获取invoker对应的注册实例
      */
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException { //originInvoker的值注册协议：registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&export=dubbo%3A%2F%2F10.118.32.69%3A20881%2Fcom.alibaba.dubbo.demo....
         //export invoker(使用dubbo协议暴露)
@@ -203,7 +188,7 @@ public class RegistryProtocol implements Protocol { //todo 11/19 相关数据结
                 exporter = (ExporterChangeableWrapper<T>) bounds.get(key);
                 if (exporter == null) {
                     final Invoker<?> invokerDelegete = new InvokerDelegete<T>(originInvoker, getProviderUrl(originInvoker));
-                    exporter = new ExporterChangeableWrapper<T>((Exporter<T>) protocol.export(invokerDelegete), originInvoker); //做本地暴露，并对Exporter进行封装
+                    exporter = new ExporterChangeableWrapper<T>((Exporter<T>) protocol.export(invokerDelegete), originInvoker); //做本地暴露，并对Exporter进行封装 todo 调试下，本地暴露时protocol是什么协议
                     bounds.put(key, exporter);
                 }
             }
@@ -234,7 +219,7 @@ public class RegistryProtocol implements Protocol { //todo 11/19 相关数据结
     }
 
     /**
-     * 根据invoker的地址获取registry实例（获取具体的注册实例，如：由registry -> zookeeper等）
+     * 从调用信息中获取具体的registry实例（获取具体的注册实例，如：由registry -> zookeeper等）
      * 1）从invoker中获取到URL
      * 2）若URL中的协议名是registry
      *   2.1）从URL中获取参数registry对应的注册协议，一般为zookeeper，默认dubbo（注册协议有多种，redis、multicase、zookeeper，dubbo）
@@ -245,8 +230,12 @@ public class RegistryProtocol implements Protocol { //todo 11/19 相关数据结
         URL registryUrl = originInvoker.getUrl();
         if (Constants.REGISTRY_PROTOCOL.equals(registryUrl.getProtocol())) {
             String protocol = registryUrl.getParameter(Constants.REGISTRY_KEY, Constants.DEFAULT_DIRECTORY); //注册协议,zookeeper
-            registryUrl = registryUrl.setProtocol(protocol).removeParameter(Constants.REGISTRY_KEY); //将注册协议 由registry -> zookeeper，并且移除registry实例
+            registryUrl = registryUrl.setProtocol(protocol).removeParameter(Constants.REGISTRY_KEY); //更换url协议的值，如由registry -> zookeeper，并且移除registry对应的参数
         }
+        /**
+         * RegistryFactory根据SPI机制来动态选择服务
+         * 若设置了注册协议从url获取，若没有获取到使用默认的DubboRegistryFactory
+         */
         return registryFactory.getRegistry(registryUrl); //扩展名url.getProtocol()取到zookeeper，所以RegistryFactory的实例为ZookeeperRegistryFactory
     }
 

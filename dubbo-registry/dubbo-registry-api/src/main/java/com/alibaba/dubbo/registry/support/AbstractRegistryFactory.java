@@ -31,11 +31,13 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * AbstractRegistryFactory. (SPI, Singleton, ThreadSafe)
+ * 对注册的公有功能进行抽象，如destroyAll()、getRegistry(URL url)，
+ * 并把创建注册实例的功能交由子类执行abstract Registry createRegistry(URL url)
  *
  * @author william.liangf
  * @see com.alibaba.dubbo.registry.RegistryFactory
  */
-public abstract class AbstractRegistryFactory implements RegistryFactory {
+public abstract class AbstractRegistryFactory implements RegistryFactory { //AbstractRegistryFactory: 工厂方法模式，把对象的创建交由子类完成
 
     // 日志输出
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRegistryFactory.class);

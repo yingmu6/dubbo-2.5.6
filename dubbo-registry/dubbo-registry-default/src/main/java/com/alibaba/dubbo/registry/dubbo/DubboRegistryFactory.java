@@ -35,16 +35,21 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * DubboRegistryFactory
+ * DubboRegistryFactory 若没有指定注册的协议Protocol，则为默认工厂
  *
  * @author william.liangf
  */
-public class DubboRegistryFactory extends AbstractRegistryFactory {/**@c */
+public class DubboRegistryFactory extends AbstractRegistryFactory {
 
     private Protocol protocol;
     private ProxyFactory proxyFactory;
     private Cluster cluster;
 
+    /**
+     * 获取注册地址
+     * 1）移除url参数，如export、refer
+     * 2）添加url参数，如sticky、sticky，并设置默认值
+     */
     private static URL getRegistryURL(URL url) {
         return url.setPath(RegistryService.class.getName())
                 .removeParameter(Constants.EXPORT_KEY).removeParameter(Constants.REFER_KEY)
@@ -75,11 +80,14 @@ public class DubboRegistryFactory extends AbstractRegistryFactory {/**@c */
         this.cluster = cluster;
     }
 
+    /**
+     * 创建注册实例
+     */
     public Registry createRegistry(URL url) {
         url = getRegistryURL(url);
         List<URL> urls = new ArrayList<URL>();
         urls.add(url.removeParameter(Constants.BACKUP_KEY));
-        String backup = url.getParameter(Constants.BACKUP_KEY);
+        String backup = url.getParameter(Constants.BACKUP_KEY);//todo 11/20 此处先移除remove再获取get，能获取到吗
         if (backup != null && backup.length() > 0) {
             String[] addresses = Constants.COMMA_SPLIT_PATTERN.split(backup);
             for (String address : addresses) {

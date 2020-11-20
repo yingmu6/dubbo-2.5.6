@@ -118,12 +118,25 @@ final class NettyChannel extends AbstractChannel { //默认Netty传输，封装N
      * 发送消息
      */
     public void send(Object message, boolean sent) throws RemotingException {
-        super.send(message, sent); //todo 11/18 super了解
+        /**
+         * super可以调用父类构造方法、成员方法、成员变量
+         * super若调用父类的构造方法，需写在子类构造方法的第一行，若父类构造方法有多个参数，则super对应设置，如super(A,B)
+         * 调用子类构造方法时，若没有通过super调用父类的构造方法时，会默认调用父类的无参构造方法，若父类没有，则会报错
+         *
+         * this是自身的一个对象，代表对象本身，可以理解为：指向对象本身的一个指针
+         * https://www.cnblogs.com/hasse/p/5023392.html
+         *
+         * super()和this()类似,区别是，super()从子类中调用父类的构造方法，this()在同一类内调用其它方法。
+         * super()和this()均需放在构造方法内第一行。
+         * this()和super()都指的是对象，所以，均不可以在static环境中使用。包括：static变量,static方法，static语句块。
+         * 从本质上讲，this是一个指向本对象的指针, 然而super是一个Java关键字。
+         */
+        super.send(message, sent);
 
         boolean success = true;
         int timeout = 0;
         try {
-            ChannelFuture future = channel.write(message);//todo 11/18 调用netty中功能，往通道中写内容，待了解实践
+            ChannelFuture future = channel.write(message);//Sends a message to this channel asynchronously（异步的往通道里发送消息）
             if (sent) {
                 timeout = getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
                 success = future.await(timeout);

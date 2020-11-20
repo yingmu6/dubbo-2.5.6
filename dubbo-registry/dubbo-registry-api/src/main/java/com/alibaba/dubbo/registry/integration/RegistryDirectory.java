@@ -69,7 +69,7 @@ import java.util.Set;
  * https://blog.csdn.net/qq924862077/article/details/79897435
  */
 
-public class RegistryDirectory<T> extends AbstractDirectory<T> implements NotifyListener {
+public class RegistryDirectory<T> extends AbstractDirectory<T> implements NotifyListener { //todo 11/20 RegistryDirectory数据结构分析下
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryDirectory.class);
 
