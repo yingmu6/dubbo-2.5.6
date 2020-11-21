@@ -81,7 +81,7 @@ public class DubboRegistryFactory extends AbstractRegistryFactory {
     }
 
     /**
-     * 创建注册实例
+     * 创建注册实例 @pause 2.1
      */
     public Registry createRegistry(URL url) {
         url = getRegistryURL(url);

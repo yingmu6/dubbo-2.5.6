@@ -487,13 +487,16 @@ public final class URL implements Serializable {//基于Java URL定义，不可�
         return getParameterAndDecoded(key, null);
     }
 
-    public String getParameterAndDecoded(String key, String defaultValue) {/**@c 获取参数并且对参数解码*/
+    /**
+     * 获取参数值并且解码
+     */
+    public String getParameterAndDecoded(String key, String defaultValue) {
         return decode(getParameter(key, defaultValue));
     }
 
     /**
-     * 获取参数中指定key对应的value
-     * 若没有查询到，则查询默认key对应的值（即default.+key）
+     * 获取url中指定参数对应的值
+     *   若没有查询到，则查询默认key对应的值（即default.+key）
      */
     public String getParameter(String key) {
         String value = parameters.get(key);
@@ -1427,13 +1430,7 @@ public final class URL implements Serializable {//基于Java URL定义，不可�
 
     /**
      * 获取服务key，格式如："group/interface:version"
-     * 1）获取服务接口名，若接口名为null，直接返回null
-     * 2）从url的参数map中，获取分组group对应的值
-     *    若存在分组，则将分组值添加到 构建的key中，如"group/"
-     * 3）添加接口到构建的key中，如"group/interface"
-     * 4）从url的参数map中，获取到版本号version
-     *    若存在版本号，则添加到构建的key中，如"group/interface:version"
-     * 5）返回构建的服务key对应的字符串
+     * 查找分组、接口名称、版本号进行拼接
      */
     public String getServiceKey() {
         String inf = getServiceInterface(); //从URL中获取接口的完整名称
@@ -1451,7 +1448,6 @@ public final class URL implements Serializable {//基于Java URL定义，不可�
         return buf.toString();
     }
 
-    //history-h1 用途？
     public String toServiceStringWithoutResolving() {
         return buildString(true, false, false, true);
     }

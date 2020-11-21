@@ -331,6 +331,7 @@ public final class StringUtils {
 
     /**
      * parse key-value pair.
+     * 按指定分隔符分隔字符串，并写入参数映射集合
      *
      * @param str           string.
      * @param itemSeparator item separator.
@@ -343,7 +344,7 @@ public final class StringUtils {
             Matcher matcher = KVP_PATTERN.matcher(tmp[i]); //以&分隔，设置map键值对
             if (matcher.matches() == false) //判断是否是
                 continue;
-            map.put(matcher.group(1), matcher.group(2));
+            map.put(matcher.group(1), matcher.group(2)); //todo 11/20 正则字符串了解以及Matcher实践
         }
         return map;
     }
@@ -354,7 +355,7 @@ public final class StringUtils {
     }
 
     /**
-     * parse query string to Parameters.
+     * parse query string to Parameters.（对url字符串进行解析，返回键值对的映射集合）
      *
      * @param qs query string.
      * @return Parameters instance.
