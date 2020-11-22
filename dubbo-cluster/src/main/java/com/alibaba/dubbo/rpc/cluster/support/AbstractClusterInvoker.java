@@ -56,6 +56,9 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
         this(directory, directory.getUrl());
     }
 
+    /**
+     * 构建抽象集群调用信息
+     */
     public AbstractClusterInvoker(Directory<T> directory, URL url) {
         if (directory == null)
             throw new IllegalArgumentException("service directory == null");

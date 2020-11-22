@@ -113,6 +113,8 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
 
     /**
      * 构建注册目录
+     * 1）调用父类构造函数，创建父类对象super(url)
+     * 2）对当前类的成员属性进行设置
      */
     public RegistryDirectory(Class<T> serviceType, URL url) { /** 初始化相关参数 */
         super(url);
@@ -123,9 +125,13 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         this.serviceType = serviceType;
         this.serviceKey = url.getServiceKey();
         this.queryMap = StringUtils.parseQueryString(url.getParameterAndDecoded(Constants.REFER_KEY)); //通过url的参数构建查询map
-        //多个赋值方式
+        /**
+         * 1）url设置路径path，先将参数集合清除clearParameters()，然后往url添加查询参数集合queryMap，并移除监控参数monitor
+         * 2）进行赋值操作，directoryUrl、overrideDirectoryUrl
+         */
         this.overrideDirectoryUrl = this.directoryUrl = url.setPath(url.getServiceInterface()).clearParameters().addParameters(queryMap).removeParameter(Constants.MONITOR_KEY);
         String group = directoryUrl.getParameter(Constants.GROUP_KEY, "");
+        // 判断是否包含多个组
         this.multiGroup = group != null && ("*".equals(group) || group.contains(","));
         String methods = queryMap.get(Constants.METHODS_KEY);
         this.serviceMethods = methods == null ? null : Constants.COMMA_SPLIT_PATTERN.split(methods);
