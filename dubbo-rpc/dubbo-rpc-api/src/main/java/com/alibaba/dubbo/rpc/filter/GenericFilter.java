@@ -46,7 +46,7 @@ import java.lang.reflect.Method;
  * @author william.liangf
  */
 @Activate(group = Constants.PROVIDER, order = -20000)
-public class GenericFilter implements Filter {//read finish    3.1 泛化过滤器了解？
+public class GenericFilter implements Filter {    //3.1 泛化过滤器了解？
 
     public Result invoke(Invoker<?> invoker, Invocation inv) throws RpcException {
         if (inv.getMethodName().equals(Constants.$INVOKE)

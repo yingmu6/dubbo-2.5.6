@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-/** read finish */
 class StatItem {
 
     private String name;

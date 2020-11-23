@@ -19,7 +19,7 @@ public class ProxyFactory$Adaptive implements com.alibaba.dubbo.rpc.ProxyFactory
             throw new IllegalStateException ("com.alibaba.dubbo.rpc.ProxyFactory 的扩展名为空 " );
         com.alibaba.dubbo.rpc.ProxyFactory extension =
                 ExtensionLoader.getExtensionLoader(com.alibaba.dubbo.rpc.ProxyFactory.class ).getExtension(extName);
-        return extension.getProxy(arg0);
+        return extension.getProxy(arg0); //先找到扩展类的实例，然后再调用实例中的方法
     }
 
     public com.alibaba.dubbo.rpc.Invoker getInvoker(java.lang.Object arg0,java.lang.Class arg1,com.alibaba.dubbo.common.URL arg2 )

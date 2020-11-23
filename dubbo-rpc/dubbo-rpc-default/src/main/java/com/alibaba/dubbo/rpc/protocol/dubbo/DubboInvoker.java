@@ -42,7 +42,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author william.liangf
  * @author chao.liuc
  */
-public class DubboInvoker<T> extends AbstractInvoker<T> {// read finish
+public class DubboInvoker<T> extends AbstractInvoker<T> {
 
     private final ExchangeClient[] clients;//同一个对象，不同方法共同拥有
 

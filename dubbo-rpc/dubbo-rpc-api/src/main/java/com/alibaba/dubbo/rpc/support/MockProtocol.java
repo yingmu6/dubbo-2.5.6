@@ -26,7 +26,7 @@ import com.alibaba.dubbo.rpc.protocol.AbstractProtocol;
  *
  * @author chao.liuc
  */
-final public class MockProtocol extends AbstractProtocol {// read finish
+final public class MockProtocol extends AbstractProtocol {
 
     public int getDefaultPort() {
         return 0;

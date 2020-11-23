@@ -26,7 +26,7 @@ import java.util.Map;
  *
  * @author william.liangf
  */
-public class DubboExporter<T> extends AbstractExporter<T> {// read finish
+public class DubboExporter<T> extends AbstractExporter<T> {
     /**
      * 数据结构 -》
      *

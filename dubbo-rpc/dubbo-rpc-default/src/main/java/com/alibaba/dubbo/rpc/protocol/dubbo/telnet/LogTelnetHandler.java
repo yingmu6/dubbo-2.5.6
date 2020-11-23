@@ -38,7 +38,7 @@ import java.util.Date;
  */
 @Activate
 @Help(parameter = "level", summary = "Change log level or show log ", detail = "Change log level or show log")
-public class LogTelnetHandler implements TelnetHandler {// read finish
+public class LogTelnetHandler implements TelnetHandler {
 
     public static final String SERVICE_KEY = "telnet.log";
 

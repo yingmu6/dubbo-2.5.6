@@ -34,7 +34,7 @@ import java.lang.reflect.Method;
  */
 @Activate
 @Help(parameter = "[service] [method] [times]", summary = "Trace the service.", detail = "Trace the service.")
-public class TraceTelnetHandler implements TelnetHandler {// read finish
+public class TraceTelnetHandler implements TelnetHandler {
 
     //trace XxxService xxxMethod 10: 跟踪 10 次服务方法的调用情况
     public String telnet(Channel channel, String message) {

@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
 
-public class DefaultTPSLimiter implements TPSLimiter {/** read finish */
+public class DefaultTPSLimiter implements TPSLimiter {
 
     private final ConcurrentMap<String, StatItem> stats
             = new ConcurrentHashMap<String, StatItem>();

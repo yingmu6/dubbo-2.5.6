@@ -24,7 +24,7 @@ import com.alibaba.dubbo.common.utils.StringUtils;
  * @serial Don't change the class name and properties.
  * @export
  */
-public class GenericException extends RuntimeException {// read finish
+public class GenericException extends RuntimeException {
 
     private static final long serialVersionUID = -1182299763306599962L;
 

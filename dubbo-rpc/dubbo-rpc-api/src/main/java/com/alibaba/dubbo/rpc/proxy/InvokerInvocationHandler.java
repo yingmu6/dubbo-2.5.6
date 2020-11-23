@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
  *
  * @author william.liangf
  */
-public class InvokerInvocationHandler implements InvocationHandler {// read finish
+public class InvokerInvocationHandler implements InvocationHandler {
 
     private final Invoker<?> invoker;
 
@@ -41,7 +41,7 @@ public class InvokerInvocationHandler implements InvocationHandler {// read fini
      * 1）
      *
      */
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable { //todo 11/23 覆盖调试
         String methodName = method.getName();
         Class<?>[] parameterTypes = method.getParameterTypes();
         if (method.getDeclaringClass() == Object.class) { // 11/07 getDeclaringClass 待调试

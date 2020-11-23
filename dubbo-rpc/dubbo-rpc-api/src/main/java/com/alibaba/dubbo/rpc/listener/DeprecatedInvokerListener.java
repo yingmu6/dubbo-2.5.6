@@ -28,7 +28,7 @@ import com.alibaba.dubbo.rpc.RpcException;
  * @author william.liangf
  */
 @Activate(Constants.DEPRECATED_KEY)
-public class DeprecatedInvokerListener extends InvokerListenerAdapter {// read finish
+public class DeprecatedInvokerListener extends InvokerListenerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeprecatedInvokerListener.class);
 

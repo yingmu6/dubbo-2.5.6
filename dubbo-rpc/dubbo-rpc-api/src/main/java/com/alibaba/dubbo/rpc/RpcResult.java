@@ -26,7 +26,7 @@ import java.util.Map;
  * @author qianlei
  * @serial Don't change the class name and properties.
  */
-public class RpcResult implements Result, Serializable {// read finish
+public class RpcResult implements Result, Serializable {
 
     private static final long serialVersionUID = -6925924956850004727L;
 

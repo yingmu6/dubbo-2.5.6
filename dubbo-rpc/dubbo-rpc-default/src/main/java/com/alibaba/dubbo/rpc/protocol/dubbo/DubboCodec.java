@@ -48,7 +48,7 @@ import static com.alibaba.dubbo.rpc.protocol.dubbo.CallbackServiceCodec.encodeIn
  * @author qianlei
  * @author chao.liuc
  */
-public class DubboCodec extends ExchangeCodec implements Codec2 {// read finish
+public class DubboCodec extends ExchangeCodec implements Codec2 {
 
     public static final String NAME = "dubbo";
     public static final String DUBBO_VERSION = Version.getVersion(DubboCodec.class, Version.getVersion());

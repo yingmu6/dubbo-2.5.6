@@ -30,7 +30,7 @@ import java.util.List;
  * @author william.liangf
  * @see com.alibaba.dubbo.rpc.cluster.Cluster#join(Directory)
  */
-public interface Directory<T> extends Node {/**@c 目录服务 todo 11/20 用途是啥？ */
+public interface Directory<T> extends Node {/**@c 目录服务 todo 11/23 用途是啥？ */
 
     /**
      * get service type.（获取服务的类型class）

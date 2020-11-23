@@ -23,7 +23,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @author william.liangf
  */
 @SPI
-public interface ExporterListener {// read finish
+public interface ExporterListener {
 
     /**
      * The exporter exported.

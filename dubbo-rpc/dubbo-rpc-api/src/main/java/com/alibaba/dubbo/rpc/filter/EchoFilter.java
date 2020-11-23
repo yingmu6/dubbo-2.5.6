@@ -30,7 +30,7 @@ import com.alibaba.dubbo.rpc.RpcResult;
  * @author william.liangf
  */
 @Activate(group = Constants.PROVIDER, order = -110000)
-public class EchoFilter implements Filter {//read finish
+public class EchoFilter implements Filter {
     //回响测试主要用来检测服务是否正常
     public Result invoke(Invoker<?> invoker, Invocation inv) throws RpcException { //10/22 功能待使用，解：所有服务都实现EchoService接口，只需将任意服务引用强制转型为 EchoService，即可使用
         if (inv.getMethodName().equals(Constants.$ECHO) && inv.getArguments() != null && inv.getArguments().length == 1)

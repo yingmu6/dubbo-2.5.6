@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author qian.lei
  * @author william.liangf
  */
-public abstract class AbstractInvoker<T> implements Invoker<T> {// read finish
+public abstract class AbstractInvoker<T> implements Invoker<T> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 

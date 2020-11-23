@@ -32,7 +32,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author william.liangf
  */
 @Activate
-public class ThreadPoolStatusChecker implements StatusChecker {// read finish
+public class ThreadPoolStatusChecker implements StatusChecker {
 
     public Status check() {
         DataStore dataStore = ExtensionLoader.getExtensionLoader(DataStore.class).getDefaultExtension();

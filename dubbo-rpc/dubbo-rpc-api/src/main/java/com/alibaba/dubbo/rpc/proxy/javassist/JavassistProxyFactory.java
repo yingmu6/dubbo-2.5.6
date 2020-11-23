@@ -24,22 +24,17 @@ import com.alibaba.dubbo.rpc.proxy.AbstractProxyInvoker;
 import com.alibaba.dubbo.rpc.proxy.InvokerInvocationHandler;
 
 /**
- * JavaassistRpcProxyFactory
+ * JavaassistRpcProxyFactory（ProxyFactory SPI接口的默认实现类）
  *
  * @author william.liangf
  */
-public class JavassistProxyFactory extends AbstractProxyFactory {// read finish
+public class JavassistProxyFactory extends AbstractProxyFactory {
 
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Invoker<T> invoker, Class<?>[] interfaces) {
         /**
-         * 代码流程：(通过javassist生成代理对象的代码，并获取实例)
-         * 1) 静态方法Proxy.getProxy，获取到Proxy
-         * 2）构建InvokerInvocationHandler处理类
-         *    2.1）构建RpcInvocation --- new RpcInvocation(method, args)
-         *    2.2）执行Invoker的invoke方法 --- invoker.invoke(new RpcInvocation(method, args))
-         *    2.3）执行Result的recreate
-         * 3）调用Proxy中newInstance产生Object
+         * 1）获取接口的代码对象
+         * 2）为调用者invoker绑定处理事件
          */
         return (T) Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker));
     }

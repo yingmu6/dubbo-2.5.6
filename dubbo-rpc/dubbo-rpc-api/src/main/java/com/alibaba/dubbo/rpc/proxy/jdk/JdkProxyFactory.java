@@ -29,7 +29,7 @@ import java.lang.reflect.Proxy;
  *
  * @author william.liangf
  */
-public class JdkProxyFactory extends AbstractProxyFactory {// read finish
+public class JdkProxyFactory extends AbstractProxyFactory {
 
     /**
      * 通过java动态代理生成代理对象，并设置代理对象的调用处理类InvokerInvocationHandler

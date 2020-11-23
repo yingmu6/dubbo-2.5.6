@@ -39,7 +39,7 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
 //用途以及待了解？对RpcResult结果进行解码
-public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable {// read finish
+public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable {
 
     private static final Logger log = LoggerFactory.getLogger(DecodeableRpcResult.class);
 

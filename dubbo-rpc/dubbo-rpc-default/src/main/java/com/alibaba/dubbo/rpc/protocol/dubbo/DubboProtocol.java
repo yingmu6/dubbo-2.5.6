@@ -55,7 +55,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author william.liangf
  * @author chao.liuc
  */
-public class DubboProtocol extends AbstractProtocol {// read finish
+public class DubboProtocol extends AbstractProtocol {
     /**
      * 数据结构 -》
      *

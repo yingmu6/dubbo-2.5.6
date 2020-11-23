@@ -61,7 +61,7 @@ import java.util.concurrent.TimeUnit;
  * @author ding.lid
  */
 @Activate(group = Constants.PROVIDER, value = Constants.ACCESS_LOG_KEY)  // 10/22 自动激活的流程图画下
-public class AccessLogFilter implements Filter {// read finish
+public class AccessLogFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessLogFilter.class);
 

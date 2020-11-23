@@ -21,7 +21,7 @@ package com.alibaba.dubbo.rpc.service;
  * @author william.liangf
  * @export
  */
-public interface GenericService {// read finish
+public interface GenericService {
 
     /**
      * 泛化调用

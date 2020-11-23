@@ -33,7 +33,7 @@ import java.util.Collection;
  */
 @Activate
 @Help(parameter = "[-l] [port]", summary = "Print server ports and connections.", detail = "Print server ports and connections.")
-public class PortTelnetHandler implements TelnetHandler {// read finish
+public class PortTelnetHandler implements TelnetHandler {
     //detail 描述功能用途
     //命令ps -l 20880  ？
     public String telnet(Channel channel, String message) {

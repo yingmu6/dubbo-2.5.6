@@ -88,19 +88,21 @@ public class DubboRegistryFactory extends AbstractRegistryFactory {
         List<URL> urls = new ArrayList<URL>();
         urls.add(url.removeParameter(Constants.BACKUP_KEY));
         String backup = url.getParameter(Constants.BACKUP_KEY);//todo 11/20 此处先移除remove再获取get，能获取到吗
-        if (backup != null && backup.length() > 0) {
+        if (backup != null && backup.length() > 0) { //todo 11/23 备选地址待了解
             String[] addresses = Constants.COMMA_SPLIT_PATTERN.split(backup);
             for (String address : addresses) {
                 urls.add(url.setAddress(address));
             }
         }
         RegistryDirectory<RegistryService> directory = new RegistryDirectory<RegistryService>(RegistryService.class, url.addParameter(Constants.INTERFACE_KEY, RegistryService.class.getName()).addParameterAndEncoded(Constants.REFER_KEY, url.toParameterString()));
-        Invoker<RegistryService> registryInvoker = cluster.join(directory);
-        RegistryService registryService = proxyFactory.getProxy(registryInvoker);
+        //把目录下的多个调用者invokers合并为一个invoker
+        Invoker<RegistryService> registryInvoker = cluster.join(directory); //Cluster默认集群策略，FailoverCluster
+        RegistryService registryService = proxyFactory.getProxy(registryInvoker); //@pause 2.2 获取执行者的代理 todo 11/23 高优先级 代理模式
         DubboRegistry registry = new DubboRegistry(registryInvoker, registryService);
         directory.setRegistry(registry);
         directory.setProtocol(protocol);
         directory.notify(urls);
+        // todo 11/23 是如何订阅url的？ 中优先级 注册相关
         directory.subscribe(new URL(Constants.CONSUMER_PROTOCOL, NetUtils.getLocalHost(), 0, RegistryService.class.getName(), url.getParameters()));
         return registry;
     }

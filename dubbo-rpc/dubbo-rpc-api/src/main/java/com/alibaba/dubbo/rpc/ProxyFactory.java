@@ -21,17 +21,16 @@ import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
- * @csy-v1 代理对象的使用？ 代理模式使用
  * 此处代理对象可以和invoker相互转换
  *
  * ProxyFactory. (API/SPI, Singleton, ThreadSafe)
  * @author william.liangf
  */
 @SPI("javassist")
-public interface ProxyFactory {// read finish // 11/07 画类结构图
+public interface ProxyFactory {
 
     /**
-     * create proxy.(创建invoker的代理对象)
+     * create proxy.(获取invoker的对应的代理对象)
      *
      * @param invoker
      * @return proxy
@@ -40,7 +39,7 @@ public interface ProxyFactory {// read finish // 11/07 画类结构图
     <T> T getProxy(Invoker<T> invoker) throws RpcException;
 
     /**
-     * create invoker.（通过代理对象创建invoker）
+     * create invoker.（获取代理对象对应的invoker）
      *
      * @param <T>
      * @param proxy  代理接口

@@ -27,7 +27,7 @@ import com.alibaba.dubbo.rpc.Invoker;
  * @author william.liangf
  */
 //子类DubboExporter、InjvmExporter只是重写了unexport方法
-public abstract class AbstractExporter<T> implements Exporter<T> {// read finish
+public abstract class AbstractExporter<T> implements Exporter<T> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 

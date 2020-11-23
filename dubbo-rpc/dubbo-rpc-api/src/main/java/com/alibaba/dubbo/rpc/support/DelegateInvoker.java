@@ -26,7 +26,7 @@ import com.alibaba.dubbo.rpc.RpcException;
  *
  * @author william.liangf
  */
-public abstract class DelegateInvoker<T> implements Invoker<T> {// read finish
+public abstract class DelegateInvoker<T> implements Invoker<T> {
 
     protected final Invoker<T> invoker;
 

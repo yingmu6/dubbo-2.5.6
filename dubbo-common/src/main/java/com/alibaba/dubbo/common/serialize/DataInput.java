@@ -22,7 +22,7 @@ import java.io.IOException;
  *
  * @author qian.lei
  */
-public interface DataInput {// read finish
+public interface DataInput {
     //从输入流中读取各种类型的数据
 
     /**

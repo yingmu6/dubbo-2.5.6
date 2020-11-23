@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public class ClientsPageHandler implements PageHandler {// read finish
+public class ClientsPageHandler implements PageHandler {
 
     //构造分页
     public Page handle(URL url) {

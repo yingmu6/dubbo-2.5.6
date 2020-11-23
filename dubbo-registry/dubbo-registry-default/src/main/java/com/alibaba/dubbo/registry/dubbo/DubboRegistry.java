@@ -40,7 +40,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author william.liangf
  */
-public class DubboRegistry extends FailbackRegistry {
+public class DubboRegistry extends FailbackRegistry { //todo 11/23 数据结构了解
 
     private final static Logger logger = LoggerFactory.getLogger(DubboRegistry.class);
 
@@ -61,7 +61,7 @@ public class DubboRegistry extends FailbackRegistry {
     private final RegistryService registryService;
 
     public DubboRegistry(Invoker<RegistryService> registryInvoker, RegistryService registryService) {
-        super(registryInvoker.getUrl());
+        super(registryInvoker.getUrl()); //构建父类对象FailbackRegistry
         this.registryInvoker = registryInvoker;
         this.registryService = registryService;
         // 启动重连定时器

@@ -39,7 +39,7 @@ import java.util.List;
  */
 @Activate
 @Help(parameter = "[service] [method] [times]", summary = "Count the service.", detail = "Count the service.")
-public class CountTelnetHandler implements TelnetHandler {// read finish
+public class CountTelnetHandler implements TelnetHandler {
 
     //实现接口方法的统计
     public String telnet(final Channel channel, String message) {

@@ -11,7 +11,7 @@ public class ProtocolUtils {
     private ProtocolUtils() {
     }
 
-    public static String serviceKey(URL url) {// read finish
+    public static String serviceKey(URL url) {
         return serviceKey(url.getPort(), url.getPath(), url.getParameter(Constants.VERSION_KEY),
                 url.getParameter(Constants.GROUP_KEY));
     }

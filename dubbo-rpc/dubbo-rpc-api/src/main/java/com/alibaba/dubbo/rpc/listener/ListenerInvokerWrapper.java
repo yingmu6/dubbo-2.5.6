@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author william.liangf
  */
-public class ListenerInvokerWrapper<T> implements Invoker<T> {// read finish
+public class ListenerInvokerWrapper<T> implements Invoker<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(ListenerInvokerWrapper.class);
 

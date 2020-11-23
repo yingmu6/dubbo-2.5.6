@@ -40,7 +40,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @SuppressWarnings("deprecation")
 //延迟连接，延迟多久？
-final class LazyConnectExchangeClient implements ExchangeClient {      // read finish
+final class LazyConnectExchangeClient implements ExchangeClient {
 
     //当调用时warning，出现这个warning，表示程序可能存在bug.
     static final String REQUEST_WITH_WARNING_KEY = "lazyclient_request_with_warning";

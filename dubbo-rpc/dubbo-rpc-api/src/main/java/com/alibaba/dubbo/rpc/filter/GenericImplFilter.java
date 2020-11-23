@@ -44,7 +44,7 @@ import java.lang.reflect.Method;
  * @author william.liangf
  */
 @Activate(group = Constants.CONSUMER, value = Constants.GENERIC_KEY, order = 20000)
-public class GenericImplFilter implements Filter {//read finish
+public class GenericImplFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(GenericImplFilter.class);
 

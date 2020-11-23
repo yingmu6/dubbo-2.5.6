@@ -22,7 +22,7 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
 //提供多个工厂方法构造
-public interface ChannelBufferFactory {// read finish
+public interface ChannelBufferFactory {
     //模仿Netty创建ChannelBuffer
     //HeapChannelBufferFactory分配堆内Buffer
     //DirectChannelBufferFactory直接封装了ByteBuffer的 directBuffer,直接buffer，没有中间缓冲区的

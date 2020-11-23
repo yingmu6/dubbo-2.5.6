@@ -22,7 +22,7 @@ package com.alibaba.dubbo.common;
  */
 // 哪些内容算节点？ 解：看有哪些实现类或子接口
 // Java中解释：网络中的每台机器称为一个节点（集群中的每台机器都是一个节点）
-public interface Node { // read finish
+public interface Node {
     // flag
     /**
      * get url.（获取节点url）

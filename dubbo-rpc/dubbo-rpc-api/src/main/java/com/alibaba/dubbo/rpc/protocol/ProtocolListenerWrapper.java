@@ -34,7 +34,7 @@ import java.util.Collections;
  *
  * @author william.liangf
  */
-public class ProtocolListenerWrapper implements Protocol {// read finish
+public class ProtocolListenerWrapper implements Protocol {
 
     private final Protocol protocol;
 

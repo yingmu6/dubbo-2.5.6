@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * reference count(引用计数)
  */
 @SuppressWarnings("deprecation")
-final class ReferenceCountExchangeClient implements ExchangeClient {// read finish
+final class ReferenceCountExchangeClient implements ExchangeClient {
 
     private final URL url;
     private final AtomicInteger refenceCount = new AtomicInteger(0);

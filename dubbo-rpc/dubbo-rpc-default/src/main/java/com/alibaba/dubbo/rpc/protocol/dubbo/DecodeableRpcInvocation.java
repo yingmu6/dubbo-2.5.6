@@ -42,7 +42,7 @@ import static com.alibaba.dubbo.rpc.protocol.dubbo.CallbackServiceCodec.decodeIn
  * RpcInvocation解码器：实现Codec的接口中的解密方法decode()
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Decodeable {// read finish
+public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Decodeable {
 
     private static final Logger log = LoggerFactory.getLogger(DecodeableRpcInvocation.class);
 

@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
  *
  * @author qian.lei
  */
-public interface ObjectInput extends DataInput {// read finish
+public interface ObjectInput extends DataInput {
 
     //对象输入流，dubbo自定义
     /**

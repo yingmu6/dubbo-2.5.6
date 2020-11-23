@@ -59,12 +59,7 @@ public abstract class AbstractRegistryFactory implements RegistryFactory { //Abs
 
     /**
      * 关闭所有已创建注册中心
-     * 1）打印出缓存中的注册实例
-     * 2）使用可重入锁加锁
-     * 3）遍历注册实例
-     *   3.1）依次进行销毁，若出现异常，则打印日志
-     *   3.2）移除缓存Map中的所有映射
-     * 4）释放可重入锁
+     *   加锁处理，遍历缓存中的注册实例，依次进行关闭处理
      */
     public static void destroyAll() {
         if (LOGGER.isInfoEnabled()) {

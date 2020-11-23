@@ -64,7 +64,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
     // 日志输出
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     // 本地磁盘缓存，其中特殊的key值.registies记录注册中心列表，其它均为notified服务提供者列表 (从缓存文件中，读取属性写到Properties)
-    private final Properties properties = new Properties();
+    private final Properties properties = new Properties(); //todo 11/23 Properties了解以及查看下本地缓存文件的内容格式
     // 文件缓存定时写入（线程为SaveProperties）
     private final ExecutorService registryCacheExecutor = Executors.newFixedThreadPool(1, new NamedThreadFactory("DubboSaveRegistryCache", true));
     //是否同步保存文件（若是异步，则用线程池）
@@ -263,17 +263,13 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
     }
 
     /**
-     * 从本地缓存Properties中获取到url中serviceKey对应的服务url列表List<URL>
-     * 1）遍历缓存Properties的所有键key
-     * 2）获取到key、value
-     * 3）若key不为空，并且key的值与服务serviceKey相等，并且首字母是字符或是下划线，并且值不等于空
-     *   3.1）将符合条件的value按给定的分隔符分隔
-     *   3.2）遍历分隔后得到的数组，加到url列表中，并返回url列表
+     * 从本地缓存Properties中获取到url对应的服务提供者URL列表
+     *   遍历本地缓存属性Properties，依次用serviceKey进行匹配，若匹配上，则加到URL列表
      */
-    public List<URL> getCacheUrls(URL url) {/**@c 缓存在内容的值*/
+    public List<URL> getCacheUrls(URL url) {
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             String key = (String) entry.getKey();
-            String value = (String) entry.getValue();/**@c 存储URL字符串 */
+            String value = (String) entry.getValue();
             if (key != null && key.length() > 0 && key.equals(url.getServiceKey())
                     && (Character.isLetter(key.charAt(0)) || key.charAt(0) == '_')
                     && value != null && value.length() > 0) {

@@ -27,7 +27,7 @@ import com.alibaba.dubbo.rpc.service.EchoService;
  *
  * @author william.liangf
  */
-public abstract class AbstractProxyFactory implements ProxyFactory {// read finish  10.1 代理工厂以及代理流程
+public abstract class AbstractProxyFactory implements ProxyFactory {//10.1 代理工厂以及代理流程
 
     /**
      * 在调用子类具体的getProxy()实现前，组装参数interfaces
@@ -36,10 +36,10 @@ public abstract class AbstractProxyFactory implements ProxyFactory {// read fini
     public <T> T getProxy(Invoker<T> invoker) throws RpcException {
         Class<?>[] interfaces = null;
         /**
-         * history-v2 此处需要调试，看下interfaces里面可能是啥内容？怎么会有多个interface，看下标签配置
+         * todo 11/23 此处需要调试，看下interfaces里面可能是啥内容？怎么会有多个interface，看下标签配置
          */
         String config = invoker.getUrl().getParameter("interfaces");
-        if (config != null && config.length() > 0) { // 10/25 构建满足条件
+        if (config != null && config.length() > 0) {
             String[] types = Constants.COMMA_SPLIT_PATTERN.split(config);
             if (types != null && types.length > 0) {//逗号分隔
                 interfaces = new Class<?>[types.length + 2];

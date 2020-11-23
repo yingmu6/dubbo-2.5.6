@@ -29,7 +29,7 @@ import java.util.Collection;
  * @author william.liangf
  */
 @Activate
-public class ServerStatusChecker implements StatusChecker {// read finish
+public class ServerStatusChecker implements StatusChecker {
 
     //服务器状态检查
     public Status check() {

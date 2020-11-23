@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public final class ClassGenerator { //10/25 待了解：类产生器，javassist了解；解:getClassPool方法处已标明
     /**
-     * ClassGenerator的数据结构  11/12 待了解
+     * ClassGenerator的数据结构  todo 11/23 待了解
      *
      */
     private static final AtomicLong CLASS_NAME_COUNTER = new AtomicLong(0);
@@ -60,7 +60,7 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
     private ClassPool mPool; //10/25 待了解；解：类池，用来管理字节码的
     private CtClass mCtc;
     private String mClassName, mSuperClass;
-    private Set<String> mInterfaces;
+    private Set<String> mInterfaces; //todo 11/23 哪些集合可作为本地缓存？
     private List<String> mFields, mConstructors, mMethods;
     private Map<String, Method> mCopyMethods; // <method desc,method instance>
     private Map<String, Constructor<?>> mCopyConstructors; // <constructor desc,constructor instance>
@@ -121,7 +121,7 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
         ClassPool pool = POOL_MAP.get(loader);
         if (pool == null) {
             pool = new ClassPool(true);
-            pool.appendClassPath(new LoaderClassPath(loader)); // 10/26 LoaderClassPath了解
+            pool.appendClassPath(new LoaderClassPath(loader)); // todo 11/23 LoaderClassPath了解
             POOL_MAP.put(loader, pool);
         }
         return pool;

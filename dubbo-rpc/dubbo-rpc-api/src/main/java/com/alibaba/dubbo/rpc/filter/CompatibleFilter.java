@@ -36,7 +36,7 @@ import java.lang.reflect.Type;
  * @author william.liangf
  */
 //为啥没有@Active注解？没有默认启动，所以不需加Active
-public class CompatibleFilter implements Filter {//read finish
+public class CompatibleFilter implements Filter {
 
     //这个类是用来做啥的？ 使返回值与调用程序的对象版本兼容，返回Map类型或做POJO转换
     private static Logger logger = LoggerFactory.getLogger(CompatibleFilter.class);

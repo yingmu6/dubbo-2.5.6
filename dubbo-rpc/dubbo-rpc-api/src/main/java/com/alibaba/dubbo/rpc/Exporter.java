@@ -24,7 +24,7 @@ package com.alibaba.dubbo.rpc;
  * @see com.alibaba.dubbo.rpc.protocol.AbstractExporter
  */
 // 指服务提供者吗？ 解：暴露服务的引用（负责维护invoker的生命周期，获取invoker、销毁invoker）
-public interface Exporter<T> {// read finish
+public interface Exporter<T> {
 
     /**
      * get invoker. 方法debug调试分析：已调

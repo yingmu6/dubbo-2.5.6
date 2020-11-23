@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author chao.liuc
  * @author william.liangf
  */
-final public class MockInvoker<T> implements Invoker<T> {// read finish
+final public class MockInvoker<T> implements Invoker<T> {
     //Mock用来测试还是用来降级服务？功能作用？
     private final static ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
     private final static Map<String, Invoker<?>> mocks = new ConcurrentHashMap<String, Invoker<?>>();

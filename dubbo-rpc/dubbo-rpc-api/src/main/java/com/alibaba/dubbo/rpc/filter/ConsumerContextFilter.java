@@ -32,7 +32,7 @@ import com.alibaba.dubbo.rpc.RpcInvocation;
  * @author william.liangf
  */
 @Activate(group = Constants.CONSUMER, order = -10000)//order的值代表什么
-public class ConsumerContextFilter implements Filter { //read finish
+public class ConsumerContextFilter implements Filter {
 
     // 10/22 此类的用途是什么？
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {

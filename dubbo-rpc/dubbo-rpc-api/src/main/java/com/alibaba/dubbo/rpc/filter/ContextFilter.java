@@ -34,7 +34,7 @@ import java.util.Map;
  * @author william.liangf
  */
 @Activate(group = Constants.PROVIDER, order = -10000) //应用到服务端
-public class ContextFilter implements Filter {//read finish
+public class ContextFilter implements Filter {
 
     /**
      * 对调用上下文参数进行过滤

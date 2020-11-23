@@ -24,7 +24,7 @@ import com.alibaba.dubbo.rpc.RpcException;
  *
  * @author william.liangf
  */
-public abstract class InvokerListenerAdapter implements InvokerListener {// read finish
+public abstract class InvokerListenerAdapter implements InvokerListener {
 
     //监听适配器（空实现）
     public void referred(Invoker<?> invoker) throws RpcException {

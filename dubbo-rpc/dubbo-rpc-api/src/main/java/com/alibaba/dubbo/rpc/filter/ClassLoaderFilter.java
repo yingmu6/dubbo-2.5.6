@@ -29,7 +29,7 @@ import com.alibaba.dubbo.rpc.RpcException;
  * @author william.liangf
  */
 @Activate(group = Constants.PROVIDER, order = -30000)
-public class ClassLoaderFilter implements Filter {// read finish
+public class ClassLoaderFilter implements Filter {
 
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         ClassLoader ocl = Thread.currentThread().getContextClassLoader();

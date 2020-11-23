@@ -33,7 +33,7 @@ import java.util.Map;
  * @author william.liangf
  */
 @Activate(group = Constants.PROVIDER, value = Constants.TOKEN_KEY)
-public class TokenFilter implements Filter {// read finish
+public class TokenFilter implements Filter {
 
     public Result invoke(Invoker<?> invoker, Invocation inv)
             throws RpcException {

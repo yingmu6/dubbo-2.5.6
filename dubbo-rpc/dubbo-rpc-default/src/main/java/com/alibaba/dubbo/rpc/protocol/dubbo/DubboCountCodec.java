@@ -31,7 +31,7 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
-public final class DubboCountCodec implements Codec2 {// read finish @chen 从字面意思来看，这个类计数的，有计数功能吗？
+public final class DubboCountCodec implements Codec2 { //@chen 从字面意思来看，这个类计数的，有计数功能吗？
 
     private DubboCodec codec = new DubboCodec();
 

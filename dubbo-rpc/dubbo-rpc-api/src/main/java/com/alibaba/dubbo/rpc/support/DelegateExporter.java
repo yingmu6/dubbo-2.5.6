@@ -24,7 +24,7 @@ import com.alibaba.dubbo.rpc.Invoker;
  *
  */
 //history-h2 委派模式，同一级别的节点委派，并不是使用向上转型
-public class DelegateExporter<T> implements Exporter<T> {// read finish
+public class DelegateExporter<T> implements Exporter<T> {
 
     private final Exporter<T> exporter;
 

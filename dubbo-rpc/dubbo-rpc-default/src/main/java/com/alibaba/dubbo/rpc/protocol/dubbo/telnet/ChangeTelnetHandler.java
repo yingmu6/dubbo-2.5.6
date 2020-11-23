@@ -30,7 +30,7 @@ import com.alibaba.dubbo.rpc.protocol.dubbo.DubboProtocol;
  */
 @Activate
 @Help(parameter = "[service]", summary = "Change default service.", detail = "Change default service.")
-public class ChangeTelnetHandler implements TelnetHandler {// read finish
+public class ChangeTelnetHandler implements TelnetHandler {
 
     public static final String SERVICE_KEY = "telnet.service";
 

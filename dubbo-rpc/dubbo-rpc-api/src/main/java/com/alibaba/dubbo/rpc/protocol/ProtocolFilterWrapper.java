@@ -32,7 +32,7 @@ import java.util.List;
  * ListenerProtocol
  * @author william.liangf
  */
-public class ProtocolFilterWrapper implements Protocol {// read finish  11/04 协议封装是在哪里引用的？解：这个Protocol的过滤封装类，在com.alibaba.dubbo.rpc.Protocol配置的filter值
+public class ProtocolFilterWrapper implements Protocol {  //11/04 协议封装是在哪里引用的？解：这个Protocol的过滤封装类，在com.alibaba.dubbo.rpc.Protocol配置的filter值
 
     //ProtocolFilterWrapper与ProtocolListenerWrapper的区别？
     private final Protocol protocol;

@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author william.liangf
  * @author chao.liuc
  */
-public class RpcUtils {// read finish
+public class RpcUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(RpcUtils.class);
     private static final AtomicLong INVOKE_ID = new AtomicLong(0);
