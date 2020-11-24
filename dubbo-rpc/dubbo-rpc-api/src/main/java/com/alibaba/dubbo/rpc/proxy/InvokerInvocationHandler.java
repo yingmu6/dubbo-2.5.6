@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
  */
 public class InvokerInvocationHandler implements InvocationHandler {
 
-    private final Invoker<?> invoker;
+    private final Invoker<?> invoker; //todo 11/24 具体实例对象是在哪里赋值的？
 
     public InvokerInvocationHandler(Invoker<?> handler) {
         this.invoker = handler;
@@ -41,11 +41,11 @@ public class InvokerInvocationHandler implements InvocationHandler {
      * 1）
      *
      */
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable { //todo 11/23 覆盖调试
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
         Class<?>[] parameterTypes = method.getParameterTypes();
-        if (method.getDeclaringClass() == Object.class) { // 11/07 getDeclaringClass 待调试
-            return method.invoke(invoker, args);
+        if (method.getDeclaringClass() == Object.class) { // getDeclaringClass() 即为方法所在的类，如com.alibaba.dubbo.rpc.service.EchoService
+            return method.invoke(invoker, args); //执行Object中的方法
         }
         if ("toString".equals(methodName) && parameterTypes.length == 0) {
             return invoker.toString();
@@ -59,7 +59,7 @@ public class InvokerInvocationHandler implements InvocationHandler {
         /**
          * 对创建结果判断，RpcResult.recreate() 若有异常抛出来，否则返回结果值
          */
-        return invoker.invoke(new RpcInvocation(method, args)).recreate();
+        return invoker.invoke(new RpcInvocation(method, args)).recreate(); //todo 11/24 为啥一开始是MockClusterInvoker？
     }
 
 }

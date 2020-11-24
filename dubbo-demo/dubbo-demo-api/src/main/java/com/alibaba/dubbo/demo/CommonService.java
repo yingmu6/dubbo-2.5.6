@@ -5,6 +5,7 @@ package com.alibaba.dubbo.demo;
  * @author chensy
  * @date 2019-11-07 17:51
  */
+@TestLog(log = "test")
 public interface CommonService {
     String sayHello();
     String sayHello(String str);

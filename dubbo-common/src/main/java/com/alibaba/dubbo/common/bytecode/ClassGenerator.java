@@ -110,12 +110,9 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
      * 获取类加载器对应的类池ClassPool
      * 1）类加载器为空，返回默认类池
      * 2）从本地缓存Map中获取类池，若不存在则创建类池
-     *
-     * @param loader
-     * @return
      */
     public static ClassPool getClassPool(ClassLoader loader) {
-        if (loader == null)
+        if (loader == null) //没有指定类加载器时，创建默认类池
             return ClassPool.getDefault();
 
         ClassPool pool = POOL_MAP.get(loader);
@@ -199,7 +196,7 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
     }
 
     public ClassGenerator addMethod(String name, int mod, Class<?> rt, Class<?>[] pts, Class<?>[] ets, String body) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(); //todo 11/24 待了解
         sb.append(modifier(mod)).append(' ').append(ReflectUtils.getName(rt)).append(' ').append(name);
         sb.append('(');
         for (int i = 0; i < pts.length; i++) {
@@ -246,7 +243,7 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
         return addConstructor(mod, pts, null, body);
     }
 
-    public ClassGenerator addConstructor(int mod, Class<?>[] pts, Class<?>[] ets, String body) {
+    public ClassGenerator addConstructor(int mod, Class<?>[] pts, Class<?>[] ets, String body) { //todo 11/24 添加构造函数待调试
         StringBuilder sb = new StringBuilder();
         sb.append(modifier(mod)).append(' ').append(SIMPLE_NAME_TAG);
         sb.append('(');

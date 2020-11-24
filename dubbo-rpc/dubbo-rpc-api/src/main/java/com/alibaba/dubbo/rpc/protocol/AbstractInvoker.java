@@ -119,7 +119,7 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {
         return destroyed.get();
     }
 
-    public String toString() {
+    public String toString() { //返回对象的字符串形式，todo 11/24 这串字符串是怎么打印出来的？ invoker :interface com.alibaba.dubbo.demo.CommonService -> zookeeper://127.0.0.1:2181/com.alibaba.dubbo.registry.RegistryService?anyhost=true&application=demo-consumer&check=false&dubbo=2.0.0&dynamic=false&generic=false&interface=com.alibaba.dubbo.demo.CommonService&methods=sayHello,test&pid=71825&remote.timestamp=1604547758139&service.filter=selfFilter&side=consumer&timestamp=1606172965813,directory: com.alibaba.dubbo.registry.integration.RegistryDirectory@67545b57
         return getInterface() + " -> " + (getUrl() == null ? "" : getUrl().toString());
     }
 

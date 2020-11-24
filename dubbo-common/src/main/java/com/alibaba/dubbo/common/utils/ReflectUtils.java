@@ -243,7 +243,7 @@ public final class ReflectUtils {
      * @param c class.
      * @return name.
      */
-    public static String getName(Class<?> c) {
+    public static String getName(Class<?> c) { //todo 11/24 数组和非数组待调试
         if (c.isArray()) {
             StringBuilder sb = new StringBuilder();
             do {
@@ -353,7 +353,7 @@ public final class ReflectUtils {
 
         while (c.isArray()) {
             ret.append('[');
-            c = c.getComponentType();
+            c = c.getComponentType(); //todo 11/24 看下是啥内容
         }
 
         //获取类型的简写  10/25 JVM首字母含义？JVM初步了解

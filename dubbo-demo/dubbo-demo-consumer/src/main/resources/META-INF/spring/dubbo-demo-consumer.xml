@@ -30,8 +30,9 @@
 
     <!-- generate proxy for the remote service, then demoService can be used in the same way as the
     local regular interface -->
-    <dubbo:reference id="commonService" check="false" interface="com.alibaba.dubbo.demo.CommonService">
-        <dubbo:method name="sayHello" timeout="1004"/>
-    </dubbo:reference>
+<!--    <dubbo:reference id="commonService" check="false" interface="com.alibaba.dubbo.demo.CommonService">-->
+<!--        <dubbo:method name="sayHello" timeout="1004"/>-->
+<!--    </dubbo:reference>-->
+    <dubbo:reference id="commonService" check="false" interface="com.alibaba.dubbo.demo.CommonService"/>
 
 </beans>

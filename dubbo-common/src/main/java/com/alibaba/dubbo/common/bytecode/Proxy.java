@@ -74,7 +74,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
     }
 
     /**
-     * 获取指定类加载器、指定类的代理 todo 11/23 待调试
+     * 获取指定类加载器、指定类的代理
      * (获取同类型的一组类的代理)
      */
     public static Proxy getProxy(ClassLoader cl, Class<?>... ics) {
@@ -116,7 +116,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
         synchronized (cache) { // 11/08 synchronized的使用方式
             do {
                 Object value = cache.get(key);
-                if (value instanceof Reference<?>) { //todo 11/23 Reference：Java中的引用对象了解
+                if (value instanceof Reference<?>) { //11/23 Reference：是引用对象的抽象类，定义了引用对象的公有操作
                     proxy = (Proxy) ((Reference<?>) value).get(); //返回引用对象，并强转为Proxy
                     /**
                      * 若本地缓存中代理对象，直接返回， 10/25 缓存的概念了解：提高数据读写速度，采用程序局部性原理(空间、时间局部性)
@@ -144,7 +144,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
                     }
                 } else {
                     cache.put(key, PendingGenerationMarker);
-                    break;
+                    break; //跳出循环
                 }
             }
             while (true);
@@ -155,7 +155,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
         ClassGenerator ccp = null, ccm = null;
         try {
             /**
-             * 11/12 此处ClassGenerator待了解以及Javassist实践
+             * ClassGenerator：维护了javassist中ClassPool、CtClass、CtMethod等数据以及对应的操作
              * Javassist: 是一个开源的分析、编辑和创建Java字节码的类库，可以直接编辑和生成Java生成的字节码 https://zhuanlan.zhihu.com/p/141449080
              */
             ccp = ClassGenerator.newInstance(cl);
@@ -164,7 +164,7 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
             List<Method> methods = new ArrayList<Method>();
 
             for (int i = 0; i < ics.length; i++) {//10/25 此处循环待了解：为每个类的方法增加功能
-                if (!Modifier.isPublic(ics[i].getModifiers())) { //对非公有的接口进行判断，看是否在同一个包内
+                if (!Modifier.isPublic(ics[i].getModifiers())) { //接口列表中的接口，若是非public的，需要在同一个包中，可进行访问（public的话，在不在同一个包都能访问）
                     String npkg = ics[i].getPackage().getName();
                     if (pkg == null) { //10/25 包名比较待调试，pkg取第一个类的包名，类数组中的其它类的包名依次比较
                         pkg = npkg;
@@ -175,6 +175,14 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
                 }
                 ccp.addInterface(ics[i]);
 
+                /**
+                 * 遍历接口中的方法，为每个方法产生对应的描述代码
+                 * 构建的code值为：
+                 * 1）CommonService的方法String sayHello(String str, Integer a); 对应产生的code
+                 *  Object[] args = new Object[2]; args[0] = ($w)$1; args[1] = ($w)$2; Object ret = handler.invoke(this, methods[2], args); return (java.lang.String)ret;
+                 * 2）CommonService的方法String sayHello(String str, Integer a); 对应产生的code
+                 * Object[] args = new Object[0]; Object ret = handler.invoke(this, methods[1], args); return (java.lang.String)ret;
+                 */
                 for (Method method : ics[i].getMethods()) {
                     String desc = ReflectUtils.getDesc(method); //获取方法的描述
                     if (worked.contains(desc))
@@ -182,14 +190,14 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
                     worked.add(desc);
 
                     int ix = methods.size();
-                    Class<?> rt = method.getReturnType();
-                    Class<?>[] pts = method.getParameterTypes();
+                    Class<?> rt = method.getReturnType(); //方法返回类型
+                    Class<?>[] pts = method.getParameterTypes(); //参数类型列表
 
                     StringBuilder code = new StringBuilder("Object[] args = new Object[").append(pts.length).append("];");
                     for (int j = 0; j < pts.length; j++)
                         code.append(" args[").append(j).append("] = ($w)$").append(j + 1).append(";");
                     code.append(" Object ret = handler.invoke(this, methods[" + ix + "], args);");
-                    if (!Void.TYPE.equals(rt))
+                    if (!Void.TYPE.equals(rt)) //若有返回类型，产生类型强制转换的代码，如：return (java.lang.String)ret;
                         code.append(" return ").append(asArgument(rt, "ret")).append(";"); //将执行返回的结果ret，进行值处理
 
                     methods.add(method);
@@ -203,22 +211,22 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
             // create ProxyInstance class.
             String pcn = pkg + ".proxy" + id; //如：com.alibaba.dubbo.common.bytecode.proxy0
             ccp.setClassName(pcn);
-            ccp.addField("public static java.lang.reflect.Method[] methods;");
-            ccp.addField("private " + InvocationHandler.class.getName() + " handler;");
+            ccp.addField("public static java.lang.reflect.Method[] methods;"); //方法列表，所有接口中的方法，如CommonService、EchoService所有的方法
+            ccp.addField("private " + InvocationHandler.class.getName() + " handler;"); //处理器成员属性：private java.lang.reflect.InvocationHandler handler;
             ccp.addConstructor(Modifier.PUBLIC, new Class<?>[]{InvocationHandler.class}, new Class<?>[0], "handler=$1;");
             ccp.addDefaultConstructor();
             Class<?> clazz = ccp.toClass();
-            clazz.getField("methods").set(null, methods.toArray(new Method[0]));
+            clazz.getField("methods").set(null, methods.toArray(new Method[0])); //methods.toArray(new Method[0]) 列表转换为数组
 
             // create Proxy class.
             String fcn = Proxy.class.getName() + id;
             ccm = ClassGenerator.newInstance(cl);
-            ccm.setClassName(fcn);
+            ccm.setClassName(fcn); //ccm的值如：com.alibaba.dubbo.common.bytecode.Proxy0
             ccm.addDefaultConstructor();
             ccm.setSuperClass(Proxy.class);
-            ccm.addMethod("public Object newInstance(" + InvocationHandler.class.getName() + " h){ return new " + pcn + "($1); }");
+            ccm.addMethod("public Object newInstance(" + InvocationHandler.class.getName() + " h){ return new " + pcn + "($1); }"); //值如：public Object newInstance(java.lang.reflect.InvocationHandler h){ return new com.alibaba.dubbo.common.bytecode.proxy0($1); }
             Class<?> pc = ccm.toClass(); //构建对象class对应的字符串，然后生成代理
-            proxy = (Proxy) pc.newInstance(); //todo 11/23 待调试，看下生产的类是啥？
+            proxy = (Proxy) pc.newInstance(); //11/23 待调试，看下生产的类是啥？已调
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
@@ -229,12 +237,12 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
                 ccp.release();
             if (ccm != null)
                 ccm.release();
-            synchronized (cache) {
+            synchronized (cache) { //synchronized结合wait()、notify()使用
                 if (proxy == null)
                     cache.remove(key);
                 else
-                    cache.put(key, new WeakReference<Proxy>(proxy)); //todo 11/23 弱引用了解
-                cache.notifyAll(); //todo 11/23 notify与wait了解
+                    cache.put(key, new WeakReference<Proxy>(proxy)); //11/23 弱引用了解？解：weekReference引用的对象只要垃圾回收执行，就会被回收，而不管是否内存不足。
+                cache.notifyAll(); //唤醒
             }
         }
         return proxy;
@@ -262,8 +270,8 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
             if (Short.TYPE == cl)
                 return name + "==null?(short)0:((Short)" + name + ").shortValue()";
             throw new RuntimeException(name + " is unknown primitive type."); //若为Void类型，抛出异常
-        } //todo 11/23 调试下，看下产生的代码是啥？
-        return "(" + ReflectUtils.getName(cl) + ")" + name; //若参数是对象类型，则进行强制转换
+        } //11/23 调试下，看下产生的代码是啥？返回值如：(java.lang.String)ret
+        return "(" + ReflectUtils.getName(cl) + ")" + name;
     }
 
     /**

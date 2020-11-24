@@ -36,7 +36,10 @@ public abstract class AbstractProxyFactory implements ProxyFactory {//10.1 代�
     public <T> T getProxy(Invoker<T> invoker) throws RpcException {
         Class<?>[] interfaces = null;
         /**
-         * todo 11/23 此处需要调试，看下interfaces里面可能是啥内容？怎么会有多个interface，看下标签配置
+         * 11/23 此处需要调试，看下interfaces里面可能是啥内容？怎么会有多个interface，看下标签配置
+         * 解：目前没看到往url中设置interfaces地方，调试中看到为空
+         * 若设置的接口不为空，将实际调用的接口invoker.getInterface() + EchoService + 参数中设置的interfaces
+         * 不管有没有设置interfaces，都会为EchoService生成代理
          */
         String config = invoker.getUrl().getParameter("interfaces");
         if (config != null && config.length() > 0) {
