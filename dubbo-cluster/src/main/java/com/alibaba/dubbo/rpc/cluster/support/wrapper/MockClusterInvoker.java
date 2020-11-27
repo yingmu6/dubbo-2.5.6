@@ -68,16 +68,16 @@ public class MockClusterInvoker<T> implements Invoker<T> {
 
         String value = directory.getUrl().getMethodParameter(invocation.getMethodName(), Constants.MOCK_KEY, Boolean.FALSE.toString()).trim();
         if (value.length() == 0 || value.equalsIgnoreCase("false")) {
-            //no mock
+            //no mock（没有设置mock，正常调用）
             result = this.invoker.invoke(invocation);
         } else if (value.startsWith("force")) {
             if (logger.isWarnEnabled()) {
                 logger.info("force-mock: " + invocation.getMethodName() + " force-mock enabled , url : " + directory.getUrl());
             }
-            //force:direct mock
+            //force:direct mock（强制执行mock逻辑）
             result = doMockInvoke(invocation, null);
         } else {
-            //fail-mock
+            //fail-mock（执行失败执行mock逻辑）
             try {
                 result = this.invoker.invoke(invocation);
             } catch (RpcException e) {
@@ -139,7 +139,6 @@ public class MockClusterInvoker<T> implements Invoker<T> {
      */
     private List<Invoker<T>> selectMockInvoker(Invocation invocation) {
         List<Invoker<T>> invokers = null;
-        //history-h1 generic invoker？
         if (invocation instanceof RpcInvocation) {
             //存在隐含契约(虽然在接口声明中增加描述，但扩展性会存在问题.同时放在attachement中的做法需要改进
             ((RpcInvocation) invocation).setAttachment(Constants.INVOCATION_NEED_MOCK, Boolean.TRUE.toString());
