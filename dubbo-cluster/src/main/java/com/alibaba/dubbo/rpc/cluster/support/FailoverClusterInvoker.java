@@ -54,19 +54,19 @@ public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Result doInvoke(Invocation invocation, final List<Invoker<T>> invokers, LoadBalance loadbalance) throws RpcException {
-        List<Invoker<T>> copyinvokers = invokers;
+        List<Invoker<T>> copyinvokers = invokers; //todo 11/30 待调试
         checkInvokers(copyinvokers, invocation); //校验Invoker列表是否为空
         /**
          *  getUrl() -》directory.getUrl() -》node.getUrl() 获取节点的url
          */
         int len = getUrl().getMethodParameter(invocation.getMethodName(), Constants.RETRIES_KEY, Constants.DEFAULT_RETRIES) + 1;
-        if (len <= 0) { //获取调用次数=重试次数 + 1
+        if (len <= 0) { //获取调用次数=重试次数 + 1 (解决参数设置为负数的情况)
             len = 1;
         }
         // retry loop.
         RpcException le = null; // last exception.
         List<Invoker<T>> invoked = new ArrayList<Invoker<T>>(copyinvokers.size()); // invoked invokers.
-        Set<String> providers = new HashSet<String>(len);
+        Set<String> providers = new HashSet<String>(len); //todo 11/30 暂停
         for (int i = 0; i < len; i++) {/**@c 调用次数，如len=3，执行0，1，2共3次 */
             //重试时，进行重新选择，避免重试时invoker列表已发生变化.
             //注意：如果列表发生了变化，那么invoked判断会失效，因为invoker示例已经改变

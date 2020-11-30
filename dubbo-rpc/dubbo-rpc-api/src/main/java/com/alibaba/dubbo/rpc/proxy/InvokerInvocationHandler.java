@@ -38,7 +38,6 @@ public class InvokerInvocationHandler implements InvocationHandler {
      * 重写java的InvocationHandler（调用处理类）
      * InvocationHandler：每一个代理实例都与一个调用处理类关联，
      *    当代理实例上的方法被调用时，会调用InvocationHandler的invoke方法（方法回调）
-     * 1）
      *
      */
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -58,8 +57,11 @@ public class InvokerInvocationHandler implements InvocationHandler {
         }
         /**
          * 对创建结果判断，RpcResult.recreate() 若有异常抛出来，否则返回结果值
+         * todo 11/24 为啥一开始是MockClusterInvoker？
+         * 目前invoker值流程为：
+         * ProxyFactory中getProxy(Invoker<T> invoker) 传入的，按使用源头待了解
          */
-        return invoker.invoke(new RpcInvocation(method, args)).recreate(); //todo 11/24 为啥一开始是MockClusterInvoker？
+        return invoker.invoke(new RpcInvocation(method, args)).recreate();
     }
 
 }

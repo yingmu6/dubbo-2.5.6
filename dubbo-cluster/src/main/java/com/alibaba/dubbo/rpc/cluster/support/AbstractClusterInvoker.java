@@ -231,7 +231,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> { //抽象
     }
 
     /**
-     * 执行调用
+     * 执行调用 todo 11/30 为啥MockClusterInvoker 选择正常调用后，就会进入该方法
      */
     public Result invoke(final Invocation invocation) throws RpcException {
 
