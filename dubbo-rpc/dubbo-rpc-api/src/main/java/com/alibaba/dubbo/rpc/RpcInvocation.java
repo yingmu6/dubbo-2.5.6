@@ -32,13 +32,17 @@ import java.util.Map;
  */
 public class RpcInvocation implements Invocation, Serializable { // RpcContext是上下文，状态记录器；而RpcInvocation是具体的调用信息，设置调用信息相关的参数
     /**
-     *  11/30 数据结构了解
+     *  数据结构
      *  类继承关系：
-     *  RpcInvocation实现了Invocation， todo 11/30 暂停
+     *  RpcInvocation实现了Invocation，Serializable接口
      *
      *  功能点：
+     *  构建调用信息，设置附加参数
      *
      *  数据：
+     *  methodName 方法名、parameterTypes 参数类型列表
+     *  arguments 参数值列表、attachments 附加参数、invoker 调用者
+     *
      */
     private static final long serialVersionUID = -4355285085441097045L;
 
