@@ -26,7 +26,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @see com.alibaba.dubbo.registry.support.AbstractRegistryFactory
  */
 @SPI("dubbo")
-public interface RegistryFactory {
+public interface RegistryFactory { //flag
 
     //支持SPI扩展，但是需要满足契约
     /**
