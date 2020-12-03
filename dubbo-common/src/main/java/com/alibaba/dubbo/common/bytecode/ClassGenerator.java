@@ -48,10 +48,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author qian.lei
  */
 
-public final class ClassGenerator { //10/25 待了解：类产生器，javassist了解；解:getClassPool方法处已标明
+public final class ClassGenerator { //类产生器，javassist了解；解:getClassPool方法处已标明
     /**
-     * ClassGenerator的数据结构  todo 11/23 待了解
-     *
+     * ClassGenerator的数据结构
      */
     private static final AtomicLong CLASS_NAME_COUNTER = new AtomicLong(0);
     private static final String SIMPLE_NAME_TAG = "<init>";
@@ -60,7 +59,7 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
     private ClassPool mPool; //10/25 待了解；解：类池，用来管理字节码的
     private CtClass mCtc;
     private String mClassName, mSuperClass;
-    private Set<String> mInterfaces; //todo 11/23 哪些集合可作为本地缓存？
+    private Set<String> mInterfaces;
     private List<String> mFields, mConstructors, mMethods;
     private Map<String, Method> mCopyMethods; // <method desc,method instance>
     private Map<String, Constructor<?>> mCopyConstructors; // <constructor desc,constructor instance>
@@ -118,7 +117,7 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
         ClassPool pool = POOL_MAP.get(loader);
         if (pool == null) {
             pool = new ClassPool(true);
-            pool.appendClassPath(new LoaderClassPath(loader)); // todo 11/23 LoaderClassPath了解
+            pool.appendClassPath(new LoaderClassPath(loader));
             POOL_MAP.put(loader, pool);
         }
         return pool;
@@ -196,7 +195,7 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
     }
 
     public ClassGenerator addMethod(String name, int mod, Class<?> rt, Class<?>[] pts, Class<?>[] ets, String body) {
-        StringBuilder sb = new StringBuilder(); //todo 11/24 待了解
+        StringBuilder sb = new StringBuilder();
         sb.append(modifier(mod)).append(' ').append(ReflectUtils.getName(rt)).append(' ').append(name);
         sb.append('(');
         for (int i = 0; i < pts.length; i++) {
@@ -243,7 +242,7 @@ public final class ClassGenerator { //10/25 待了解：类产生器，javassist
         return addConstructor(mod, pts, null, body);
     }
 
-    public ClassGenerator addConstructor(int mod, Class<?>[] pts, Class<?>[] ets, String body) { //todo 11/24 添加构造函数待调试
+    public ClassGenerator addConstructor(int mod, Class<?>[] pts, Class<?>[] ets, String body) {
         StringBuilder sb = new StringBuilder();
         sb.append(modifier(mod)).append(' ').append(SIMPLE_NAME_TAG);
         sb.append('(');

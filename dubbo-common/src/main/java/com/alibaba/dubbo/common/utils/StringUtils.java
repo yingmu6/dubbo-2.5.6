@@ -344,7 +344,7 @@ public final class StringUtils {
             Matcher matcher = KVP_PATTERN.matcher(tmp[i]); //以&分隔，设置map键值对
             if (matcher.matches() == false) //判断是否是
                 continue;
-            map.put(matcher.group(1), matcher.group(2)); //todo 11/20 正则字符串了解以及Matcher实践
+            map.put(matcher.group(1), matcher.group(2));
         }
         return map;
     }

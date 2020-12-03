@@ -31,7 +31,6 @@ public class ConsumerForCommon {
 //        }
         CommonService commonService = (CommonService) context.getBean("commonService");
 
-        //todo 11/24 此处没有注解值TestLog为null，是否能拿到远程对象的注解值的？
 //        TestLog testLog = commonService.getClass().getAnnotation(TestLog.class);
 //        System.out.println("注解中内容：" + testLog.log());
 
@@ -47,11 +46,6 @@ public class ConsumerForCommon {
         System.out.println(commonService.sayHello());
         System.in.read();
     }
-
-    /**
-     * todo 11/24 启动报com.alibaba.dubbo.remoting.RemotingException: client(url: dubbo://192.168.43.29:20881  connection timed out
-     * 为啥com.alibaba.dubbo.demo.CommonService 这个服务会连到192.168.43.29不存在的节点下？
-     */
 
     /**
      * 上下文 RpcContext

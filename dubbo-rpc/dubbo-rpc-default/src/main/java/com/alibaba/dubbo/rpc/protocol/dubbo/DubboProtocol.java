@@ -268,7 +268,7 @@ public class DubboProtocol extends AbstractProtocol {
      * 2）检查存根方法是否正确
      * 3）打开服务并返回DubboExporter
      */
-    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {//todo 暴露本地服务以及注册服务是哪里用到的？
+    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         URL url = invoker.getUrl();
 
         // export service.（根据执行者信息，构造服务暴露引用的信息）

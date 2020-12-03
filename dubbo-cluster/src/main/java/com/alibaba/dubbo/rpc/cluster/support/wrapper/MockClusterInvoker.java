@@ -64,13 +64,13 @@ public class MockClusterInvoker<T> implements Invoker<T> {
     }
 
     public Result invoke(Invocation invocation) throws RpcException { //flag
-        Result result = null; //todo 11/30 待调试， 暂停
+        Result result = null;
 
         String value = directory.getUrl().getMethodParameter(invocation.getMethodName(), Constants.MOCK_KEY, Boolean.FALSE.toString()).trim();
         if (value.length() == 0 || value.equalsIgnoreCase("false")) {
             //no mock（没有设置mock，正常调用）
-            result = this.invoker.invoke(invocation); //todo 11/30 是怎么选择具体的执行实例的？
-        } else if (value.startsWith("force")) { //todo 11/30 mock测试用例待覆盖
+            result = this.invoker.invoke(invocation);
+        } else if (value.startsWith("force")) {
             if (logger.isWarnEnabled()) {
                 logger.info("force-mock: " + invocation.getMethodName() + " force-mock enabled , url : " + directory.getUrl());
             }

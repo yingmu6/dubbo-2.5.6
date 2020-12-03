@@ -63,7 +63,7 @@ public interface Endpoint { // 集中的节点（包含Client、Server、Channel
     InetSocketAddress getLocalAddress();
 
     /**
-     * send message.  todo 11/18 为啥只能发送信息，那节点怎么接收信息的？给哪里发送消息，是发送给其它节点吗？
+     * send message.
      *
      * @param message
      * @throws RemotingException
@@ -79,7 +79,7 @@ public interface Endpoint { // 集中的节点（包含Client、Server、Channel
     void send(Object message, boolean sent) throws RemotingException;
 
     /**
-     * close the channel. todo 11/18 关闭节点，会做什么业务
+     * close the channel.
      */
     void close();
 

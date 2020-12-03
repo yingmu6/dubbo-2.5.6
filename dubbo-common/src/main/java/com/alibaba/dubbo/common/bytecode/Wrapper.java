@@ -196,9 +196,9 @@ public abstract class Wrapper {/**@c 包装类（抽象类） */
     }
 
     /**
-     * 创建指定类的封装类 todo 11/24 是先经过封装，才进入获取代理吗？getProxy()
+     * 创建指定类的封装类
      */
-    private static Wrapper makeWrapper(Class<?> c) {/**@c 运行时根据反射机制解析Class，构造java文件*/ // 10/24 待阅读
+    private static Wrapper makeWrapper(Class<?> c) {/**@c 运行时根据反射机制解析Class，构造java文件*/
         if (c.isPrimitive())/**@c 判断是否是基本类型 */
             throw new IllegalArgumentException("Can not create wrapper for primitive type: " + c);
 
@@ -340,7 +340,7 @@ public abstract class Wrapper {/**@c 包装类（抽象类） */
             for (Method m : ms.values())
                 wc.getField("mts" + ix++).set(null, m.getParameterTypes());
 
-            return (Wrapper) wc.newInstance(); //todo 11/24 待调试封装的内容
+            return (Wrapper) wc.newInstance();
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable e) {

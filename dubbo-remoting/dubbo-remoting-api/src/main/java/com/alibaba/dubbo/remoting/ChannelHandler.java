@@ -34,11 +34,6 @@ public interface ChannelHandler { //发生事件时，回调对应的函数
     // 解：不管是否是单向，通道与通道可以用Channel中transport(通道传输)
 
     /**
-     * 通道处理器功能点：（基于事件回调）todo 11/18 相关事件底层实现查看
-     *
-     */
-
-    /**
      * on channel connected.（连接事件）
      * 与Channel建立连接
      * @param channel channel.

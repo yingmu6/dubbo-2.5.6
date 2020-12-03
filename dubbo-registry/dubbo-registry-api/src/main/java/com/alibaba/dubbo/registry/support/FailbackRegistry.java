@@ -41,6 +41,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author william.liangf
  */
 public abstract class FailbackRegistry extends AbstractRegistry {
+    /**
+     * 注册失败，做恢复处理
+     * 注册失败、订阅失败等，将失败的节点url记录在缓存集合中，然后定时去尝试处理
+     */
 
     // 定时任务执行器
     private final ScheduledExecutorService retryExecutor = Executors.newScheduledThreadPool(1, new NamedThreadFactory("DubboRegistryFailedRetryTimer", true));

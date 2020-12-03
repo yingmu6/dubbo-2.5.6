@@ -24,7 +24,7 @@ import com.alibaba.dubbo.rpc.cluster.RouterFactory;
  *
  * @author william.liangf
  */
-public class ConditionRouterFactory implements RouterFactory { //todo 11/28 各种路由待了解
+public class ConditionRouterFactory implements RouterFactory {
 
     public static final String NAME = "condition";
 

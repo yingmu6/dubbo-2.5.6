@@ -40,7 +40,21 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author william.liangf
  */
-public class DubboRegistry extends FailbackRegistry { //todo 11/23 数据结构了解
+public class DubboRegistry extends FailbackRegistry { //11/23 数据结构了解
+    /**
+     * 数据结构：
+     * 类继承关系：
+     * DubboRegistry继承 -》FailbackRegistry继承 -》AbstractRegistry实现 -》Registry接口
+     * Registry接口继承 Node、 RegistryService接口
+     *
+     * 功能：
+     * 连接connect()、检查是否有效isAvailable、销毁destroy()
+     * 注册节点 doRegister(URL url) ，订阅节点等doSubscribe(URL url, NotifyListener listener)
+     *
+     * 数据：
+     * 注册服务RegistryService，调用者Invoker<RegistryService>
+     * 重连的定时任务ScheduledFuture<?>，定时任务ScheduledExecutorService等
+     */
 
     private final static Logger logger = LoggerFactory.getLogger(DubboRegistry.class);
 

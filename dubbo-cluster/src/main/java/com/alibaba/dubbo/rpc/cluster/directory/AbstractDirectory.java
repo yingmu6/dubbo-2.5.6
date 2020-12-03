@@ -134,7 +134,7 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         // copy list
         routers = routers == null ? new ArrayList<Router>() : new ArrayList<Router>(routers);
         // append url router
-        String routerkey = url.getParameter(Constants.ROUTER_KEY); //todo 11/28 路由key是怎么设置的？
+        String routerkey = url.getParameter(Constants.ROUTER_KEY);
         if (routerkey != null && routerkey.length() > 0) {
             RouterFactory routerFactory = ExtensionLoader.getExtensionLoader(RouterFactory.class).getExtension(routerkey);
             routers.add(routerFactory.getRouter(url)); //往路由规则列表里加路由
@@ -163,7 +163,6 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
 
     /**
      * 获取调用信息对应的invoker列表
-     * todo 11/30 是怎么选择具体的执行实例的？如RegistryDirectory、StaticDirectory等
      */
     protected abstract List<Invoker<T>> doList(Invocation invocation) throws RpcException; /**@c 此处是如何选择StaticDirectory和RegistryDirectory？解：通过抽象类实现多态的方式 */
 

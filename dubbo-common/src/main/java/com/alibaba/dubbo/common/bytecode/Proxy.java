@@ -288,5 +288,5 @@ public abstract class Proxy { //10/24 没有看到实现类，是怎么使用的
      *
      * @return instance.
      */
-    abstract public Object newInstance(InvocationHandler handler); //todo 11/23 没有看到对应的调用？是动态调用的吗
+    abstract public Object newInstance(InvocationHandler handler);
 }

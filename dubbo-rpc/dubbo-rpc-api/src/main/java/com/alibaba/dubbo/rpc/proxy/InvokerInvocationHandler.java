@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
  */
 public class InvokerInvocationHandler implements InvocationHandler {
 
-    private final Invoker<?> invoker; //todo 11/24 具体实例对象是在哪里赋值的？
+    private final Invoker<?> invoker;
 
     public InvokerInvocationHandler(Invoker<?> handler) {
         this.invoker = handler;
@@ -57,7 +57,6 @@ public class InvokerInvocationHandler implements InvocationHandler {
         }
         /**
          * 对创建结果判断，RpcResult.recreate() 若有异常抛出来，否则返回结果值
-         * todo 11/24 为啥一开始是MockClusterInvoker？
          * 目前invoker值流程为：
          * ProxyFactory中getProxy(Invoker<T> invoker) 传入的，按使用源头待了解
          */

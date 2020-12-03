@@ -25,7 +25,7 @@ import java.io.File;
  * @author william.liangf
  */
 @SPI
-public interface LoggerAdapter { //todo 11/19 日志相关了解
+public interface LoggerAdapter {
 
     /**
      * 获取日志输出器

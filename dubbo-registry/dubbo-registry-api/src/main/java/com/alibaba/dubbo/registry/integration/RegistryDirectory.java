@@ -69,7 +69,7 @@ import java.util.Set;
  * https://blog.csdn.net/qq924862077/article/details/79897435
  */
 
-public class RegistryDirectory<T> extends AbstractDirectory<T> implements NotifyListener { //todo 11/20 RegistryDirectory数据结构分析下
+public class RegistryDirectory<T> extends AbstractDirectory<T> implements NotifyListener {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryDirectory.class);
 
@@ -636,7 +636,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * 2）从本地缓存中localMethodInvokerMap，获取方法名对应的调用列表List<Invoker>
      * 3）若方法名没有查到，尝试查找"*"对应列表，若没查到，则返回其中一个缓存调用列表
      */
-    public List<Invoker<T>> doList(Invocation invocation) { //todo 11/30 待调试
+    public List<Invoker<T>> doList(Invocation invocation) {
         if (forbidden) {/**@c 禁用 */
             // 1. 没有服务提供者 2. 服务提供者被禁用
             throw new RpcException(RpcException.FORBIDDEN_EXCEPTION,

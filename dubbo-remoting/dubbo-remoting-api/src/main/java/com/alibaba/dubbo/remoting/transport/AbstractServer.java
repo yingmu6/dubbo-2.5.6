@@ -61,7 +61,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
 
     protected static final String SERVER_THREAD_POOL_NAME = "DubboServerHandler";
     private static final Logger logger = LoggerFactory.getLogger(AbstractServer.class);
-    ExecutorService executor; //todo 11/18 这个线程池的用途？
+    ExecutorService executor;
     private InetSocketAddress localAddress;
     private InetSocketAddress bindAddress;
     private int accepts;
@@ -81,7 +81,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
      * 6）打开服务：默认打开NettyServer中的doOpen()方法
      */
     public AbstractServer(URL url, ChannelHandler handler) throws RemotingException { //service export 步骤15
-        super(url, handler); //todo java继承中的加载顺序，以及父类的实例化
+        super(url, handler);
         localAddress = getUrl().toInetSocketAddress();
         String host = url.getParameter(Constants.ANYHOST_KEY, false)
                 || NetUtils.isInvalidLocalHost(getUrl().getHost())

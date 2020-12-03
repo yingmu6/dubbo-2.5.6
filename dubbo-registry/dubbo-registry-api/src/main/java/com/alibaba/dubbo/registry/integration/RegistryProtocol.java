@@ -81,7 +81,7 @@ public class RegistryProtocol implements Protocol {
 
     public static RegistryProtocol getRegistryProtocol() { //初始化实例 RegistryProtocol
         if (INSTANCE == null) {
-            ExtensionLoader.getExtensionLoader(Protocol.class).getExtension(Constants.REGISTRY_PROTOCOL); // load todo 11/20 此处为啥没有赋值操作
+            ExtensionLoader.getExtensionLoader(Protocol.class).getExtension(Constants.REGISTRY_PROTOCOL);
         }
         return INSTANCE;
     }
@@ -188,7 +188,7 @@ public class RegistryProtocol implements Protocol {
                 exporter = (ExporterChangeableWrapper<T>) bounds.get(key);
                 if (exporter == null) {
                     final Invoker<?> invokerDelegete = new InvokerDelegete<T>(originInvoker, getProviderUrl(originInvoker));
-                    exporter = new ExporterChangeableWrapper<T>((Exporter<T>) protocol.export(invokerDelegete), originInvoker); //做本地暴露，并对Exporter进行封装 todo 调试下，本地暴露时protocol是什么协议
+                    exporter = new ExporterChangeableWrapper<T>((Exporter<T>) protocol.export(invokerDelegete), originInvoker); //做本地暴露，并对Exporter进行封装
                     bounds.put(key, exporter);
                 }
             }

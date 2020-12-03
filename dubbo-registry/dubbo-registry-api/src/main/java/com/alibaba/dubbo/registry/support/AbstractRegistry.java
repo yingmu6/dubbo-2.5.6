@@ -56,7 +56,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author william.liangf
  */
 public abstract class AbstractRegistry implements Registry { //将公共信息放到抽象类，供子类调用
-
     // URL地址分隔符，用于文件缓存中，服务提供者URL分隔
     private static final char URL_SEPARATOR = ' ';
     // URL地址分隔正则表达式，用于解析文件缓存中服务提供者URL列表
@@ -64,7 +63,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
     // 日志输出
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     // 本地磁盘缓存，其中特殊的key值.registies记录注册中心列表，其它均为notified服务提供者列表 (从缓存文件中，读取属性写到Properties)
-    private final Properties properties = new Properties(); //todo 11/23 Properties了解以及查看下本地缓存文件的内容格式
+    private final Properties properties = new Properties();
     // 文件缓存定时写入（线程为SaveProperties）
     private final ExecutorService registryCacheExecutor = Executors.newFixedThreadPool(1, new NamedThreadFactory("DubboSaveRegistryCache", true));
     //是否同步保存文件（若是异步，则用线程池）
@@ -120,7 +119,7 @@ public abstract class AbstractRegistry implements Registry { //将公共信息�
         return registryUrl;
     }
 
-    protected void setUrl(URL url) {
+    protected void setUrl(URL url) { //设置注册节点的url
         if (url == null) {
             throw new IllegalArgumentException("registry url == null");
         }

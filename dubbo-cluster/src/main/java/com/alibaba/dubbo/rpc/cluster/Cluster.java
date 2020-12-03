@@ -30,7 +30,7 @@ import com.alibaba.dubbo.rpc.cluster.support.FailoverCluster;
  * @author william.liangf
  */
 @SPI(FailoverCluster.NAME)
-public interface Cluster { /** 集群策略，包含：容错、合并、并行等 */ //todo 11/23 集群各种策略待了解
+public interface Cluster { /** 集群策略，包含：容错、合并、并行等 */
 
     /**
      * Merge the directory invokers to a virtual invoker.(把目录下的多个调用者invokers合并为一个invoker)

@@ -185,7 +185,7 @@ public class ConditionRouter implements Router, Comparable<Router> {/**@c 具有
      * 3）依次将满足条件的invoker加入结果列表中
      */
     public <T> List<Invoker<T>> route(List<Invoker<T>> invokers, URL url, Invocation invocation)
-            throws RpcException { //todo 11/30 待调试
+            throws RpcException {
         if (invokers == null || invokers.size() == 0) {
             return invokers;
         }
