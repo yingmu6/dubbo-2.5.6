@@ -60,7 +60,7 @@ public class NettyServer extends AbstractServer implements Server {//netty服务
     private org.jboss.netty.channel.Channel channel;
 
     /**@c */
-    public NettyServer(URL url, ChannelHandler handler) throws RemotingException { //@pause 1.2
+    public NettyServer(URL url, ChannelHandler handler) throws RemotingException {
         //由抽象类AbstractServer构建参数，并调用doOpen方法
         super(url, ChannelHandlers.wrap(handler, ExecutorUtil.setThreadName(url, SERVER_THREAD_POOL_NAME))); //history-h3 ChannelHandlers中wrap？
     }

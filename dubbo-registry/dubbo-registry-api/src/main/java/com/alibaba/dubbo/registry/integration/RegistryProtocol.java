@@ -126,10 +126,6 @@ public class RegistryProtocol implements Protocol {
         return overrideListeners;
     }
 
-    /**
-     * @pause 1.8 注册服务暴露流程
-     *
-     */
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException { //originInvoker的值注册协议：registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&export=dubbo%3A%2F%2F10.118.32.69%3A20881%2Fcom.alibaba.dubbo.demo....
         //export invoker(使用dubbo协议暴露)
         final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker); //本地服务暴露，比如DubboProtocol中export

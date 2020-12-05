@@ -69,8 +69,32 @@ import java.util.Set;
  * https://blog.csdn.net/qq924862077/article/details/79897435
  */
 
-public class RegistryDirectory<T> extends AbstractDirectory<T> implements NotifyListener {
+public class RegistryDirectory<T> extends AbstractDirectory<T> implements NotifyListener { //实现NotifyListener接口，表明是个监听器，可以监听服务列表invoker的变更
 
+    /**
+     * 数据结构分析：
+     * 类继承：
+     * 1）RegistryDirectory继承AbstractDirectory，并实现NotifyListener接口
+     * 2）AbstractDirectory实现Directory接口
+     * 3）Directory接口继承Node接口
+     * RegistryDirectory是一个目录Directory，也是一个节点Node、监听器NotifyListener
+     *
+     * 功能点：
+     * 1）List<Invoker<T>> doList(Invocation invocation) 查询调用invoker列表
+     * 2）List<Invoker<T>> route(List<Invoker<T>> invokers, String method) 对方法关联的多个invoker进行路由过滤
+     * 3）void subscribe(URL url, NotifyListener listener) 为url添加监听器listener
+     * 4）synchronized void notify(List<URL> urls) 通知url列表
+     * 5）URL mergeUrl(URL providerUrl) 合并url
+     *
+     * 数据点：
+     * 1）Cluster cluster 集群策略
+     * 2）RouterFactory routerFactory 路由工厂，自适应扩展
+     * 3）ConfiguratorFactory configuratorFactory 配置工厂
+     * 4）Map<String, List<Invoker<T>>> methodInvokerMap 方法与执行列表的缓存
+     * 5）List<Configurator> configurators 配置列表
+     * 6）Registry registry 注册实例
+     * 7）Protocol protocol 协议实例
+     */
     private static final Logger logger = LoggerFactory.getLogger(RegistryDirectory.class);
 
     private static final Cluster cluster = ExtensionLoader.getExtensionLoader(Cluster.class).getAdaptiveExtension();
@@ -90,7 +114,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
 
     private volatile URL overrideDirectoryUrl; // 构造时初始化，断言不为null，并且总是赋非null值
 
-    /*override规则 history-h3
+    /*override规则
      * 优先级：override>-D>consumer>provider
      * 第一种规则：针对某个provider <ip:port,timeout=100>
      * 第二种规则：针对所有provider <* ,timeout=5000>
@@ -123,7 +147,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         if (url.getServiceKey() == null || url.getServiceKey().length() == 0) //com.alibaba.dubbo.registry.RegistryService
             throw new IllegalArgumentException("registry serviceKey is null.");
         this.serviceType = serviceType;
-        this.serviceKey = url.getServiceKey();
+        this.serviceKey = url.getServiceKey();//@pause 解析字符串
         this.queryMap = StringUtils.parseQueryString(url.getParameterAndDecoded(Constants.REFER_KEY)); //通过url的参数构建查询map
         /**
          * 1）url设置路径path，先将参数集合清除clearParameters()，然后往url添加查询参数集合queryMap，并移除监控参数monitor
@@ -151,19 +175,6 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
 
     /**
      * 将url列表转换为Configurator列表
-     * 1）若url列表为空，则返回空列表
-     * 2）构建Configurator列表，初始大小为传入的urls列表大小值
-     * 3）遍历输入的url列表
-     *   3.1）若url中协议为空即为"empty"，则移除列表，进行下一个判断
-     *      (此处列表中只要有一个是空协议，就移除列表，并break终止循环
-     *      1：全部的url的协议都不为"empty"，2：前面的url协议可以为"empty"，最后一个不为"empty"即可)
-     *   3.2）通过url的参数列表，构建override的参数Map集合
-     *   3.3）override的Map集合中移除"anyhost"对应的值
-     *        若没有参数，则将configurators.clear() 列表清空，进入下一次循环
-     *   3.4）若url通过上述检测，则通过ConfiguratorFactory配置工厂，
-     *        获取url对应的配置Configurator的实例，并加到configurators列表中
-     * 4）对List<Configurator>列表排序，因为Configurator继承了Comparable接口中compareTo方法
-     *    所以会根据Configurator的实现类的compareTo方法进行排序
      */
     public static List<Configurator> toConfigurators(List<URL> urls) {
         if (urls == null || urls.size() == 0) {
@@ -286,7 +297,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * @param invokerUrls 传入的参数不能为null
      */
     // @system: 2017/8/31 System-t0d0 使用线程池去刷新地址，否则可能会导致任务堆积
-    private void refreshInvoker(List<URL> invokerUrls) {/**@c history-h3 待了解*/
+    private void refreshInvoker(List<URL> invokerUrls) {
         if (invokerUrls != null && invokerUrls.size() == 1 && invokerUrls.get(0) != null
                 && Constants.EMPTY_PROTOCOL.equals(invokerUrls.get(0).getProtocol())) {
             this.forbidden = true; // 禁止访问
@@ -322,7 +333,6 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
-    /**@c history-h3 */
     private Map<String, List<Invoker<T>>> toMergeMethodInvokerMap(Map<String, List<Invoker<T>>> methodMap) {
         Map<String, List<Invoker<T>>> result = new HashMap<String, List<Invoker<T>>>();
         for (Map.Entry<String, List<Invoker<T>>> entry : methodMap.entrySet()) {
@@ -468,9 +478,8 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
 
     /**
      * 合并url参数 顺序为override > -D >Consumer > Provider
-     *
      */
-    private URL mergeUrl(URL providerUrl) {/**@c */
+    private URL mergeUrl(URL providerUrl) {
         providerUrl = ClusterUtils.mergeUrl(providerUrl, queryMap); // 合并消费端参数
 
         List<Configurator> localConfigurators = this.configurators; // local reference
@@ -572,7 +581,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     /**
      * 关闭所有Invoker
      */
-    private void destroyAllInvokers() {/**@c */
+    private void destroyAllInvokers() {
         Map<String, Invoker<T>> localUrlInvokerMap = this.urlInvokerMap; // local reference
         if (localUrlInvokerMap != null) {
             for (Invoker<T> invoker : new ArrayList<Invoker<T>>(localUrlInvokerMap.values())) {
@@ -590,7 +599,6 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     /**
      * 检查缓存中的invoker是否需要被destroy
      * 如果url中指定refer.autodestroy=false，则只增加不减少，可能会有refer泄漏，
-     *
      */
     private void destroyUnusedInvokers(Map<String, Invoker<T>> oldUrlInvokerMap, Map<String, Invoker<T>> newUrlInvokerMap) {
         if (newUrlInvokerMap == null || newUrlInvokerMap.size() == 0) {
@@ -631,13 +639,13 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     }
 
     /**
-     * 查询调用列表List<Invoker>
+     * 从本地缓存中查询调用列表List<Invoker>
      * 1）从调用信息Invocation中，获取方法名methodName、参数列表args
      * 2）从本地缓存中localMethodInvokerMap，获取方法名对应的调用列表List<Invoker>
      * 3）若方法名没有查到，尝试查找"*"对应列表，若没查到，则返回其中一个缓存调用列表
      */
     public List<Invoker<T>> doList(Invocation invocation) {
-        if (forbidden) {/**@c 禁用 */
+        if (forbidden) {
             // 1. 没有服务提供者 2. 服务提供者被禁用
             throw new RpcException(RpcException.FORBIDDEN_EXCEPTION,
                 "No provider available from registry " + getUrl().getAddress() + " for service " + getConsumerUrl().getServiceKey() + " on consumer " +  NetUtils.getLocalHost()

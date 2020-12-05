@@ -54,7 +54,7 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
 
     private final URL url;
 
-    private volatile boolean destroyed = false; //维护着目录销毁状态
+    private volatile boolean destroyed = false; //是否被销毁
 
     private volatile URL consumerUrl;
 
@@ -80,17 +80,17 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
     }
 
     /**
-     * 获取指定Invocation调用信息对应的调用列表List<Invoker>
+     * 获取Invocation调用信息对应的调用列表List<Invoker>
      * 1）按调用信息过滤doList(invocation)
      * 2）按路由器Router路由过滤
      */
     public List<Invoker<T>> list(Invocation invocation) throws RpcException {
-        if (destroyed) {
+        if (destroyed) { //目录已被销毁了，就拿不到invoker列表，则抛出异常
             throw new RpcException("Directory already destroyed .url: " + getUrl());
         }
-        List<Invoker<T>> invokers = doList(invocation); //从内存中获取调用方法对应的invoker列表，
+        List<Invoker<T>> invokers = doList(invocation);
         List<Router> localRouters = this.routers; // 若有路由器，则按路由器依次路由过滤（至少有一个MockInvokersSelector）
-        if (localRouters != null && localRouters.size() > 0) { //此处有多个路由器，invokers去最优一个列表？还是有前后关联的？解：依次拿上一次的调用列表去路由invokers = router.route(invokers...)
+        if (localRouters != null && localRouters.size() > 0) { //用路由列表依次对invoker列表进行路由过滤
             for (Router router : localRouters) {
                 try {
                     if (router.getUrl() == null || router.getUrl().getParameter(Constants.RUNTIME_KEY, true)) {
@@ -157,13 +157,13 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         return destroyed;
     }
 
-    public void destroy() {
+    public void destroy() { //实现Note接口的方法，销毁目录时，把销毁状态标记destroyed置为true
         destroyed = true;
     }
 
     /**
      * 获取调用信息对应的invoker列表（交由子类实现）
      */
-    protected abstract List<Invoker<T>> doList(Invocation invocation) throws RpcException; /**@c 此处是如何选择StaticDirectory和RegistryDirectory？解：通过抽象类实现多态的方式 */
+    protected abstract List<Invoker<T>> doList(Invocation invocation) throws RpcException;
 
 }

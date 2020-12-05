@@ -39,7 +39,7 @@ public class ChannelHandlers {
      * 2）封装wrapInternal，获取到ChannelHandler
      */
     public static ChannelHandler wrap(ChannelHandler handler, URL url) {
-        return ChannelHandlers.getInstance().wrapInternal(handler, url); //@pause 1.3
+        return ChannelHandlers.getInstance().wrapInternal(handler, url);
     }
 
     protected static ChannelHandlers getInstance() {

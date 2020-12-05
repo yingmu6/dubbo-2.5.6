@@ -342,7 +342,7 @@ public final class StringUtils {
         Map<String, String> map = new HashMap<String, String>(tmp.length);
         for (int i = 0; i < tmp.length; i++) { //str为application=api_demo&dubbo=2.0.0&interface=com.alibaba.dubbo.demo.ApiDemo&methods=sayHello,sayApi&pid=20130&side=consumer&timestamp=1564548724133
             Matcher matcher = KVP_PATTERN.matcher(tmp[i]); //以&分隔，设置map键值对
-            if (matcher.matches() == false) //判断是否是
+            if (matcher.matches() == false)
                 continue;
             map.put(matcher.group(1), matcher.group(2));
         }

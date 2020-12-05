@@ -80,9 +80,6 @@ public class DubboRegistryFactory extends AbstractRegistryFactory {
         this.cluster = cluster;
     }
 
-    /**
-     * 创建注册实例 @pause 2.1
-     */
     public Registry createRegistry(URL url) {
         url = getRegistryURL(url);
         List<URL> urls = new ArrayList<URL>();

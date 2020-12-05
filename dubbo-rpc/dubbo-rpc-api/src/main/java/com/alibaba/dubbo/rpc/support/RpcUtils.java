@@ -119,17 +119,12 @@ public class RpcUtils {
      * 2）若不是直接从调用信息中获取
      */
     public static String getMethodName(Invocation invocation) {
-        //为啥方法名加上$  0809 此处"$invoke" 什么场景会出现? 解：这个方法名是GenericService的方法名，判断是否是泛化调用
+        //为啥方法名加上$，此处"$invoke" 什么场景会出现? 解：这个方法名是GenericService的方法名，判断是否是泛化调用
         if (Constants.$INVOKE.equals(invocation.getMethodName())
                 && invocation.getArguments() != null
                 && invocation.getArguments().length > 0
                 && invocation.getArguments()[0] instanceof String) {
-            /**
-             *  10/27 为啥是第一个参数？泛化调试下, 11/03-done
-             *  解：根据GenericService定义的方法Object $invoke(String method, String[] parameterTypes, Object[] args)
-             *  获取到方法名称
-             */
-            return (String) invocation.getArguments()[0];
+            return (String) invocation.getArguments()[0]; //GenericService的 Object $invoke(String method, String[] parameterTypes, Object[] args)
         }
         return invocation.getMethodName();
     }
@@ -139,7 +134,6 @@ public class RpcUtils {
                 && invocation.getArguments() != null
                 && invocation.getArguments().length > 2
                 && invocation.getArguments()[2] instanceof Object[]) {
-            //取第三个参数？Invocation具体的值？
             return (Object[]) invocation.getArguments()[2];
         }
         return invocation.getArguments();
