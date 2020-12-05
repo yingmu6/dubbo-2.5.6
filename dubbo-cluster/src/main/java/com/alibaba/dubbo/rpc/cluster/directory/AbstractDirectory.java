@@ -162,7 +162,7 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
     }
 
     /**
-     * 获取调用信息对应的invoker列表
+     * 获取调用信息对应的invoker列表（交由子类实现）
      */
     protected abstract List<Invoker<T>> doList(Invocation invocation) throws RpcException; /**@c 此处是如何选择StaticDirectory和RegistryDirectory？解：通过抽象类实现多态的方式 */
 
