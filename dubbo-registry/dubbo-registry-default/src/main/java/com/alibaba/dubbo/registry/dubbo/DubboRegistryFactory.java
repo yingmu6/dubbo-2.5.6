@@ -94,7 +94,7 @@ public class DubboRegistryFactory extends AbstractRegistryFactory {
         RegistryDirectory<RegistryService> directory = new RegistryDirectory<RegistryService>(RegistryService.class, url.addParameter(Constants.INTERFACE_KEY, RegistryService.class.getName()).addParameterAndEncoded(Constants.REFER_KEY, url.toParameterString()));
         //把目录下的多个调用者invokers合并为一个invoker
         Invoker<RegistryService> registryInvoker = cluster.join(directory); //Cluster默认集群策略，FailoverCluster
-        RegistryService registryService = proxyFactory.getProxy(registryInvoker); //@pause 2.2 获取执行者的代理
+        RegistryService registryService = proxyFactory.getProxy(registryInvoker); //获取执行者的代理
         DubboRegistry registry = new DubboRegistry(registryInvoker, registryService);
         directory.setRegistry(registry);
         directory.setProtocol(protocol);

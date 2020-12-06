@@ -27,7 +27,7 @@ import com.alibaba.dubbo.rpc.cluster.Directory;
  *
  * @author william.liangf
  */
-public class ForkingCluster implements Cluster {
+public class ForkingCluster implements Cluster { //fork：分叉，join：连接
 
     public final static String NAME = "forking";
 

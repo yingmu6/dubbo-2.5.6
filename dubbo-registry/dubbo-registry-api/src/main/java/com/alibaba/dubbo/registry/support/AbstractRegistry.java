@@ -56,6 +56,10 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author william.liangf
  */
 public abstract class AbstractRegistry implements Registry { //将公共信息放到抽象类，供子类调用
+    /**
+     *
+     */
+
     // URL地址分隔符，用于文件缓存中，服务提供者URL分隔
     private static final char URL_SEPARATOR = ' ';
     // URL地址分隔正则表达式，用于解析文件缓存中服务提供者URL列表

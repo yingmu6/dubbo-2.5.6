@@ -70,7 +70,7 @@ public class NettyServer extends AbstractServer implements Server {//netty服务
      * 绑定解码、编码、netty事件
      */
     @Override
-    protected void doOpen() throws Throwable { //@pause 1.7 netty客户端使用，了解bootstrap使用
+    protected void doOpen() throws Throwable { //netty客户端使用，了解bootstrap使用
         NettyHelper.setNettyLoggerFactory();
         ExecutorService boss = Executors.newCachedThreadPool(new NamedThreadFactory("NettyServerBoss", true));
         ExecutorService worker = Executors.newCachedThreadPool(new NamedThreadFactory("NettyServerWorker", true));
