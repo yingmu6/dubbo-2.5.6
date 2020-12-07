@@ -258,7 +258,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
             } else if (Constants.CONFIGURATORS_CATEGORY.equals(category)
                     || Constants.OVERRIDE_PROTOCOL.equals(protocol)) {
                 configuratorUrls.add(url);
-            } else if (Constants.PROVIDERS_CATEGORY.equals(category)) {
+            } else if (Constants.PROVIDERS_CATEGORY.equals(category)) { //提供者的url
                 invokerUrls.add(url);
             } else {
                 logger.warn("Unsupported category " + category + " in notified url: " + url + " from registry " + getUrl().getAddress() + " to consumer " + NetUtils.getLocalHost());
