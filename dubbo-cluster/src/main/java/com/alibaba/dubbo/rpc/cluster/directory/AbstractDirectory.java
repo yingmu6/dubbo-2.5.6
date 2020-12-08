@@ -58,7 +58,7 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
 
     private volatile URL consumerUrl;
 
-    private volatile List<Router> routers;/**@c 一个目录下有多个Router */
+    private volatile List<Router> routers;
 
     public AbstractDirectory(URL url) {
         this(url, null);
@@ -113,19 +113,7 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
     }
 
     /**
-     * 将路由列表设置到AbstractDirectory中的List<Router>
-     * 1）若传入的routers为空，则初始化新的列表，若不为空，则用传入的routers构建新的列表
-     * 2）获取url中router对应的路由routerkey
-     *   2.1）若routerkey不为空，通过SPI获取到RouterFactory的实例
-     *   2.2）获取url对应的路由实例Router，并且加到List<Router>
-     * 3）构建mock invoker选择器MockInvokersSelector，并加到List<Router>
-     * 4）对路由列表进行排序，将路由列表设置到AbstractDirectory中的List<Router>
-     * 5）遍历当前的List<Configurator>，Configurator.configure配置每个元素
-     */
-
-    /**
-     * 思路整理：
-     * 为抽象目录设置路由列表routers，并且附加指定路由router
+     * 思路整理：设置路由列表routers
      * 1）从url查找路由key，如设置了则加到router列表
      * 2）默认都加上MockInvokersSelector
      * 3）对路由进行排序，并设置到当前AbstractDirectory的路由列表中
