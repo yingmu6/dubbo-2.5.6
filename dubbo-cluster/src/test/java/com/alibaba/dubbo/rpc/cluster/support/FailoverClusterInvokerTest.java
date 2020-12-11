@@ -261,6 +261,10 @@ public class FailoverClusterInvokerTest {
         }
     }
 
+    /**
+     * MockDirectory 测试的目录：不会用在生产环境中
+     * 1）继承了StaticDirectory，数据维护在父目录中
+     */
     public class MockDirectory<T> extends StaticDirectory<T> {
         public MockDirectory(URL url, List<Invoker<T>> invokers) {
             super(url, invokers);

@@ -63,7 +63,7 @@ import java.util.Set;
  * 消费者会监听注册中心相关服务的消息，当收到相关服务提供者变动的消息时会更新本地服务目录Directory，实现类RegistryDirectory中主要提供了两个功能接口
  *
  * （1）notify(List<URL> urls)：当注册中心有通知变化时会通知服务消费者更新本地的服务目录
- * （2）List<Invoker<T>> doList(Invo
+ * （2）List<Invoker<T>> doList(Invocation invocation)：获取调用信息对应的invoker列表
  * 服务目录Directory简单来说就是维护了一个List，提供两个接口分别通知修改list和获取符合消费者要求的服务列表
  *
  * https://blog.csdn.net/qq924862077/article/details/79897435
@@ -115,7 +115,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     private volatile URL overrideDirectoryUrl; // 构造时初始化，断言不为null，并且总是赋非null值
 
     /*override规则
-     * 优先级：override>-D>consumer>provider
+     * 优先级：override>-D>consumer>provider（动态配置 > 系统设置 > 消费端设置 > 提供端设置）
      * 第一种规则：针对某个provider <ip:port,timeout=100>
      * 第二种规则：针对所有provider <* ,timeout=5000>
      */
@@ -245,7 +245,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * 3）对配置器列表依次执行配置操作，configurator.configure
      * 4）刷新invoker列表，根据invokerURL列表转换为invoker列表，refreshInvoker(invokerUrls)
      */
-    public synchronized void notify(List<URL> urls) { //服务提供者出现变化时注册中心会将消息通知到消息者，消费者收到通知消息会调用notify函数，完成消费者本地服务目录相关信息的刷新
+    public synchronized void notify(List<URL> urls) { //服务提供者出现变化时，注册中心会将消息通知到消息者，消费者收到通知消息会调用notify函数，完成消费者本地服务目录相关信息的刷新
         List<URL> invokerUrls = new ArrayList<URL>();
         List<URL> routerUrls = new ArrayList<URL>();
         List<URL> configuratorUrls = new ArrayList<URL>();
@@ -284,11 +284,11 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
             }
         }
         // providers
-        refreshInvoker(invokerUrls); //todo @pause-12/6_03 刷新invoker
+        refreshInvoker(invokerUrls);
     }
 
     /**
-     * 根据invokerURL列表转换为invoker列表。转换规则如下：
+     * 根据invokerURL列表转换为invoker列表。转换规则如下：（刷新本地服务目录中缓存的invoker列表）
      * 1.如果url已经被转换为invoker，则不在重新引用，直接从缓存中获取，注意如果url中任何一个参数变更也会重新引用
      * 2.如果传入的invoker列表不为空，则表示最新的invoker列表
      * 3.如果传入的invokerUrl列表是空，则表示只是下发的override规则或route规则，需要重新交叉对比，决定是否需要重新引用。
@@ -302,7 +302,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
             this.forbidden = true; // 禁止访问
             this.methodInvokerMap = null; // 置空列表
             destroyAllInvokers(); // 关闭所有Invoker
-        } else {
+        } else { //执行条件：invokerUrls == null || invokerUrls.size() ！= 1 || invokerUrls.get(0) == null || ！Constants.EMPTY_PROTOCOL.equals(invokerUrls.get(0).getProtocol())
             this.forbidden = false; // 允许访问
             Map<String, Invoker<T>> oldUrlInvokerMap = this.urlInvokerMap; // local reference
             if (invokerUrls.size() == 0 && this.cachedInvokerUrls != null) {
@@ -313,9 +313,9 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
             }
             if (invokerUrls.size() == 0) {
                 return;
-            }//todo @pause-12/6_01 invoker url转换
+            }
             Map<String, Invoker<T>> newUrlInvokerMap = toInvokers(invokerUrls);// 将URL列表转成Invoker列表
-            Map<String, List<Invoker<T>>> newMethodInvokerMap = toMethodInvokers(newUrlInvokerMap); // 换方法名映射Invoker列表 todo @pause-12/6_04
+            Map<String, List<Invoker<T>>> newMethodInvokerMap = toMethodInvokers(newUrlInvokerMap); // 换方法名映射Invoker列表
             // state change
             //如果计算错误，则不进行处理.
             if (newUrlInvokerMap == null || newUrlInvokerMap.size() == 0) {
@@ -435,7 +435,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                 logger.error(new IllegalStateException("Unsupported protocol " + providerUrl.getProtocol() + " in notified url: " + providerUrl + " from registry " + getUrl().getAddress() + " to consumer " + NetUtils.getLocalHost()
                         + ", supported protocol: " + ExtensionLoader.getExtensionLoader(Protocol.class).getSupportedExtensions()));
                 continue;
-            }// todo @pause-12/6_02 合并url
+            }
             URL url = mergeUrl(providerUrl);/**@c 合并url时，同一参数会有覆盖策略 */
 
             String key = url.toFullString(); // URL参数是排序的
@@ -592,16 +592,18 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     }
 
     /**
-     * 检查缓存中的invoker是否需要被destroy
+     * 检查缓存中的invoker是否需要被destroy（将新老invoker map进行比较，销毁未使用的invoker）
      * 如果url中指定refer.autodestroy=false，则只增加不减少，可能会有refer泄漏，
+     *
+     * 1）判断需要删除的invoker：以新的invoker为主，依次遍历老的invoker，若老的invoker不在新的invoker，表明是删除的invoker
+     * 2）从本地缓存的map中删除对应的值，并且销毁invoker节点
      */
-    // todo @pause-12/6_06 销毁未使用的invoker
     private void destroyUnusedInvokers(Map<String, Invoker<T>> oldUrlInvokerMap, Map<String, Invoker<T>> newUrlInvokerMap) {
         if (newUrlInvokerMap == null || newUrlInvokerMap.size() == 0) {
             destroyAllInvokers();
             return;
         }
-        // check deleted invoker
+        // check deleted invoker（新老invoker列表进行对比，检查出需要删除的invoker）
         List<String> deleted = null;
         if (oldUrlInvokerMap != null) {
             Collection<Invoker<T>> newInvokers = newUrlInvokerMap.values();
@@ -615,6 +617,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
             }
         }
 
+        // 遍历需要删除的url列表，从本地缓存中移除，并销毁节点
         if (deleted != null) {
             for (String url : deleted) {
                 if (url != null) {

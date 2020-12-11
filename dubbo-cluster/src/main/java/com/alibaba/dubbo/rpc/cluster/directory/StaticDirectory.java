@@ -45,6 +45,7 @@ public class StaticDirectory<T> extends AbstractDirectory<T> {
     }
 
     public StaticDirectory(URL url, List<Invoker<T>> invokers, List<Router> routers) {
+        // 若url为空，且调用列表invokers不为空的话，取列表中第一个执行体invoker的url，否则直接取url
         super(url == null && invokers != null && invokers.size() > 0 ? invokers.get(0).getUrl() : url, routers);
         if (invokers == null || invokers.size() == 0)
             throw new IllegalArgumentException("invokers == null");
@@ -55,6 +56,11 @@ public class StaticDirectory<T> extends AbstractDirectory<T> {
         return invokers.get(0).getInterface(); //为啥直接取第一个？ 列表中的invoker类型是一样的，所以取其中一个即可
     }
 
+    /**
+     * 判断静态目录是否可用
+     * 1）判断目录的标识destroyed是否被销毁
+     * 2）判断目录维护的invoker列表中是否有可用的invoker
+     */
     public boolean isAvailable() {
         if (isDestroyed()) {
             return false;
@@ -67,7 +73,13 @@ public class StaticDirectory<T> extends AbstractDirectory<T> {
         return false;
     }
 
-    public void destroy() {/**@c 清除执行列表 */
+    /**
+     * 销毁静态目录
+     * 1）判断是否有销毁，若已销毁，则不处理
+     * 2）将父类AbstractDirectory的标识destroyed更新为销毁状态
+     * 3）清空静态目录维护的列表invokers.clear()
+     */
+    public void destroy() {
         if (isDestroyed()) {
             return;
         }
@@ -78,6 +90,10 @@ public class StaticDirectory<T> extends AbstractDirectory<T> {
         invokers.clear();
     }
 
+    /**
+     * 获取调用信息对应的invoker列表
+     * 1）直接返回静态目录维护的invoker列表
+     */
     @Override
     protected List<Invoker<T>> doList(Invocation invocation) throws RpcException {
 
