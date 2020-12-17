@@ -24,7 +24,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  * @author william.liangf
  */
 @SPI
-public interface PageHandler {/**@c */
+public interface PageHandler { //页面处理器
 
     /**
      * Handle the page.

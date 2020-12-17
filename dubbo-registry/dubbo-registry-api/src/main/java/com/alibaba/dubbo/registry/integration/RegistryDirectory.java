@@ -332,13 +332,13 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
-    //todo @pause-12/6_05 合并MethodInvokerMap
     private Map<String, List<Invoker<T>>> toMergeMethodInvokerMap(Map<String, List<Invoker<T>>> methodMap) {
         Map<String, List<Invoker<T>>> result = new HashMap<String, List<Invoker<T>>>();
         for (Map.Entry<String, List<Invoker<T>>> entry : methodMap.entrySet()) {
             String method = entry.getKey();
             List<Invoker<T>> invokers = entry.getValue();
-            Map<String, List<Invoker<T>>> groupMap = new HashMap<String, List<Invoker<T>>>();
+            Map<String, List<Invoker<T>>> groupMap = new HashMap<String, List<Invoker<T>>>(); //组与组内的invoker列表的映射
+            // 对invoker列表，按组group进行归并
             for (Invoker<T> invoker : invokers) {
                 String group = invoker.getUrl().getParameter(Constants.GROUP_KEY, "");
                 List<Invoker<T>> groupInvokers = groupMap.get(group);
@@ -402,9 +402,10 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
 
     /**
      * 将urls转成invokers,如果url已经被refer过，不再重新引用。
+     * 1）从参数map中获取Protocol，依次与输入的url进行比较
+     * 2）若协议匹配，则将url进行合并mergeUrl(providerUrl)
      *
-     * @param urls
-     * @return invokers
+     *
      */
     private Map<String, Invoker<T>> toInvokers(List<URL> urls) {
         Map<String, Invoker<T>> newUrlInvokerMap = new HashMap<String, Invoker<T>>();

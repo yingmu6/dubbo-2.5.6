@@ -45,6 +45,7 @@ public class ApplicationsPageHandler implements PageHandler {
                 List<String> row = new ArrayList<String>();
                 row.add(application);
 
+                // 从本地缓存中按应用获取提供者和消费者信息
                 List<URL> providers = RegistryContainer.getInstance().getProvidersByApplication(application);
                 List<URL> consumers = RegistryContainer.getInstance().getConsumersByApplication(application);
 
@@ -56,6 +57,7 @@ public class ApplicationsPageHandler implements PageHandler {
                     row.add("");
                 }
 
+                // 若有异常数据，自定义页面显示
                 int providersSize = providers == null ? 0 : providers.size();
                 providersCount += providersSize;
                 row.add(providersSize == 0 ? "<font color=\"blue\">No provider</font>" : "<a href=\"providers.html?application=" + application + "\">Providers(" + providersSize + ")</a>");
@@ -76,6 +78,7 @@ public class ApplicationsPageHandler implements PageHandler {
                 rows.add(row);
             }
         }
+        // 构造返回的页面对象
         return new Page("Applications", "Applications (" + rows.size() + ")",
                 new String[]{"Application Name:", "Owner", "Providers(" + providersCount + ")", "Consumers(" + consumersCount + ")", "Depends On(" + efferentCount + ")", "Used By(" + afferentCount + ")"}, rows);
     }

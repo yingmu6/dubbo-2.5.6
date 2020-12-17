@@ -64,7 +64,7 @@ public class Log4jContainer implements Container {
             Enumeration<org.apache.log4j.Logger> ls = LogManager.getCurrentLoggers();
             while (ls.hasMoreElements()) {
                 org.apache.log4j.Logger l = ls.nextElement();
-                if (l != null) {/**@c 待了解 */
+                if (l != null) {
                     Enumeration<Appender> as = l.getAllAppenders();
                     while (as.hasMoreElements()) {
                         Appender a = as.nextElement();

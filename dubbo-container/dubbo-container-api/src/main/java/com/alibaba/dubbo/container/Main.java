@@ -50,7 +50,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            if (args == null || args.length == 0) {
+            if (args == null || args.length == 0) { //接收启动入参
                 String config = ConfigUtils.getProperty(CONTAINER_KEY, loader.getDefaultExtensionName()); //默认使用spring容器
                 args = Constants.COMMA_SPLIT_PATTERN.split(config);
             }
@@ -73,7 +73,7 @@ public class Main {
                             }
                             try {
                                 LOCK.lock();
-                                STOP.signal(); //history-h2 待了解
+                                STOP.signal();
                             } finally {
                                 LOCK.unlock();
                             }
@@ -83,14 +83,14 @@ public class Main {
             }
 
             for (Container container : containers) {
-                container.start();
+                container.start(); //启动容器，可以启动多个容器
                 logger.info("Dubbo " + container.getClass().getSimpleName() + " started!");
             }
             System.out.println(new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss]").format(new Date()) + " Dubbo service server started!");
         } catch (RuntimeException e) {
             e.printStackTrace();
             logger.error(e.getMessage(), e);
-            System.exit(1); //history-h2 待了解
+            System.exit(1);
         }
         try {
             LOCK.lock();

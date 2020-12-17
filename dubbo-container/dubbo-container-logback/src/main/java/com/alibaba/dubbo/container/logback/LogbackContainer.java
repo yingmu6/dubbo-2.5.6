@@ -68,7 +68,7 @@ public class LogbackContainer implements Container {
      * @param level
      * @param maxHistory
      */
-    private void doInitializer(String file, String level, int maxHistory) {/**@c 待了解 */
+    private void doInitializer(String file, String level, int maxHistory) {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.detachAndStopAllAppenders();

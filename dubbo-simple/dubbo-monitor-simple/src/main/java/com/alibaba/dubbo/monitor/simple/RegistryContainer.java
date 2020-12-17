@@ -208,7 +208,7 @@ public class RegistryContainer implements Container {
                 Constants.CATEGORY_KEY, Constants.PROVIDERS_CATEGORY + ","
                 + Constants.CONSUMERS_CATEGORY,
                 Constants.CHECK_KEY, String.valueOf(false));
-        registry.subscribe(subscribeUrl, new NotifyListener() {
+        registry.subscribe(subscribeUrl, new NotifyListener() { //启动时，订阅"providers"、"consumers"目录的改变
             public void notify(List<URL> urls) {
                 if (urls == null || urls.size() == 0) {
                     return;
