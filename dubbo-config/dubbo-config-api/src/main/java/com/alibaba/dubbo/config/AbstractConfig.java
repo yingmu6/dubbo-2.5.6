@@ -36,7 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 配置解析的工具方法、公共方法 history 10/01 配置config类继承图画下
+ * 配置解析的工具方法、公共方法
  * 抽象类，但该类没有抽象方法
  *
  * @author william.liangf
@@ -110,11 +110,10 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
     protected String id;
 
     /**
-     *  对特殊属性处理
-     *  1）当值不为空时
-     *    1.1）若key的值为dubbo.service.max.retry.providers，即提供者最大重试次数
+     * 对特殊属性处理
+     * 1）若key的值为dubbo.service.max.retry.providers，即提供者最大重试次数
      *         将给定的值减1，如value为3，处理后的值为2
-     *    1.2）若key的值为dubbo.service.allow.no.provider，即为是否允许没有提供者
+     * 2）若key的值为dubbo.service.allow.no.provider，即为是否允许没有提供者
      *         对传入的值去反
      */
     private static String convertLegacyValue(String key, String value) {
@@ -135,22 +134,6 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
      *
      * 等同：系统配置（启动配置）> xml配置（API配置）> properties文件配置
      * 此方法用于是将dubbo的属性配置过滤处理
-     */
-    /**@c 为此方法是设值 但API已经可以设置，为啥还用这个 解：过滤处理属性值，引用传递,过 */
-
-    /**
-     * Note: 将系统属性或属性文件的内容加载到配置对象中AbstractConfig
-     * 1）若配置为空，则不处理
-     * 2）构建url中的前缀名，如dubbo.provider
-     * 3）获取类中的方法Method列表，并遍历Method列表，查找公有方法Method，set* ()
-     *    3.1）将属性名由驼峰式改为按指定分隔符分隔，如userName改为user-name
-     *    3.2）尝试获取系统属性的值，（"dubbo." + TagName + config.getId() + "." + property）
-     *    3.3）若没有获取到指定的属性值，则继续尝试查找，（"dubbo." + TagName + "." + property）
-     *    3.4）构建getter方法，则调用get方法获取。若没有get方法，调用会报异常，则在异常中调用is方法
-     *        3.4.1）若getter方法不为空，尝试获取prefix + config.getId() + "." + property的值，
-     *        3.4.2）若值为空继续尝试prefix + property对应的值
-     *        3.4.3）若查到的值还为空，则预置的Map获取到特殊的key
-     *    3.5）执行方法调用method.invoke
      */
 
     /**
@@ -263,7 +246,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
     }
 
     @SuppressWarnings("unchecked")   /**@c 过滤处理URL中的参数值 原始方法*/
-    protected static void appendParametersOrigin(Map<String, String> parameters, Object config, String prefix) {
+    protected static void appendParameters(Map<String, String> parameters, Object config, String prefix) {
         if (config == null) {
             return;
         }
@@ -435,7 +418,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
      * 4）getParameters方法中，循环遍历map，把值写入待处理的map中
      */
 
-    protected static void appendParameters (Map<String, String> parametersMap, Object config, String prefix) {
+    protected static void appendParametersOverride (Map<String, String> parametersMap, Object config, String prefix) {
         if (config == null) {
             return;
         }
