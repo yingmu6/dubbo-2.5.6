@@ -272,7 +272,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                     } else {
                         key = prop;
                     }
-                    Object value = method.invoke(config, new Object[0]);
+                    Object value = method.invoke(config, new Object[0]); // 执行方法调用，并返回执行的结果
                     String str = String.valueOf(value).trim();
                     if (value != null && str.length() > 0) {
                         if (parameter != null && parameter.escaped()) {
@@ -292,7 +292,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                             key = prefix + "." + key;
                         }
                         parameters.put(key, str);/**@c 存入键值*/
-                    } else if (parameter != null && parameter.required()) {
+                    } else if (parameter != null && parameter.required()) { //
                         throw new IllegalStateException(config.getClass().getSimpleName() + "." + key + " == null");
                     }
                 } else if ("getParameters".equals(name)  /**@c ProtocolConfig中方法*/
