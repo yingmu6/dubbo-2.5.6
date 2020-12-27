@@ -63,18 +63,27 @@ import java.util.concurrent.TimeUnit;
  */
 /**@ 服务提供者配置 */
 public class ServiceConfig<T> extends AbstractServiceConfig {
+    /**
+     * ServiceConfig数据结构
+     * 继承关系
+     * ServiceConfig -》AbstractServiceConfig -》 AbstractInterfaceConfig
+     * -》AbstractMethodConfig -》AbstractConfig
+     *
+     * 维护的数据
+     *
+     */
 
     private static final long serialVersionUID = 3033787999037024738L;
 
     private static final Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
-    //history-h3 代理工厂需了解
+
     private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
 
     private static final Map<String, Integer> RANDOM_PORT_MAP = new HashMap<String, Integer>(); //history-h3 随机端口map
 
-    /**@ 单例的线程池*/
+    /** 延迟线程池 */
     private static final ScheduledExecutorService delayExportExecutor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("DubboServiceDelayExporter", true));
-    private final List<URL> urls = new ArrayList<URL>(); /**@ list中的E 表示元素类型，泛型表示 */
+    private final List<URL> urls = new ArrayList<URL>();
     private final List<Exporter<?>> exporters = new ArrayList<Exporter<?>>();
     // 接口名称（暴露的接口名）
     private String interfaceName;

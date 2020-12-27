@@ -115,7 +115,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                 String[] as = address.split("\\s*[|]+\\s*");/**@c 以竖线分隔，前后都可以有空格 */
                 for (String a : as) {
                     RegistryConfig registryConfig = new RegistryConfig();
-                    registryConfig.setAddress(a);
+                    registryConfig.setAddress(a); //配置如：dubbo.registry.address=zookeeper://127.0.0.1:2181
                     registries.add(registryConfig);
                 }
             }

@@ -494,7 +494,9 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         appendAttributes(parameters, config, null);
     }
 
-    /**@c 将config中注解attribute为true的属性放入map中 */
+    /**
+     * 遍历配置类config的方法，将包含注解Parameter，且含有属性的attribute的值设置的参数map中
+     */
     protected static void appendAttributes(Map<Object, Object> parameters, Object config, String prefix) {
         if (config == null) {
             return;
@@ -506,8 +508,8 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                 if ((name.startsWith("get") || name.startsWith("is"))
                         && !"getClass".equals(name)
                         && Modifier.isPublic(method.getModifiers())
-                        && method.getParameterTypes().length == 0
-                        && isPrimitive(method.getReturnType())) {
+                        && method.getParameterTypes().length == 0 // 没有参数
+                        && isPrimitive(method.getReturnType())) { // 是基本类型
                     Parameter parameter = method.getAnnotation(Parameter.class);
                     if (parameter == null || !parameter.attribute()) //分析注解参数attribute
                         continue;
@@ -664,7 +666,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
     }
 
     /**@c 将注解中方法的值设置到配置中对应的属性 */
-    protected void appendAnnotationOrigin(Class<?> annotationClass, Object annotation) {
+    protected void appendAnnotation(Class<?> annotationClass, Object annotation) {
         Method[] methods = annotationClass.getMethods();
         for (Method method : methods) {
             if (method.getDeclaringClass() != Object.class
@@ -702,8 +704,11 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         }
     }
 
+    /**
+     * 将配置config转换字符串输出
+     */
     @Override
-    public String toString() {/**@c 转换为String */
+    public String toString() {
         try {
             StringBuilder buf = new StringBuilder();
             buf.append("<dubbo:");
@@ -752,7 +757,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
      *   如果属性是getParameters，值为Map，CollectionUtils.toMap
      * 6.当前对象中getClass查找对应的属性方法，如果有该方法，则设置值。若没有，则跳过
      */
-    protected void appendAnnotation(Class<?> annotationClass, Object annotation) {
+    protected void appendAnnotationOverride(Class<?> annotationClass, Object annotation) {
         Method[] methods = annotationClass.getMethods();
             for (Method method : methods) {
                 if (method.getDeclaringClass() != Object.class && method.getReturnType() != void.class
