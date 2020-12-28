@@ -57,7 +57,20 @@ import java.util.Properties;
  * @export
  */
 public class  ReferenceConfig<T> extends AbstractReferenceConfig {/**@c 服务引用配置 核心配置 <dubbo:reference />*/
-
+    /**
+     * ReferenceConfig数据结构
+     * 类继承关系
+     * ReferenceConfig -》AbstractReferenceConfig -》AbstractInterfaceConfig
+     * AbstractInterfaceConfig -》AbstractMethodConfig -》AbstractConfig
+     *
+     * 维护的数据
+     * Protocol refprotocol（引用协议）、 Cluster（集群）、ProxyFactory（代理工厂）
+     * List<URL>（url列表）、interfaceName（接口名）、interfaceClass（接口类型）
+     * String client（客户端类型）、url（点对点直连服务提供地址）
+     * List<MethodConfig>（方法配置）、ConsumerConfig（消费者配置，缺省配置）
+     * T ref（引用实例）、Invoker<?> invoker（调用实例）
+     * boolean initialized（是否已被初始化）、boolean destroyed（是否已被销毁）
+     */
     private static final long serialVersionUID = -5864351140409987595L;
 
     private static final Protocol refprotocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension(); //默认dubboProtocol

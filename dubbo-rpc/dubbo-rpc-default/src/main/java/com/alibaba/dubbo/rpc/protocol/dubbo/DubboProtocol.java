@@ -304,7 +304,7 @@ public class DubboProtocol extends AbstractProtocol {
      * 1）判断是否是服务端，只有服务端才打开服务，客户端不处理
      * 2）从本地缓存的交换服务获取key对应的服务，若不存在，则重新创建服务，否则重置服务的配置reset(url)
      */
-    private void openServer(URL url) { //service export
+    private void openServer(URL url) {
         // find server.
         String key = url.getAddress(); //形式为 host:port或host
         //client 也可以暴露一个只有server可以调用的服务。
@@ -325,7 +325,7 @@ public class DubboProtocol extends AbstractProtocol {
      * 1）设置服务相关参数，如channel.readonly.sent通道只读事件、heartbeat心跳检测时间、codec编码方式等
      * 2）把通道处理类绑定到指定url上，并返回交换服务ExchangeServer
      */
-    private ExchangeServer createServer(URL url) {  //service export
+    private ExchangeServer createServer(URL url) {
         //默认开启server关闭时发送readonly事件
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
         //默认开启heartbeat(设置心跳检测时间，默认每隔60秒检查一次)

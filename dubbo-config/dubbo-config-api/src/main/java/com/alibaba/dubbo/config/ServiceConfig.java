@@ -70,6 +70,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
      * -》AbstractMethodConfig -》AbstractConfig
      *
      * 维护的数据
+     * Protocol（协议）、ProxyFactory（代理工厂）、ScheduledExecutorService（延迟线程池 ）
+     * List<Exporter<?>> 暴露者列表、interfaceName（暴露的接口名）、interfaceClass（暴露的接口）
+     * T（接口的实现类）、path（服务名称）、List<MethodConfig>（方法配置）、ProviderConfig（提供者配置）
+     * exported（是否已暴露）、unexported（是否取消暴露）、generic（泛化接口）
      *
      */
 
@@ -79,7 +83,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
 
-    private static final Map<String, Integer> RANDOM_PORT_MAP = new HashMap<String, Integer>(); //history-h3 随机端口map
+    private static final Map<String, Integer> RANDOM_PORT_MAP = new HashMap<String, Integer>(); // 随机端口map
 
     /** 延迟线程池 */
     private static final ScheduledExecutorService delayExportExecutor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("DubboServiceDelayExporter", true));
@@ -112,10 +116,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     /**
-     * 将Provider列表转换到Protocol列表（ProviderConfig、ProtocolConfig相互转换）
-     * 1）若Provider列表为空，则返回null
-     * 2）遍历Provider列表，依次进行转化
-     * 3）返回转化后的Protocol列表
+     * 将ProviderConfig列表转换到ProtocolConfig列表（已弃用）
      */
     @Deprecated
     private static final List<ProtocolConfig> convertProviderToProtocol(List<ProviderConfig> providers) {
@@ -131,9 +132,6 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     /**
      * 将ProtocolConfig列表转换到ProviderConfig列表
-     * 1）若ProtocolConfig列表为空，则返回null
-     * 2）遍历ProtocolConfig列表，依次进行转化
-     * 3）返回转化后的ProviderConfig列表
      */
     @Deprecated
     private static final List<ProviderConfig> convertProtocolToProvider(List<ProtocolConfig> protocols) {
@@ -206,7 +204,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         return urls;
     }
 
-    @Parameter(excluded = true)
+    @Parameter(excluded = true) // 方法需要被排除
     public boolean isExported() {
         return exported;
     }
@@ -216,16 +214,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         return unexported;
     }
 
-    /**
-     * this ServiceConfig对象显示内容
-     * <dubbo:service ref="com.alibaba.dubbo.demo.provider.self.provider.ApiDemoImpl@1ed1993a" exported="false" unexported="false"
-     * interface="com.alibaba.dubbo.demo.ApiDemo" id="com.alibaba.dubbo.demo.ApiDemo" />
-     */
-
     /**@c 接口暴露是在提供方，接口引用是在消费方 */
-    public synchronized void exportOrgin() { //service export 步骤01
-        logger.info("export测试:" + this.getExportedUrls());
-        if (provider != null) {/**@c 在ServiceConfig接口参数为空的时候，从提供者ProviderConfig参数获取 */
+    public synchronized void export() {
+        if (provider != null) {
             if (export == null) {
                 export = provider.getExport();
             }
@@ -237,11 +228,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             return;
         }
 
-        if (delay != null && delay > 0) {//延迟暴露，在指定的时间后执行任务
-            final long startTime = System.currentTimeMillis();
-            delayExportExecutor.schedule(new Runnable() { //内部类访问局部变量需要加final
+        if (delay != null && delay > 0) {// 延迟暴露，在指定的时间后执行任务
+            delayExportExecutor.schedule(new Runnable() {
                 public void run() {
-                    logger.info("接口延时时间间隔：" + (System.currentTimeMillis() - startTime));
                     doExport();
                 }
             }, delay, TimeUnit.MILLISECONDS);
@@ -250,11 +239,11 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }
     }
 
-    protected synchronized void doExportOrigin() { //service export 步骤02
-        if (unexported) {/**@c 解除暴露*/
+    protected synchronized void doExport() {
+        if (unexported) {
             throw new IllegalStateException("Already unexported!");
         }
-        if (exported) {/**@c 已经暴露过*/ // 同一个接口，不同应用端口以及同一个端口 启动看看： 已处理
+        if (exported) {
             return;
         }
         exported = true;
@@ -395,7 +384,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void doExportUrls() { //service export 步骤03
+    private void doExportUrls() {
         List<URL> registryURLs = loadRegistries(true);
         for (ProtocolConfig protocolConfig : protocols) {
             doExportUrlsFor1Protocol(protocolConfig, registryURLs);
@@ -403,7 +392,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     //暴露URL流程有点复杂，需要仔细分析 ： 组装处理protocalConfig以及注册url，生成invoker，执行暴露export(invoker)
-    private void doExportUrlsFor1ProtocolOrigin(ProtocolConfig protocolConfig, List<URL> registryURLs) { //service export 步骤05
+    private void doExportUrlsFor1Protocol(ProtocolConfig protocolConfig, List<URL> registryURLs) {
         String name = protocolConfig.getName();
         if (name == null || name.length() == 0) {
             name = "dubbo"; //默认协议为dubbo
@@ -449,6 +438,12 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             }
         }
 
+        /**
+         * 暴露服务的端口处理
+         * 1）从配置的config中获取，若有配置port，则直接获取
+         * 2）若没有配置port，则产生随机的端口，并用NetUtils工具校验端口是否可用
+         * （随机端口从30000开始，随机值的返回是10000，所以随机端口 30000 - 40000）
+         */
         Integer port = protocolConfig.getPort();
         if (provider != null && (port == null || port == 0)) {
             port = provider.getPort();
@@ -612,7 +607,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         //history-h3 组装invoker
                         Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
                         //invoker的值 registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&export=dubbo%3A%2F%2F10.118.32.182%3A20881%2Fcom.alibaba.dubbo.demo.ApiDemo%3Fanyhost%3Dtrue%26application%3Dapi_demo%26delay%3D5%26dubbo%3D2.0.0%26export%3Dtrue%26generic%3Dfalse%26interface%3Dcom.alibaba.dubbo.demo.ApiDemo%26methods%3DsayApi%26pid%3D43951%26side%3Dprovider%26timeout%3D3000%26timestamp%3D1562072331803&pid=43951&registry=zookeeper&timestamp=1562071838319
-                        Exporter<?> exporter = protocol.export(invoker);   //service export 步骤07 协议暴露
+                        Exporter<?> exporter = protocol.export(invoker);
                         exporters.add(exporter);
                     }
                 } else {
@@ -642,7 +637,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
      * @param url
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void exportLocal(URL url) { //service export 步骤06  history-h3 本地暴露，待调试
+    private void exportLocal(URL url) {
         if (!Constants.LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) {
             URL local = URL.valueOf(url.toFullString())
                     .setProtocol(Constants.LOCAL_PROTOCOL)
@@ -807,7 +802,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
      * 3）判断是否需要暴露，若不要直接返回
      * 4）判断是否需要延迟，若需要使用定时类延迟指定的时间后暴露
      */
-    public synchronized void export() {
+    public synchronized void exportOverride() {
         if (provider != null) {
             if (export == null) {
                 export = provider.getExport();
@@ -850,7 +845,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
      *    检查存根和mock checkStubAndMock
      * 7）检查完成后，暴露url， doExportUrlsFor1Protocol();
      */
-    protected synchronized void doExport() {
+    protected synchronized void doExportOverride() {
         if (unexported) {
             throw new IllegalStateException("Already unexported！");
         }
@@ -1033,7 +1028,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
      * 13）加url添加到urls列表中 this.urls.add(url)
      *
      */
-    private void doExportUrlsFor1Protocol(ProtocolConfig protocolConfig, List<URL> registryURLs) {
+    private void doExportUrlsFor1ProtocolOverride(ProtocolConfig protocolConfig, List<URL> registryURLs) {
         String protocolName = protocolConfig.getName();
         if (protocolName == null || protocolName.length() == 0) {
             protocolName = "dubbo";

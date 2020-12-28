@@ -217,7 +217,7 @@ public class ApplicationConfig extends AbstractConfig {
     }
 
     public void testAppendAnnotation(Class<?> annotationClass, Object annotation) {
-        appendAnnotationOrigin(annotationClass, annotation);
+        appendAnnotation(annotationClass, annotation);
     }
 
     /**@c 重新方法 */

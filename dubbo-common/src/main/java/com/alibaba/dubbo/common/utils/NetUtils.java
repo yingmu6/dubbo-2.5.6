@@ -54,7 +54,7 @@ public class NetUtils {
     private static final Map<String, String> hostNameCache = new LRUCache<String, String>(1000);
     private static volatile InetAddress LOCAL_ADDRESS = null;
 
-    public static int getRandomPort() { //随机端口从3000开始，随机值的返回是10000，所以随机端口 30000 - 40000
+    public static int getRandomPort() { //随机端口从30000开始，随机值的返回是10000，所以随机端口 30000 - 40000
         return RND_PORT_START + RANDOM.nextInt(RND_PORT_RANGE);
     }
 

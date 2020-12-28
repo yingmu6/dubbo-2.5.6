@@ -80,7 +80,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
      * 5）设置accepts， 从url中获取idle.timeout并设置
      * 6）打开服务：默认打开NettyServer中的doOpen()方法
      */
-    public AbstractServer(URL url, ChannelHandler handler) throws RemotingException { //service export 步骤15
+    public AbstractServer(URL url, ChannelHandler handler) throws RemotingException {
         super(url, handler);
         localAddress = getUrl().toInetSocketAddress();
         String host = url.getParameter(Constants.ANYHOST_KEY, false)
