@@ -245,7 +245,12 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         appendParameters(parameters, config, null);
     }
 
-    @SuppressWarnings("unchecked")   /**@c 过滤处理URL中的参数值 原始方法*/
+    /**
+     * 将config对象的属性值附加到参数map中
+     * 1）对get、is方法处理，处理config中的属性key以及值value并设置到map中
+     * 2）对getParameters方法处理，将已有的map值写到目标map中
+     */
+    @SuppressWarnings("unchecked")
     protected static void appendParameters(Map<String, String> parameters, Object config, String prefix) {
         if (config == null) {
             return;
@@ -254,6 +259,11 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
         for (Method method : methods) {
             try {
                 String name = method.getName();
+                /**
+                 * 对get、is方法处理
+                 * 1）处理config中的属性key以及值value
+                 * 2）设置到参数map中
+                 */
                 if ((name.startsWith("get") || name.startsWith("is"))
                         && !"getClass".equals(name)
                         && Modifier.isPublic(method.getModifiers())
@@ -264,6 +274,12 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                     if (method.getReturnType() == Object.class || parameter != null && parameter.excluded()) { //excluded表示的方法对应的字段，不会出现在url中
                         continue;
                     }
+
+                    /**
+                     * 对参数map的key进行处理
+                     * 1）若注解@Parameter设置了参数key，则作为参数map的key
+                     * 2）若注解@Parameter没有设置了参数key，则将方法名按驼峰的风格转化获取到属性名
+                     */
                     int i = name.startsWith("get") ? 3 : 2;
                     String prop = StringUtils.camelToSplitName(name.substring(i, i + 1).toLowerCase() + name.substring(i + 1), ".");
                     String key;
@@ -272,7 +288,17 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                     } else {
                         key = prop;
                     }
-                    Object value = method.invoke(config, new Object[0]); // 执行方法调用，并返回执行的结果
+                    // 调用config的get或is方法，获取到属性值
+                    Object value = method.invoke(config, new Object[0]);
+                    /**
+                     * 对参数map的value进行处理
+                     * 1）若参数需要转义，则将字符串通过URL编码
+                     * 2）若参数可以直接附加连接
+                     *   2.1）若Constants.DEFAULT_KEY + "." + key或key在参数map中已存在值，表明
+                     *   一个key对应多个value时，通过分号进行分隔
+                     * 3）若包含前缀prefix，则变更参数的key
+                     * 4）将处理好的key、value设置到parameters
+                     */
                     String str = String.valueOf(value).trim();
                     if (value != null && str.length() > 0) {
                         if (parameter != null && parameter.escaped()) {
@@ -281,7 +307,7 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                         if (parameter != null && parameter.append()) {
                             String pre = (String) parameters.get(Constants.DEFAULT_KEY + "." + key);
                             if (pre != null && pre.length() > 0) {
-                                str = pre + "," + str;
+                                str = pre + "," + str; // 同一个键对应多个值
                             }
                             pre = (String) parameters.get(key);
                             if (pre != null && pre.length() > 0) {
@@ -295,7 +321,12 @@ public abstract class AbstractConfig implements Serializable {/**@c API配置方
                     } else if (parameter != null && parameter.required()) { //
                         throw new IllegalStateException(config.getClass().getSimpleName() + "." + key + " == null");
                     }
-                } else if ("getParameters".equals(name)  /**@c ProtocolConfig中方法*/
+                /**
+                 * 对getParameters方法处理
+                 * 1）获取getParameters对应的参数map
+                 * 2）依次遍历map，处理key值，并设置到目标map中
+                 */
+                } else if ("getParameters".equals(name)
                         && Modifier.isPublic(method.getModifiers())
                         && method.getParameterTypes().length == 0
                         && method.getReturnType() == Map.class) {

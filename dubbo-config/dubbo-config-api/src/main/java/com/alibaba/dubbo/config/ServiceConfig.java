@@ -403,21 +403,27 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             host = provider.getHost();
         }
         boolean anyhost = false;
-        if (NetUtils.isInvalidLocalHost(host)) { //尝试多种方式，知道获取到host，(判断是不是无效的host)
-            anyhost = true;
+        /**
+         * 当本地地址host无效时，尝试多种方式获取host
+         * 1）通过InetAddress获取host
+         * 2）通过Socket连接注册中心，若能连上注册中心，则取Socket的本地地址host
+         * 3）通过遍历网卡NetworkInterface，获取本地地址host
+         */
+        if (NetUtils.isInvalidLocalHost(host)) {
+            anyhost = true; // 设置anyhost
             try {
                 host = InetAddress.getLocalHost().getHostAddress(); //获取本地ip地址
             } catch (UnknownHostException e) {
                 logger.warn(e.getMessage(), e);
             }
-            if (NetUtils.isInvalidLocalHost(host)) { // 为啥要和上面两次判断？ 因为host为null也通过判断，还不知道host具体值，所以需要继续判断
+            if (NetUtils.isInvalidLocalHost(host)) {
                 if (registryURLs != null && registryURLs.size() > 0) {
                     for (URL registryURL : registryURLs) {
                         try {
                             Socket socket = new Socket();
                             try {
                                 /**@c 连接到注册中心 */
-                                SocketAddress addr = new InetSocketAddress(registryURL.getHost(), registryURL.getPort()); //history-h3 socket客户端连接
+                                SocketAddress addr = new InetSocketAddress(registryURL.getHost(), registryURL.getPort()); // socket客户端连接
                                 socket.connect(addr, 1000); //此处registry设置的地址为localhost，host取到的值为127.0.0.1
                                 host = socket.getLocalAddress().getHostAddress(); // 此处socket连接，只为获取host？ 是的，只为获取host
                                 break;
@@ -461,6 +467,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             logger.warn("Use random available port(" + port + ") for protocol " + name);
         }
 
+        /**
+         * 构建传输的参数map
+         * 设置基本信息，side、version、timestamp、pid等
+         */
         Map<String, String> map = new HashMap<String, String>();
         if (anyhost) { //判断是否是任意host
             map.put(Constants.ANYHOST_KEY, "true");
@@ -471,14 +481,21 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (ConfigUtils.getPid() > 0) {
             map.put(Constants.PID_KEY, String.valueOf(ConfigUtils.getPid()));
         }
-        appendParameters(map, application);/**@c 构建暴露的参数，将指定配置的属性值添加参数到url中 */
+        /**
+         * 将config对象的属性值附加到参数map中
+         */
+        appendParameters(map, application); // application成员变量
         appendParameters(map, module);
         appendParameters(map, provider, Constants.DEFAULT_KEY);
-        appendParameters(map, protocolConfig);
+        appendParameters(map, protocolConfig); // protocolConfig传入的参数
         appendParameters(map, this);
         if (methods != null && methods.size() > 0) { // methods是从哪里设置的？方法级参数设置，<dubbo:method name="" ...>
             for (MethodConfig method : methods) { //将设置的MethodConfig与 暴露接口的名称以及参数类型进行比较（反射获取）
-                appendParameters(map, method, method.getName()); //方法配置时加上方法名作为前缀，便于区分，比如"sayApi.timeout" -> "3000"
+                // <dubbo:method> 方法配置时加上方法名作为前缀，便于区分，比如sayApi.timeout=3000
+                appendParameters(map, method, method.getName());
+                /**
+                 * 对重试key进行替换，若存在methodName + ".retry"的键，则进行移除并改为 methodName + ".retries"
+                 */
                 String retryKey = method.getName() + ".retry";
                 if (map.containsKey(retryKey)) {
                     String retryValue = map.remove(retryKey); //将map中的key移除，并且返回key对应的值
@@ -486,6 +503,11 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         map.put(method.getName() + ".retries", "0"); //重试次数处理
                     }
                 }
+                /**
+                 * <dubbo:argument> 设置参数值
+                 * 1）获取方法对应的参数config列表，依次遍历
+                 * 2）
+                 */
                 List<ArgumentConfig> arguments = method.getArguments();
                 if (arguments != null && arguments.size() > 0) {
                     for (ArgumentConfig argument : arguments) { //
@@ -506,7 +528,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                                             } else { //ArgumentConfig中的index以及type都是会被忽视的，即不加载url中
                                                 throw new IllegalArgumentException("argument config error : the index attribute and type attirbute not match :index :" + argument.getIndex() + ", type:" + argument.getType());
                                             }
-                                        } else { //history-h3 待调试，以及callback的含义？ 参数回调，服务端可以调用客户端逻辑
+                                        } else { //参数回调，服务端可以调用客户端逻辑
                                             //一个方法中多个callback
                                             for (int j = 0; j < argtypes.length; j++) { //循环结束条件：1）遍历完参数列表 2）出现异常
                                                 Class<?> argclazz = argtypes[j]; //若只设置了type，同一个方法中的相同参数的callback一样，并且后面只设置type的参数把前面替换
@@ -546,39 +568,39 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 map.put("revision", revision);
             }
 
-            String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames(); //history-h3 封装类？
+            String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames();
             if (methods.length == 0) {
                 logger.warn("NO method found in service interface " + interfaceClass.getName());
                 map.put("methods", Constants.ANY_VALUE);
-            } else { //设置暴露接口的方法名，如"methods" -> "sayApi" history-h3 此处会通过hashSet去重，重载的方法是否只有一个？
+            } else { //设置暴露接口的方法名，如"methods" -> "sayApi"
                 map.put("methods", StringUtils.join(new HashSet<String>(Arrays.asList(methods)), ","));
             }
         }
-        if (!ConfigUtils.isEmpty(token)) {/**@c token生成 */  //history-h3 token的使用？
+        if (!ConfigUtils.isEmpty(token)) {/**@c token生成 */
             if (ConfigUtils.isDefault(token)) {
-                map.put("token", UUID.randomUUID().toString()); //history-h3 uuid的值？
+                map.put("token", UUID.randomUUID().toString());
             } else {
                 map.put("token", token);
             }
         }
         if ("injvm".equals(protocolConfig.getName())) {/**@c 本地服务 若是本地服务，不设置注册中心以及通知 */
-            protocolConfig.setRegister(false);  //history-h3 injvm了解：
+            protocolConfig.setRegister(false);
             map.put("notify", "false");
         }
         // 导出服务
         String contextPath = protocolConfig.getContextpath();
         if ((contextPath == null || contextPath.length() == 0) && provider != null) {
-            contextPath = provider.getContextpath(); //history-h3 上下文的作用，以及具体的值？
+            contextPath = provider.getContextpath();
         }
         URL url = new URL(name, host, port, (contextPath == null || contextPath.length() == 0 ? "" : contextPath + "/") + path, map);
 
-        if (ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)  //history-h3 此处配置啥？
+        if (ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)
                 .hasExtension(url.getProtocol())) {
-            url = ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class) //history-h3 ConfiguratorFactory 待了解
+            url = ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)
                     .getExtension(url.getProtocol()).getConfigurator(url).configure(url);
         }
 
-        String scope = url.getParameter(Constants.SCOPE_KEY); //history-h3 暴露范围
+        String scope = url.getParameter(Constants.SCOPE_KEY);
         //配置为none不暴露
         if (!Constants.SCOPE_NONE.toString().equalsIgnoreCase(scope)) {
 

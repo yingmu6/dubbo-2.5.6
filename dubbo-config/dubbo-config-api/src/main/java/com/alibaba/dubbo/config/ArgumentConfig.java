@@ -28,13 +28,13 @@ public class ArgumentConfig implements Serializable { //参数是按位置对应
     private static final long serialVersionUID = -2165482463925213595L;
 
     //arugment index -1 represents not set
-    private Integer index = -1;/**@c 参数配置 包含参数位置索引和对应的类型 */
+    private Integer index = -1; // 参数位置索引
 
     //argument type
-    private String type;  //参数配置中type、index字段都会被忽略(lue)，不会暴露在url中
+    private String type;  // 参数类型
 
     //callback interface
-    private Boolean callback;
+    private Boolean callback; // 是否回调接口
 
     @Parameter(excluded = true)
     public Integer getIndex() {
