@@ -161,13 +161,6 @@ public final class Version {
         } catch (Throwable e) { // 防御性容错
             logger.error(e.getMessage(), e);
         }
-
-        /**
-         * 问题集：history-new
-         * 1）类加载器了解以及getResources的使用
-         * 2）url.getFile()获取到的是文件路径吗？
-         * 3）待调试
-         */
     }
 
     //Test

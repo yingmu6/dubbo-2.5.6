@@ -392,6 +392,13 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     //暴露URL流程有点复杂，需要仔细分析 ： 组装处理protocalConfig以及注册url，生成invoker，执行暴露export(invoker)
+
+    /**
+     * 为协议Protocol构建暴露的url，
+     * 1）处理host、port以及参数map
+     * 2）创建url，构建invoker
+     * 3）做服务暴露protocol.export，并添加暴露exporters.add(exporter);
+     */
     private void doExportUrlsFor1Protocol(ProtocolConfig protocolConfig, List<URL> registryURLs) {
         String name = protocolConfig.getName();
         if (name == null || name.length() == 0) {
@@ -583,7 +590,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 map.put("token", token);
             }
         }
-        if ("injvm".equals(protocolConfig.getName())) {/**@c 本地服务 若是本地服务，不设置注册中心以及通知 */
+        /**
+         * 若是本地服务injvm，不设置注册中心且不通知
+         */
+        if ("injvm".equals(protocolConfig.getName())) {
             protocolConfig.setRegister(false);
             map.put("notify", "false");
         }
@@ -592,6 +602,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if ((contextPath == null || contextPath.length() == 0) && provider != null) {
             contextPath = provider.getContextpath();
         }
+
+        /**
+         * 构建暴露的url
+         */
         URL url = new URL(name, host, port, (contextPath == null || contextPath.length() == 0 ? "" : contextPath + "/") + path, map);
 
         if (ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)
@@ -626,13 +640,16 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                             logger.info("Register dubbo service " + interfaceClass.getName() + " url " + url + " to registry " + registryURL);
                         }
 
-                        //history-h3 组装invoker
+                        // 组装invoker
                         Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
                         //invoker的值 registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=api_demo&dubbo=2.0.0&export=dubbo%3A%2F%2F10.118.32.182%3A20881%2Fcom.alibaba.dubbo.demo.ApiDemo%3Fanyhost%3Dtrue%26application%3Dapi_demo%26delay%3D5%26dubbo%3D2.0.0%26export%3Dtrue%26generic%3Dfalse%26interface%3Dcom.alibaba.dubbo.demo.ApiDemo%26methods%3DsayApi%26pid%3D43951%26side%3Dprovider%26timeout%3D3000%26timestamp%3D1562072331803&pid=43951&registry=zookeeper&timestamp=1562071838319
+                        /**
+                         * 暴露远程服务，将invoker转换为export
+                         */
                         Exporter<?> exporter = protocol.export(invoker);
                         exporters.add(exporter);
                     }
-                } else {
+                } else { // 没有注册url
                     Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, url);
 
                     Exporter<?> exporter = protocol.export(invoker);
