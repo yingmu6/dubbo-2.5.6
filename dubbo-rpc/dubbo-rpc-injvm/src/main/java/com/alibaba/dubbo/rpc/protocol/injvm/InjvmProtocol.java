@@ -34,7 +34,7 @@ import java.util.Map;
  * @author qian.lei
  * @author william.liangf
  */
-public class InjvmProtocol extends AbstractProtocol implements Protocol {
+public class InjvmProtocol extends AbstractProtocol implements Protocol { //本地服务
 
     public static final String NAME = Constants.LOCAL_PROTOCOL;
 
