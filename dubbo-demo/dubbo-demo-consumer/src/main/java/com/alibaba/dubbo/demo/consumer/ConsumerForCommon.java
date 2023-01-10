@@ -11,7 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 /**
  * 常用功能点
  */
-public class ConsumerForCommon { //test3
+public class ConsumerForCommon { //test4
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static void main(String[] args) throws Exception {
